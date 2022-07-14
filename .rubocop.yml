@@ -1,0 +1,33 @@
+
+require:
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.1
+  NewCops: enable
+  Include:
+    - "spec/**/*"
+  Exclude:
+    - "lib/**/*"
+    - "bin/**/*"
+    - "db/schema.rb"
+
+Metrics/BlockLength:
+  IgnoredMethods:
+    - context
+    - describe
+    - it
+    - shared_examples
+    - shared_examples_for
+    - namespace
+    - draw
+    - configure
+    - group
+
+Style/Documentation:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
