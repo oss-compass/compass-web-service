@@ -4,6 +4,10 @@ class ApplicationController < ActionController::Base
 
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
+  def analyze
+    redirect_to('http://localhost:5000/analyze', allow_other_host: true)
+  end
+
   def website
     render template: 'layouts/website'
   end

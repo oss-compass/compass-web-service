@@ -224,6 +224,9 @@ GEM
       rack (>= 2.0.0)
     rack-proxy (0.7.2)
       rack
+    rack-reverse-proxy (0.12.0)
+      rack (>= 1.0.0)
+      rack-proxy (~> 0.6, >= 0.6.1)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (7.0.2.4)
@@ -399,6 +402,7 @@ DEPENDENCIES
   pry
   puma
   rack-cors
+  rack-reverse-proxy
   rails (~> 7.0.2.4)
   ransack
   redis

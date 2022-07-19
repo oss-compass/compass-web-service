@@ -6,6 +6,8 @@ import { pinia } from '@/stores';
 import { setHTTPHeader } from '@/services/http.service';
 import AuthService from '@/services/auth.service';
 
+import 'virtual:windi.css';
+
 const token = AuthService.getToken();
 
 if (token) {

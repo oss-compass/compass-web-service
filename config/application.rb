@@ -45,5 +45,10 @@ module GiteeGrimoirelab
     end
 
     config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+
+    config.middleware.insert(0, Rack::ReverseProxy) do
+      reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
+      reverse_proxy '/analyze', 'http://localhost:5000/'
+    end
   end
 end

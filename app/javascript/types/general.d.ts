@@ -10,3 +10,10 @@ export interface IRegisterUser extends IUserLogin {
 export interface ICurrentUser {
   id: number;
 }
+
+export interface AnalysisTask {
+  project_url: string;
+  raw: boolean;
+  enrich: boolean;
+  metrics: boolean;
+}

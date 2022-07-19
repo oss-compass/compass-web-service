@@ -28,6 +28,7 @@ module.exports = {
     'import/order': 'error',
   },
   settings: {
+    'import/core-modules': ['virtual:windi.css'],
     'import/resolver': {
       'eslint-import-resolver-custom-alias': {
         alias: {
