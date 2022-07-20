@@ -4,15 +4,15 @@ import AnalyzeService from '@/services/analyze.service';
 import { IAnalysisTask } from '@/types/general';
 
 interface IState {
-	project_url: string | null;
+  project_url: string | null;
   status: string | null;
-	message: string | null;
+  message: string | null;
 }
 
 const initialState: IState = {
-	project_url: '',
-	status: '',
-	message: ''
+  project_url: '',
+  status: '',
+  message: ''
 };
 
 export const useAnalyzeStore = defineStore('analyze.store', {
@@ -21,17 +21,17 @@ export const useAnalyzeStore = defineStore('analyze.store', {
     isFinshed: (state: IState) => state.status === 'finished' || state.status === 'failed',
   },
   actions: {
-		updateState(projectUrl: string, data: any) {
-			this.$patch((state) => {
-				state.status = data?.status
-				state.message = data?.message
-				state.project_url = projectUrl
-			})
-		},
+    updateState(projectUrl: string, data: any) {
+      this.$patch((state) => {
+	state.status = data?.status
+	state.message = data?.message
+	state.project_url = projectUrl
+      })
+    },
     start(task: IAnalysisTask) {
       return AnalyzeService.startAnalyze(task).then(
         (response: AxiosResponse) => {
-					this.updateState(task.project_url, response.data)
+	  this.updateState(task.project_url, response.data);
           return Promise.resolve(response);
         },
         (error) => {
@@ -39,17 +39,17 @@ export const useAnalyzeStore = defineStore('analyze.store', {
         },
       );
     },
-		check(projectUrl: string) {
-			return AnalyzeService.checkAnalyze(projectUrl).then(
+    check(projectUrl: string) {
+      return AnalyzeService.checkAnalyze(projectUrl).then(
         (response: AxiosResponse) => {
-					this.updateState(projectUrl, response.data)
+	  this.updateState(projectUrl, response.data);
           return Promise.resolve(response);
         },
         (error) => {
           return Promise.reject(error);
         },
       );
-		}
+    }
   },
 });
 
