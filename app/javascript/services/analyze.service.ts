@@ -1,16 +1,21 @@
-import { AnalysisTask } from '@/types/general';
-import { analyze } from '@/apis/analyze.api';
+import { IAnalysisTask } from '@/types/general';
+import { analyze, check } from '@/apis/analyze.api';
 
 class AnalyzeService {
-  async startAnalyze(task: AnalysisTask) {
+  async startAnalyze(task: IAnalysisTask) {
     return analyze(task).then((response) => {
       if (response.data) {
-        localStorage.setItem('status', response.data);
+        localStorage.setItem('status', response.data.status);
       }
-
       return response.data;
     });
   }
+
+	async checkAnalyze(projectUrl: string) {
+		return check(projectUrl).then((response) => {
+      return response.data;
+    });
+	}
 
   getStatus() {
     const status = localStorage.getItem('status');

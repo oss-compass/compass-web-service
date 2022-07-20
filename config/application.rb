@@ -23,6 +23,10 @@ module GiteeGrimoirelab
     # Set Redis as the back-end for the cache.
     config.cache_store = :redis_cache_store, {
       url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
+      connect_timeout:    30,  # Defaults to 20 seconds
+      read_timeout:       0.2, # Defaults to 1 second
+      write_timeout:      0.2, # Defaults to 1 second
+      reconnect_attempts: 1,   # Defaults to 0
       namespace: 'cache'
     }
 
@@ -46,9 +50,9 @@ module GiteeGrimoirelab
 
     config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
 
-    config.middleware.insert(0, Rack::ReverseProxy) do
-      reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
-      reverse_proxy '/analyze', 'http://localhost:5000/'
-    end
+    # config.middleware.insert(0, Rack::ReverseProxy) do
+    #   reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
+    #   reverse_proxy '/analyze', 'http://localhost:5000/'
+    # end
   end
 end

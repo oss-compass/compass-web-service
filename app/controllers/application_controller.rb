@@ -5,7 +5,23 @@ class ApplicationController < ActionController::Base
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def analyze
-    redirect_to('http://localhost:5000/analyze', allow_other_host: true)
+    opts = params.permit(:project_url, :enrich, :raw, :metrics)
+    case AnalyzeServer.new(opts).perform_async
+        in { result: :ok, message: }
+        render json: { message: message }, status: 200
+        in { result: :none, message: }
+        render json: { message: message }, status: 202
+        in {result: :error, message: }
+        render json: { message: message }, status: 400
+    else
+      render json: { message: 'Unknown params' }, status: 400
+    end
+  end
+
+  def check
+    opts = params.permit(:project_url, :enrich, :raw, :metrics)
+    status = AnalyzeServer.new(opts).get_analyze_status
+    render json: status
   end
 
   def website

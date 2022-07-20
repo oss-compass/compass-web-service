@@ -1,19 +1,19 @@
 export interface IUserLogin {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 }
 
 export interface IRegisterUser extends IUserLogin {
-  password_confirmation: string;
+	password_confirmation: string;
 }
 
 export interface ICurrentUser {
-  id: number;
+	id: number;
 }
 
-export interface AnalysisTask {
-  project_url: string;
-  raw: boolean;
-  enrich: boolean;
-  metrics: boolean;
+export interface IAnalysisTask {
+	project_url: string;
+	raw: boolean;
+	enrich: boolean;
+	metrics: boolean;
 }

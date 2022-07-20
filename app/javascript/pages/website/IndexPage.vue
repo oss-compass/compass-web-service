@@ -57,27 +57,63 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useAnalyzeStore } from '@/stores/analyze.store';
-import { AnalysisTask } from '@/types/general';
+import { IAnalysisTask } from '@/types/general';
 import { showToast } from '@/utils/showToast';
 
 const analyzeStore = useAnalyzeStore();
 const analyzing = ref(false);
+const manual = ref(false)
+const showTips = ref(true);
 
-const task = reactive<AnalysisTask>({
+const task = reactive<IAnalysisTask>({
   project_url: '',
   raw: true,
   enrich: true,
   metrics: true,
-});
+ });
 
-const submit = () => {
+ watch(() => task.project_url, () => {
+   spellCheck();
+ });
+
+ const check = () => {
+   analyzeStore.check(task.project_url).then(
+     (response) => {
+       if (response.status === 'failed') {
+         analyzing.value = false
+         showToast(response.message, 'error');
+       } else if (response.status === 'finished') {
+         analyzing.value = false
+         showToast(response.message, 'success');
+       } else {
+         analyzing.value = true;
+         if (showTips.value) {
+           showToast(response.message, 'warning');
+           showTips.value = false
+         }
+         if (!manual.value) {
+           setTimeout(() => { check(); }, 5000);
+         }
+       }
+     }
+   )
+ }
+
+ const spellCheck = () => {
+   manual.value = true
+   showTips.value = true
+   check()
+   manual.value = false
+ }
+
+ const submit = () => {
   analyzing.value = true;
   analyzeStore.start(task).then(
-    () => {
-      showToast('Finished', 'success');
-      analyzing.value = false;
+    (response) => {
+      showToast(response.message, 'success');
+      check()
     },
     (error) => {
       showToast(error, 'error');

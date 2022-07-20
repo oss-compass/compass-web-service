@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     post '/users/signup' => 'registrations#create', as: :user_registration
   end
 
+  get '/check', to: 'application#check', as: :check
   post '/analyze', to: 'application#analyze', as: :analyze
   get '/panel(/*path)', to: 'application#panel', as: :panel
   get '/(*path)', to: 'application#website', as: :website
