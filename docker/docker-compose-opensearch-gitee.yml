@@ -1,0 +1,110 @@
+version: '3'
+services:
+  opensearch-node1:
+    image: opensearchproject/opensearch:1.3.4
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=opensearch-node1,opensearch-node2,opensearch-node3
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536 # maximum number of open files for the OpenSearch user, set to at least 65536 on modern systems
+        hard: 65536
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+    ports:
+      - 8200:9200
+      - 9600:9600 # required for Performance Analyzer
+    networks:
+      - opensearch-net
+  opensearch-node2:
+    image: opensearchproject/opensearch:1.3.4
+    container_name: opensearch-node2
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node2
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=opensearch-node1,opensearch-node2,opensearch-node3
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data2:/usr/share/opensearch/data
+    networks:
+      - opensearch-net
+  opensearch-node3:
+    image: opensearchproject/opensearch:1.3.4
+    container_name: opensearch-node3
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node3
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
+      - cluster.initial_master_nodes=opensearch-node1,opensearch-node2,opensearch-node3
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data3:/usr/share/opensearch/data
+    networks:
+      - opensearch-net
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:1.3.4
+    container_name: opensearch-dashboards
+    ports:
+      - 7601:5601
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
+    networks:
+      - opensearch-net
+  mariadb:
+    image: mariadb:10.0
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=demo_sh
+  hatstall:
+    image: grimoirelab/hatstall:latest
+    environment:
+      - DATABASE_DIR=/db/
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+    ports:
+      - 8000:80
+    links:
+      - mariadb
+    volumes:
+      - ../default-grimoirelab-settings/apache-hatstall.conf:/home/grimoirelab/apache-hatstall.conf
+      - ../default-grimoirelab-settings/shdb.cfg:/home/grimoirelab/shdb.cfg
+
+volumes:
+  opensearch-data1:
+  opensearch-data2:
+  opensearch-data3:
+
+networks:
+  opensearch-net:
