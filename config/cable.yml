@@ -4,7 +4,7 @@ default: &default
 
 development:
   <<: *default
-  channel_prefix: <%= ENV.fetch("REDIS_CHANNEL_PREFIX") { "gitee-grimoirelab_development" } %>
+  channel_prefix: <%= ENV.fetch("REDIS_CHANNEL_PREFIX") { "compass-web-service_development" } %>
 
 test:
   <<: *default
@@ -12,4 +12,4 @@ test:
 
 production:
   <<: *default
-  channel_prefix: <%= ENV.fetch("REDIS_CHANNEL_PREFIX") { "gitee-grimoirelab_production" } %>
+  channel_prefix: <%= ENV.fetch("REDIS_CHANNEL_PREFIX") { "compass-web-service_production" } %>

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col container content-center mx-auto place-content-center min-h-screen-sm">
     <div class="flex flex-col justify-center">
-      <h1 class="text-2xl font-semibold italic">Welcome to Gitee Grimoirelab</h1>
+      <h1 class="text-2xl font-semibold italic">Welcome to Compass Web Service</h1>
       <div class="mt-2 mb-3 w-128">
         <div class="input-group relative flex flex-wrap items-stretch w-full mb-4">
           <input

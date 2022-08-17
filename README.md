@@ -1,8 +1,8 @@
-# Gitee Grimoirelab Radar
+# Compass Web Service
 
 **This app is using Rails 7, Ruby 3, Vite, Vue 3 and typescript**
 
-**使用 CHAOSS 构建的 Gitee 指数 2.0 （Working in process)**
+**使用CHAOSS工具集构建的开源度量指数 2.0 （Working in process)**
 
 ### Backend
 
@@ -125,8 +125,8 @@ You need to do few small steps to run the app
 ### Clone the repo
 
 ```sh
-git clone https://gitee.com/oschina/gitee-grimoirelab
-cd gitee-grimoirelab
+git clone https://gitee.com/oschina/compass-web-service
+cd compass-web-service
 ```
 
 ### Copy example file

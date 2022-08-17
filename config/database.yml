@@ -1,8 +1,8 @@
 default: &default
   adapter: "mysql2"
   encoding: "utf8mb4"
-  database: <%= ENV.fetch("MARIADB_DB") { "gitee-grimoirelab" } %>
-  username: <%= ENV.fetch("MARIADB_USER") { "gitee-grimoirelab" } %>
+  database: <%= ENV.fetch("MARIADB_DB") { "compass-web-servic" } %>
+  username: <%= ENV.fetch("MARIADB_USER") { "compass-web-service" } %>
   password: <%= ENV.fetch("MARIADB_PASSWORD") { "password" } %>
   host: <%= ENV.fetch("MARIADB_HOST") { "localhost" } %>
   port: <%= ENV.fetch("MARIADB_PORT") { 3306 } %>
@@ -11,12 +11,12 @@ default: &default
 
 development:
   <<: *default
-  database: <%= ENV.fetch("MARIADB_DB") { "gitee-grimoirelab_development" } %>
+  database: <%= ENV.fetch("MARIADB_DB") { "compass-web-service_development" } %>
 
 test:
   <<: *default
-  database: <%= ENV.fetch("MARIADB_DB") { "gitee-grimoirelab_test" } %>
+  database: <%= ENV.fetch("MARIADB_DB") { "compass-web-service_test" } %>
 
 production:
   <<: *default
-  database: <%= ENV.fetch("MARIADB_DB") { "gitee-grimoirelab_production" } %>
+  database: <%= ENV.fetch("MARIADB_DB") { "compass-web-service_production" } %>

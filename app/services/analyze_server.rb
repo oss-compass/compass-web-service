@@ -4,7 +4,7 @@ class AnalyzeServer
 
   ANALYZE_QUEUE = 'analyze_queue'
   TASK = 'micro_server.analyze'
-  SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'gitlab.com']
+  SUPPORT_DOMAINS = ['gitee.com', 'github.com']
 
   class TaskExists < StandardError; end
   class ValidateError < StandardError; end
