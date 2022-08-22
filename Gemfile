@@ -21,10 +21,6 @@ gem 'jbuilder'
 # Use Redis adapter to run Action Cable in production
 gem 'redis'
 
-# User RabbitMQ
-gem 'bunny'
-gem 'sneakers'
-
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
@@ -114,3 +110,6 @@ group :test do
   gem 'simplecov', require: false
   gem 'webdrivers'
 end
+
+gem "graphql", "~> 2.0"
+gem "graphiql-rails", group: :development
