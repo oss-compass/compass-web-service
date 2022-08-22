@@ -1,6 +1,6 @@
 # Compass Web Service
 
-**This app is using Rails 7, Ruby 3, Vite, Vue 3 and typescript**
+**This app is using Rails 7, Ruby 3**
 
 **使用CHAOSS工具集构建的开源度量指数 2.0 （Working in process)**
 
@@ -25,46 +25,25 @@
 - 15- [Sidekiq](https://github.com/mperham/sidekiq)
 - 16- [dotenv](https://github.com/bkeepers/dotenv)
 
-### Frontend
-
-- 17- [Vite](https://github.com/ElMassimo/vite_ruby) Removing importmaps and all frontend libraries and Use Vite instead
-- 18- Code quality and format (Check **Healthy app/Frontend** part)
-- 19- [Vue.js](https://vuejs.org/) Vue.js version 3
-- 20- Enabling auth process(and make the app ready) which needed more packages
-  - [axios](https://www.npmjs.com/package/axios)
-  - [pinia](https://pinia.vuejs.org/introduction.html) The official state management library for Vue. will be used instead of **Vuex**
-  - [vue-query](https://www.npmjs.com/package/vue-query)
-  - [@babel/types](https://babeljs.io/docs/en/babel-types)
-  - We start using [TypeScript](https://www.typescriptlang.org/) and [Vue3 compistion API](https://vuejs.org/guide/extras/composition-api-faq.html) here
-
 ### Healthy app
-
-#### Frontend
-
-- 21- Code quality and format
-  - [ESlint](https://eslint.org/)
-  - [Eslint plugin vue](https://eslint.vuejs.org/rules/)
-  - [Prettier](https://prettier.io/)
-  - [Husky](https://typicode.github.io/husky/#/)
-  - [lint-staged](https://github.com/okonet/lint-staged)
 
 #### Backend
 
-- 21- [RuboCop](https://github.com/rubocop/rubocop) Code quality and format.
+- 17- [RuboCop](https://github.com/rubocop/rubocop) Code quality and format.
 
-- 22- [Brakeman](https://github.com/presidentbeef/brakeman) Checking Ruby on Rails applications for security vulnerabilities. you can check `config/brakeman.ignore` to see ignore errors
-- 23- [bundler-audit](https://github.com/rubysec/bundler-audit) Patch-level verification for bundler
-- 24- [Fasterer](https://github.com/DamirSvrtan/fasterer) Make Rubies code faster by suggestion some speed improvements. check `.fasterer.yml` to enable/disable suggestions
-- 25- [License Finder](https://github.com/pivotal/LicenseFinder) Check the licenses of the gems and packages. you can update `doc/dependency_decisions.yml` to manage licenses
+- 18- [Brakeman](https://github.com/presidentbeef/brakeman) Checking Ruby on Rails applications for security vulnerabilities. you can check `config/brakeman.ignore` to see ignore errors
+- 19- [bundler-audit](https://github.com/rubysec/bundler-audit) Patch-level verification for bundler
+- 20- [Fasterer](https://github.com/DamirSvrtan/fasterer) Make Rubies code faster by suggestion some speed improvements. check `.fasterer.yml` to enable/disable suggestions
+- 21- [License Finder](https://github.com/pivotal/LicenseFinder) Check the licenses of the gems and packages. you can update `doc/dependency_decisions.yml` to manage licenses
 
 #### Common
 
-- 24- [overcommit](https://github.com/sds/overcommit) to manage and configure Git hooks by managing all healthy app tools. you can check `.overcommit.yml` to enable or disable tools
-- 25- Enabling github action to run `overcommit` after push and pull requests in github. Check `.github/workflows/lint.yml` to see the github configs
+- 22- [overcommit](https://github.com/sds/overcommit) to manage and configure Git hooks by managing all healthy app tools. you can check `.overcommit.yml` to enable or disable tools
+- 23- Enabling github action to run `overcommit` after push and pull requests in github. Check `.github/workflows/lint.yml` to see the github configs
 
 ## Auth
 
-- 26- [Devise](https://github.com/heartcombo/devise) and [Devise::JWT](https://github.com/waiting-for-dev/devise-jwt) JWT authentication solution
+- 24- [Devise](https://github.com/heartcombo/devise) and [Devise::JWT](https://github.com/waiting-for-dev/devise-jwt) JWT authentication solution
 
 Predefined auth routes:
 
@@ -156,12 +135,6 @@ rails db:setup
 
   ```sh
   rails s
-  ```
-
-- frontend app
-
-  ```sh
-  yarn dev
   ```
 
 ## TODO

@@ -38,7 +38,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'bootsnap', require: false
 
 # frontend build tool
-gem 'vite_rails'
+# gem 'vite_rails'
 
 # Use Sass to process CSS
 # gem "sassc-rails"

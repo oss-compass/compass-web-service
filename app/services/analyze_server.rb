@@ -27,7 +27,7 @@ class AnalyzeServer
   end
 
   def initialize_analyze_status
-    Rails.cache.write(analyze_status_key, { status: 'pending', message: '' })
+    Rails.cache.write(analyze_status_key, { status: 'pending', message: 'Task is pending' })
   end
 
   def update_analyze_status(status = {})
