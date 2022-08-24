@@ -2,7 +2,7 @@
 
 **This app is using Rails 7, Ruby 3**
 
-**使用CHAOSS工具集构建的开源度量指数 2.0 （Working in process)**
+**（Working in process)**
 
 ### Backend
 
@@ -138,6 +138,4 @@ rails db:setup
   ```
 
 ## TODO
-
-- [ ] 集成 Grimoirelab
 - [ ] Dockerize
