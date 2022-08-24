@@ -7,10 +7,7 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    field :projects, [Types::ProjectType], null: false, description: "Return a list of project in the compass service"
-
-    def projects
-      Project.all
-    end
+    field :repo, resolver: Queries::RepoQuery
+    field :overview, resolver: Queries::OverviewQuery
   end
 end

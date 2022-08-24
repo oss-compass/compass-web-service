@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 module Types
-  class ProjectType < Types::BaseObject
-    field :id, ID, null: false
+  class RepoType < Types::BaseObject
+    field :origin, String, null: false
     field :name, String
     field :language, String
-    field :hash, String
     field :path, String
     field :backend, String
-    field :html_url, String
+    field :pulls_count, Integer
+    field :issues_count, Integer
     field :forks_count, Integer
     field :watchers_count, Integer
     field :stargazers_count, Integer
