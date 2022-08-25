@@ -1,96 +1,127 @@
-require 'addressable/uri'
+# frozen_string_literal: true
 
 class AnalyzeServer
-
-  ANALYZE_QUEUE = 'analyze_queue'
-  TASK = 'micro_server.analyze'
   SUPPORT_DOMAINS = ['gitee.com', 'github.com']
+  CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
+  PROJECT = 'insight'
+  WORKFLOW = 'ETL_V1'
 
   class TaskExists < StandardError; end
   class ValidateError < StandardError; end
 
   def initialize(opts = {})
-    opts = opts.to_h.with_indifferent_access
-    @raw = !!opts[:raw]
-    @enrich = !!opts[:enrich]
-    @identities_load = !!opts[:identities_load]
-    @identities_merge = !!opts[:identities_merge]
-    @panels = !!opts[:panels]
-    @metrics = !!opts[:metrics]
-    @debug = !!opts[:debug]
-    @project_url = opts[:project_url]
-    if @project_url.present?
-      uri = Addressable::URI.parse(@project_url)
-      @project_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+    @raw = opts[:raw]
+    @enrich = opts[:enrich]
+    @repo_url = opts[:repo_url]
+    @activity = opts[:activity]
+    @community = opts[:community]
+    @codequality = opts[:codequality]
+
+    if @repo_url.present?
+      uri = Addressable::URI.parse(@repo_url)
+      @repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
       @domain = uri&.normalized_host
     end
   end
 
-  def initialize_analyze_status
-    Rails.cache.write(analyze_status_key, { status: 'pending', message: 'Task is pending' })
+  def repo_task
+    @repo_task ||= RepoTask.find_by(repo_url: @repo_url)
   end
 
-  def update_analyze_status(status = {})
-    Rails.cache.write(analyze_status_key, status)
+  def check_task_status
+    if repo_task.present?
+      update_task_status
+      repo_task.status
+    else
+      RepoTask::UnSubmit
+    end
   end
 
-  def get_analyze_status
-    Rails.cache.read(analyze_status_key)
-  end
-
-  def perform_async
+  def execute
     validate!
-    RabbitMQ.publish(
-      ANALYZE_QUEUE,
-      {
-        task: TASK,
-        args: [{
-                 raw: @raw,
-                 enrich: @enrich,
-                 identities_load: @identities_load,
-                 identities_merge: @identities_merge,
-                 panels: @panels,
-                 metrics: @metrics,
-                 debug: @debug,
-                 project_url: @project_url,
-               }]
-      })
 
-    initialize_analyze_status
-    { result: :ok, message: 'Task is pending' }
+    status = check_task_status
+
+    if RepoTask::Processing.include?(status)
+      raise TaskExists.new('Task already sumbitted!')
+    end
+
+    result = submit_task_status
+
+    { status: result[:status], message: result[:message] }
   rescue TaskExists => ex
-    { result: :none, message: ex.message }
+    { status: :progress, message: ex.message }
   rescue ValidateError => ex
-    { result: :error, message: ex.message }
+    { status: :error, message: ex.message }
   end
 
   private
 
-  def analyze_status_key
-    "analyze-#{@project_url}"
-  end
-
   def validate!
-    raise ValidateError.new('`project_url` is required') unless @project_url.present?
+    raise ValidateError.new('`repo_url` is required') unless @repo_url.present?
 
     unless SUPPORT_DOMAINS.include?(@domain)
-      raise ValidateError.new("No support data source from: #{@project_url}")
+      raise ValidateError.new("No support data source from: #{@repo_url}")
     end
 
-    tasks = [@raw, @enrich, @identities_load, @identities_merge, @panels, @metrics]
+    tasks = [@raw, @enrich, @activity, @community, @codequality]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
+  end
 
-    result = Rails.cache.read(analyze_status_key)
+  def payload
+    {
+      project: PROJECT,
+      name: WORKFLOW,
+      payload: {
+          deubg: false,
+          enrich: @enrich,
+          identities_load: false,
+          identities_merge: false,
+          metrics_activity: @activity,
+          metrics_codequality: @codequality,
+          metrics_community: @community,
+          panels: false,
+          project_url: @repo_url,
+          raw: @raw
+      }
+    }
+  end
 
-    result = result.to_h.with_indifferent_access
-    puts result
+  def submit_task_status
+    repo_task = RepoTask.find_by(repo_url: @repo_url)
 
-    if result&.[](:status) == 'pending'
-      raise TaskExists.new('Task already exists!')
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload.to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+    task_resp = JSON.parse(response.body)
+
+    if repo_task.present?
+      repo_task.update(status: task_resp['status'], task_id: task_resp['id'])
+    else
+      RepoTask.create(
+        task_id: task_resp['id'],
+        repo_url: @repo_url,
+        status: task_resp['status'],
+        payload: payload.to_json
+      )
     end
+    { status: task_resp['status'], message: 'Task is pending' }
+  rescue => ex
+    logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")
+    { status: RepoTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
+  end
 
-    if result&.[](:status) == 'analyzing'
-      raise TaskExists.new('Task is analyzing!')
+  def update_task_status
+    if repo_task.task_id
+      response =
+        Faraday.get("#{CELERY_SERVER}/api/workflows/#{repo_task.task_id}")
+      task_resp = JSON.parse(response.body)
+      repo_task.update(status: task_resp['status'])
     end
+  rescue => ex
+    logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
   end
 end

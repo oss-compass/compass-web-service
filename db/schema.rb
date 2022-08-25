@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_22_083153) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_25_073716) do
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -20,6 +20,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_22_083153) do
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_allowlisted_jwts_on_jti", unique: true
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
+  end
+
+  create_table "repo_tasks", charset: "utf8mb4", force: :cascade do |t|
+    t.string "task_id"
+    t.string "repo_url"
+    t.string "status"
+    t.text "payload"
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|

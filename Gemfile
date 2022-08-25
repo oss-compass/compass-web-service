@@ -25,6 +25,9 @@ gem 'redis'
 gem 'search_flip'
 gem 'opensearch-ruby'
 
+# Use Http Client
+gem 'faraday'
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 

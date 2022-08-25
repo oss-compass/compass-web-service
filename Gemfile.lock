@@ -428,6 +428,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  faraday
   fasterer
   graphiql-rails
   graphql (~> 2.0)
