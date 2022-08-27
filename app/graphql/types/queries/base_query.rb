@@ -31,6 +31,19 @@ module Types
         end
         skeletons
       end
+
+      def build_metrics_data(resp, base_type, &builder)
+        hits = resp&.[]('hits')&.[]('hits')
+        skeletons = []
+        hits.map do |data|
+          data = data['_source']
+          skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
+          if data.present?
+            skeletons << builder.(skeleton, data)
+          end
+        end
+        skeletons
+      end
     end
   end
 end

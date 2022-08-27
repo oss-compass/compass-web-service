@@ -9,5 +9,6 @@ module Types
 
     field :repo, resolver: Queries::RepoQuery
     field :overview, resolver: Queries::OverviewQuery
+    field :metric_activity, resolver: Queries::ActivityMetricQuery
   end
 end
