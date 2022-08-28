@@ -32,6 +32,33 @@ module Types
         skeletons
       end
 
+      def extract_date(range)
+        now = Date.today
+
+        end_date = Date.tomorrow
+
+        begin_date =
+          case range.to_s.downcase
+          when '3m'
+            now - 3.months
+          when '6m'
+            now - 6.months
+          when '1y'
+            now - 1.year
+          when '2y'
+            now - 2.years
+          when '3y'
+            now - 3.years
+          when '5y'
+            now - 5.years
+          when '10y'
+            now - 10.years
+          else
+            Date.new(2000)
+          end
+        [begin_date, end_date]
+      end
+
       def build_metrics_data(resp, base_type, &builder)
         hits = resp&.[]('hits')&.[]('hits')
         skeletons = []

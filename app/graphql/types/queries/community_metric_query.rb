@@ -2,9 +2,9 @@
 
 module Types
   module Queries
-    class ActivityMetricQuery < BaseQuery
-      type [Types::ActivityMetricType], null: false
-      description 'Get activity metrics data of compass'
+    class CommunityMetricQuery < BaseQuery
+      type [Types::CommunityMetricType], null: false
+      description 'Get community metrics data of compass'
       argument :url, String, required: true, description: 'repo or project url'
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
       argument :range, String, required: false, description: 'time range (3m 6m 1y 2y 3y 5y 10y s2000)' ,  default_value: '3m'
@@ -15,13 +15,13 @@ module Types
         begin_date, end_date = extract_date(range)
 
         resp =
-          ActivityMetric
+          CommunityMetric
             .must(match: { label: repo_url })
             .range(:grimoire_creation_date, gt: begin_date, lt: end_date)
             .execute
             .raw_response
 
-        build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
+        build_metrics_data(resp, Types::CommunityMetricType) do |skeleton, raw|
           OpenStruct.new(skeleton.merge(raw))
         end
       end

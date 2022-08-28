@@ -10,5 +10,7 @@ module Types
     field :repo, resolver: Queries::RepoQuery
     field :overview, resolver: Queries::OverviewQuery
     field :metric_activity, resolver: Queries::ActivityMetricQuery
+    field :metric_community, resolver: Queries::CommunityMetricQuery
+    field :metric_codequality, resolver: Queries::CodequalityMetricQuery
   end
 end
