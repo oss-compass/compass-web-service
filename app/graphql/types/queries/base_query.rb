@@ -35,43 +35,55 @@ module Types
       def extract_date(range)
         now = Date.today
 
-        end_date = Date.tomorrow
+        end_date = Date.today
+
+        interval = '7d'
 
         begin_date =
           case range.to_s.downcase
           when '3m'
+            interval = false
             now - 3.months
           when '6m'
+            interval = false
             now - 6.months
           when '1y'
+            interval = '1M'
             now - 1.year
           when '2y'
+            interval = '1M'
             now - 2.years
           when '3y'
+            interval = '1q'
             now - 3.years
           when '5y'
+            interval = '1q'
             now - 5.years
           when '10y'
+            interval = '1q'
             now - 10.years
           else
+            interval = '1q'
             Date.new(2000)
           end
-        [begin_date, end_date]
+        [begin_date, end_date, interval]
       end
 
-      def generate_interval_aggs(date_field, interval_str='7d', avg_fields=[])
+      def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={})
+        metric_fields =
+          base_type.fields.select{|k, v| v.type.name.end_with?(avg_type)}.keys.map(&:underscore)
         aggregate_inteval = {
           aggsWithDate: {
             date_histogram: {
               field: date_field,
               calendar_interval: interval_str
             },
-            aggs: avg_fields.reduce({}) do |aggs, field|
+            aggs: metric_fields.reduce({}) do |aggs, field|
               aggs.merge(
                 {
                   field => {
                     avg: {
-                      field: field
+                      field: aliases[field] || field
                     }
                   }
                 }

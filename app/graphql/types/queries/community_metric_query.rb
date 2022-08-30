@@ -12,17 +12,39 @@ module Types
         uri = Addressable::URI.parse(url)
         repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
 
-        begin_date, end_date = extract_date(range)
+        begin_date, end_date, interval = extract_date(range)
 
-        resp =
-          CommunityMetric
-            .must(match: { label: repo_url })
-            .range(:grimoire_creation_date, gt: begin_date, lt: end_date)
-            .execute
+        if !interval
+          resp =
+            CommunityMetric
+              .must(match_phrase: { label: repo_url })
+              .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+              .execute
             .raw_response
-
-        build_metrics_data(resp, Types::CommunityMetricType) do |skeleton, raw|
-          OpenStruct.new(skeleton.merge(raw))
+          build_metrics_data(resp, Types::CommunityMetricType) do |skeleton, raw|
+            OpenStruct.new(skeleton.merge(raw))
+          end
+        else
+          aggs = generate_interval_aggs(Types::CommunityMetricType, :grimoire_creation_date, interval)
+          resp =
+            CommunityMetric
+              .must(match_phrase: { label: repo_url })
+              .page(1)
+              .per(1)
+              .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+              .aggregate(aggs)
+              .execute
+              .raw_response
+          build_metrics_data(resp, Types::CommunityMetricType) do |skeleton, raw|
+            data = raw[:data]
+            template = raw[:template]
+            skeleton.keys.map do |k|
+              key = k.to_s.underscore
+              skeleton[key] = data&.[](key)&.[]('value') || template[key]
+            end
+            skeleton['grimoire_creation_date'] = data&.[]('key_as_string')
+            OpenStruct.new(skeleton)
+          end
         end
       end
     end

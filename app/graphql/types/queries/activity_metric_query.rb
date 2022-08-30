@@ -12,9 +12,9 @@ module Types
         uri = Addressable::URI.parse(url)
         repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
 
-        begin_date, end_date = extract_date(range)
+        begin_date, end_date, interval = extract_date(range)
 
-        if (end_date - begin_date).to_i < 365
+        if !interval
           resp =
             ActivityMetric
               .must(match_phrase: { label: repo_url })
@@ -27,23 +27,7 @@ module Types
             OpenStruct.new(skeleton.merge(raw))
           end
         else
-          metric_fields = [
-            :activity_score,
-            :closed_issues_count,
-            :code_review_count,
-            :comment_frequency,
-            :commit_frequency,
-            :contributor_count,
-            :created_since,
-            :updated_issues_count,
-            :updated_since
-          ]
-          interval_str = (end_date - begin_date).to_i < (3 * 365) ? '1M' : '1q'
-          aggs = generate_interval_aggs(
-            :grimoire_creation_date,
-            interval_str,
-            metric_fields
-          )
+          aggs = generate_interval_aggs(Types::ActivityMetricType, :grimoire_creation_date, interval)
           resp =
             ActivityMetric
               .must(match_phrase: { label: repo_url })
@@ -53,6 +37,7 @@ module Types
               .aggregate(aggs)
               .execute
               .raw_response
+
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
             data = raw[:data]
             template = raw[:template]
