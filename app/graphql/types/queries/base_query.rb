@@ -59,14 +59,47 @@ module Types
         [begin_date, end_date]
       end
 
+      def generate_interval_aggs(date_field, interval_str='7d', avg_fields=[])
+        aggregate_inteval = {
+          aggsWithDate: {
+            date_histogram: {
+              field: date_field,
+              calendar_interval: interval_str
+            },
+            aggs: avg_fields.reduce({}) do |aggs, field|
+              aggs.merge(
+                {
+                  field => {
+                    avg: {
+                      field: field
+                    }
+                  }
+                }
+              )
+            end
+          }
+        }
+      end
+
       def build_metrics_data(resp, base_type, &builder)
+        aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
         hits = resp&.[]('hits')&.[]('hits')
         skeletons = []
-        hits.map do |data|
-          data = data['_source']
-          skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
-          if data.present?
-            skeletons << builder.(skeleton, data)
+        if aggs.present?
+          template = hits.first&.[]('_source')
+          aggs.map do |data|
+            skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
+            if template.present? && data.present?
+              skeletons << builder.(skeleton, {template: template, data: data})
+            end
+          end
+        else
+          hits.map do |data|
+            data = data['_source']
+            skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
+            if data.present?
+              skeletons << builder.(skeleton, data)
+            end
           end
         end
         skeletons
