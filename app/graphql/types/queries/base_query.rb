@@ -1,6 +1,9 @@
 module Types
   module Queries
     class BaseQuery < GraphQL::Schema::Resolver
+      SEVEN_DAYS = 7 * 24 * 60 * 60
+      HALF_YEAR = 180 * 24 * 60 * 60
+      TWO_YEARS = 2 * 365 * 24 * 60 * 60
       # methods that should be inherited can go here.
       # like a `current_tenant` method, or methods related
       # to the `context` object
@@ -32,40 +35,24 @@ module Types
         skeletons
       end
 
-      def extract_date(range)
-        now = Date.today
+      def extract_date(begin_date, end_date)
+        today = DateTime.now
 
-        end_date = Date.today
+        begin_date = begin_date || today - 3.months
+        end_date = [end_date || today, today].min
+        diff_seconds = end_date.to_i - begin_date.to_i
 
-        interval = '7d'
-
-        begin_date =
-          case range.to_s.downcase
-          when '3m'
-            interval = false
-            now - 3.months
-          when '6m'
-            interval = false
-            now - 6.months
-          when '1y'
-            interval = '1M'
-            now - 1.year
-          when '2y'
-            interval = '1M'
-            now - 2.years
-          when '3y'
-            interval = '1q'
-            now - 3.years
-          when '5y'
-            interval = '1q'
-            now - 5.years
-          when '10y'
-            interval = '1q'
-            now - 10.years
-          else
-            interval = '1q'
-            Date.new(2000)
-          end
+        if diff_seconds < SEVEN_DAYS
+          begin_date = today - 3.months
+          end_date = today
+          interval = false
+        elsif diff_seconds < HALF_YEAR
+          interval = false
+        elsif diff_seconds < TWO_YEARS
+          interval = '1M'
+        else
+          interval = '1q'
+        end
         [begin_date, end_date, interval]
       end
 

@@ -7,12 +7,14 @@ module Types
       description 'Get activity metrics data of compass'
       argument :url, String, required: true, description: 'repo or project url'
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
-      argument :range, String, required: false, description: 'time range (3m 6m 1y 2y 3y 5y 10y s2000)' ,  default_value: '3m'
-      def resolve(url: nil, level: 'repo', range: '3m')
+      argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
+      argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
+
+      def resolve(url: nil, level: 'repo', begin_date: nil, end_date: nil)
         uri = Addressable::URI.parse(url)
         repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
 
-        begin_date, end_date, interval = extract_date(range)
+        begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         if !interval
           resp =
