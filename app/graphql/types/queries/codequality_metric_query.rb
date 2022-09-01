@@ -17,12 +17,7 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         if !interval
-          resp =
-            CodequalityMetric
-              .must(match_phrase: { label: repo_url })
-              .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-              .execute
-              .raw_response
+          resp = CodequalityMetric.query_repo_by_date(repo_url, begin_date, end_date)
 
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
@@ -37,15 +32,8 @@ module Types
             'Float',
             {'loc_frequency' => 'LOC_frequency'}
           )
-          resp =
-            CodequalityMetric
-              .must(match_phrase: { label: repo_url })
-              .page(1)
-              .per(1)
-              .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-              .aggregate(aggs)
-              .execute
-              .raw_response
+          resp = CodequalityMetric.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
+
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             data = raw[:data]
             template = raw[:template]
