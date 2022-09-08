@@ -8,6 +8,7 @@ module Types
     # They will be entry points for queries on your schema.
 
     field :repo, resolver: Queries::RepoQuery
+    field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
     field :overview, resolver: Queries::OverviewQuery
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery

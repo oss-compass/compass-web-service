@@ -19,7 +19,7 @@ class AnalyzeServer
 
     if @repo_url.present?
       uri = Addressable::URI.parse(@repo_url)
-      @repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+      @repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
       @domain = uri&.normalized_host
     end
   end
