@@ -73,16 +73,16 @@ class AnalyzeServer
       project: PROJECT,
       name: WORKFLOW,
       payload: {
-          deubg: false,
-          enrich: @enrich,
-          identities_load: false,
-          identities_merge: false,
-          metrics_activity: @activity,
-          metrics_codequality: @codequality,
-          metrics_community: @community,
-          panels: false,
-          project_url: @repo_url,
-          raw: @raw
+        deubg: false,
+        enrich: @enrich,
+        identities_load: false,
+        identities_merge: false,
+        metrics_activity: @activity,
+        metrics_codequality: @codequality,
+        metrics_community: @community,
+        panels: false,
+        project_url: @repo_url,
+        raw: @raw
       }
     }
   end

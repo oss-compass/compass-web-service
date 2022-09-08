@@ -9,7 +9,7 @@ module Types
 
       def resolve(url:)
         uri = Addressable::URI.parse(url)
-        repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+        repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
         domain = uri&.normalized_host
         case domain
         when 'gitee.com'

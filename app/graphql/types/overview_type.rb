@@ -2,11 +2,10 @@
 
 module Types
   class OverviewType < Types::BaseObject
-    field :repos_count, Integer
-    field :stargazers_count, Integer
-    field :pulls_count, Integer
-    field :issues_count, Integer
-    field :subscribers_count, Integer
+    field :projects_count, Integer
+    field :dimensions_count, Integer
+    field :models_count, Integer
+    field :metrics_count, Integer
     field :trends, [Types::RepoType]
   end
 end

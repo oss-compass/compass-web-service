@@ -12,7 +12,7 @@ module Types
 
       def resolve(url: nil, level: 'repo', begin_date: nil, end_date: nil)
         uri = Addressable::URI.parse(url)
-        repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+        repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
