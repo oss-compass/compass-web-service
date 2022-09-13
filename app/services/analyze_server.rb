@@ -37,7 +37,7 @@ class AnalyzeServer
     end
   end
 
-  def execute
+  def execute(only_validate: false)
     validate!
 
     status = check_task_status
@@ -46,9 +46,13 @@ class AnalyzeServer
       raise TaskExists.new('Task already sumbitted!')
     end
 
-    result = submit_task_status
+    if only_validate
+      { status: true, message: 'validate pass' }
+    else
+      result = submit_task_status
 
-    { status: result[:status], message: result[:message] }
+      { status: result[:status], message: result[:message] }
+    end
   rescue TaskExists => ex
     { status: :progress, message: ex.message }
   rescue ValidateError => ex
@@ -66,6 +70,16 @@ class AnalyzeServer
 
     tasks = [@raw, @enrich, @activity, @community, @codequality]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
+
+    validate_project!
+  end
+
+  def validate_project!
+    url = "#{@repo_url}.git/info/refs?service=git-upload-pack"
+    response = Faraday.get(url)
+    raise ValidateError.new('This repository can not access') unless response.status == 200
+  rescue => ex
+    raise ValidateError.new("This repository can not access, error: #{ex.message}")
   end
 
   def payload

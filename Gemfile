@@ -28,6 +28,9 @@ gem 'opensearch-ruby'
 # Use Http Client
 gem 'faraday'
 
+# Git tools
+gem 'git_diff_parser'
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 

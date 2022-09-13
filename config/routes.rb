@@ -16,6 +16,8 @@ Rails.application.routes.draw do
     post '/users/signup' => 'registrations#create', as: :user_registration
   end
 
+  post '/api/workflow', to: 'application#workflow', as: :workflow
+
   get '/panel(/*path)', to: 'application#panel', as: :panel
   get '/(*path)', to: 'application#website', as: :website
 end

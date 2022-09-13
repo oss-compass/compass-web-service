@@ -150,6 +150,7 @@ GEM
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
+    git_diff_parser (4.0.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
     graphiql-rails (1.8.0)
@@ -430,6 +431,7 @@ DEPENDENCIES
   faker
   faraday
   fasterer
+  git_diff_parser
   graphiql-rails
   graphql (~> 2.0)
   has_scope
