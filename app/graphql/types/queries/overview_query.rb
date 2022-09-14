@@ -19,7 +19,8 @@ module Types
         resp =
           GithubRepo
             .exists(:origin)
-            .sort('data.updated_at': 'desc').page(1).per(4)
+            .custom(collapse: { field: :origin })
+            .sort('data.updated_at': 'desc').page(1).per(24)
             .source(['origin',
                      'backend_name',
                      'data.name',
