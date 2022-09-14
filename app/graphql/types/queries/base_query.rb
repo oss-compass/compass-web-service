@@ -20,8 +20,8 @@ module Types
               skeleton['language'] = data['data']['language']
               skeleton['path'] = data['data']['full_name']
               skeleton['backend'] = data['backend_name']
-              skeleton['pulls_count'] = (GithubPull.must(match: { origin: data['origin'] }).total_entries rescue 0)
-              skeleton['issues_count'] = (GithubIssue.must(match: { origin: data['origin'] }).total_entries rescue 0)
+              skeleton['pulls_count'] = (GithubPull.count_by_field(data['origin']) rescue 0)
+              skeleton['issues_count'] = (GithubIssue.count_by_field(data['origin']) rescue 0)
               skeleton['forks_count'] = data['data']['forks_count']
               skeleton['watchers_count'] = data['data']['subscribers_count']
               skeleton['stargazers_count'] = data['data']['stargazers_count']

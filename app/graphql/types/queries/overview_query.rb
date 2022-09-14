@@ -6,36 +6,41 @@ module Types
       DIMENSIONS_COUNT = ENV.fetch('DIMENSIONS') { 3 }
       MODELS_COUNT = ENV.fetch('MODELS') { 24 }
       METRICS_COUNT = ENV.fetch('METRICS') { 72 }
+      OVERVIEW_CACHE_KEY = 'compass-overview'
 
       type Types::OverviewType, null: false
       description 'Get overview data of compass'
 
       def resolve
-        skeleton = Hash[Types::OverviewType.fields.keys.zip([])].symbolize_keys
-        skeleton['projects_count'] = aggs_distinct(GithubRepoEnrich, :origin) + aggs_distinct(GiteeRepoEnrich, :origin)
-        skeleton['dimensions_count'] = DIMENSIONS_COUNT
-        skeleton['models_count'] = MODELS_COUNT
-        skeleton['metrics_count'] = METRICS_COUNT
-        resp =
-          GithubRepo
-            .exists(:origin)
-            .custom(collapse: { field: :origin })
-            .sort('data.updated_at': 'desc').page(1).per(24)
-            .source(['origin',
-                     'backend_name',
-                     'data.name',
-                     'data.language',
-                     'data.full_name',
-                     'data.forks_count',
-                     'data.subscribers_count',
-                     'data.stargazers_count',
-                     'data.open_issues_count',
-                     'data.created_at',
-                     'data.updated_at'])
+        results =
+          Rails.cache.fetch(OVERVIEW_CACHE_KEY, expires_in: 1.day) do
+          skeleton = Hash[Types::OverviewType.fields.keys.zip([])].symbolize_keys
+          skeleton['projects_count'] = aggs_distinct(GithubRepoEnrich, :origin) + aggs_distinct(GiteeRepoEnrich, :origin)
+          skeleton['dimensions_count'] = DIMENSIONS_COUNT
+          skeleton['models_count'] = MODELS_COUNT
+          skeleton['metrics_count'] = METRICS_COUNT
+          resp =
+            GithubRepo
+              .exists(:origin)
+              .custom(collapse: { field: :origin })
+              .sort('data.updated_at': 'desc').page(1).per(24)
+              .source(['origin',
+                       'backend_name',
+                       'data.name',
+                       'data.language',
+                       'data.full_name',
+                       'data.forks_count',
+                       'data.subscribers_count',
+                       'data.stargazers_count',
+                       'data.open_issues_count',
+                       'data.created_at',
+                       'data.updated_at'])
               .execute
               .raw_response
-        skeleton['trends'] = build_github_repo(resp).map { |repo| OpenStruct.new(repo) }
-        OpenStruct.new(skeleton)
+          skeleton['trends'] = build_github_repo(resp).map { |repo| OpenStruct.new(repo) }
+          skeleton
+        end
+        OpenStruct.new(results)
       end
 
       private

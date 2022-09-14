@@ -1,10 +1,6 @@
-class GithubIssue
-  include SearchFlip::Index
+# frozen_string_literal: true
 
-  def self.connection
-    AuthSearchConn
-  end
-
+class GithubIssue < GithubBase
   def self.index_name
     'github_raw'
   end

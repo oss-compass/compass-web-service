@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-class GithubPullEnrich
-  include SearchFlip::Index
-
-  def self.connection
-    AuthSearchConn
-  end
-
+class GithubPullEnrich < GithubBase
   def self.index_name
     'github-pull_enriched'
   end

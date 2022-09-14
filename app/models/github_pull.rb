@@ -1,10 +1,6 @@
-class GithubPull
-  include SearchFlip::Index
+# frozen_string_literal: true
 
-  def self.connection
-    AuthSearchConn
-  end
-
+class GithubPull < GithubBase
   def self.index_name
     'github-pull_raw'
   end
