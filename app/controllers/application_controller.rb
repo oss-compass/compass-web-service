@@ -5,12 +5,13 @@ class ApplicationController < ActionController::Base
   GITHUB_TOKEN = ENV.fetch('GITHUB_API_TOKEN')
   GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
   GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
+  HOST = ENV.fetch('DEFAULT_HOST')
   GITEE_API_ENDPOINT = "https://gitee.com/api/v5"
 
   skip_before_action :verify_authenticity_token
   include Pagy::Backend
 
-  before_action :validate_password, only: [:template]
+  before_action :validate_password, only: [:workflow, :hook]
 
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
@@ -20,7 +21,7 @@ class ApplicationController < ActionController::Base
 
     action = payload['action']
     action_desc = payload['action_desc']
-    pr_number = payload['iid']
+    @pr_number = payload['iid']
     result =
       case action
       when 'open', 'reopen'
@@ -33,9 +34,24 @@ class ApplicationController < ActionController::Base
         submit_task(payload)
       end
 
-    notify_on_pr(pr_number, result.to_json)
+    if result.present? && result.is_a?(Hash)
+      notify_on_pr(@pr_number, quote_mark(YAML.dump(result)))
+    end
 
     render json: result
+  end
+
+  def hook
+    payload = request.request_parameters
+    result = payload['result'].to_h
+    domain = payload['domain']
+    pr_number = payload['pr_number']
+
+    if result.present? && result.is_a?(Hash)
+      notify_on_pr(pr_number, quote_mark(YAML.dump(result)), domain: domain)
+    end
+
+    { status: true, message: 'ok' }
   end
 
   def website
@@ -52,13 +68,13 @@ class ApplicationController < ActionController::Base
 
   def check_yaml(payload)
     diff_url = payload&.[]('pull_request')&.[]('diff_url')
-    @source_branch = payload&.[]('source_branch')
+    @branch = payload&.[]('source_branch')
     if diff_url.present?
       result = []
       diff = Faraday.get(diff_url).body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
-        result << check_yaml_file(patch.file)
+        result << analyze_yaml_file(patch.file)
       end
       { status: true, message: 'ok', result: result }
     else
@@ -68,7 +84,25 @@ class ApplicationController < ActionController::Base
     { status: false, message: ex.message }
   end
 
-  def check_yaml_file(path)
+  def submit_task(payload)
+    diff_url = payload&.[]('pull_request')&.[]('diff_url')
+    @branch = payload&.[]('target_branch')
+    if diff_url.present?
+      result = []
+      diff = Faraday.get(diff_url).body
+      patches = GitDiffParser.parse(diff)
+      patches.each do |patch|
+        result << analyze_yaml_file(patch.file, only_validate: false)
+      end
+      { status: true, message: 'ok', result: result }
+    else
+      { status: false, message: 'invalid diff url' }
+    end
+  rescue => ex
+    { status: false, message: ex.message }
+  end
+
+  def analyze_yaml_file(path, only_validate: true)
     yaml_url = generate_yml_url(path)
     yaml = YAML.load(Faraday.get(yaml_url).body)
     AnalyzeServer.new(
@@ -78,15 +112,15 @@ class ApplicationController < ActionController::Base
         enrich: true,
         activity: true,
         community: true,
-        codequality: true
+        codequality: true,
+        callback: {
+          hook_url: "#{HOST}/api/hook",
+          params: { pr_number: @pr_number }
+        }
       }
-    ).execute(only_validate: true).merge(path: path)
+    ).execute(only_validate: only_validate).merge(path: path)
   rescue => ex
     { status: false, path: path, message: ex.message }
-  end
-
-  def submit_task(payload)
-    { status: true, message: 'ok' }
   end
 
 
@@ -96,11 +130,19 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def quote_mark(message)
+    <<~HEREDOC
+    ```
+    #{message}
+    ```
+    HEREDOC
+  end
+
   def generate_yml_url(path)
     if @user_agent == 'git-oschina-hook'
-      "#{GITEE_REPO}/raw/#{@source_branch}/#{path}"
+      "#{GITEE_REPO}/raw/#{@branch}/#{path}"
     else
-      "#{GITHUB_REPO.sub('github.com', 'raw.githubusercontent.com')}/#{@source_branch}/#{path}"
+      "#{GITHUB_REPO.sub('github.com', 'raw.githubusercontent.com')}/#{@branch}/#{path}"
     end
   end
 
@@ -112,8 +154,8 @@ class ApplicationController < ActionController::Base
     (@user_agent == 'git-oschina-hook' ? GITEE_REPO : GITHUB_REPO).split('/')[-1]
   end
 
-  def notify_on_pr(pr_number, message)
-    if @user_agent == 'git-oschina-hook'
+  def notify_on_pr(pr_number, message, domain: nil)
+    if @user_agent == 'git-oschina-hook' || domain == 'gitee'
       note_url = "#{GITEE_API_ENDPOINT}/repos/#{repo_owner}/#{repo_path}/pulls/#{pr_number}/comments"
       Faraday.post(
         note_url,

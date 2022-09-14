@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
 
   post '/api/workflow', to: 'application#workflow', as: :workflow
+  post '/api/hook', to: 'application#hook', as: :hook
 
   get '/panel(/*path)', to: 'application#panel', as: :panel
   get '/(*path)', to: 'application#website', as: :website

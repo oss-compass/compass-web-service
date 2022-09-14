@@ -16,6 +16,7 @@ class AnalyzeServer
     @activity = opts[:activity]
     @community = opts[:community]
     @codequality = opts[:codequality]
+    @callback = opts[:callback]
 
     if @repo_url.present?
       uri = Addressable::URI.parse(@repo_url)
@@ -96,7 +97,8 @@ class AnalyzeServer
         metrics_community: @community,
         panels: false,
         project_url: @repo_url,
-        raw: @raw
+        raw: @raw,
+        callback: @callback
       }
     }
   end
