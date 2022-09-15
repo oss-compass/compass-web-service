@@ -12,7 +12,7 @@ module Types
 
       def resolve(url: nil, level: 'repo', begin_date: nil, end_date: nil)
         uri = Addressable::URI.parse(url)
-        repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
+        repo_url = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
@@ -20,10 +20,27 @@ module Types
           resp = ActivityMetric.query_repo_by_date(repo_url, begin_date, end_date)
 
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
-            OpenStruct.new(skeleton.merge(raw))
+            skeleton.merge!(raw)
+            skeleton['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
+            skeleton['active_c2_contributor_count'] = raw['active_C2_contributor_count']
+            skeleton['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
+            skeleton['active_c1_issue_create_contributor_count'] = raw['active_C1_issue_create_contributor']
+            skeleton['active_c1_issue_comments_contributor_count'] = raw['active_C1_issue_comments_contributor']
+            OpenStruct.new(skeleton)
           end
         else
-          aggs = generate_interval_aggs(Types::ActivityMetricType, :grimoire_creation_date, interval)
+          aggs = generate_interval_aggs(
+            Types::ActivityMetricType,
+            :grimoire_creation_date,
+            interval,
+            'Float',
+            {
+              'active_c1_pr_create_contributor_count' => 'active_C1_pr_create_contributor',
+              'active_c2_contributor_count' => 'active_C2_contributor_count',
+              'active_c1_pr_comments_contributor_count' => 'active_C1_pr_comments_contributor',
+              'active_c1_issue_create_contributor_count' => 'active_C1_issue_create_contributor',
+              'active_c1_issue_comments_contributor_count' => 'active_C1_issue_comments_contributor'
+            })
           resp = ActivityMetric.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
 
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
