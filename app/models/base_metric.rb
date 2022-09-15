@@ -36,4 +36,8 @@ class BaseMetric
       .execute
       .raw_response
   end
+
+  def self.exist_one?(field, value, keyword: true)
+    self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value }).total_entries > 0
+  end
 end

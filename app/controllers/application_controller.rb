@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
   GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
   HOST = ENV.fetch('DEFAULT_HOST')
   GITEE_API_ENDPOINT = "https://gitee.com/api/v5"
+  SINGLE_DIR = 'single-projects'
+  ORG_DIR = 'organizations'
 
   skip_before_action :verify_authenticity_token
   include Pagy::Backend
@@ -74,7 +76,13 @@ class ApplicationController < ActionController::Base
       diff = Faraday.get(diff_url).body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
-        result << analyze_yaml_file(patch.file)
+        if patch.file.start_with?(SINGLE_DIR)
+          result << analyze_yaml_file(patch.file)
+        elsif patch.file.start_with?(ORG_DIR)
+          result << analyze_org_yaml_file(patch.file)
+        else
+          result << { status: false, message: "invaild configure yaml path: #{patch.file}" }
+        end
       end
       { status: true, message: 'ok', result: result }
     else
@@ -92,7 +100,13 @@ class ApplicationController < ActionController::Base
       diff = Faraday.get(diff_url).body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
-        result << analyze_yaml_file(patch.file, only_validate: false)
+        if patch.file.start_with?(SINGLE_DIR)
+          result << analyze_yaml_file(patch.file, only_validate: false)
+        elsif patch.file.start_with?(ORG_DIR)
+          result << analyze_org_yaml_file(patch.file, only_validate: false)
+        else
+          result << { status: false, message: "invaild configure yaml path: #{patch.file}" }
+        end
       end
       { status: true, message: 'ok', result: result }
     else
@@ -108,6 +122,26 @@ class ApplicationController < ActionController::Base
     AnalyzeServer.new(
       {
         repo_url: yaml['data_sources']['repo_name'],
+        raw: true,
+        enrich: true,
+        activity: true,
+        community: true,
+        codequality: true,
+        callback: {
+          hook_url: "#{HOST}/api/hook",
+          params: { pr_number: @pr_number }
+        }
+      }
+    ).execute(only_validate: only_validate).merge(path: path)
+  rescue => ex
+    { status: false, path: path, message: ex.message }
+  end
+
+  def analyze_org_yaml_file(path, only_validate: true)
+    yaml_url = generate_yml_url(path)
+    AnalyzeGroupServer.new(
+      {
+        yaml_url: yaml_url,
         raw: true,
         enrich: true,
         activity: true,
