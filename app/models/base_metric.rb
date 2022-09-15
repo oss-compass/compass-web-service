@@ -27,12 +27,12 @@ class BaseMetric
       .raw_response
   end
 
-  def self.fuzzy_search(keyword, field, agg_field: nil, limit: 5)
+  def self.fuzzy_search(keyword, field, collapse, fields: [], limit: 5)
     self
       .search(keyword, default_field: field)
-      .page(1)
       .per(limit)
-      .aggregate(agg_field || field)
+      .custom({ collapse: { field: collapse } } )
+      .source(fields)
       .execute
       .raw_response
   end
