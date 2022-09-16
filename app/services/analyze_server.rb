@@ -22,6 +22,7 @@ class AnalyzeServer
       uri = Addressable::URI.parse(@repo_url)
       @repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
       @domain = uri&.normalized_host
+      @project_name = @repo_url
     end
   end
 
@@ -121,7 +122,9 @@ class AnalyzeServer
         task_id: task_resp['id'],
         repo_url: @repo_url,
         status: task_resp['status'],
-        payload: payload.to_json
+        payload: payload.to_json,
+        level: 'repo',
+        project_name: @project_name
       )
     end
     { status: task_resp['status'], message: 'Task is pending' }

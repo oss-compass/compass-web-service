@@ -72,19 +72,12 @@ class AnalyzeGroupServer
     tasks = [@raw, @enrich, @activity, @community, @codequality]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
 
-    # yaml = YAML.load(Faraday.get(@yaml_url).body)
-    # org_name = yaml['organization_name']
-    # project_types = yaml['project_types']
-    # existed_metrics =
-    #   project_types.flat_map do |type, _|
-    #   [ActivityMetric, CommunityMetric, CodequalityMetric].map do |metric|
-    #     metric.exist_one?('label', "#{org_name}-#{type}")
-    #   end
-    # end
-
-    # if existed_metrics.any?
-    #   raise ValidateError.new('organization name already existed')
-    # end
+    yaml = YAML.load(Faraday.get(@yaml_url).body)
+    org_name = yaml['organization_name']
+    @project_name = org_name
+    raise ValidateError.new('Invalid organization name') unless @project_name.present?
+  rescue => ex
+    raise ValidateError.new(ex.message)
   end
 
   def payload
@@ -126,7 +119,9 @@ class AnalyzeGroupServer
         task_id: task_resp['id'],
         repo_url: @yaml_url,
         status: task_resp['status'],
-        payload: payload.to_json
+        payload: payload.to_json,
+        level: @level,
+        project_name: @project_name
       )
     end
     { status: task_resp['status'], message: 'Task is pending' }

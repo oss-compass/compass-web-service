@@ -5,19 +5,24 @@ module Types
     class CodequalityMetricQuery < BaseQuery
       type [Types::CodequalityMetricType], null: false
       description 'Get code quality metrics data of compass'
-      argument :url, String, required: true, description: 'repo or project url'
+      argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
-      def resolve(url: nil, level: 'repo', begin_date: nil, end_date: nil)
-        uri = Addressable::URI.parse(url)
-        repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
+      def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
+        label =
+          if label =~ URI::regexp
+            uri = Addressable::URI.parse(label)
+            label = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+          else
+            label
+          end
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         if !interval
-          resp = CodequalityMetric.query_repo_by_date(repo_url, begin_date, end_date)
+          resp = CodequalityMetric.query_repo_by_date(label, begin_date, end_date)
 
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
@@ -32,7 +37,7 @@ module Types
             'Float',
             {'loc_frequency' => 'LOC_frequency'}
           )
-          resp = CodequalityMetric.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
+          resp = CodequalityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
 
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             data = raw[:data]
