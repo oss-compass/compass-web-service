@@ -1,25 +1,18 @@
 class ApplicationController < ActionController::Base
 
-  HOOK_PASS = ENV.fetch('HOOK_PASS') { 'password' }
-  GITEE_TOKEN = ENV.fetch('GITEE_API_TOKEN')
-  GITHUB_TOKEN = ENV.fetch('GITHUB_API_TOKEN')
-  GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
-  GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
-  HOST = ENV.fetch('DEFAULT_HOST')
-  GITEE_API_ENDPOINT = "https://gitee.com/api/v5"
-  SINGLE_DIR = 'single-projects'
-  ORG_DIR = 'organizations'
-
   skip_before_action :verify_authenticity_token
-  include Pagy::Backend
 
-  before_action :validate_password, only: [:workflow, :hook]
+  include Pagy::Backend
+  include Common
+  include GiteeApplication
+  include GithubApplication
+
+  before_action :auth_validate, only: [:workflow, :hook]
 
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
   def workflow
     payload = request.request_parameters
-    @user_agent = request.user_agent
 
     action = payload['action']
     action_desc = payload['action_desc']
@@ -164,6 +157,14 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def user_agent
+    @user_agent ||= request.user_agent
+  end
+
+  def gitee_agent?
+    user_agent == 'git-oschina-hook'
+  end
+
   def quote_mark(message)
     <<~HEREDOC
     ```
@@ -173,7 +174,7 @@ class ApplicationController < ActionController::Base
   end
 
   def generate_yml_url(path)
-    if @user_agent == 'git-oschina-hook'
+    if gitee_agent?
       "#{GITEE_REPO}/raw/#{@branch}/#{path}"
     else
       "#{GITHUB_REPO.sub('github.com', 'raw.githubusercontent.com')}/#{@branch}/#{path}"
@@ -181,15 +182,15 @@ class ApplicationController < ActionController::Base
   end
 
   def repo_owner
-    (@user_agent == 'git-oschina-hook' ? GITEE_REPO : GITHUB_REPO).split('/')[-2]
+    (gitee_agent? ? GITEE_REPO : GITHUB_REPO).split('/')[-2]
   end
 
   def repo_path
-    (@user_agent == 'git-oschina-hook' ? GITEE_REPO : GITHUB_REPO).split('/')[-1]
+    (gitee_agent? ? GITEE_REPO : GITHUB_REPO).split('/')[-1]
   end
 
   def notify_on_pr(pr_number, message, domain: nil)
-    if @user_agent == 'git-oschina-hook' || domain == 'gitee'
+    if gitee_agent? || domain == 'gitee'
       note_url = "#{GITEE_API_ENDPOINT}/repos/#{repo_owner}/#{repo_path}/pulls/#{pr_number}/comments"
       Faraday.post(
         note_url,
@@ -203,8 +204,7 @@ class ApplicationController < ActionController::Base
     logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
   end
 
-  def validate_password
-    password = request.request_parameters&.[]('password')
-    render_json(403, message: 'unauthorized') unless password == HOOK_PASS
+  def auth_validate
+    gitee_agent? ? gitee_webhook_verify : github_webhook_verify
   end
 end
