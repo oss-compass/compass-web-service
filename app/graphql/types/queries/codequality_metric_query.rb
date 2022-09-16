@@ -27,6 +27,9 @@ module Types
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
             skeleton['loc_frequency'] = raw['LOC_frequency']
+            skeleton['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
+            skeleton['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
+            skeleton['active_c2_contributor_count'] = raw['active_C2_contributor_count']
             OpenStruct.new(skeleton)
           end
         else
@@ -35,7 +38,12 @@ module Types
             :grimoire_creation_date,
             interval,
             'Float',
-            {'loc_frequency' => 'LOC_frequency'}
+            {
+              'loc_frequency' => 'LOC_frequency',
+              'active_c1_pr_create_contributor_count' => 'active_C1_pr_create_contributor',
+              'active_c2_contributor_count' => 'active_C2_contributor_count',
+              'active_c1_pr_comments_contributor_count' => 'active_C1_pr_comments_contributor',
+            }
           )
           resp = CodequalityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
 
