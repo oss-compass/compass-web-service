@@ -27,11 +27,20 @@ class BaseMetric
       .raw_response
   end
 
-  def self.fuzzy_search(keyword, field, collapse, fields: [], limit: 5)
-    self
-      .search(keyword, default_field: field)
-      .per(limit)
-      .custom({ collapse: { field: collapse } } )
+  def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
+    base =
+      self
+        .search(keyword, default_field: field)
+        .per(limit)
+        .custom({ collapse: { field: collapse } } )
+
+    filters.map do |k, value|
+      if value.present?
+        base = base.where(k => value)
+      end
+    end
+
+    base
       .source(fields)
       .execute
       .raw_response
