@@ -1,11 +1,6 @@
 # frozen_string_literal: true
 
-class GiteeRepo
-  include SearchFlip::Index
-
-  def self.connection
-    AuthSearchConn
-  end
+class GiteeRepo < GiteeBase
 
   def self.index_name
     'gitee_repo-raw'

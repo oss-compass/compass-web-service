@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-class GiteePullEnrich
-  include SearchFlip::Index
-
-  def self.connection
-    AuthSearchConn
-  end
-
+class GiteePullEnrich < GiteeBase
   def self.index_name
     'gitee_pulls-enriched'
   end

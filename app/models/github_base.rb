@@ -1,9 +1,6 @@
-class GithubBase
-  include SearchFlip::Index
-  def self.connection
-    AuthSearchConn
-  end
+# frozen_string_literal: true
 
+class GithubBase < IndexBase
   def self.count_by_field(origin, field: :uuid)
     self
       .must(match: { origin: origin })
