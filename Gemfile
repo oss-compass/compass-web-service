@@ -27,6 +27,7 @@ gem 'opensearch-ruby'
 
 # Use Http Client
 gem 'faraday'
+gem 'rest-client'
 
 # Git tools
 gem 'git_diff_parser'

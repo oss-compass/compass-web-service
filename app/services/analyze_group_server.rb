@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 class AnalyzeGroupServer
-  SUPPORT_DOMAINS = ['gitee.com', 'github.com']
+  SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
   CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
   PROJECT = 'insight'
   WORKFLOW = 'ETL_V1_GROUP'
+
+  include Common
 
   class TaskExists < StandardError; end
   class ValidateError < StandardError; end
@@ -72,7 +74,8 @@ class AnalyzeGroupServer
     tasks = [@raw, @enrich, @activity, @community, @codequality]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
 
-    yaml = YAML.load(Faraday.get(@yaml_url).body)
+    RestClient.proxy = PROXY unless @domain.start_with?('gitee')
+    yaml = YAML.load(RestClient.get(@yaml_url).body)
     org_name = yaml['organization_name']
     @project_name = org_name
     raise ValidateError.new('Invalid organization name') unless @project_name.present?

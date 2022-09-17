@@ -16,10 +16,11 @@ class ApplicationController < ActionController::Base
 
     action = payload['action']
     action_desc = payload['action_desc']
-    @pr_number = payload['iid']
+    @pr_number = payload['iid'] || payload['number']
+    @merged_at = payload['pull_request']&.[]('merged_at')
     result =
       case action
-      when 'open', 'reopen'
+      when 'open', 'reopen', 'opened', 'synchronize'
         check_yaml(payload)
       when 'update'
         if action_desc == 'source_branch_changed'
@@ -27,6 +28,10 @@ class ApplicationController < ActionController::Base
         end
       when 'merge'
         submit_task(payload)
+      when 'closed'
+        if @merged_at.present?
+          submit_task(payload)
+        end
       end
 
     if result.present? && result.is_a?(Hash)
@@ -63,10 +68,11 @@ class ApplicationController < ActionController::Base
 
   def check_yaml(payload)
     diff_url = payload&.[]('pull_request')&.[]('diff_url')
-    @branch = payload&.[]('source_branch')
+    @branch = payload&.[]('pull_request')&.[]('head')&.[]('ref')
     if diff_url.present?
       result = []
-      diff = Faraday.get(diff_url).body
+      RestClient.proxy = PROXY unless extract_domain(diff_url).start_with?('gitee')
+      diff = RestClient.get(diff_url).body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
         if patch.file.start_with?(SINGLE_DIR)
@@ -87,10 +93,11 @@ class ApplicationController < ActionController::Base
 
   def submit_task(payload)
     diff_url = payload&.[]('pull_request')&.[]('diff_url')
-    @branch = payload&.[]('target_branch')
+    @branch = payload&.[]('pull_request')&.[]('base')&.[]('ref')
     if diff_url.present?
       result = []
-      diff = Faraday.get(diff_url).body
+      RestClient.proxy = PROXY unless extract_domain(diff_url).start_with?('gitee')
+      diff = RestClient.get(diff_url).body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
         if patch.file.start_with?(SINGLE_DIR)
@@ -111,7 +118,8 @@ class ApplicationController < ActionController::Base
 
   def analyze_yaml_file(path, only_validate: true)
     yaml_url = generate_yml_url(path)
-    yaml = YAML.load(Faraday.get(yaml_url).body)
+    RestClient.proxy = PROXY unless extract_domain(yaml_url).start_with?('gitee')
+    yaml = YAML.load(RestClient.get(yaml_url).body)
     AnalyzeServer.new(
       {
         repo_url: yaml['data_sources']['repo_name'],
@@ -181,24 +189,19 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def repo_owner
+  def owner
     (gitee_agent? ? GITEE_REPO : GITHUB_REPO).split('/')[-2]
   end
 
-  def repo_path
+  def repo
     (gitee_agent? ? GITEE_REPO : GITHUB_REPO).split('/')[-1]
   end
 
   def notify_on_pr(pr_number, message, domain: nil)
     if gitee_agent? || domain == 'gitee'
-      note_url = "#{GITEE_API_ENDPOINT}/repos/#{repo_owner}/#{repo_path}/pulls/#{pr_number}/comments"
-      Faraday.post(
-        note_url,
-        { body: message, access_token: GITEE_TOKEN }.to_json,
-        { 'Content-Type' => 'application/json' }
-      )
+      gitee_notify_on_pr(owner, repo, pr_number, message)
     else
-      puts "no implentment"
+      github_notify_on_pr(owner, repo, pr_number, message)
     end
   rescue => ex
     logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
