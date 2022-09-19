@@ -88,6 +88,7 @@ module Types
           template = hits.first&.[]('_source')
           aggs.map do |data|
             skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
+            skeleton = skeleton.merge(Hash[base_type.fields.keys.map(&:underscore).zip([])].symbolize_keys)
             if template.present? && data.present?
               skeletons << builder.(skeleton, {template: template, data: data})
             end
@@ -96,6 +97,7 @@ module Types
           hits.map do |data|
             data = data['_source']
             skeleton = Hash[base_type.fields.keys.zip([])].symbolize_keys
+            skeleton = skeleton.merge(Hash[base_type.fields.keys.map(&:underscore).zip([])].symbolize_keys)
             if data.present?
               skeletons << builder.(skeleton, data)
             end
