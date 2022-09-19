@@ -7,7 +7,8 @@ class ApplicationController < ActionController::Base
   include GiteeApplication
   include GithubApplication
 
-  before_action :auth_validate, only: [:workflow, :hook]
+  before_action :gitee_webhook_verify, only: [:hook]
+  before_action :auth_validate, only: [:workflow]
 
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
