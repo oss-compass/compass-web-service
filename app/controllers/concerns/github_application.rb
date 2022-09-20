@@ -15,14 +15,17 @@ module GithubApplication
     )
   end
 
-  def github_get_head_sha()
+  def github_get_head_sha(ref_name: 'main')
     RestClient.proxy = PROXY
     resp =
       RestClient.get(
         "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/git/refs/heads",
         { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
       )
-    { status: true, sha: JSON.load(resp.body).first['object']['sha'] }
+    {
+      status: true,
+      sha: JSON.load(resp.body).select{|branch| branch['ref'] == "refs/heads/#{ref_name}"}.first['object']['sha']
+    }
   rescue
     { status: false, message: 'failed to get latest sha' }
   end

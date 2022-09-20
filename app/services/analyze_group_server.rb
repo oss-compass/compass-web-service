@@ -13,6 +13,7 @@ class AnalyzeGroupServer
 
   def initialize(opts = {})
     @yaml_url = opts[:yaml_url]
+    @raw_yaml = opts[:raw_yaml]
     @raw = opts[:raw] || true
     @enrich = opts[:enrich] || true
     @activity = opts[:activity] || true
@@ -65,20 +66,25 @@ class AnalyzeGroupServer
   private
 
   def validate!
-    raise ValidateError.new('`yaml_url` is required') unless @yaml_url.present?
+    raise ValidateError.new('`yaml_url` is required') unless @yaml_url.present? || @raw_yaml.present?
 
-    unless SUPPORT_DOMAINS.include?(@domain)
+    if @yaml_url.present? && !SUPPORT_DOMAINS.include?(@domain)
       raise ValidateError.new("No support data source from: #{@yaml_url}")
     end
 
     tasks = [@raw, @enrich, @activity, @community, @codequality]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
 
-    RestClient.proxy = PROXY unless @domain.start_with?('gitee')
-    yaml = YAML.load(RestClient.get(@yaml_url).body)
-    org_name = yaml['organization_name']
-    @project_name = org_name
+    if @raw_yaml.present?
+      @raw_yaml = YAML.load(@raw_yaml)
+    else
+      @raw_yaml = YAML.load(RestClient.get(@yaml_url).body)
+      RestClient.proxy = PROXY unless @domain.start_with?('gitee')
+    end
+
+    @project_name = @raw_yaml['organization_name']
     raise ValidateError.new('Invalid organization name') unless @project_name.present?
+
   rescue => ex
     raise ValidateError.new(ex.message)
   end

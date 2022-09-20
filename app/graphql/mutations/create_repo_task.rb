@@ -1,6 +1,6 @@
 module Mutations
   class CreateRepoTask < BaseMutation
-    graphql_name 'CreateTask'
+    graphql_name 'CreateRepoTask'
 
     field :status, String, null: false
     field :pr_url, String, null: true
