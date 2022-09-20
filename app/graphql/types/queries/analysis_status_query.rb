@@ -15,13 +15,13 @@ module Types
         end
 
         if existed_metrics.any?
-          return RepoTask::Success
+          return ProjectTask::Success
         end
 
         label = (label =~ URI::regexp ? label : label.split('-').first rescue label)
 
-        task = RepoTask.find_by(project_name: label)
-        task ||= RepoTask.find_by(repo_url: label)
+        task = ProjectTask.find_by(project_name: label)
+        task ||= ProjectTask.find_by(repo_url: label)
         if task.present?
           status =
             if task.level == 'repo'
@@ -31,7 +31,7 @@ module Types
             end
           return status
         else
-          return RepoTask::UnSubmit
+          return ProjectTask::UnSubmit
         end
       end
     end

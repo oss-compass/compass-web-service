@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class AnalyzeGroupServer
-  SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
-  CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
   PROJECT = 'insight'
   WORKFLOW = 'ETL_V1_GROUP'
 
@@ -30,7 +28,7 @@ class AnalyzeGroupServer
   end
 
   def repo_task
-    @repo_task ||= RepoTask.find_by(repo_url: @yaml_url)
+    @repo_task ||= ProjectTask.find_by(repo_url: @yaml_url)
   end
 
   def check_task_status
@@ -38,7 +36,7 @@ class AnalyzeGroupServer
       update_task_status
       repo_task.status
     else
-      RepoTask::UnSubmit
+      ProjectTask::UnSubmit
     end
   end
 
@@ -47,7 +45,7 @@ class AnalyzeGroupServer
 
     status = check_task_status
 
-    if RepoTask::Processing.include?(status)
+    if ProjectTask::Processing.include?(status)
       raise TaskExists.new('Task already sumbitted!')
     end
 
@@ -111,7 +109,7 @@ class AnalyzeGroupServer
   end
 
   def submit_task_status
-    repo_task = RepoTask.find_by(repo_url: @yaml_url)
+    repo_task = ProjectTask.find_by(repo_url: @yaml_url)
 
     response =
       Faraday.post(
@@ -124,7 +122,7 @@ class AnalyzeGroupServer
     if repo_task.present?
       repo_task.update(status: task_resp['status'], task_id: task_resp['id'])
     else
-      RepoTask.create(
+      ProjectTask.create(
         task_id: task_resp['id'],
         repo_url: @yaml_url,
         status: task_resp['status'],
@@ -136,7 +134,7 @@ class AnalyzeGroupServer
     { status: task_resp['status'], message: 'Task is pending' }
   rescue => ex
     logger.error("Failed to sumbit task #{@yaml_url} status, #{ex.message}")
-    { status: RepoTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
+    { status: ProjectTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
   end
 
   def update_task_status

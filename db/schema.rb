@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_16_064333) do
+ActiveRecord::Schema[7.0].define(version: 2022_09_20_085227) do
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_16_064333) do
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
   end
 
-  create_table "repo_tasks", charset: "utf8mb4", force: :cascade do |t|
+  create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
     t.string "task_id"
     t.string "repo_url"
     t.string "status"

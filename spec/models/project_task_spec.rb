@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: repo_tasks
+# Table name: project_tasks
 #
 #  id           :bigint           not null, primary key
 #  task_id      :string(255)
@@ -13,12 +13,8 @@
 #  level        :string(255)
 #  project_name :string(255)
 #
-class RepoTask < ApplicationRecord
-  Pending = 'pending'
-  Progress = 'progress'
-  Success = 'success'
-  Error = 'error'
-  Canceled = 'canceled'
-  UnSubmit = 'unsumbit'
-  Processing = [Pending, Progress]
+require 'rails_helper'
+
+RSpec.describe ProjectTask, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
 end
