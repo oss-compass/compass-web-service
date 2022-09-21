@@ -10,12 +10,12 @@ class AnalyzeServer
   class ValidateError < StandardError; end
 
   def initialize(opts = {})
-    @raw = opts[:raw]
-    @enrich = opts[:enrich]
+    @raw = opts[:raw] || true
+    @enrich = opts[:enrich] || true
     @repo_url = opts[:repo_url]
-    @activity = opts[:activity]
-    @community = opts[:community]
-    @codequality = opts[:codequality]
+    @activity = opts[:activity] || true
+    @community = opts[:community] || true
+    @codequality = opts[:codequality] || true
     @callback = opts[:callback]
 
     if @repo_url.present?
@@ -49,7 +49,7 @@ class AnalyzeServer
     end
 
     if only_validate
-      { status: true, message: 'validate pass' }
+      { status: true, message: 'Validation passed' }
     else
       result = submit_task_status
 

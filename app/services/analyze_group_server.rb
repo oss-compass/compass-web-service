@@ -50,7 +50,7 @@ class AnalyzeGroupServer
     end
 
     if only_validate
-      { status: true, message: 'validate pass' }
+      { status: true, message: 'Validation passed' }
     else
       result = submit_task_status
       { status: result[:status], message: result[:message] }

@@ -96,6 +96,9 @@ GEM
     concurrent-ruby (1.1.10)
     connection_pool (2.2.5)
     crass (1.0.6)
+    crono (2.0.1)
+      rails (>= 5.2.8)
+      sprockets-rails
     database_cleaner-active_record (2.0.1)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
@@ -432,6 +435,7 @@ DEPENDENCIES
   brakeman
   bundler-audit
   capybara
+  crono
   database_cleaner-active_record
   debug
   devise

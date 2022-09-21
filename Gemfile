@@ -32,6 +32,9 @@ gem 'rest-client'
 # Git tools
 gem 'git_diff_parser'
 
+# Cron
+gem 'crono'
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
