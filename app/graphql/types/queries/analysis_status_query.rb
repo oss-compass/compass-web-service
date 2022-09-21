@@ -21,13 +21,13 @@ module Types
         label = (label =~ URI::regexp ? label : label.split('-').first rescue label)
 
         task = ProjectTask.find_by(project_name: label)
-        task ||= ProjectTask.find_by(repo_url: label)
+        task ||= ProjectTask.find_by(remote_url: label)
         if task.present?
           status =
             if task.level == 'repo'
-              AnalyzeServer.new(repo_url: task.repo_url).check_task_status
+              AnalyzeServer.new(repo_url: task.remote_url).check_task_status
             else
-              AnalyzeGroupServer.new(yaml_url: task.repo_url).check_task_status
+              AnalyzeGroupServer.new(yaml_url: task.remote_url).check_task_status
             end
           return status
         else

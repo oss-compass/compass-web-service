@@ -27,7 +27,7 @@ class AnalyzeServer
   end
 
   def repo_task
-    @repo_task ||= ProjectTask.find_by(repo_url: @repo_url)
+    @repo_task ||= ProjectTask.find_by(remote_url: @repo_url)
   end
 
   def check_task_status
@@ -105,7 +105,7 @@ class AnalyzeServer
   end
 
   def submit_task_status
-    repo_task = ProjectTask.find_by(repo_url: @repo_url)
+    repo_task = ProjectTask.find_by(remote_url: @repo_url)
 
     response =
       Faraday.post(
@@ -120,7 +120,7 @@ class AnalyzeServer
     else
       ProjectTask.create(
         task_id: task_resp['id'],
-        repo_url: @repo_url,
+        remote_url: @repo_url,
         status: task_resp['status'],
         payload: payload.to_json,
         level: 'repo',
