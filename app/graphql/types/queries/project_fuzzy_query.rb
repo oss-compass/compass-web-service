@@ -26,7 +26,9 @@ module Types
           list.map do |item|
             OpenStruct.new(item['_source'].slice(*fields))
           end :
-          []
+          ProjectTask.where('project_name LIKE ?', "#{keyword}%").limit(5).map do |item|
+            OpenStruct.new({level: item.level, label: item.project_name})
+          end
       end
     end
   end
