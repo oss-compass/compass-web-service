@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 class PullServer
+  include GiteeApplication
   include GithubApplication
 
   def initialize(opts = {})
@@ -21,24 +22,37 @@ class PullServer
     when 'repo'
       path = "single-projects/#{@domain_name}#{@path}.yml"
       message = "Updated #{path}"
-
-      result = github_get_head_sha()
-      return result unless result[:status]
-
       branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
-      result = github_create_ref(branch, result[:sha])
-      return result unless result[:status]
-
       repo = {}
       repo['data_sources'] = { 'repo_name' => @project_url }
-      content_base64 = Base64.encode64(YAML.dump(repo))
-      result = github_put_file(path, message, content_base64, branch)
-      return result unless result[:status]
+      content_base64 = Base64.strict_encode64(YAML.dump(repo))
+      pr_desc = "submitted by @#{@extra[:username]}"
 
-      result = github_create_pull(message, "submitted by @#{@extra[:username]}", branch)
-      return result unless result[:status]
+      if @domain_name == 'gitee'
 
-      { status: true, pr_url: result[:pr_url] }
+        result = gitee_create_branch(branch)
+        return result unless result[:status]
+
+        result = gitee_post_file(path, message, content_base64, branch)
+        return result unless result[:status]
+
+        result = gitee_create_pull(message, pr_desc, branch)
+        return result unless result[:status]
+        { status: true, pr_url: result[:pr_url] }
+      else
+        result = github_get_head_sha()
+        return result unless result[:status]
+
+        result = github_create_ref(branch, result[:sha])
+        return result unless result[:status]
+
+        result = github_put_file(path, message, content_base64, branch)
+        return result unless result[:status]
+
+        result = github_create_pull(message, pr_desc, branch)
+        return result unless result[:status]
+        { status: true, pr_url: result[:pr_url] }
+      end
     when 'project'
       path = "organizations/#{@label}.yml"
       message = "Updated #{path}"
