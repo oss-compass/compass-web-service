@@ -8,8 +8,10 @@ module Mutations
     argument :username, String, required: true, description: 'gitee or github login/username'
     argument :project_name, String, required: true, description: 'project label for following repositories'
     argument :project_types, [Input::ProjectTypeInput], required: true, description: 'project detail information'
+    argument :origin, String, required: true, description: "user's origin (gitee/github)"
+    argument :token, String, required: true, description: "user's oauth token only for username verification"
 
-    def resolve(username:, project_name:, project_types:)
+    def resolve(username:, project_name:, project_types:, origin:, token:)
       yaml_template = {}
       yaml_template['organization_name'] = project_name
       yaml_template['project_types'] =
@@ -39,7 +41,7 @@ module Mutations
               label: project_name,
               level: 'project',
               project_types: project_types,
-              extra: { username: username }
+              extra: { username: username, origin: origin, token: token }
             }
           ).execute
         OpenStruct.new(result.reverse_merge({pr_url: nil, message: '', status: true}))

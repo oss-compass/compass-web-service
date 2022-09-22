@@ -15,6 +15,23 @@ module GithubApplication
     )
   end
 
+  def github_get_user_info(token)
+    RestClient.proxy = PROXY
+    resp =
+      RestClient.get(
+        "#{GITHUB_API_ENDPOINT}/user",
+        { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{token}" }
+      )
+    case JSON.load(resp.body).symbolize_keys
+        in {login: username}
+        { status: true, username: username }
+    else
+      { status: false, message: 'no `login` field' }
+    end
+  rescue => ex
+    { status: false, message: "failed to get user info, reason: #{ex.message}" }
+  end
+
   def github_get_head_sha(ref_name: 'main')
     RestClient.proxy = PROXY
     resp =

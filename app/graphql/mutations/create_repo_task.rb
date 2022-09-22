@@ -7,8 +7,10 @@ module Mutations
 
     argument :username, String, required: true, description: 'gitee or github login/username'
     argument :repo_url, String, required: true, description: 'repository url'
+    argument :origin, String, required: true, description: "user's origin (gitee/github)"
+    argument :token, String, required: true, description: "user's oauth token only for username verification"
 
-    def resolve(username:, repo_url:)
+    def resolve(username:, repo_url:, origin:, token:)
       result =
         AnalyzeServer.new(
           {
@@ -30,7 +32,7 @@ module Mutations
             label: repo_url,
             level: 'repo',
             project_url: repo_url,
-            extra: { username: username }
+            extra: { username: username, origin: origin, token: token }
           }
         ).execute
       OpenStruct.new(result.reverse_merge({pr_url: nil, message: '', status: true}))

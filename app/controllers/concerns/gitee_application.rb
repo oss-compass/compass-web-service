@@ -14,6 +14,22 @@ module GiteeApplication
       )
   end
 
+  def gitee_get_user_info(token)
+    resp =
+      Faraday.get(
+        "#{GITEE_API_ENDPOINT}/user?access_token=#{token}",
+        { 'Content-Type' => 'application/json' }
+      )
+    case JSON.parse(resp.body).symbolize_keys
+        in {login: username}
+        { status: true, username: username }
+    else
+      { status: false, message: 'no `login` field' }
+    end
+  rescue => ex
+    { status: false, message: "failed to get user info, reason: #{ex.message}" }
+  end
+
   def gitee_create_branch(branch_name, refs: 'main')
     Faraday.post(
       "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner}/#{gitee_repo}/branches",
