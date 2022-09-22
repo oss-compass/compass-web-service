@@ -2,8 +2,26 @@ Rails.application.routes.draw do
   if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/api/graphql"
   end
+
+  with_dev_auth =
+    lambda do |app|
+    Rack::Builder.new do
+      use Rack::Auth::Basic do |username, password|
+        ActiveSupport::SecurityUtils.secure_compare(
+          ::Digest::SHA256.hexdigest(username),
+          ::Digest::SHA256.hexdigest(ENV.fetch("ADMIN_WEB_USERNAME"))) &
+          ActiveSupport::SecurityUtils.secure_compare(
+            ::Digest::SHA256.hexdigest(password),
+            ::Digest::SHA256.hexdigest(ENV.fetch("ADMIN_WEB_PASSWORD")))
+      end
+      run app
+    end
+  end
+
   post "/api/graphql", to: "graphql#execute"
-  mount Sidekiq::Web => '/sidekiq'
+  # mount Sidekiq::Web => '/sidekiq'
+  mount with_dev_auth.call(Crono::Engine), at: '/crono'
+
   root to: 'application#website'
 
   devise_for :users, defaults: { format: :json }, skip: :all
@@ -19,6 +37,5 @@ Rails.application.routes.draw do
   post '/api/workflow', to: 'application#workflow', as: :workflow
   post '/api/hook', to: 'application#hook', as: :hook
 
-  get '/panel(/*path)', to: 'application#panel', as: :panel
   get '/(*path)', to: 'application#website', as: :website
 end

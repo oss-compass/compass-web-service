@@ -42,12 +42,6 @@ module CompassWebService
     origins.map! { |url| /#{url}/ }
     config.action_cable.allowed_request_origins = origins
 
-    # Protect sidekiq-web
-    Sidekiq::Web.use(Rack::Auth::Basic) do |username, password|
-      ActiveSupport::SecurityUtils.secure_compare(username, ENV.fetch('SIDEKIQ_WEB_USERNAME', 'sidekiq-web-dashboard')) &&
-        ActiveSupport::SecurityUtils.secure_compare(password, ENV.fetch('SIDEKIQ_WEB_PASSWORD', 'sidekiq-web-123'))
-    end
-
     config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
 
     # config.middleware.insert(0, Rack::ReverseProxy) do
