@@ -17,10 +17,12 @@ class DispatchServer
         if task.present?
           task_execute(task)
         else
+          job_logger.error "no such task with project_name: #{opts[:project_name]}"
           {status: :error, message: "no such task with project_name: #{opts[:project_name]}"}
         end
     else
-      raise InvalidParams.new('Invalid project_name')
+      job_logger.error "invalid project_name: #{opts[:project_name]}"
+      {status: :error, message: "invalid project_name: #{opts[:project_name]}"}
     end
   end
 
@@ -28,11 +30,31 @@ class DispatchServer
   def task_execute(task)
     case task.level
     when 'repo'
-      AnalyzeServer.new(repo_url: task.remote_url).execute(only_validate: false)
+      job_logger.info "Begin to execute repo task #{task.id}: with remote_url #{task.remote_url}"
+      case AnalyzeServer.new(repo_url: task.remote_url).execute(only_validate: false)
+          in {status: 'pending'}
+          job_logger.info "repo task #{task.id} dispatch successfully"
+          in {status: :progress}
+          job_logger.warn "last repo task #{task.id} is still processing"
+          in {status: status, message: message}
+          job_logger.error "repo task #{task.id} dispatch result: status #{status}, message #{message}"
+      end
     when 'project'
-      AnalyzeGroupServer.new(yaml_url: task.remote_url).execute(only_validate: false)
+      job_logger.info "Begin to execute repo task #{task.id}: with remote_url #{task.remote_url}, project_name: #{task.project_name}"
+      case AnalyzeGroupServer.new(yaml_url: task.remote_url).execute(only_validate: false)
+          in {status: 'pending'}
+          job_logger.info "project task #{task.id} dispatch successfully"
+          in {status: :progress}
+          job_logger.warn "last project task #{task.id} is still processing"
+          in {status: status, message: message}
+          job_logger.error "project task #{task.id} dispatch result: status #{status}, message #{message}"
+      end
     else
-      logger.error("Failed to execute task: #{task.to_json}")
+      job_logger.error "Failed to execute task: #{task.to_json}"
     end
+  end
+
+  def job_logger
+    Crono.logger.nil? ? Rails.logger : Crono.logger
   end
 end
