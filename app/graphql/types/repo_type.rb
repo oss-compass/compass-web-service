@@ -7,8 +7,6 @@ module Types
     field :language, String
     field :path, String
     field :backend, String
-    field :pulls_count, Integer
-    field :issues_count, Integer
     field :forks_count, Integer
     field :watchers_count, Integer
     field :stargazers_count, Integer

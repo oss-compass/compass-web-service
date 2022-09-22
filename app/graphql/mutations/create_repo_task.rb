@@ -24,7 +24,7 @@ module Mutations
         ).execute(only_validate: true)
 
       unless result[:status]
-        return { status: result[:status], message: result[:message] }
+        return OpenStruct.new({ status: result[:status], message: result[:message], pr_url: nil })
       end
       result =
         PullServer.new(

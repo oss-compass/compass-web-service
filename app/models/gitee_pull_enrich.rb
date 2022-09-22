@@ -2,6 +2,6 @@
 
 class GiteePullEnrich < GiteeBase
   def self.index_name
-    'gitee_pulls-enriched'
+    'gitee-pulls_enriched'
   end
 end

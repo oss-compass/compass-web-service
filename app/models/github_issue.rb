@@ -2,6 +2,6 @@
 
 class GithubIssue < GithubBase
   def self.index_name
-    'github_raw'
+    'github-issues_raw'
   end
 end

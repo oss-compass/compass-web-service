@@ -2,6 +2,6 @@
 
 class GiteeIssueEnrich < GiteeBase
   def self.index_name
-    'gitee_issues-enriched'
+    'gitee-issues_enriched'
   end
 end

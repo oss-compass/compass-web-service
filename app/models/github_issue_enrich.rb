@@ -2,6 +2,6 @@
 
 class GithubIssueEnrich < GithubBase
   def self.index_name
-    'github_enriched'
+    'github-issues_enriched'
   end
 end

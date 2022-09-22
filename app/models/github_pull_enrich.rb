@@ -2,6 +2,6 @@
 
 class GithubPullEnrich < GithubBase
   def self.index_name
-    'github-pull_enriched'
+    'github-pulls_enriched'
   end
 end

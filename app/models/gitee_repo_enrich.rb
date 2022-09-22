@@ -2,6 +2,6 @@
 
 class GiteeRepoEnrich < GiteeBase
   def self.index_name
-    'gitee_repo-enriched'
+    'gitee-repo_enriched'
   end
 end

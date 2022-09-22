@@ -7,7 +7,6 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    field :repo, resolver: Queries::RepoQuery
     field :analysis_status, resolver: Queries::AnalysisStatusQuery
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
     field :overview, resolver: Queries::OverviewQuery
