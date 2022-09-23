@@ -32,7 +32,9 @@ class BaseMetric
       self
         .search(keyword, default_field: field)
         .per(limit)
-        .custom({ collapse: { field: collapse } } )
+        .custom(collapse: {
+                  field: collapse ,
+                  inner_hits: { name: "by_level", collapse: { field: "level.keyword" } } })
 
     filters.map do |k, value|
       if value.present?
