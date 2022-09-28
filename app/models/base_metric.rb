@@ -8,7 +8,7 @@ class BaseMetric
 
   def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 30)
     self
-      .must(match_phrase: { label: repo_url })
+      .must(match: { 'label.keyword': repo_url })
       .page(page)
       .per(per)
       .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
@@ -16,9 +16,20 @@ class BaseMetric
       .raw_response
   end
 
+  def self.query_label_one(label, level)
+    self
+      .must(match: { 'label.keyword': label })
+      .where(level: level)
+      .page(1)
+      .per(1)
+      .sort(grimoire_creation_date: :desc)
+      .execute
+      .raw_response
+  end
+
   def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
     self
-      .must(match_phrase: { label: repo_url })
+      .must(match: { 'label.keyword': repo_url })
       .page(1)
       .per(1)
       .range(:grimoire_creation_date, gte: begin_date, lte: end_date)

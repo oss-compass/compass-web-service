@@ -13,5 +13,6 @@ module Types
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery
     field :metric_codequality, resolver: Queries::CodequalityMetricQuery
+    field :latest_metrics, resolver: Queries::LatestMetricsQuery
   end
 end

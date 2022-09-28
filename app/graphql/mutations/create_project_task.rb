@@ -33,7 +33,7 @@ module Mutations
 
       case result
           in {status: :error}
-          return { status: false, message: result[:message], pr_url: nil }
+          return OpenStruct.new({ status: false, message: result[:message], pr_url: nil })
       else
         result =
           PullServer.new(
