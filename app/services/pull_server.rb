@@ -15,6 +15,9 @@ class PullServer
       @path = uri.path
     end
     @extra = opts[:extra]
+    if @extra.is_a?(Hash) && SUPPORT_DOMAIN_NAMES.include?(@extra[:origin])
+      @domain_name = @extra[:origin]
+    end
   end
 
   def update_workflow

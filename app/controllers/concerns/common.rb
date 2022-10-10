@@ -6,6 +6,7 @@ module Common
   HOST = ENV.fetch('DEFAULT_HOST') { 'http://localhost:3000' }
   CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
   SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
+  SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
 
   def extract_domain(url)
     Addressable::URI.parse(url)&.normalized_host
