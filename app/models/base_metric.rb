@@ -12,6 +12,7 @@ class BaseMetric
       .page(page)
       .per(per)
       .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+      .sort(grimoire_creation_date: :asc)
       .execute
       .raw_response
   end
@@ -33,6 +34,7 @@ class BaseMetric
       .page(1)
       .per(1)
       .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+      .sort(grimoire_creation_date: :asc)
       .aggregate(aggs)
       .execute
       .raw_response
