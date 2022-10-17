@@ -7,23 +7,25 @@ module GithubApplication
   GITHUB_API_ENDPOINT = 'https://api.github.com'
 
   def github_notify_on_pr(owner, repo, pr_number, message)
-    RestClient.proxy = PROXY
-    RestClient.post(
-      "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/issues/#{pr_number}/comments",
-      { body: message }.to_json,
-      { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
-    )
+    RestClient::Request.new(
+      method: :post,
+      url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/issues/#{pr_number}/comments",
+      payload: { body: message }.to_json,
+      headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+      proxy: PROXY
+    ).execute
   end
 
   def github_get_user_info(token)
-    RestClient.proxy = PROXY
     resp =
-      RestClient.get(
-        "#{GITHUB_API_ENDPOINT}/user",
-        { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{token}" }
-      )
+      RestClient::Request.new(
+        method: :get,
+        url: "#{GITHUB_API_ENDPOINT}/user",
+        headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{token}" },
+        proxy: PROXY
+      ).execute
     case JSON.load(resp.body).symbolize_keys
-        in {login: username}
+        in { login: username }
         { status: true, username: username }
     else
       { status: false, message: 'no `login` field' }
@@ -33,40 +35,43 @@ module GithubApplication
   end
 
   def github_get_head_sha(ref_name: 'main')
-    RestClient.proxy = PROXY
     resp =
-      RestClient.get(
-        "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/git/refs/heads",
-        { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
-      )
+      RestClient::Request.new(
+        method: :get,
+        url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/git/refs/heads",
+        headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+        proxy: PROXY
+      ).execute
     {
       status: true,
       sha: JSON.load(resp.body).select{|branch| branch['ref'] == "refs/heads/#{ref_name}"}.first['object']['sha']
     }
-  rescue
-    { status: false, message: 'failed to get latest sha' }
+  rescue => ex
+    { status: false, message: "failed to get latest sha, reason: #{ex.message}" }
   end
 
   def github_create_ref(branch_name, sha)
-    RestClient.proxy = PROXY
-    RestClient.post(
-      "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/git/refs",
-      { ref: "refs/heads/#{branch_name}", sha: sha }.to_json,
-      { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
-    )
+    RestClient::Request.new(
+      method: :post,
+      url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/git/refs",
+      payload: { ref: "refs/heads/#{branch_name}", sha: sha }.to_json,
+      headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+      proxy: PROXY
+    ).execute
     { status: true, ref: branch_name }
   rescue => ex
     { status: false, message: "failed to create ref, reason: #{ex.message}" }
   end
 
   def github_put_file(path, message, content_base64, branch_name)
-    RestClient.proxy = PROXY
     resp =
-      RestClient.put(
-        "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/contents/#{path}",
-        { message: message, content: content_base64, branch: branch_name }.to_json,
-        { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
-      )
+      RestClient::Request.new(
+        method: :put,
+        url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/contents/#{path}",
+        payload: { message: message, content: content_base64, branch: branch_name }.to_json,
+        headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+        proxy: PROXY
+      ).execute
     { status: true, message: resp.body }
   rescue => ex
     if ex.message.include?('422')
@@ -76,13 +81,14 @@ module GithubApplication
   end
 
   def github_create_pull(title, content, head, base: 'main')
-    RestClient.proxy = PROXY
     resp =
-      RestClient.post(
-        "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/pulls",
-        { title: title, body: content, head: head, base: base }.to_json,
-        { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" }
-      )
+      RestClient::Request.new(
+        method: :post,
+        url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/pulls",
+        payload: { title: title, body: content, head: head, base: base }.to_json,
+        headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+        proxy: PROXY
+      ).execute
     pull = JSON.load(resp.body)
     { status: true, pr_id: pull['id'], pr_url: pull['html_url'] }
   rescue => ex

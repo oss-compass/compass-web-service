@@ -76,8 +76,9 @@ class AnalyzeGroupServer
     if @raw_yaml.present?
       @raw_yaml = YAML.load(@raw_yaml)
     else
-      @raw_yaml = YAML.load(RestClient.get(@yaml_url).body)
-      RestClient.proxy = PROXY unless @domain.start_with?('gitee')
+      req = { method: :get, url: @yaml_url }
+      req.merge!(proxy: PROXY) unless @domain.start_with?('gitee')
+      @raw_yaml = YAML.load(RestClient::Request.new(req).execute.body)
     end
 
     @project_name = @raw_yaml['organization_name']

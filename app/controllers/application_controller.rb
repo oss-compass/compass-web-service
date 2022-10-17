@@ -72,8 +72,9 @@ class ApplicationController < ActionController::Base
     @branch = payload&.[]('pull_request')&.[]('head')&.[]('ref')
     if diff_url.present?
       result = []
-      RestClient.proxy = PROXY unless extract_domain(diff_url).start_with?('gitee')
-      diff = RestClient.get(diff_url).body
+      req = { method: :get, url: diff_url }
+      req.merge!(proxy: PROXY) unless extract_domain(diff_url).start_with?('gitee')
+      diff = RestClient::Request.new(req).execute.body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
         if patch.file.start_with?(SINGLE_DIR)
@@ -97,8 +98,9 @@ class ApplicationController < ActionController::Base
     @branch = payload&.[]('pull_request')&.[]('base')&.[]('ref')
     if diff_url.present?
       result = []
-      RestClient.proxy = PROXY unless extract_domain(diff_url).start_with?('gitee')
-      diff = RestClient.get(diff_url).body
+      req = { method: :get, url: diff_url }
+      req.merge!(proxy: PROXY) unless extract_domain(diff_url).start_with?('gitee')
+      diff = RestClient::Request.new(req).execute.body
       patches = GitDiffParser.parse(diff)
       patches.each do |patch|
         if patch.file.start_with?(SINGLE_DIR)
@@ -119,8 +121,9 @@ class ApplicationController < ActionController::Base
 
   def analyze_yaml_file(path, only_validate: true)
     yaml_url = generate_yml_url(path)
-    RestClient.proxy = PROXY unless extract_domain(yaml_url).start_with?('gitee')
-    yaml = YAML.load(RestClient.get(yaml_url).body)
+    req = { method: :get, url: yaml_url }
+    req.merge!(proxy: PROXY) unless extract_domain(yaml_url).start_with?('gitee')
+    yaml = YAML.load(RestClient::Request.new(req).execute.body)
     AnalyzeServer.new(
       {
         repo_url: yaml['data_sources']['repo_name'],
