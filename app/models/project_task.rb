@@ -13,6 +13,11 @@
 #  level        :string(255)
 #  project_name :string(255)
 #
+# Indexes
+#
+#  index_project_tasks_on_project_name  (project_name) UNIQUE
+#  index_project_tasks_on_remote_url    (remote_url) UNIQUE
+#
 class ProjectTask < ApplicationRecord
   Pending = 'pending'
   Progress = 'progress'

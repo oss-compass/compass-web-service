@@ -28,7 +28,7 @@ module Types
               OpenStruct.new(item['_source'].slice(*fields))
             end
           end :
-          ProjectTask.where('project_name LIKE ?', "#{keyword}%")
+          ProjectTask.where('project_name LIKE ?', "%#{keyword}")
             .yield_self do |can|
           level.present? ? can.where(level: level) : can
         end.limit(5).map do |item|

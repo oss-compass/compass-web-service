@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_09_21_083016) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_18_031430) do
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -42,6 +42,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_09_21_083016) do
     t.datetime "updated_at", null: false
     t.string "level"
     t.string "project_name"
+    t.index ["project_name"], name: "index_project_tasks_on_project_name", unique: true
+    t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|
