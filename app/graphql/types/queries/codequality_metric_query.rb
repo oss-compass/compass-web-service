@@ -31,9 +31,9 @@ module Types
             skeleton['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
             skeleton['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
             skeleton['active_c2_contributor_count'] = raw['active_C2_contributor_count']
-            skeleton['code_merged_count'] = (raw['code_merge_ratio'].to_i * pr_count rescue 0)
-            skeleton['code_reviewed_count'] = (raw['code_review_ratio'].to_i * pr_count rescue 0)
-            skeleton['pr_issue_linked_count'] = (raw['pr_issue_linked_ratio'].to_i * pr_count rescue 0)
+            skeleton['code_merged_count'] = (raw['code_merge_ratio'].to_f * pr_count rescue 0)
+            skeleton['code_reviewed_count'] = (raw['code_review_ratio'].to_f * pr_count rescue 0)
+            skeleton['pr_issue_linked_count'] = (raw['pr_issue_linked_ratio'].to_f * pr_count rescue 0)
             OpenStruct.new(skeleton)
           end
         else
@@ -60,9 +60,9 @@ module Types
             end
             pr_count = raw['pr_count'] || 0
             skeleton['grimoire_creation_date'] = data&.[]('key_as_string')
-            skeleton['code_merged_count'] = (data&.[]('code_merge_ratio')&.[]('value').to_i * pr_count rescue 0)
-            skeleton['code_reviewed_count'] = (data&.[]('code_review_ratio')&.[]('value').to_i * pr_count rescue 0)
-            skeleton['pr_issue_linked_count'] = (data&.[]('pr_issue_linked_ratio')&.[]('value').to_i * pr_count rescue 0)
+            skeleton['code_merged_count'] = (data&.[]('code_merge_ratio')&.[]('value').to_f * pr_count rescue 0)
+            skeleton['code_reviewed_count'] = (data&.[]('code_review_ratio')&.[]('value').to_f * pr_count rescue 0)
+            skeleton['pr_issue_linked_count'] = (data&.[]('pr_issue_linked_ratio')&.[]('value').to_f * pr_count rescue 0)
             OpenStruct.new(skeleton)
           end
         end
