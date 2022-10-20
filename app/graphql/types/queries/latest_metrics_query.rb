@@ -18,7 +18,7 @@ module Types
           end
 
         result = {}
-        [ActivityMetric, CommunityMetric, CodequalityMetric].map do |metric|
+        [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
           extract_metric(metric, label, level, result)
         end
         keys = Types::LatestMetricsType.fields.keys

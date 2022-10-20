@@ -10,7 +10,7 @@ module Types
 
       def resolve(label: nil)
         existed_metrics =
-          [ActivityMetric, CommunityMetric, CodequalityMetric].map do |metric|
+          [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
           metric.exist_one?('label', label)
         end
 
