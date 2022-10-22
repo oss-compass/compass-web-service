@@ -15,6 +15,7 @@ module Types
     field :contributor_count, Float, description: 'number of active D1 developers in the past 90 days'
     field :created_since, Float, description: 'number of months since the project was created'
     field :updated_issues_count, Float, description: 'number of issue updates in the past 90 days'
+    field :recent_releases_count, Float, description: 'number of releases in the last 90 days'
     field :updated_since, Float, description: '(average of months from the last code commit to the time of statistics'
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
     field :label, String, description: 'metric model object identification'
