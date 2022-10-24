@@ -8,6 +8,8 @@ module Types
     field :comment_frequency, Float, description: 'mean of comments per issue over the past 90 days'
     field :issue_first_reponse_avg, Float, description: 'mean of issues first response time (days)'
     field :issue_first_reponse_mid, Float, description: 'middle of issues first response time (days)'
+    field :bug_issue_open_time_avg, Float, description: 'mean of bug issues open time (days)'
+    field :bug_issue_open_time_mid, Float, description: 'middle of bug issues open time (days)'
     field :issue_open_time_avg, Float, description: 'mean of issues open time (days)'
     field :issue_open_time_mid, Float, description: 'middle of issues open time (days)'
     field :updated_issues_count, Float, description: 'number of issue updates in the past 90 days'
