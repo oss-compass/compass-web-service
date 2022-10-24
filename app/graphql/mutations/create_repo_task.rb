@@ -20,6 +20,7 @@ module Mutations
             activity: true,
             community: true,
             codequality: true,
+            group_activity: true,
           }
         ).execute(only_validate: true)
 

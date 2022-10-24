@@ -16,6 +16,7 @@ class AnalyzeServer
     @activity = opts[:activity] || true
     @community = opts[:community] || true
     @codequality = opts[:codequality] || true
+    @group_activity = opts[:group_activity] || true
     @callback = opts[:callback]
 
     if @repo_url.present?
@@ -70,7 +71,7 @@ class AnalyzeServer
       raise ValidateError.new("No support data source from: #{@repo_url}")
     end
 
-    tasks = [@raw, @enrich, @activity, @community, @codequality]
+    tasks = [@raw, @enrich, @activity, @community, @codequality, @group_activity]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
 
     validate_project!
@@ -96,6 +97,7 @@ class AnalyzeServer
         metrics_activity: @activity,
         metrics_codequality: @codequality,
         metrics_community: @community,
+        metrics_group_activity: @group_activity,
         panels: false,
         project_url: @repo_url,
         raw: @raw,

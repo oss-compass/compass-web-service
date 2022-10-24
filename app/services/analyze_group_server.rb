@@ -17,6 +17,7 @@ class AnalyzeGroupServer
     @activity = opts[:activity] || true
     @community = opts[:community] || true
     @codequality = opts[:codequality] || true
+    @group_activity = opts[:group_activity] || true
     @callback = opts[:callback]
     @level = 'project'
 
@@ -70,7 +71,7 @@ class AnalyzeGroupServer
       raise ValidateError.new("No support data source from: #{@yaml_url}")
     end
 
-    tasks = [@raw, @enrich, @activity, @community, @codequality]
+    tasks = [@raw, @enrich, @activity, @community, @codequality, @group_activity]
     raise ValidateError.new('No tasks enabled') unless tasks.any?
 
     if @raw_yaml.present?
@@ -100,6 +101,7 @@ class AnalyzeGroupServer
         metrics_activity: @activity,
         metrics_codequality: @codequality,
         metrics_community: @community,
+        metrics_group_activity: @group_activity,
         panels: false,
         project_template_yaml: @yaml_url,
         raw: @raw,
