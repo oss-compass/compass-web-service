@@ -8,6 +8,8 @@ module Common
   SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
   SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
 
+  Faraday.ignore_env_proxy = true
+
   def extract_domain(url)
     Addressable::URI.parse(url)&.normalized_host
   end
