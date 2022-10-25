@@ -131,7 +131,7 @@ class AnalyzeServer
     end
     { status: task_resp['status'], message: 'Task is pending' }
   rescue => ex
-    logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")
+    Rails.logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")
     { status: ProjectTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
   end
 
@@ -143,6 +143,6 @@ class AnalyzeServer
       repo_task.update(status: task_resp['status'])
     end
   rescue => ex
-    logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
   end
 end
