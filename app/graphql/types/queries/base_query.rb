@@ -5,6 +5,7 @@ module Types
       HALF_YEAR = 180 * 24 * 60 * 60
       ONE_YEAR = 2 * HALF_YEAR
       TWO_YEARS = 2 * ONE_YEAR
+      FIVE_YEARS = 5 * ONE_YEAR
       # methods that should be inherited can go here.
       # like a `current_tenant` method, or methods related
       # to the `context` object
@@ -71,12 +72,10 @@ module Types
           begin_date = today - 3.months
           end_date = today
           interval = false
-        elsif diff_seconds <= ONE_YEAR
+        elsif diff_seconds <= FIVE_YEARS
           interval = false
-        elsif diff_seconds <= TWO_YEARS
-          interval = '1M'
         else
-          interval = '1q'
+          interval = '1M'
         end
         [begin_date, end_date, interval]
       end
