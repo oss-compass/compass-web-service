@@ -22,18 +22,27 @@ module Types
             )
         list = resp&.[]('hits')&.[]('hits')
 
-        list.present? ?
+        existed, candidates = {}, []
+        if list.present?
           list.flat_map do |items|
             items['inner_hits']['by_level']['hits']['hits'].map do |item|
-              OpenStruct.new(item['_source'].slice(*fields))
+              candidate = OpenStruct.new(item['_source'].slice(*fields).merge({status: 'success'}))
+              existed[candidate.label] = true
+              candidates << candidate
             end
-          end :
-          ProjectTask.where('project_name LIKE ?', "%#{keyword}")
-            .yield_self do |can|
+          end
+        end
+
+        ProjectTask.where('project_name LIKE ?', "%#{keyword}")
+          .yield_self do |can|
           level.present? ? can.where(level: level) : can
         end.limit(5).map do |item|
-          OpenStruct.new({level: item.level, label: item.project_name})
+          unless existed[item.project_name]
+            candidates << OpenStruct.new({level: item.level, label: item.project_name, status: item.status})
+          end
         end
+
+        candidates
       end
     end
   end
