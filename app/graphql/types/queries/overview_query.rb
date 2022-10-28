@@ -49,8 +49,8 @@ module Types
           skeleton['dimensions_count'] = DIMENSIONS_COUNT
           skeleton['models_count'] = MODELS_COUNT
           skeleton['metrics_count'] = METRICS_COUNT
-          resp = GithubRepo.only(GiteeFixedTemplates)
-          resp2 = GiteeRepo.only(GithubFixedTemplates)
+          resp = GithubRepo.only(GithubFixedTemplates)
+          resp2 = GiteeRepo.only(GiteeFixedTemplates)
           skeleton['trends'] = build_github_repo(resp).map { |repo| OpenStruct.new(repo) }
           skeleton['trends'] += build_gitee_repo(resp2).map { |repo| OpenStruct.new(repo) }
           skeleton
