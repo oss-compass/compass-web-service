@@ -13,10 +13,10 @@ module Mutations
 
     def resolve(username:, project_name:, project_types:, origin:, token:)
       yaml_template = {}
-      yaml_template['organization_name'] = project_name
-      yaml_template['project_types'] =
+      yaml_template['community_name'] = project_name
+      yaml_template['resource_types'] =
         project_types.reduce({}) do |result, type|
-        result.merge({ type.type => { 'data_sources' => { 'repo_names' => type.repo_list }}})
+        result.merge({type.type => { 'repo_urls' => type.repo_list }})
       end
       raw_yaml = YAML.dump(yaml_template)
       result =
@@ -40,7 +40,7 @@ module Mutations
           PullServer.new(
             {
               label: project_name,
-              level: 'project',
+              level: 'community',
               project_types: project_types,
               extra: { username: username, origin: origin, token: token }
             }

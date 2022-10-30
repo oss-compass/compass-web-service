@@ -19,7 +19,7 @@ class AnalyzeGroupServer
     @codequality = opts[:codequality] || true
     @group_activity = opts[:group_activity] || true
     @callback = opts[:callback]
-    @level = 'project'
+    @level = 'community'
 
     if @yaml_url.present?
       uri = Addressable::URI.parse(@yaml_url)
@@ -82,8 +82,8 @@ class AnalyzeGroupServer
       @raw_yaml = YAML.load(RestClient::Request.new(req).execute.body)
     end
 
-    @project_name = @raw_yaml['organization_name']
-    raise ValidateError.new('Invalid organization name') unless @project_name.present?
+    @project_name = @raw_yaml['community_name']
+    raise ValidateError.new('Invalid community name') unless @project_name.present?
 
   rescue => ex
     raise ValidateError.new(ex.message)

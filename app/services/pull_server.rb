@@ -26,11 +26,11 @@ class PullServer
 
     case @level
     when 'repo'
-      path = "single-projects/#{@domain_name}#{@path}.yml"
+      path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
       message = "Updated #{path}"
       branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
       repo = {}
-      repo['data_sources'] = { 'repo_name' => @project_url }
+      repo['resource_types'] = { 'repo_urls' => @project_url }
       content_base64 = Base64.strict_encode64(YAML.dump(repo))
       pr_desc = "submitted by @#{@extra[:username]}"
 
@@ -40,15 +40,15 @@ class PullServer
         create_github_pull(branch, path, content_base64, message, pr_desc)
       end
 
-    when 'project'
-      path = "organizations/#{@label}.yml"
+    when 'project', 'community'
+      path = "#{ORG_DIR}/#{@label}.yml"
       message = "Updated #{path}"
       branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
       project = {}
-      project['organization_name'] = @label
-      project['project_types'] =
+      project['community_name'] = @label
+      project['resource_types'] =
         @project_types.reduce({}) do |result, type|
-        result.merge({ type.type => { 'data_sources' => { 'repo_names' => type.repo_list }}})
+        result.merge({ type.type => { 'repo_urls' => type.repo_list } })
       end
       content_base64 = Base64.strict_encode64(YAML.dump(project))
       pr_desc = "submitted by @#{@extra[:username]}"

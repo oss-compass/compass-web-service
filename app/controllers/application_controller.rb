@@ -126,7 +126,7 @@ class ApplicationController < ActionController::Base
     yaml = YAML.load(RestClient::Request.new(req).execute.body)
     AnalyzeServer.new(
       {
-        repo_url: yaml['data_sources']['repo_name'],
+        repo_url: yaml['resource_types']['repo_urls'],
         raw: true,
         enrich: true,
         activity: true,

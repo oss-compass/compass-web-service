@@ -1,6 +1,6 @@
 module Common
-  ORG_DIR = 'organizations'
-  SINGLE_DIR = 'single-projects'
+  ORG_DIR = 'communities'
+  SINGLE_DIR = 'single-repositories'
   HOOK_PASS = ENV.fetch('HOOK_PASS') { 'password' }
   PROXY = ENV.fetch('PROXY') { 'http://localhost:10807' }
   HOST = ENV.fetch('DEFAULT_HOST') { 'http://localhost:3000' }
