@@ -13,7 +13,7 @@ module Types
 
       def build_repo_activity(label)
         build_metrics_data(
-          ActivityMetric.query_repo_by_date(label, DateTime.now - 30.days, DateTime.now),
+          ActivityMetric.query_repo_by_date(label, DateTime.now - 90.days, DateTime.now),
           Types::ActivityMetricType) do |metric, raw|
           metric.merge!(raw)
           metric['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']

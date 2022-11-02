@@ -42,7 +42,7 @@ module Types
 
       def resolve
         results =
-          Rails.cache.fetch(OVERVIEW_CACHE_KEY, expires_in: 1.day) do
+          Rails.cache.fetch(OVERVIEW_CACHE_KEY, expires_in: 2.hours) do
           skeleton = Hash[Types::OverviewType.fields.keys.zip([])].symbolize_keys
           skeleton['projects_count'] =
             aggs_distinct(GithubRepoEnrich, :origin) + aggs_distinct(GiteeRepoEnrich, :origin)
