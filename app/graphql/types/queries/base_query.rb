@@ -1,6 +1,7 @@
 module Types
   module Queries
     class BaseQuery < GraphQL::Schema::Resolver
+
       SEVEN_DAYS = 7 * 24 * 60 * 60
       HALF_YEAR = 180 * 24 * 60 * 60
       ONE_YEAR = 2 * HALF_YEAR
@@ -9,6 +10,21 @@ module Types
       # methods that should be inherited can go here.
       # like a `current_tenant` method, or methods related
       # to the `context` object
+
+      def build_repo_activity(label)
+        build_metrics_data(
+          ActivityMetric.query_repo_by_date(label, DateTime.now - 30.days, DateTime.now),
+          Types::ActivityMetricType) do |metric, raw|
+          metric.merge!(raw)
+          metric['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
+          metric['active_c2_contributor_count'] = raw['active_C2_contributor_count']
+          metric['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
+          metric['active_c1_issue_create_contributor_count'] = raw['active_C1_issue_create_contributor']
+          metric['active_c1_issue_comments_contributor_count'] = raw['active_C1_issue_comments_contributor']
+          OpenStruct.new(metric)
+        end
+      end
+
       def build_github_repo(resp)
         hits = resp&.[]('hits')&.[]('hits')
         skeletons = []
@@ -28,6 +44,7 @@ module Types
               skeleton['open_issues_count'] = data['data']['open_issues_count']
               skeleton['created_at'] = data['data']['created_at']
               skeleton['updated_at'] = data['data']['updated_at']
+              skeleton['metric_activity'] = build_repo_activity(data['origin'])
             end
             skeletons << skeleton
           end
@@ -54,6 +71,7 @@ module Types
               skeleton['open_issues_count'] = data['data']['open_issues_count']
               skeleton['created_at'] = data['data']['created_at']
               skeleton['updated_at'] = data['data']['updated_at']
+              skeleton['metric_activity'] = build_repo_activity(data['origin'])
             end
             skeletons << skeleton
           end

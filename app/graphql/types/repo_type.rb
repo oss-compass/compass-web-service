@@ -11,6 +11,7 @@ module Types
     field :watchers_count, Integer
     field :stargazers_count, Integer
     field :open_issues_count, Integer
+    field :metric_activity, [Types::ActivityMetricType], null: false
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end
