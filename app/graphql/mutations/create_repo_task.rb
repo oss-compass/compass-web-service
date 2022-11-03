@@ -6,33 +6,16 @@ module Mutations
     field :pr_url, String, null: true
 
     argument :username, String, required: true, description: 'gitee or github login/username'
-    argument :repo_url, String, required: true, description: 'repository url'
+    argument :repo_urls, [String], required: true, description: 'repository urls'
     argument :origin, String, required: true, description: "user's origin (gitee/github)"
     argument :token, String, required: true, description: "user's oauth token only for username verification"
 
-    def resolve(username:, repo_url:, origin:, token:)
-      result =
-        AnalyzeServer.new(
-          {
-            repo_url: repo_url,
-            raw: true,
-            enrich: true,
-            activity: true,
-            community: true,
-            codequality: true,
-            group_activity: true,
-          }
-        ).execute(only_validate: true)
-
-      unless result[:status]
-        return OpenStruct.new({ status: result[:status], message: result[:message], pr_url: nil })
-      end
+    def resolve(username:, repo_urls:, origin:, token:)
       result =
         PullServer.new(
           {
-            label: repo_url,
             level: 'repo',
-            project_url: repo_url,
+            project_urls: repo_urls,
             extra: { username: username, origin: origin, token: token }
           }
         ).execute

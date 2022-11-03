@@ -7,14 +7,21 @@ class PullServer
     @label = opts[:label]
     @level = opts[:level]
     @project_url = opts[:project_url]
+    @project_urls = opts[:project_urls]
     @project_types = opts[:project_types]
+    @extra = opts[:extra]
+
+    if @project_urls.present? && @project_urls.length == 1
+      @project_url = @project_urls.first
+    end
+
     if @project_url.present?
       uri = Addressable::URI.parse(@project_url)
       @domain = uri&.normalized_host
       @domain_name = @domain.starts_with?('gitee.com') ? 'gitee' : 'github'
       @path = uri.path
     end
-    @extra = opts[:extra]
+
     if @extra.is_a?(Hash) && SUPPORT_DOMAIN_NAMES.include?(@extra[:origin])
       @domain_name = @extra[:origin]
     end
@@ -26,18 +33,46 @@ class PullServer
 
     case @level
     when 'repo'
-      path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
-      message = "Updated #{path}"
-      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
-      repo = {}
-      repo['resource_types'] = { 'repo_urls' => @project_url }
-      content_base64 = Base64.strict_encode64(YAML.dump(repo))
       pr_desc = "submitted by @#{@extra[:username]}"
+      if @project_url.present?
+        path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
+        message = "Updated #{path}"
+        branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
+        repo = {}
+        repo['resource_types'] = { 'repo_urls' => @project_url }
+        content_base64 = Base64.strict_encode64(YAML.dump(repo))
 
-      if @domain_name == 'gitee'
-        create_gitee_pull(branch, path, content_base64, message, pr_desc)
-      else
-        create_github_pull(branch, path, content_base64, message, pr_desc)
+        if @domain_name == 'gitee'
+          create_gitee_pull(branch, path, content_base64, message, pr_desc)
+        else
+          create_github_pull(branch, path, content_base64, message, pr_desc)
+        end
+      elsif @project_urls.present?
+
+        if @project_urls.length > 5
+          return { status: false, message: 'too many repositories, please create a pull request' }
+        end
+
+        branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-update-projects"
+        message = "Updated projects"
+
+        path_content_base64_pairs = {}
+        @project_urls.each do |project_url|
+          uri = Addressable::URI.parse(project_url)
+          domain = uri&.normalized_host
+          domain_name = domain.starts_with?('gitee.com') ? 'gitee' : 'github'
+          path = "#{SINGLE_DIR}/#{domain_name}#{uri.path}.yml"
+          repo = {}
+          repo['resource_types'] = { 'repo_urls' => project_url }
+          content_base64 = Base64.strict_encode64(YAML.dump(repo))
+          path_content_base64_pairs[path] = content_base64
+        end
+
+        if @domain_name == 'gitee'
+          create_gitee_pull_with_multiple_files(branch, path_content_base64_pairs, message, pr_desc)
+        else
+          create_github_pull_with_multiple_files(branch, path_content_base64_pairs, message, pr_desc)
+        end
       end
 
     when 'project', 'community'
@@ -108,6 +143,20 @@ class PullServer
     { status: true, pr_url: result[:pr_url] }
   end
 
+  def create_gitee_pull_with_multiple_files(branch, path_content_base64_pairs, message, pr_desc)
+    result = gitee_create_branch(branch)
+    return result unless result[:status]
+
+    path_content_base64_pairs.each do |path, content_base64|
+      result = gitee_post_file(path, message, content_base64, branch)
+      return result unless result[:status]
+    end
+
+    result = gitee_create_pull(message, pr_desc, branch)
+    return result unless result[:status]
+    { status: true, pr_url: result[:pr_url] }
+  end
+
   def create_github_pull(branch, path, content_base64, message, pr_desc)
     result = github_get_head_sha()
     return result unless result[:status]
@@ -117,6 +166,23 @@ class PullServer
 
     result = github_put_file(path, message, content_base64, branch)
     return result unless result[:status]
+
+    result = github_create_pull(message, pr_desc, branch)
+    return result unless result[:status]
+    { status: true, pr_url: result[:pr_url] }
+  end
+
+  def create_github_pull_with_multiple_files(branch, path_content_base64_pairs, message, pr_desc)
+    result = github_get_head_sha()
+    return result unless result[:status]
+
+    result = github_create_ref(branch, result[:sha])
+    return result unless result[:status]
+
+    path_content_base64_pairs.each do |path, content_base64|
+      result = github_put_file(path, message, content_base64, branch)
+      return result unless result[:status]
+    end
 
     result = github_create_pull(message, pr_desc, branch)
     return result unless result[:status]
