@@ -3,7 +3,6 @@ module GithubApplication
   include Common
 
   GITHUB_TOKEN = ENV.fetch('GITHUB_API_TOKEN')
-  GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
   GITHUB_API_ENDPOINT = 'https://api.github.com'
 
   def github_notify_on_pr(owner, repo, pr_number, message)

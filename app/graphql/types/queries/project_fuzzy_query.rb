@@ -11,6 +11,8 @@ module Types
 
       def resolve(keyword: nil, level: nil)
         fields = ['label', 'level']
+        keyword.gsub!(/^https:\/\//, '')
+        keyword.gsub!(/^http:\/\//, '')
         resp =
           ActivityMetric
             .fuzzy_search(

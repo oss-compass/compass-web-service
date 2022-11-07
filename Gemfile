@@ -21,6 +21,10 @@ gem 'jbuilder'
 # Use Redis adapter to run Action Cable in production
 gem 'redis'
 
+# User RabbitMQ
+gem 'bunny'
+gem 'sneakers'
+
 # Use OpenSearch
 gem 'search_flip'
 gem 'opensearch-ruby'
