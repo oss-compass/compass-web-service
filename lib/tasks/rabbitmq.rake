@@ -1,7 +1,6 @@
 desc "Run all of your sneakers tasks"
 namespace :rabbitmq do
   task :start => :environment do
-    AnalyzeResWorker
     Rake::Task["sneakers:run"].invoke
     puts "Started sneakers workers"
   end
