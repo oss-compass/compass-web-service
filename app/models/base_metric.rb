@@ -6,7 +6,7 @@ class BaseMetric
     AuthSearchConn
   end
 
-  def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 30)
+  def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 60)
     self
       .must(match: { 'label.keyword': repo_url })
       .page(page)

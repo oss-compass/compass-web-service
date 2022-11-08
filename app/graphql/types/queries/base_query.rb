@@ -90,7 +90,7 @@ module Types
           begin_date = today - 3.months
           end_date = today
           interval = false
-        elsif diff_seconds <= FIVE_YEARS
+        elsif diff_seconds <= TWO_YEARS
           interval = false
         else
           interval = '1M'
