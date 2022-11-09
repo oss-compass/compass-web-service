@@ -50,8 +50,9 @@ module Types
           skeleton['models_count'] = MODELS_COUNT
           skeleton['metrics_count'] = METRICS_COUNT
 
-          activity_top50_last_month =
+          fetch_top50_by_phrase = -> (domain) {
             ActivityMetric
+              .must(match_phrase: { 'label': domain })
               .custom(collapse: { field: 'label.keyword' })
               .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
               .page(1)
@@ -60,12 +61,15 @@ module Types
               .source(['label'])
               .execute
               .raw_response['hits']['hits'].map{ |row| row['_source']['label'] }
+          }
+
+          gitee_activity_top50_last_month = fetch_top50_by_phrase.('gitee.com')
+          github_activity_top50_last_month = fetch_top50_by_phrase.('github.com')
 
           activity_upward_trending =
             ActivityMetric
               .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
               .sort(grimoire_creation_date: :desc)
-              .page(0)
               .per(0)
               .aggregate(
                 {
@@ -101,7 +105,38 @@ module Types
               .select { |row| row['arise']['buckets'].last&.[]('the_delta')&.[]('value').to_f > 0.0 }
               .map { |row| row['key'] }
 
-          candidate_set = (activity_upward_trending || []) + (activity_top50_last_month || [])
+          candidate_set =
+            (activity_upward_trending || []) +
+            (gitee_activity_top50_last_month || []) +
+            (github_activity_top50_last_month || [])
+
+          candidate_set =
+            { community_support_score: CommunityMetric, code_quality_guarantee: CodequalityMetric }.map do |score, metric|
+            metric
+              .where({'label.keyword' => candidate_set})
+              .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
+              .per(0)
+              .aggregate(
+                {
+                  label_group: {
+                    terms: {
+                      field: "label.keyword",
+                      size: candidate_set.length
+                    },
+                    aggs: {
+                      avg_score: {
+                        avg: {
+                          field: score
+                        }
+                      }
+                    }
+                  }
+                })
+              .execute
+              .aggregations&.[]('label_group')&.[]('buckets')
+              .select { |row| row['avg_score']&.[]('value').to_f > 0.0 }
+              .map { |row| row['key'] }
+          end.reduce(&:&)
 
           gitee_repos = candidate_set.select {|row| row =~ /gitee\.com/ }.sample(12)
           github_repos = candidate_set.select {|row| row =~ /github\.com/ }.sample(12)
