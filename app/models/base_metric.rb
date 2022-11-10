@@ -1,5 +1,6 @@
 class BaseMetric
   MetricsIndexPrefix = ENV.fetch('METRICS_OUT_INDEX') { 'compass_metric' }
+  CacheTTL = 2.minutes
   include SearchFlip::Index
 
   def self.connection
@@ -7,37 +8,52 @@ class BaseMetric
   end
 
   def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 60)
-    self
-      .must(match: { 'label.keyword': repo_url })
-      .page(page)
-      .per(per)
-      .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-      .sort(grimoire_creation_date: :asc)
-      .execute
-      .raw_response
+    Rails.cache.fetch(
+      "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}-#{page}-#{per}",
+      expires_in: CacheTTL
+    ) do
+      self
+        .must(match: { 'label.keyword': repo_url })
+        .page(page)
+        .per(per)
+        .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+        .sort(grimoire_creation_date: :asc)
+        .execute
+        .raw_response
+    end
   end
 
   def self.query_label_one(label, level)
-    self
-      .must(match: { 'label.keyword': label })
-      .where(level: level)
-      .page(1)
-      .per(1)
-      .sort(grimoire_creation_date: :desc)
-      .execute
-      .raw_response
+    Rails.cache.fetch(
+      "#{self.name}-#{__method__}-#{label}-#{level}",
+      expires_in: CacheTTL
+    ) do
+      self
+        .must(match: { 'label.keyword': label })
+        .where(level: level)
+        .page(1)
+        .per(1)
+        .sort(grimoire_creation_date: :desc)
+        .execute
+        .raw_response
+    end
   end
 
   def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
-    self
-      .must(match: { 'label.keyword': repo_url })
-      .page(1)
-      .per(1)
-      .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-      .sort(grimoire_creation_date: :asc)
-      .aggregate(aggs)
-      .execute
-      .raw_response
+    Rails.cache.fetch(
+      "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}",
+      expires_in: CacheTTL
+    ) do
+      self
+        .must(match: { 'label.keyword': repo_url })
+        .page(1)
+        .per(1)
+        .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+        .sort(grimoire_creation_date: :asc)
+        .aggregate(aggs)
+        .execute
+        .raw_response
+    end
   end
 
   def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
