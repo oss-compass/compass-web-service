@@ -102,7 +102,7 @@ module Types
                 })
               .execute
               .aggregations&.[]('label_group')&.[]('buckets')
-              .select { |row| row['arise']['buckets'].last&.[]('the_delta')&.[]('value').to_f > 0.0 }
+              .select { |row| row['arise']['buckets'].last&.[]('the_delta')&.[]('value').to_f > 0.001 }
               .map { |row| row['key'] }
 
           candidate_set =
