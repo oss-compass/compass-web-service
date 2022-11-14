@@ -144,6 +144,7 @@ module Types
           resp2 = GiteeRepo.only(gitee_repos)
           skeleton['trends'] = build_github_repo(resp).map { |repo| OpenStruct.new(repo) }
           skeleton['trends'] += build_gitee_repo(resp2).map { |repo| OpenStruct.new(repo) }
+          skeleton['trends'] = skeleton['trends'].shuffle()
           skeleton
         end
         OpenStruct.new(results)
