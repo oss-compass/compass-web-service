@@ -21,27 +21,20 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        if !interval
-          resp = GroupActivityMetric.query_repo_by_date(label, begin_date, end_date)
+        interval = '1w' if !interval
 
-          build_metrics_data(resp, Types::GroupActivityMetricType) do |skeleton, raw|
-            skeleton.merge!(raw)
-            OpenStruct.new(skeleton)
-          end
-        else
-          aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, interval)
-          resp = GroupActivityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
+        aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, interval)
+        resp = GroupActivityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
 
-          build_metrics_data(resp, Types::GroupActivityMetricType) do |skeleton, raw|
-            data = raw[:data]
-            template = raw[:template]
-            skeleton.keys.map do |k|
-              key = k.to_s.underscore
-              skeleton[key] = data&.[](key)&.[]('value') || template[key]
-            end
-            skeleton['grimoire_creation_date'] = data&.[]('key_as_string')
-            OpenStruct.new(skeleton)
+        build_metrics_data(resp, Types::GroupActivityMetricType) do |skeleton, raw|
+          data = raw[:data]
+          template = raw[:template]
+          skeleton.keys.map do |k|
+            key = k.to_s.underscore
+            skeleton[key] = data&.[](key)&.[]('value') || template[key]
           end
+          skeleton['grimoire_creation_date'] = data&.[]('key_as_string')
+          OpenStruct.new(skeleton)
         end
       end
     end
