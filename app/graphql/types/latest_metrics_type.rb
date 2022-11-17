@@ -8,6 +8,8 @@ module Types
     field :community_support_score_updated_at, GraphQL::Types::ISO8601DateTime, description: 'latest score of community support metric model up'
     field :code_quality_guarantee, Float, description: 'latest score of code quality metric model'
     field :code_quality_guarantee_updated_at, GraphQL::Types::ISO8601DateTime, description: 'latest score of code quality metric model updated_at'
+    field :organizations_activity, Float, description: 'latest score of organizations activity metric model'
+    field :organizations_activity_updated_at, GraphQL::Types::ISO8601DateTime, description: 'latest score of organizations activity metric model updated_at'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end

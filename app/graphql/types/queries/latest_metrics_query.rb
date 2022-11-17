@@ -39,16 +39,21 @@ module Types
             result[:level] = level
             result[:activity_score] = score
             result[:activity_score_updated_at] = date
-            in { community_support_score: score, grimoire_creation_date: date, label: label, level: level  }
+            in { community_support_score: score, grimoire_creation_date: date, label: label, level: level }
             result[:label] = label
             result[:level] = level
             result[:community_support_score] = score
             result[:community_support_score_updated_at] = date
-            in { code_quality_guarantee: score, grimoire_creation_date: date, label: label, level: level  }
+            in { code_quality_guarantee: score, grimoire_creation_date: date, label: label, level: level }
             result[:label] = label
             result[:level] = level
             result[:code_quality_guarantee] = score
             result[:code_quality_guarantee_updated_at] = date
+            in { organizations_activity: score, grimoire_creation_date: date, label: label, level: level }
+            result[:label] = label
+            result[:level] = level
+            result[:organizations_activity] = score
+            result[:organizations_activity_updated_at] = date
         else
         end
       end
