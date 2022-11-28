@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   include GiteeApplication
   include GithubApplication
 
+  before_action :set_locale
   before_action :gitee_webhook_verify, only: [:hook]
   before_action :auth_validate, only: [:workflow]
 
@@ -39,7 +40,7 @@ class ApplicationController < ActionController::Base
       RabbitMQ.publish(queue, { user_agent: user_agent, payload: payload })
     end
 
-    render json: { status: true, message: 'Your submission is being processed' }
+    render json: { status: true, message: I18n.t('workflow.processed') }
   end
 
   def hook
@@ -89,5 +90,13 @@ class ApplicationController < ActionController::Base
 
   def auth_validate
     gitee_agent?(user_agent) ? gitee_webhook_verify : github_webhook_verify
+  end
+
+  def set_locale
+    locale = params[:locale].to_s.strip.to_sym
+    I18n.locale =
+      I18n.available_locales.include?(locale) ?
+        locale :
+        I18n.default_locale
   end
 end

@@ -50,7 +50,7 @@ class PullServer
       elsif @project_urls.present?
 
         if @project_urls.length > 5
-          return { status: false, message: 'too many repositories, please create a pull request' }
+          return { status: false, message: I18n.t('pull.too_many_repositories') }
         end
 
         branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-update-projects"
@@ -95,7 +95,7 @@ class PullServer
       end
 
     else
-      { status: false, message: 'invalid level' }
+      { status: false, message: I18n.t('pull.invalid_level') }
     end
   rescue => ex
     { status: false, message: ex.message }
@@ -117,15 +117,15 @@ class PullServer
          case result
              in { status: true, username: real_login }
              if username.downcase == real_login.downcase
-               { status: true, message: 'user verification pass' }
+               { status: true, message: I18n.t('pull.user.validation.pass') }
              else
-                { status: false, message: 'user verification failed' }
+                { status: false, message: I18n.t('pull.user.validation.failed') }
              end
          else
            { status: false, message: result[:message] }
          end
     else
-      { status: false, message: 'invalid user information' }
+      { status: false, message: I18n.t('pull.user.invalid') }
     end
   end
 

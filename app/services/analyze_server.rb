@@ -46,11 +46,11 @@ class AnalyzeServer
     status = check_task_status
 
     if ProjectTask::Processing.include?(status)
-      raise TaskExists.new('Task already sumbitted!')
+      raise TaskExists.new(I18n.t('analysis.task.submitted'))
     end
 
     if only_validate
-      { status: true, message: 'Validation passed' }
+      { status: true, message: I18n.t('analysis.validation.pass') }
     else
       result = submit_task_status
 
@@ -65,14 +65,14 @@ class AnalyzeServer
   private
 
   def validate!
-    raise ValidateError.new('`repo_url` is required') unless @repo_url.present?
+    raise ValidateError.new(I18n.t('analysis.validation.missing', field: 'repo_url')) unless @repo_url.present?
 
     unless SUPPORT_DOMAINS.include?(@domain)
-      raise ValidateError.new("No support data source from: #{@repo_url}")
+      raise ValidateError.new(I18n.t('analysis.validation.not_support', source: @repo_url))
     end
 
     tasks = [@raw, @enrich, @activity, @community, @codequality, @group_activity]
-    raise ValidateError.new('No tasks enabled') unless tasks.any?
+    raise ValidateError.new(I18n.t('analysis.validation.no_tasks')) unless tasks.any?
 
     validate_project!
   end
@@ -80,9 +80,10 @@ class AnalyzeServer
   def validate_project!
     url = "#{@repo_url}.git/info/refs?service=git-upload-pack"
     response = Faraday.get(url)
-    raise ValidateError.new('This repository can not access') unless response.status == 200
+    raise ValidateError.new(I18n.t('analysis.validation.cannot_access')) unless response.status == 200
   rescue => ex
-    raise ValidateError.new("This repository can not access, error: #{ex.message}")
+    Rails.logger.error("This repository can not access, error: #{ex.message}")
+    raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))
   end
 
   def payload
@@ -129,10 +130,10 @@ class AnalyzeServer
         project_name: @project_name
       )
     end
-    { status: task_resp['status'], message: 'Task is pending' }
+    { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
     Rails.logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")
-    { status: ProjectTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
+    { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
   def update_task_status

@@ -47,11 +47,11 @@ class AnalyzeGroupServer
     status = check_task_status
 
     if ProjectTask::Processing.include?(status)
-      raise TaskExists.new('Task already sumbitted!')
+      raise TaskExists.new(I18n.t('analysis.task.submitted'))
     end
 
     if only_validate
-      { status: true, message: 'Validation passed' }
+      { status: true, message: I18n.t('analysis.validation.pass') }
     else
       result = submit_task_status
       { status: result[:status], message: result[:message] }
@@ -134,10 +134,10 @@ class AnalyzeGroupServer
         project_name: @project_name
       )
     end
-    { status: task_resp['status'], message: 'Task is pending' }
+    { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
     Rails.logger.error("Failed to sumbit task #{@yaml_url} status, #{ex.message}")
-    { status: ProjectTask::UnSubmit, message: 'Failed to sumbit task, please retry' }
+    { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
   def update_task_status

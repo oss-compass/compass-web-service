@@ -44,6 +44,10 @@ module CompassWebService
 
     config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
 
+    config.i18n.available_locales = %i[en zh-CN]
+    config.i18n.default_locale = :en
+    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '*', '*.{rb,yml}')]
+
     # config.middleware.insert(0, Rack::ReverseProxy) do
     #   reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
     #   reverse_proxy '/analyze', 'http://localhost:5000/'

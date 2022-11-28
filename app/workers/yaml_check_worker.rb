@@ -42,13 +42,13 @@ class YamlCheckWorker
           if analyzer
             items << analyze_or_submit_yaml_file(analyzer, user_agent, branch, patch.file, extra)
           else
-            items << { status: false, message: "invaild configure yaml path: #{patch.file}" }
+            items << { status: false, message: I18n.t('yaml.path.invalid', path: patch.file) }
           end
 
         end
         { status: true, message: 'ok', result: items }
       else
-        { status: false, message: 'invalid diff url' }
+        { status: false, message: I18n.t('yaml.diff_url.invalid') }
       end
 
     if result.present? && result.is_a?(Hash)

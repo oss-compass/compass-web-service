@@ -23,10 +23,10 @@ module GiteeApplication
         in {login: username}
         { status: true, username: username }
     else
-      { status: false, message: 'no `login` field' }
+      { status: false, message: I18n.t('oauth.user.missing') }
     end
   rescue => ex
-    { status: false, message: "failed to get user info, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.user.failed', reason: ex.message) }
   end
 
   def gitee_create_branch(branch_name, refs: 'main')
@@ -37,7 +37,7 @@ module GiteeApplication
     )
     { status: true, ref: branch_name }
   rescue => ex
-    { status: false, message: "failed to create ref, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.branch.failed', reason: ex.message) }
   end
 
   def gitee_post_file(path, message, content_base64, branch_name)
@@ -56,7 +56,7 @@ module GiteeApplication
       { status: false, message: resp.body }
     end
   rescue => ex
-    { status: false, message: "failed to put file, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.file.failed', reason: ex.message) }
   end
 
   def gitee_create_pull(title, content, head, base: 'main')
@@ -76,7 +76,7 @@ module GiteeApplication
     pull = JSON.load(resp.body)
     { status: true, pr_id: pull['id'], pr_url: pull['html_url'] }
   rescue => ex
-    { status: false, message: "failed to create ref, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }
   end
 
   private

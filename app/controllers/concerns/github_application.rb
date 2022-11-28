@@ -27,10 +27,10 @@ module GithubApplication
         in { login: username }
         { status: true, username: username }
     else
-      { status: false, message: 'no `login` field' }
+      { status: false, message: I18n.t('oauth.user.missing') }
     end
   rescue => ex
-    { status: false, message: "failed to get user info, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.user.failed', reason: ex.message) }
   end
 
   def github_get_head_sha(ref_name: 'main')
@@ -46,7 +46,7 @@ module GithubApplication
       sha: JSON.load(resp.body).select{|branch| branch['ref'] == "refs/heads/#{ref_name}"}.first['object']['sha']
     }
   rescue => ex
-    { status: false, message: "failed to get latest sha, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.latest_sha.failed', reason: ex.message) }
   end
 
   def github_create_ref(branch_name, sha)
@@ -59,7 +59,7 @@ module GithubApplication
     ).execute
     { status: true, ref: branch_name }
   rescue => ex
-    { status: false, message: "failed to create ref, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.branch.failed', reason: ex.message) }
   end
 
   def github_put_file(path, message, content_base64, branch_name)
@@ -74,9 +74,9 @@ module GithubApplication
     { status: true, message: resp.body }
   rescue => ex
     if ex.message.include?('422')
-      return { status: false, message: "alreadly sumbitted" }
+      return { status: false, message: I18n.t('oauth.file.submitted') }
     end
-    { status: false, message: "failed to put file, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.file.failed', reason: ex.message) }
   end
 
   def github_create_pull(title, content, head, base: 'main')
@@ -91,7 +91,7 @@ module GithubApplication
     pull = JSON.load(resp.body)
     { status: true, pr_id: pull['id'], pr_url: pull['html_url'] }
   rescue => ex
-    { status: false, message: "failed to create ref, reason: #{ex.message}" }
+    { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }
   end
 
   private
