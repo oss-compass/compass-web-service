@@ -59,7 +59,7 @@ module Types
               skeleton[key] = data&.[](key)&.[]('value') || template[key]
             end
             pr_count = data&.[]('pr_count')&.[]('value').to_f
-            skeleton['grimoire_creation_date'] = data&.[]('key_as_string')
+            skeleton['grimoire_creation_date'] = DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
             skeleton['code_merged_count'] = (data&.[]('code_merge_ratio')&.[]('value').to_f * pr_count rescue 0)
             skeleton['code_reviewed_count'] = (data&.[]('code_review_ratio')&.[]('value').to_f * pr_count rescue 0)
             skeleton['pr_issue_linked_count'] = (data&.[]('pr_issue_linked_ratio')&.[]('value').to_f * pr_count rescue 0)
