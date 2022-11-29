@@ -7,6 +7,7 @@ module Types
     field :code_review_count, Float, description: 'mean of comments per PR over the past 90 days'
     field :comment_frequency, Float, description: 'mean of comments per issue over the past 90 days'
     field :commit_frequency, Float, description: 'mean of submissions per week over the past 90 days'
+    field :org_count, Float, description: 'organization count'
     field :active_c1_pr_create_contributor_count, Float, description: 'number of active C1 pr create contributors in the past 90 days'
     field :active_c1_pr_comments_contributor_count, Float, description: 'number of active C1 pr comments contributors in the past 90 days'
     field :active_c1_issue_create_contributor_count, Float, description: 'number of active C1 issue create contributors in the past 90 days'
