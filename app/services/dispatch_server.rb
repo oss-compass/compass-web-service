@@ -12,6 +12,14 @@ class DispatchServer
           .find_each(batch_size: 500) do |task|
           task_execute(task)
         end
+        in { project_name: '_group' }
+        ProjectTask
+          .where.not(project_name: nil)
+          .where.not(remote_url: nil)
+          .where.not(level: 'repo')
+          .find_each(batch_size: 500) do |task|
+          task_execute(task)
+        end
         in { project_name: String }
         task = ProjectTask.find_by(project_name: opts[:project_name])
         if task.present?
@@ -40,7 +48,7 @@ class DispatchServer
           in { status: status, message: message }
           job_logger.error "repo task #{task.id} dispatch result: status #{status}, message #{message}"
       end
-    when 'project'
+    when 'project', 'community'
       job_logger.info "Begin to execute repo task #{task.id}: with remote_url #{task.remote_url}, project_name: #{task.project_name}"
       case AnalyzeGroupServer.new(yaml_url: task.remote_url).execute(only_validate: false)
           in { status: 'pending' }

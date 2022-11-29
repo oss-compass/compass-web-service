@@ -21,7 +21,12 @@ class YamlCheckWorker
 
     pr_number = payload['iid'] || payload['number']
     diff_url = payload['pull_request']&.[]('diff_url')
-    branch = payload['pull_request']&.[]('head')&.[]('ref')
+    branch =
+      if only_validate
+        payload['pull_request']&.[]('head')&.[]('ref')
+      else
+        payload['pull_request']&.[]('base')&.[]('ref')
+      end
 
     result =
       if diff_url.present?
