@@ -10,7 +10,7 @@ module Types
     field :analysis_status, resolver: Queries::AnalysisStatusQuery
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
     field :overview, resolver: Queries::OverviewQuery
-    field :comunity_overview, resolver: Queries::CommunityOverviewQuery
+    field :community_overview, resolver: Queries::CommunityOverviewQuery
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery
     field :metric_codequality, resolver: Queries::CodequalityMetricQuery
