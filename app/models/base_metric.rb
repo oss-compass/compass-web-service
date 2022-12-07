@@ -59,7 +59,7 @@ class BaseMetric
   def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
     base =
       self
-        .must(prefix: { field => keyword })
+        .search(keyword, default_field: field)
         .per(limit)
     filters.map do |k, value|
       if value.present?

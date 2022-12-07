@@ -16,7 +16,7 @@ module Types
         resp =
           ActivityMetric
             .fuzzy_search(
-              keyword,
+              keyword.gsub('/', ' '),
               'label',
               'label.keyword',
               fields: fields,
