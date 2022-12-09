@@ -14,6 +14,8 @@ class AnalyzeGroupServer
     @raw_yaml = opts[:raw_yaml]
     @raw = opts[:raw] || true
     @enrich = opts[:enrich] || true
+    @identities_load = opts[:identities_load] || true
+    @identities_merge = opts[:identities_merge] || true
     @activity = opts[:activity] || true
     @community = opts[:community] || true
     @codequality = opts[:codequality] || true
@@ -96,8 +98,8 @@ class AnalyzeGroupServer
       payload: {
         deubg: false,
         enrich: @enrich,
-        identities_load: false,
-        identities_merge: false,
+        identities_load: @identities_load,
+        identities_merge: @identities_merge,
         metrics_activity: @activity,
         metrics_codequality: @codequality,
         metrics_community: @community,

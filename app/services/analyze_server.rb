@@ -12,6 +12,8 @@ class AnalyzeServer
   def initialize(opts = {})
     @raw = opts[:raw] || true
     @enrich = opts[:enrich] || true
+    @identities_load = opts[:identities_load] || true
+    @identities_merge = opts[:identities_merge] || true
     @repo_url = opts[:repo_url]
     @activity = opts[:activity] || true
     @community = opts[:community] || true
@@ -93,8 +95,8 @@ class AnalyzeServer
       payload: {
         deubg: false,
         enrich: @enrich,
-        identities_load: false,
-        identities_merge: false,
+        identities_load: @identities_load,
+        identities_merge: @identities_merge,
         metrics_activity: @activity,
         metrics_codequality: @codequality,
         metrics_community: @community,
