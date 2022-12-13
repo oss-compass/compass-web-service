@@ -13,7 +13,7 @@ module Types
 
       def build_repo_activity(label)
         build_metrics_data(
-          ActivityMetric.query_repo_by_date(label, DateTime.now - 90.days, DateTime.now),
+          ActivityMetric.query_repo_by_date(label, Date.today.end_of_day - 90.days, Date.today.end_of_day),
           Types::ActivityMetricType) do |metric, raw|
           metric.merge!(raw)
           metric['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
@@ -80,7 +80,7 @@ module Types
       end
 
       def extract_date(begin_date, end_date)
-        today = DateTime.now
+        today = Date.today.end_of_day
 
         begin_date = begin_date || today - 3.months
         end_date = [end_date || today, today].min
@@ -145,7 +145,37 @@ module Types
             end
           end
         end
+
         skeletons
+      end
+
+      def aggs_distinct(index, field, threshold=100)
+        index.aggregate(
+          {
+            distinct: {
+              cardinality: {
+                field: field,
+                precision_threshold: threshold
+              }
+            }
+          }
+        ).per(0).execute.raw_response['aggregations']['distinct']['value']
+      rescue
+        0
+      end
+
+      def aggs_sum(index, field)
+        index.aggregate(
+          {
+            total: {
+              sum: {
+                field: field
+              }
+            }
+          }
+        ).per(0).execute.raw_response['aggregations']['total']['value']
+      rescue
+        0
       end
     end
   end

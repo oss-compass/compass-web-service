@@ -39,13 +39,8 @@ module Types
             :grimoire_creation_date,
             interval,
             'Float',
-            {
-              'active_c1_pr_create_contributor_count' => 'active_C1_pr_create_contributor',
-              'active_c2_contributor_count' => 'active_C2_contributor_count',
-              'active_c1_pr_comments_contributor_count' => 'active_C1_pr_comments_contributor',
-              'active_c1_issue_create_contributor_count' => 'active_C1_issue_create_contributor',
-              'active_c1_issue_comments_contributor_count' => 'active_C1_issue_comments_contributor'
-            })
+            ActivityMetric.fields_aliases
+          )
           resp = ActivityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
 
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|

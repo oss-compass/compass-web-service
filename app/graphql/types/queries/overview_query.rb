@@ -54,7 +54,7 @@ module Types
             ActivityMetric
               .must(match_phrase: { 'label': domain })
               .custom(collapse: { field: 'label.keyword' })
-              .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
+              .range(:grimoire_creation_date, gte: Date.today.end_of_day - 1.month, lte: Date.today.end_of_day)
               .page(1)
               .per(50)
               .sort(activity_score: :desc)
@@ -68,7 +68,7 @@ module Types
 
           activity_upward_trending =
             ActivityMetric
-              .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
+              .range(:grimoire_creation_date, gte: Date.today.end_of_day - 1.month, lte: Date.today.end_of_day)
               .sort(grimoire_creation_date: :desc)
               .per(0)
               .aggregate(
@@ -114,7 +114,7 @@ module Types
             { community_support_score: CommunityMetric, code_quality_guarantee: CodequalityMetric }.map do |score, metric|
             metric
               .where({'label.keyword' => candidate_set})
-              .range(:grimoire_creation_date, gte: DateTime.now() - 1.month, lte: DateTime.now())
+              .range(:grimoire_creation_date, gte: Date.today.end_of_day - 1.month, lte: Date.today.end_of_day)
               .per(0)
               .aggregate(
                 {
@@ -148,37 +148,6 @@ module Types
           skeleton
         end
         OpenStruct.new(results)
-      end
-
-      private
-
-      def aggs_distinct(index, field, threshold=100)
-        index.aggregate(
-          {
-            distinct: {
-              cardinality: {
-                field: field,
-                precision_threshold: threshold
-              }
-            }
-          }
-        ).per(0).execute.raw_response['aggregations']['distinct']['value']
-      rescue
-        0
-      end
-
-      def aggs_sum(index, field)
-        index.aggregate(
-          {
-            total: {
-              sum: {
-                field: field
-              }
-            }
-          }
-        ).per(0).execute.raw_response['aggregations']['total']['value']
-      rescue
-        0
       end
     end
   end

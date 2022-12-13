@@ -1,12 +1,4 @@
-class BaseMetric
-  MetricsIndexPrefix = ENV.fetch('METRICS_OUT_INDEX') { 'compass_metric' }
-  CacheTTL = 2.minutes
-  include SearchFlip::Index
-
-  def self.connection
-    AuthSearchConn
-  end
-
+class BaseMetric < BaseIndex
   def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 60)
     Rails.cache.fetch(
       "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}-#{page}-#{per}",
