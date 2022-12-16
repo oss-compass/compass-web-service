@@ -9,13 +9,7 @@ module Types
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
 
       def resolve(label: nil, level: 'repo')
-        label =
-          if label =~ URI::regexp
-            uri = Addressable::URI.parse(label)
-            label = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
-          else
-            label
-          end
+        label = normalize_label(label)
 
         result = {}
         [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|

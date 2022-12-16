@@ -18,7 +18,7 @@ module Types
           return ProjectTask::Success
         end
 
-        label = (label =~ URI::regexp ? label : label.split('-').first rescue label)
+        label = normalize_label(label)
 
         task = ProjectTask.find_by(project_name: label)
         task ||= ProjectTask.find_by(remote_url: label)

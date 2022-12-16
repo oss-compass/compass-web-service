@@ -11,13 +11,7 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
-        label =
-          if label =~ URI::regexp
-            uri = Addressable::URI.parse(label)
-            label = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
-          else
-            label
-          end
+        label = normalize_label(label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 

@@ -11,13 +11,7 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
-        label =
-          if label =~ URI::regexp
-            uri = Addressable::URI.parse(label)
-            label = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
-          else
-            label
-          end
+        label = normalize_label(label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
@@ -26,11 +20,7 @@ module Types
 
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
-            skeleton['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
-            skeleton['active_c2_contributor_count'] = raw['active_C2_contributor_count']
-            skeleton['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
-            skeleton['active_c1_issue_create_contributor_count'] = raw['active_C1_issue_create_contributor']
-            skeleton['active_c1_issue_comments_contributor_count'] = raw['active_C1_issue_comments_contributor']
+            ActivityMetric.fields_aliases.map { |alias_key, key| skeleton[alias_key] = raw[key] }
             OpenStruct.new(skeleton)
           end
         else

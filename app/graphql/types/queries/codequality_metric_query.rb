@@ -11,13 +11,7 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
-        label =
-          if label =~ URI::regexp
-            uri = Addressable::URI.parse(label)
-            label = "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
-          else
-            label
-          end
+        label = normalize_label(label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
@@ -26,14 +20,10 @@ module Types
 
           build_metrics_data(resp, Types::CodequalityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
-            pr_count = raw['pr_count'] || 0
-            skeleton['loc_frequency'] = raw['LOC_frequency']
-            skeleton['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
-            skeleton['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
-            skeleton['active_c2_contributor_count'] = raw['active_C2_contributor_count']
-            skeleton['code_merged_count'] = (raw['code_merge_ratio'].to_f * pr_count rescue 0)
-            skeleton['code_reviewed_count'] = (raw['code_review_ratio'].to_f * pr_count rescue 0)
-            skeleton['pr_issue_linked_count'] = (raw['pr_issue_linked_ratio'].to_f * pr_count rescue 0)
+            CodequalityMetric.fields_aliases.map { |alias_key, key| skeleton[alias_key] = raw[key] }
+            CodequalityMetric.calc_fields.map do |key, sources|
+              skeleton[key] = (raw[sources[0]].to_f * raw[sources[1]] rescue 0)
+            end
             OpenStruct.new(skeleton)
           end
         else
@@ -54,10 +44,9 @@ module Types
               skeleton[key] = data&.[](key)&.[]('value') || template[key]
             end
             pr_count = data&.[]('pr_count')&.[]('value').to_f
-            skeleton['grimoire_creation_date'] = DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
-            skeleton['code_merged_count'] = (data&.[]('code_merge_ratio')&.[]('value').to_f * pr_count rescue 0)
-            skeleton['code_reviewed_count'] = (data&.[]('code_review_ratio')&.[]('value').to_f * pr_count rescue 0)
-            skeleton['pr_issue_linked_count'] = (data&.[]('pr_issue_linked_ratio')&.[]('value').to_f * pr_count rescue 0)
+            CodequalityMetric.calc_fields.map do |key, sources|
+              skeleton[key] = (data&.[](sources[0])&.[]('value').to_f * pr_count rescue 0)
+            end
             OpenStruct.new(skeleton)
           end
         end

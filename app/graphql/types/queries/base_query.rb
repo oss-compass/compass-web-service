@@ -98,6 +98,15 @@ module Types
         [begin_date, end_date, interval]
       end
 
+      def normalize_label(label)
+        if label =~ URI::regexp
+          uri = Addressable::URI.parse(label)
+          "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+        else
+          label
+        end
+      end
+
       def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={}, suffixs=[])
         metric_fields =
           base_type.fields.select{|k, v| v.type.name.end_with?(avg_type)}.keys.map(&:underscore)
