@@ -11,4 +11,12 @@ class CodequalityMetric < BaseMetric
       'active_c1_pr_comments_contributor_count' => 'active_C1_pr_comments_contributor',
     }
   end
+
+  def self.calc_fields
+    {
+      'code_merged_count' => ['code_merge_ratio', 'pr_count'],
+      'code_reviewed_count' => ['code_review_ratio', 'pr_count'],
+      'pr_issue_linked_count' => ['pr_issue_linked_ratio', 'pr_count']
+    }
+  end
 end
