@@ -38,7 +38,9 @@ module Types
                 }
               )
           end
-          skeleton['grimoire_creation_date'] = DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
+          skeleton['grimoire_creation_date'] =
+            DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
+
           OpenStruct.new(skeleton)
         end
       end

@@ -15,6 +15,9 @@ module Types
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery
     field :metric_codequality, resolver: Queries::CodequalityMetricQuery
+    field :metric_group_activity, resolver: Queries::GroupActivityMetricQuery
+
+    # @deprecated, rename to metric_group_activity
     field :group_metric_activity, resolver: Queries::GroupActivityMetricQuery
 
     field :summary_activity, resolver: Queries::ActivitySummaryQuery

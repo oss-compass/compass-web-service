@@ -14,17 +14,16 @@ module Types
 
         if !interval
           resp = CodequalitySummary.query_by_date(begin_date, end_date)
-          build_metrics_data(
-            resp,
-            Types::CodequalitySummaryType,
-          ) do |skeleton, raw|
+          build_metrics_data(resp, Types::CodequalitySummaryType) do |skeleton, raw|
             stats = Types::MetricStatType.fields.keys
             fields = skeleton.keys
             fields.map do |key|
-              skeleton[key] = OpenStruct.new({ mean: raw["#{key}_mean"], median: raw["#{key}_median"] })
+              skeleton[key] =
+                OpenStruct.new({ mean: raw["#{key}_mean"], median: raw["#{key}_median"] })
             end
             CodequalityMetric.fields_aliases.map do |alias_key, key|
-              skeleton[alias_key] = OpenStruct.new({ mean: raw["#{key}_mean"], median: raw["#{key}_median"] })
+              skeleton[alias_key] =
+                OpenStruct.new({ mean: raw["#{key}_mean"], median: raw["#{key}_median"] })
             end
             CodequalityMetric.calc_fields.map do |key, sources|
               skeleton[key] =
@@ -35,7 +34,9 @@ module Types
                   }
                 )
             end
-            skeleton['grimoire_creation_date'] = raw['grimoire_creation_date']
+            skeleton['grimoire_creation_date'] =
+              DateTime.parse(raw['grimoire_creation_date']) rescue raw['grimoire_creation_date']
+
             OpenStruct.new(skeleton)
           end
         else
@@ -72,6 +73,7 @@ module Types
                 )
             end
             skeleton['grimoire_creation_date'] = DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
+
             OpenStruct.new(skeleton)
           end
         end

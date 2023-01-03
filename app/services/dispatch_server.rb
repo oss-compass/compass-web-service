@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DispatchServer
+  include Common
+
   class InvalidParams < StandardError; end
 
   def execute(opts={project_name: nil})
@@ -28,6 +30,8 @@ class DispatchServer
           job_logger.error "no such task with project_name: #{opts[:project_name]}"
           { status: :error, message: I18n.t('dispatch.project.no_exists', project_name: opts[:project_name]) }
         end
+        in { summary: true }
+        summary_execute
     else
       job_logger.error "invalid project_name: #{opts[:project_name]}"
       { status: :error, message: I18n.t('dispatch.project.invalid', project_name: opts[:project_name])
@@ -36,6 +40,28 @@ class DispatchServer
   end
 
   private
+
+  def summary_execute
+    payload = {
+      project: 'insight',
+      name: 'SUMMARY_V1',
+      payload: {
+        metrics_activity_summary: true,
+        metrics_codequality_summary: true,
+        metrics_community_summary: true,
+        metrics_group_activity_summary: true
+      }
+    }
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload.to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+  rescue => ex
+    job_logger.error("summary execute failed, error: #{ex.message}")
+  end
+
   def task_execute(task)
     case task.level
     when 'repo'

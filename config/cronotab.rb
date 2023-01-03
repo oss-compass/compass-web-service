@@ -11,4 +11,11 @@ class CalculateAllTaskJob
   end
 end
 
+class CalculateSummaryJob
+  def perform
+    DispatchServer.new.execute({summary: true})
+  end
+end
+
 Crono.perform(CalculateAllTaskJob).every 1.week, on: :sunday, at: "09:30"
+Crono.perform(CalculateSummaryJob).every 1.week, on: :saturday, at: "09:30"
