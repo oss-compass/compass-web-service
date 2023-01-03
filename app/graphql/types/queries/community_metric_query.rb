@@ -32,7 +32,8 @@ module Types
               key = k.to_s.underscore
               skeleton[key] = data&.[](key)&.[]('value') || template[key]
             end
-            skeleton['grimoire_creation_date'] = DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
+            skeleton['grimoire_creation_date'] =
+              DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
             OpenStruct.new(skeleton)
           end
         end

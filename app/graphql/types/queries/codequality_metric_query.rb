@@ -47,6 +47,8 @@ module Types
             CodequalityMetric.calc_fields.map do |key, sources|
               skeleton[key] = (data&.[](sources[0])&.[]('value').to_f * pr_count rescue 0)
             end
+            skeleton['grimoire_creation_date'] =
+              DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
             OpenStruct.new(skeleton)
           end
         end
