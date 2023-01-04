@@ -26,5 +26,7 @@ module Types
     field :summary_group_activity, resolver: Queries::GroupActivitySummaryQuery
 
     field :latest_metrics, resolver: Queries::LatestMetricsQuery
+    field :beta_metrics_index, resolver: Queries::BetaMetricsIndexQuery
+    field :beta_metric_overview, resolver: Queries::BetaMetricOverviewQuery
   end
 end

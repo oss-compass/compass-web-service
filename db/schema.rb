@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_18_031430) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -20,6 +20,20 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_18_031430) do
     t.datetime "updated_at", null: false
     t.index ["jti"], name: "index_allowlisted_jwts_on_jti", unique: true
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
+  end
+
+  create_table "beta_metrics", charset: "utf8mb4", force: :cascade do |t|
+    t.string "dimensionality"
+    t.string "metric"
+    t.string "desc"
+    t.string "status"
+    t.string "workflow"
+    t.string "project"
+    t.string "op_index"
+    t.string "op_metric"
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "crono_jobs", charset: "utf8mb4", force: :cascade do |t|

@@ -25,6 +25,44 @@ module Types
         end
       end
 
+      def build_beta_repo_scores(
+            beta_metric, label)
+        build_metrics_data(
+          beta_metric.op_metric.constantize
+            .query_repo_by_date(label, Date.today.end_of_day - 90.days, Date.today.end_of_day),
+          Types::BetaMetricScoreType) do |score, raw|
+          score['name'] = beta_metric.metric
+          score['score'] = raw[beta_metric.op_index]
+          score['label'] = raw['label']
+          score['level'] = raw['level']
+          score['grimoire_creation_date'] = raw['grimoire_creation_date']
+          OpenStruct.new(score)
+        end
+      end
+
+      def build_beta_repo(metric, resp)
+        hits = resp&.[]('hits')&.[]('hits')
+        skeletons = []
+        if hits.present?
+          hits.map do |data|
+            data = data['_source']
+            skeleton = Hash[Types::BetaRepoType.fields.keys.zip([])].symbolize_keys
+            if data.present?
+              skeleton['origin'] = data['origin']
+              skeleton['name'] = data['data']['name']
+              skeleton['language'] = data['data']['language']
+              skeleton['path'] = data['data']['full_name']
+              skeleton['backend'] = data['backend_name']
+              skeleton['created_at'] = data['data']['created_at']
+              skeleton['updated_at'] = data['data']['updated_at']
+              skeleton['beta_metric_scores'] = build_beta_repo_scores(metric, data['origin'])
+            end
+            skeletons << skeleton
+          end
+        end
+        skeletons
+      end
+
       def build_github_repo(resp)
         hits = resp&.[]('hits')&.[]('hits')
         skeletons = []
