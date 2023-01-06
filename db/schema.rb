@@ -36,6 +36,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "collections", charset: "utf8mb4", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "desc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_collections_on_title"
+  end
+
   create_table "crono_jobs", charset: "utf8mb4", force: :cascade do |t|
     t.string "job_id", null: false
     t.text "log", size: :long
@@ -46,6 +54,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
+  create_table "keywords", charset: "utf8mb4", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "desc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_keywords_on_title"
+  end
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
     t.string "task_id"
     t.string "remote_url"

@@ -31,6 +31,18 @@ en:
       invalid: "invaild configure yaml path: %{path}."
     diff_url:
       invalid: "invalid diff url."
+  collection:
+    create_success: 'collection created successfully.'
+    create_failed: 'failed to create collection, reason: %{reason}.'
+    delete_success: 'collection deleted successfully.'
+    delete_failed: 'failed to delete collection, reason: %{reason}.'
+  keyword:
+    create_success: 'keyword created successfully.'
+    create_failed: 'failed to create keyword, reason: %{reason}.'
+    delete_success: 'keyword deleted successfully.'
+    delete_failed: 'failed to delete keyword, reason: %{reason}.'
+  admin:
+    invalid_token: "invalid admin token."
   oauth:
     user:
       missing: "no `login` field."

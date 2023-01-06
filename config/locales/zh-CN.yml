@@ -31,6 +31,18 @@ zh-CN:
       invalid: "无效的YAML文件路径: %{path}"
     diff_url:
       invalid: "无效的Diff链接地址"
+  collection:
+    create_success: 'collection 创建成功'
+    create_failed: 'collection 创建失败, 原因： %{reason}'
+    delete_success: 'collection 删除成功'
+    delete_failed: 'collection 删除失败, 原因： %{reason}'
+  keyword:
+    create_success: 'keyword 创建成功'
+    create_failed: 'keyword创建失败, 原因： %{reason}'
+    delete_success: 'keyword 删除成功'
+    delete_failed: 'keyword 删除失败, 原因： %{reason}'
+  admin:
+    invalid_token: "无效的管理 Token"
   oauth:
     user:
       missing: "缺少用户 `login` 信息"

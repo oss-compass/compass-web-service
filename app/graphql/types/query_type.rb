@@ -25,5 +25,8 @@ module Types
     field :latest_metrics, resolver: Queries::LatestMetricsQuery
     field :beta_metrics_index, resolver: Queries::BetaMetricsIndexQuery
     field :beta_metric_overview, resolver: Queries::BetaMetricOverviewQuery
+
+    field :collection_overview, resolver: Queries::Collections::CollectionOverviewQuery
+    field :keyword_overview, resolver: Queries::Keywords::KeywordOverviewQuery
   end
 end
