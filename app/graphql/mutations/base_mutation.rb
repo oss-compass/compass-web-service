@@ -9,5 +9,14 @@ module Mutations
     field :errors, [Types::ErrorType],
           null: true,
           description: 'Errors encountered during execution of the mutation.'
+
+    def normalize_label(label)
+      if label =~ URI::regexp
+        uri = Addressable::URI.parse(label)
+        "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+      else
+        label
+      end
+    end
   end
 end

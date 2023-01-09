@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_08_115239) do
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -34,6 +34,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
     t.text "extra"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "collection_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.integer "keyword_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "keyword_id"], name: "index_collection_keyword_refs_on_collection_id_and_keyword_id", unique: true
+    t.index ["collection_id"], name: "index_collection_keyword_refs_on_collection_id"
+    t.index ["keyword_id"], name: "index_collection_keyword_refs_on_keyword_id"
   end
 
   create_table "collections", charset: "utf8mb4", force: :cascade do |t|
@@ -61,6 +71,27 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
     t.datetime "updated_at", null: false
     t.index ["title"], name: "index_keywords_on_title"
   end
+
+  create_table "project_collection_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "project_name", null: false
+    t.integer "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_project_collection_refs_on_collection_id"
+    t.index ["project_name", "collection_id"], name: "index_project_collection_refs_on_project_name_and_collection_id", unique: true
+    t.index ["project_name"], name: "index_project_collection_refs_on_project_name"
+  end
+
+  create_table "project_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "project_name", null: false
+    t.integer "keyword_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["keyword_id"], name: "index_project_keyword_refs_on_keyword_id"
+    t.index ["project_name", "keyword_id"], name: "index_project_keyword_refs_on_project_name_and_keyword_id", unique: true
+    t.index ["project_name"], name: "index_project_keyword_refs_on_project_name"
+  end
+
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
     t.string "task_id"
     t.string "remote_url"
@@ -73,6 +104,16 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_30_061348) do
     t.string "project_name"
     t.index ["project_name"], name: "index_project_tasks_on_project_name", unique: true
     t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
+  end
+
+  create_table "reports", charset: "utf8mb4", force: :cascade do |t|
+    t.text "content"
+    t.string "lang"
+    t.string "associated_id"
+    t.string "associated_type"
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|

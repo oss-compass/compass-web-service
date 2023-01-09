@@ -32,15 +32,27 @@ en:
     diff_url:
       invalid: "invalid diff url."
   collection:
+    invalid: 'invalid collection.'
+    no_such_keyword: 'this keyword is is not associated with this collection.'
+    no_such_project: 'this collection does not contain such repo or community.'
     create_success: 'collection created successfully.'
     create_failed: 'failed to create collection, reason: %{reason}.'
     delete_success: 'collection deleted successfully.'
     delete_failed: 'failed to delete collection, reason: %{reason}.'
+    append_keyword_failed: 'failed to append keyword to collection, reason: %{reason}.'
+    detach_keyword_failed: 'failed to detach keyword from collection, reason: %{reason}.'
+    append_project_failed: 'failed to append repo or community to collection, reason: %{reason}.'
+    detach_project_failed: 'failed to detach repo or community from collection, reason: %{reason}.'
   keyword:
+    invalid: 'invalid keyword.'
     create_success: 'keyword created successfully.'
     create_failed: 'failed to create keyword, reason: %{reason}.'
     delete_success: 'keyword deleted successfully.'
     delete_failed: 'failed to delete keyword, reason: %{reason}.'
+  project:
+    no_such_keyword: 'this keyword is is not associated with this repo or community.'
+    append_keyword_failed: 'failed to append keyword to repo or community, reason: %{reason}.'
+    detach_keyword_failed: 'failed to detach keyword from repo or community, reason: %{reason}.'
   admin:
     invalid_token: "invalid admin token."
   oauth:

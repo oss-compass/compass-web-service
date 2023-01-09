@@ -32,15 +32,27 @@ zh-CN:
     diff_url:
       invalid: "无效的Diff链接地址"
   collection:
+    invalid: '无效的collection'
+    no_such_keyword: 'collection 未关联该 keyword'
+    no_such_project: 'collection 未包含该 repo 或 community'
     create_success: 'collection 创建成功'
     create_failed: 'collection 创建失败, 原因： %{reason}'
     delete_success: 'collection 删除成功'
     delete_failed: 'collection 删除失败, 原因： %{reason}'
+    append_keyword_failed: 'collection 的 keyword 添加失败, 原因： %{reason}'
+    detach_keyword_failed: '取消 collection 与 该keyword的关联 失败, 原因： %{reason}'
+    append_project_failed: '添加 repo 或 community 到 collection 失败, 原因： %{reason}'
+    detach_project_failed: '从 collection 中移除 repo 或 community 失败, 原因： %{reason}'
   keyword:
+    invalid: '无效的keyword'
     create_success: 'keyword 创建成功'
     create_failed: 'keyword创建失败, 原因： %{reason}'
     delete_success: 'keyword 删除成功'
     delete_failed: 'keyword 删除失败, 原因： %{reason}'
+  project:
+    no_such_keyword: 'repo 或 community 未关联该 keyword'
+    append_keyword_failed: 'repo 或 community 的 keyword 添加失败, 原因： %{reason}'
+    detach_keyword_failed: '取消 repo 或 community 与 该keyword的关联 失败, 原因： %{reason}'
   admin:
     invalid_token: "无效的管理 Token"
   oauth:

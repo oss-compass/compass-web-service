@@ -14,4 +14,6 @@
 #
 class Keyword < ApplicationRecord
 
+  has_many :collections
+  has_many :project_keyword_refs
 end
