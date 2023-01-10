@@ -81,8 +81,13 @@ class AnalyzeServer
 
   def validate_project!
     url = "#{@repo_url}.git/info/refs?service=git-upload-pack"
-    response = Faraday.get(url)
-    raise ValidateError.new(I18n.t('analysis.validation.cannot_access')) unless response.status == 200
+    ret_code =
+      if @domain&.starts_with?('gitee.com')
+        Faraday.get(url).status
+      else
+        RestClient::Request.new(method: :get, url: url, proxy: PROXY).execute.code
+      end
+    raise ValidateError.new(I18n.t('analysis.validation.cannot_access')) unless ret_code == 200
   rescue => ex
     Rails.logger.error("This repository can not access, error: #{ex.message}")
     raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))
