@@ -18,4 +18,4 @@ class CalculateSummaryJob
 end
 
 Crono.perform(CalculateAllTaskJob).every 1.week, on: :sunday, at: "09:30"
-Crono.perform(CalculateSummaryJob).every 1.week, on: :saturday, at: "09:30"
+Crono.perform(CalculateSummaryJob).every 2.days, at: {hour: 15, min: 30}
