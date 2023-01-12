@@ -8,6 +8,7 @@ class AnalyzeServer
 
   class TaskExists < StandardError; end
   class ValidateError < StandardError; end
+  class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
     @raw = opts[:raw] || true
@@ -60,21 +61,23 @@ class AnalyzeServer
     end
   rescue TaskExists => ex
     { status: :progress, message: ex.message }
-  rescue ValidateError => ex
+  rescue ValidateFailed => ex
     { status: :error, message: ex.message }
+  rescue ValidateError => ex
+    { status: nil, message: ex.message }
   end
 
   private
 
   def validate!
-    raise ValidateError.new(I18n.t('analysis.validation.missing', field: 'repo_url')) unless @repo_url.present?
+    raise ValidateFailed.new(I18n.t('analysis.validation.missing', field: 'repo_url')) unless @repo_url.present?
 
     unless SUPPORT_DOMAINS.include?(@domain)
-      raise ValidateError.new(I18n.t('analysis.validation.not_support', source: @repo_url))
+      raise ValidateFailed.new(I18n.t('analysis.validation.not_support', source: @repo_url))
     end
 
     tasks = [@raw, @enrich, @activity, @community, @codequality, @group_activity]
-    raise ValidateError.new(I18n.t('analysis.validation.no_tasks')) unless tasks.any?
+    raise ValidateFailed.new(I18n.t('analysis.validation.no_tasks')) unless tasks.any?
 
     validate_project!
   end
@@ -87,7 +90,7 @@ class AnalyzeServer
       else
         RestClient::Request.new(method: :get, url: url, proxy: PROXY).execute.code
       end
-    raise ValidateError.new(I18n.t('analysis.validation.cannot_access')) unless ret_code == 200
+    raise ValidateFailed.new(I18n.t('analysis.validation.cannot_access')) unless ret_code == 200
   rescue => ex
     Rails.logger.error("This repository can not access, error: #{ex.message}")
     raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))

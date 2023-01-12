@@ -57,7 +57,19 @@ class YamlCheckWorker
       end
 
     if result.present? && result.is_a?(Hash)
-      notify_on_pr(user_agent, pr_number, quote_mark(YAML.dump(result)))
+      rets = result[:result]
+      if rets.present?
+        system_notifies = rets.select { |ret| ret.is_a?(Hash) && ret[:status].nil? }
+        normal_notifies = rets.select { |ret| ret.is_a?(Hash) && !ret[:status].nil? }
+        if system_notifies.present?
+          result[:result] = system_notifies
+          system_slack_notify(user_agent, pr_number, result)
+        end
+        if normal_notifies.present?
+          result[:result] = normal_notifies
+          notify_on_pr(user_agent, pr_number, quote_mark(YAML.dump(result)))
+        end
+      end
     end
   end
 
@@ -67,6 +79,6 @@ class YamlCheckWorker
     notify_method = gitee_agent?(agent) ? :gitee_notify_on_pr : :github_notify_on_pr
     self.send(notify_method, owner(agent), repo(agent), pr_number, message)
   rescue => ex
-    logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
+    Rails.logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
   end
 end

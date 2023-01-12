@@ -8,6 +8,7 @@ class AnalyzeGroupServer
 
   class TaskExists < StandardError; end
   class ValidateError < StandardError; end
+  class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
     @yaml_url = opts[:yaml_url]
@@ -60,21 +61,23 @@ class AnalyzeGroupServer
     end
   rescue TaskExists => ex
     { status: :progress, message: ex.message }
-  rescue ValidateError => ex
+  rescue ValidateFailed => ex
     { status: :error, message: ex.message }
+  rescue ValidateError => ex
+    { status: nil, message: ex.message }
   end
 
   private
 
   def validate!
-    raise ValidateError.new('`yaml_url` is required') unless @yaml_url.present? || @raw_yaml.present?
+    raise ValidateFailed.new('`yaml_url` is required') unless @yaml_url.present? || @raw_yaml.present?
 
     if @yaml_url.present? && !SUPPORT_DOMAINS.include?(@domain)
-      raise ValidateError.new("No support data source from: #{@yaml_url}")
+      raise ValidateFailed.new("No support data source from: #{@yaml_url}")
     end
 
     tasks = [@raw, @enrich, @activity, @community, @codequality, @group_activity]
-    raise ValidateError.new('No tasks enabled') unless tasks.any?
+    raise ValidateFailed.new('No tasks enabled') unless tasks.any?
 
     if @raw_yaml.present?
       @raw_yaml = YAML.load(@raw_yaml)
@@ -85,7 +88,7 @@ class AnalyzeGroupServer
     end
 
     @project_name = @raw_yaml['community_name']
-    raise ValidateError.new('Invalid community name') unless @project_name.present?
+    raise ValidateFailed.new('Invalid community name') unless @project_name.present?
 
   rescue => ex
     raise ValidateError.new(ex.message)

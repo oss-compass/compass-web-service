@@ -10,6 +10,7 @@ module Common
   GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
   GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
   ADMIN_WEB_TOKEN = ENV.fetch('ADMIN_WEB_TOKEN')
+  ADMIN_SLACK_WEBHOOK = ENV.fetch('ADMIN_SLACK_WEBBHOOK') { nil }
 
   Faraday.ignore_env_proxy = true
 
@@ -85,6 +86,26 @@ module Common
       end
     analyzer.new(params).execute(only_validate: only_validate).merge(path: path)
   rescue => ex
-    { status: false, message: ex.message, url: yaml_url }
+    { status: nil, message: ex.message, url: yaml_url }
+  end
+
+  def system_slack_notify(agent, pr_number, message)
+    if ADMIN_SLACK_WEBHOOK.present?
+      source = gitee_agent?(agent) ? GITEE_REPO : GITHUB_REPO
+      body = {
+        source: source,
+        pr_number: pr_number,
+        message: message
+      }
+      resp =
+        Faraday.post(
+          ADMIN_SLACK_WEBHOOK,
+          { text: YAML.dump(body) }.to_json,
+          { 'Content-Type' => 'application/json' }
+        )
+      Rails.logger.info(resp.body)
+    end
+  rescue => ex
+    Rails.logger.error("Failed to notify system slack, #{ex.message}")
   end
 end
