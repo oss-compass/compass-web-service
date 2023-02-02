@@ -31,6 +31,21 @@ class BaseMetric < BaseIndex
     end
   end
 
+  def self.recent(limit)
+    Rails.cache.fetch(
+      "#{self.name}-#{__method__}-#{limit}",
+      expires_in: CacheTTL
+    ) do
+      self
+        .page(1)
+        .per(limit)
+        .custom(collapse: { field: 'label.keyword' })
+        .sort(metadata__enriched_on: :desc)
+        .execute
+        .raw_response
+    end
+  end
+
   def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
     Rails.cache.fetch(
       "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}",

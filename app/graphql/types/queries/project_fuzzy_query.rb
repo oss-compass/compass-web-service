@@ -11,8 +11,8 @@ module Types
 
       def resolve(keyword: nil, level: nil)
         fields = ['label', 'level']
-        keyword.gsub!(/^https:\/\//, '')
-        keyword.gsub!(/^http:\/\//, '')
+        keyword = keyword.gsub(/^https:\/\//, '')
+        keyword = keyword.gsub(/^http:\/\//, '')
         resp =
           ActivityMetric
             .fuzzy_search(
@@ -28,7 +28,13 @@ module Types
         if list.present?
           list.flat_map do |items|
             items['inner_hits']['by_level']['hits']['hits'].map do |item|
-              candidate = OpenStruct.new(item['_source'].slice(*fields).merge({status: 'success'}))
+              metadata__enriched_on = item['_source']['metadata__enriched_on']
+              updated_at = DateTime.parse(metadata__enriched_on).strftime rescue metadata__enriched_on
+              candidate = OpenStruct.new(
+                item['_source']
+                  .slice(*fields)
+                  .merge({status: 'success', updated_at: updated_at})
+              )
               existed[candidate.label] = true
               candidates << candidate
             end
@@ -40,7 +46,7 @@ module Types
           level.present? ? can.where(level: level) : can
         end.limit(5).map do |item|
           unless existed[item.project_name]
-            candidates << OpenStruct.new({level: item.level, label: item.project_name, status: item.status})
+            candidates << OpenStruct.new({level: item.level, label: item.project_name, status: item.status, updated_at: item.updated_at})
           end
         end
 
