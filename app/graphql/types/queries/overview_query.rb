@@ -11,34 +11,8 @@ module Types
       type Types::OverviewType, null: false
       description 'Get overview data of compass'
 
-      GiteeFixedTemplates = [
-        'https://gitee.com/jfinal/jfinal',
-        'https://gitee.com/ld/J2Cache',
-        'https://gitee.com/mindspore/mindspore',
-        'https://gitee.com/smartide/SmartIDE',
-        'https://gitee.com/GreatSQL/GreatSQL',
-        'https://gitee.com/openeuler/kernel',
-        'https://gitee.com/openarkcompiler/OpenArkCompiler',
-        'https://gitee.com/Tencent/TencentOS-tiny',
-        'https://gitee.com/openeuler/A-Tune',
-        'https://gitee.com/openeuler/stratovirt',
-        'https://gitee.com/erzhongxmu/jeewms',
-        'https://gitee.com/mindspore/mindscience',
-        'https://gitee.com/vant-contrib/vant',
-        'https://gitee.com/LinkWeChat/link-wechat',
-        'https://gitee.com/sjqzhang/go-fastdfs',
-        'https://gitee.com/wfchat/im-server'
-      ]
-      GithubFixedTemplates = [
-        'https://github.com/livebook-dev/livebook',
-        'https://github.com/ruby/ruby',
-        'https://github.com/phoenixframework/phoenix',
-        'https://github.com/rails/rails',
-        'https://github.com/elixir-lang/elixir',
-        'https://github.com/phoenixframework/phoenix_live_view',
-        'https://github.com/gin-gonic/gin',
-        'https://github.com/grpc/grpc-go'
-      ]
+      GiteeFixedTemplates = []
+      GithubFixedTemplates = []
 
       def resolve
         results =

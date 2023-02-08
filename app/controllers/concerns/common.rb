@@ -9,6 +9,7 @@ module Common
   SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
   GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
   GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
+  META_REPO = ENV.fetch('WORKFLOW_REPO_NAME') { 'compass-projects-information' }
   ADMIN_WEB_TOKEN = ENV.fetch('ADMIN_WEB_TOKEN')
   ADMIN_SLACK_WEBHOOK = ENV.fetch('ADMIN_SLACK_WEBBHOOK') { nil }
 
