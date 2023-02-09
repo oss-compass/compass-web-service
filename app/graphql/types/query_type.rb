@@ -12,6 +12,7 @@ module Types
     field :recent_updates, resolver: Queries::ProjectRecentUpdatesQuery
     field :overview, resolver: Queries::OverviewQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
+    field :bulk_overview, resolver: Queries::BulkOverviewQuery
 
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery
@@ -27,6 +28,7 @@ module Types
     field :beta_metrics_index, resolver: Queries::BetaMetricsIndexQuery
     field :beta_metric_overview, resolver: Queries::BetaMetricOverviewQuery
 
+    field :collection_hottest, resolver: Queries::CollectionHottestQuery
     # field :collection_detail, resolver: Queries::Collections::CollectionDetailQuery
     # field :collection_overview, resolver: Queries::Collections::CollectionOverviewQuery
 

@@ -1,5 +1,6 @@
 en:
   hello: "Hello world."
+  too_long: "Your request params is too long, limit is %{long}"
   workflow:
     processed: "Your submission is being processed."
   dispatch:

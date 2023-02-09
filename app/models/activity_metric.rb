@@ -17,7 +17,7 @@ class ActivityMetric < BaseMetric
     snaphost =
       self
         .must(match: { 'label.keyword': label })
-        .range(:grimoire_creation_date, gte: Date.today.end_of_day - 2.month, lte: Date.today.end_of_day)
+        .range(:grimoire_creation_date, gte: Date.today.end_of_day - 1.month, lte: Date.today.end_of_day)
         .sort(grimoire_creation_date: :asc)
         .aggregate(
           {
@@ -46,12 +46,26 @@ class ActivityMetric < BaseMetric
         &.[]('arise')
         &.[]('buckets')
         &.last
+
+    level = label =~ URI::regexp ? 'repo' : 'community'
+
     if snaphost
       {
         label: label,
+        level: level,
         activity_score: snaphost['avg_activity']['value'],
         activity_delta: snaphost['the_delta']['value'],
         updated_at: DateTime.parse(snaphost['key_as_string'])
+      }
+    else
+      resp = query_label_one(label, level)
+      snaphost = resp&.[]('hits')&.[]('hits').first
+      {
+        label: label,
+        level: level,
+        activity_score: snaphost['_source']['activity_score'],
+        activity_delta: 0,
+        updated_at: DateTime.parse(snaphost['_source']['grimoire_creation_date'])
       }
     end
   end

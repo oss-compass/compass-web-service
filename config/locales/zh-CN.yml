@@ -1,5 +1,6 @@
 zh-CN:
   hello: "你好"
+  too_long: "请求参数过长，限制为：%{long}"
   workflow:
     processed: "您提交的请求正在处理中"
   dispatch:
