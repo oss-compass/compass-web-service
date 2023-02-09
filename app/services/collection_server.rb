@@ -8,7 +8,7 @@ class CollectionServer
     output, status = Open3.capture2('git pull', :chdir=>"#{Rails.root + META_REPO}")
 
     if !status.success?
-      job_logger.error "failed to git pull latest #{file}, error: #{output}"
+      job_logger.error "failed to git pull latest, error: #{output}"
       return
     end
 
