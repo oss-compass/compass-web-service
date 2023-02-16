@@ -13,6 +13,8 @@ module Types
         fields = ['label', 'level']
         keyword = keyword.gsub(/^https:\/\//, '')
         keyword = keyword.gsub(/^http:\/\//, '')
+        keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
+        return [] if keyword.chop.blank?
         resp =
           ActivityMetric
             .fuzzy_search(
