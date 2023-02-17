@@ -34,6 +34,7 @@ en:
       invalid: "invalid diff url."
   collection:
     invalid: 'invalid collection.'
+    welcome: 'Welcome to submit Collection changes. After the PR is reviewd and merged, the new Collection information will be automatically updated and displayed in the next period.'
     no_such_keyword: 'this keyword is is not associated with this collection.'
     no_such_project: 'this collection does not contain such repo or community.'
     create_success: 'collection created successfully.'

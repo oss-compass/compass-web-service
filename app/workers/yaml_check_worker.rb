@@ -32,11 +32,13 @@ class YamlCheckWorker
       if diff_url.present?
         items = []
         each_patch_with_action(diff_url) do |patch|
-          analyzer, is_org =
+          analyzer, is_org, is_collection =
                     if patch.file.start_with?(SINGLE_DIR)
-                      [AnalyzeServer, false]
+                      [AnalyzeServer, false, false]
                     elsif patch.file.start_with?(ORG_DIR)
-                      [AnalyzeGroupServer, true]
+                      [AnalyzeGroupServer, true, false]
+                    elsif patch.file.start_with?(COLLECTION_DIR)
+                      [CollectionServer, false, true]
                     end
           extra = {
             is_org: is_org,
@@ -44,8 +46,10 @@ class YamlCheckWorker
             only_validate: only_validate
           }
 
-          if analyzer
+          if analyzer && !is_collection
             items << analyze_or_submit_yaml_file(analyzer, user_agent, branch, patch.file, extra)
+          elsif is_collection
+            items << { status: true, message: I18n.t('collection.welcome') }
           else
             items << { status: false, message: I18n.t('yaml.path.invalid', path: patch.file) }
           end

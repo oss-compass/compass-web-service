@@ -34,6 +34,7 @@ zh-CN:
       invalid: "无效的Diff链接地址"
   collection:
     invalid: '无效的collection'
+    welcome: '欢迎提交 Collection 变更，在PR审查合并后，新的 Collection 信息会在下一个周期自动更新展示'
     no_such_keyword: 'collection 未关联该 keyword'
     no_such_project: 'collection 未包含该 repo 或 community'
     create_success: 'collection 创建成功'
