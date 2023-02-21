@@ -42,6 +42,8 @@ class PullServer
         repo['resource_types'] = { 'repo_urls' => @project_url }
         content_base64 = Base64.strict_encode64(YAML.dump(repo))
 
+        pr_desc = "#{pr_desc}, repository: #{@project_url}"
+
         if @domain_name == 'gitee'
           create_gitee_pull(branch, path, content_base64, message, pr_desc)
         else
@@ -67,6 +69,8 @@ class PullServer
           content_base64 = Base64.strict_encode64(YAML.dump(repo))
           path_content_base64_pairs[path] = content_base64
         end
+
+        pr_desc = "#{pr_desc}, repositories: #{@project_urls.join(',')}"
 
         if @domain_name == 'gitee'
           create_gitee_pull_with_multiple_files(branch, path_content_base64_pairs, message, pr_desc)
