@@ -17,7 +17,7 @@ class PullServer
 
     if @project_url.present?
       uri = Addressable::URI.parse(@project_url)
-      uri.path.sub!(/\.git$/, '')
+      uri.path = uri.path.sub(/\.git$/, '')
       @domain = uri&.normalized_host
       @domain_name = @domain.starts_with?('gitee.com') ? 'gitee' : 'github'
       @path = uri.path
@@ -63,7 +63,7 @@ class PullServer
         path_content_base64_pairs = {}
         @project_urls.each do |project_url|
           uri = Addressable::URI.parse(project_url)
-          uri.path.sub!(/\.git$/, '')
+          uri.path = uri.path.sub(/\.git$/, '')
           domain = uri&.normalized_host
           domain_name = domain.starts_with?('gitee.com') ? 'gitee' : 'github'
           path = "#{SINGLE_DIR}/#{domain_name}#{uri.path}.yml"
