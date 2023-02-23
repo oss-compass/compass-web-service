@@ -65,7 +65,7 @@ en:
       failed: "failed to create a ref, reason: %{reason}."
     file:
       failed: "failed to put the file, reason: %{reason}."
-      submitted: "alreadly sumbitted."
+      submitted: "alreadly submitted."
     pull:
       failed: "failed to create a pull request, reason: %{reason}."
     latest_sha:
