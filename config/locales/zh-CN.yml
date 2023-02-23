@@ -65,7 +65,7 @@ zh-CN:
       failed: "创建分支失败，原因：%{reason}"
     file:
       failed: "更新文件失败，原因：%{reason}"
-      sumbitted: "文件已经提交过了"
+      submitted: "文件已经提交过了"
     pull:
       failed: "创建PR失败，原因：%{reason}"
     latest_sha:
