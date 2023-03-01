@@ -15,6 +15,26 @@ module GithubApplication
     ).execute
   end
 
+  def github_is_fork_repo(url)
+    url = url.chomp('.git')
+    namespace, repository = url.match(/github.com\/(.*)\/(.*)$/).captures
+    resp =
+      RestClient::Request.new(
+        method: :get,
+        url: "#{GITHUB_API_ENDPOINT}/repos/#{namespace}/#{repository}",
+        headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+        proxy: PROXY
+      ).execute
+    case JSON.load(resp.body).symbolize_keys
+        in { fork: false }
+        { status: true }
+    else
+      { status: false, message: I18n.t('oauth.validate.fork') }
+    end
+  rescue => ex
+    { status: true, message: I18n.t('oauth.validate.retry', reason: ex.message) }
+  end
+
   def github_get_user_info(token)
     resp =
       RestClient::Request.new(

@@ -13,6 +13,24 @@ module GiteeApplication
       )
   end
 
+  def gitee_is_fork_repo(url)
+    url = url.chomp('.git')
+    namespace, repository = url.match(/gitee.com\/(.*)\/(.*)$/).captures
+    resp =
+      Faraday.get(
+        "#{GITEE_API_ENDPOINT}/repos/#{namespace}/#{repository}?access_token=#{GITEE_TOKEN}",
+        { 'Content-Type' => 'application/json' },
+      )
+    case JSON.load(resp.body).symbolize_keys
+        in { fork: false }
+        { status: true }
+    else
+      { status: false, message: I18n.t('oauth.validate.fork') }
+    end
+  rescue => ex
+    { status: true, message: I18n.t('oauth.validate.retry', reason: ex.message) }
+  end
+
   def gitee_get_user_info(token)
     resp =
       Faraday.get(

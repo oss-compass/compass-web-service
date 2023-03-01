@@ -63,6 +63,9 @@ en:
       failed: "failed to get the user info, reason: %{reason}."
     branch:
       failed: "failed to create a ref, reason: %{reason}."
+    validate:
+      fork: "the analysis of the fork repository is not currently supported, please submit the upstream repository."
+      retry: "failed to validate the repository, please try again."
     file:
       failed: "failed to put the file, reason: %{reason}."
       submitted: "alreadly submitted."

@@ -63,6 +63,9 @@ zh-CN:
       failed: "获取用户信息失败，原因：%{reason}"
     branch:
       failed: "创建分支失败，原因：%{reason}"
+    validate:
+      fork: "暂不支持fork仓库的分析，请提交上游仓库"
+      retry: "仓库有效性检测失败，请重试"
     file:
       failed: "更新文件失败，原因：%{reason}"
       submitted: "文件已经提交过了"

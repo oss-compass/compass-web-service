@@ -47,8 +47,14 @@ class PullServer
         pr_desc = "#{pr_desc}, repository: #{@project_url}"
 
         if @domain_name == 'gitee'
+          result = gitee_is_fork_repo(@project_url)
+          return result unless result[:status]
+
           create_gitee_pull(branch, path, content_base64, message, pr_desc)
         else
+          result = github_is_fork_repo(@project_url)
+          return result unless result[:status]
+
           create_github_pull(branch, path, content_base64, message, pr_desc)
         end
       elsif @project_urls.present?
@@ -66,6 +72,13 @@ class PullServer
           uri.path = uri.path.sub(/\.git$/, '')
           domain = uri&.normalized_host
           domain_name = domain.starts_with?('gitee.com') ? 'gitee' : 'github'
+          if domain_name == 'gitee'
+            result = gitee_is_fork_repo(@project_url)
+            return result unless result[:status]
+          else
+            result = github_is_fork_repo(@project_url)
+            return result unless result[:status]
+          end
           path = "#{SINGLE_DIR}/#{domain_name}#{uri.path}.yml"
           repo = {}
           repo['resource_types'] = { 'repo_urls' => uri.to_s }
