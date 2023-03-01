@@ -22,6 +22,7 @@ en:
   pull:
     too_many_repositories: "too many repositories, please create a pull request manually."
     invalid_level: "invalid resource type."
+    duplicate: "analysis report already exists, please visit follow url: %{url}"
     user:
       validation:
         pass: "user verification passed."

@@ -33,6 +33,9 @@ class PullServer
     result = validate
     return result unless result[:status]
 
+    result = duplicate_validate
+    return result unless result[:status]
+
     case @level
     when 'repo'
       pr_desc = "submitted by @#{@extra[:username]}"
@@ -147,6 +150,16 @@ class PullServer
     else
       { status: false, message: I18n.t('pull.user.invalid') }
     end
+  end
+
+  def duplicate_validate
+    if @project_url.present?
+      task = ProjectTask.find_by(remote_url: @project_url)
+      if task.present?
+        return { status: false, message: I18n.t('pull.duplicate', url: "#{HOST}/analyze?label=#{@project_url}&level=#{@level}")}
+      end
+    end
+    { status: true }
   end
 
   private

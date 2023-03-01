@@ -10,7 +10,7 @@ zh-CN:
   analysis:
     task:
       submitted: "任务已经提交"
-      pending: "改提交需求已进入分析服务队列，我们​​会在分析完成后在此 Pull Request 下同步的分析报告地址"
+      pending: "该提交需求已进入分析服务队列，我们​​会在分析完成后在此 Pull Request 下同步的分析报告地址"
       unsubmit: "任务提交失败；系统正忙，请稍后重试"
     validation:
       pass: "感谢您的提交，我们将在 Pull Request 合并后分析项目信息，您可以持续关注此 Pull Request 的进展"
@@ -22,6 +22,7 @@ zh-CN:
   pull:
     too_many_repositories: "提交的仓库数量过多，请手动创建PR"
     invalid_level: "无效的资源类型"
+    duplicate: "分析报告已存在，请访问以下地址查看： %{url}"
     user:
       validation:
         pass: "提交者校验成功"
