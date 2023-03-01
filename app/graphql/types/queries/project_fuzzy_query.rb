@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Types
   module Queries
     class ProjectFuzzyQuery < BaseQuery
@@ -11,6 +10,7 @@ module Types
 
       def resolve(keyword: nil, level: nil)
         fields = ['label', 'level']
+        prefix = keyword
         keyword = keyword.gsub(/^https:\/\//, '')
         keyword = keyword.gsub(/^http:\/\//, '')
         keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
@@ -24,21 +24,36 @@ module Types
               fields: fields,
               filters: { level: level }
             )
-        list = resp&.[]('hits')&.[]('hits')
+        fuzzy_list = resp&.[]('hits')&.[]('hits')
+
+        resp =
+          ActivityMetric
+            .prefix_search(
+              prefix,
+              'label.keyword',
+              'label.keyword',
+              fields: fields,
+              filters: { level: level }
+            )
+        prefix_list = resp&.[]('hits')&.[]('hits')
 
         existed, candidates = {}, []
-        if list.present?
-          list.flat_map do |items|
-            items['inner_hits']['by_level']['hits']['hits'].map do |item|
-              metadata__enriched_on = item['_source']['metadata__enriched_on']
-              updated_at = DateTime.parse(metadata__enriched_on).strftime rescue metadata__enriched_on
-              candidate = OpenStruct.new(
-                item['_source']
-                  .slice(*fields)
-                  .merge({status: 'success', updated_at: updated_at})
-              )
-              existed[candidate.label] = true
-              candidates << candidate
+        [fuzzy_list, prefix_list].each do |list|
+          if list.present?
+            list.flat_map do |items|
+              items['inner_hits']['by_level']['hits']['hits'].map do |item|
+                metadata__enriched_on = item['_source']['metadata__enriched_on']
+                updated_at = DateTime.parse(metadata__enriched_on).strftime rescue metadata__enriched_on
+                candidate = OpenStruct.new(
+                  item['_source']
+                    .slice(*fields)
+                    .merge({status: 'success', updated_at: updated_at})
+                )
+                unless existed[candidate.label]
+                  existed[candidate.label] = true
+                  candidates << candidate
+                end
+              end
             end
           end
         end

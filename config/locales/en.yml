@@ -59,7 +59,7 @@ en:
     invalid_token: "invalid admin token."
   oauth:
     user:
-      missing: "no `login` field."
+      missing: "authorization information has expired or not logged in, please re-login again."
       failed: "failed to get the user info, reason: %{reason}."
     branch:
       failed: "failed to create a ref, reason: %{reason}."

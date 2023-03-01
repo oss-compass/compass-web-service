@@ -83,6 +83,26 @@ class BaseMetric < BaseIndex
       .raw_response
   end
 
+  def self.prefix_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
+    base =
+      self
+        .must(prefix: { field => keyword })
+        .per(limit)
+    filters.map do |k, value|
+      if value.present?
+        base = base.where(k => value)
+      end
+    end
+
+    base
+      .custom(collapse: {
+                field: collapse ,
+                inner_hits: { name: "by_level", collapse: { field: "level.keyword" } } })
+      .source(fields)
+      .execute
+      .raw_response
+  end
+
   def self.exist_one?(field, value, keyword: true)
     self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value }).total_entries > 0
   end

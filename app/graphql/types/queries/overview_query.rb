@@ -112,8 +112,8 @@ module Types
               .map { |row| row['key'] }
           end.reduce(&:&)
 
-          gitee_repos = candidate_set.select {|row| row =~ /gitee\.com/ }.sample(12)
-          github_repos = candidate_set.select {|row| row =~ /github\.com/ }.sample(12)
+          gitee_repos = candidate_set.select {|row| row =~ /gitee\.com/ }.sample(18)
+          github_repos = candidate_set.select {|row| row =~ /github\.com/ }.sample(18)
           resp = GithubRepo.only(github_repos)
           resp2 = GiteeRepo.only(gitee_repos)
           skeleton['trends'] = build_github_repo(resp).map { |repo| OpenStruct.new(repo) }

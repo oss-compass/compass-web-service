@@ -59,7 +59,7 @@ zh-CN:
     invalid_token: "无效的管理 Token"
   oauth:
     user:
-      missing: "缺少用户 `login` 信息"
+      missing: "授权信息已经过期或未登录，请重新登录授权"
       failed: "获取用户信息失败，原因：%{reason}"
     branch:
       failed: "创建分支失败，原因：%{reason}"
