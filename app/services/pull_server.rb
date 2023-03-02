@@ -153,10 +153,15 @@ class PullServer
   end
 
   def duplicate_validate
-    if @project_url.present?
-      task = ProjectTask.find_by(remote_url: @project_url)
+    label = @project_url || @label
+    if label.present?
+      task = ProjectTask.find_by(project_name: label)
       if task.present?
-        return { status: false, message: I18n.t('pull.duplicate', url: "#{HOST}/analyze?label=#{@project_url}&level=#{@level}")}
+        return {
+          status: false,
+          message: I18n.t('pull.duplicate'),
+          report_url: "/analyze?label=#{label}&level=#{@level}"
+        }
       end
     end
     { status: true }

@@ -22,7 +22,7 @@ zh-CN:
   pull:
     too_many_repositories: "提交的仓库数量过多，请手动创建PR"
     invalid_level: "无效的资源类型"
-    duplicate: "分析报告已存在，请访问以下地址查看： %{url}"
+    duplicate: "分析报告已存在，请访问以下地址查看"
     user:
       validation:
         pass: "提交者校验成功"

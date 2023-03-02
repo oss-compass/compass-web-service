@@ -93,7 +93,8 @@ class ApplicationController < ActionController::Base
   end
 
   def set_locale
-    locale = params[:locale].to_s.strip.to_sym
+    locale = cookies[:locale].to_s.strip.to_sym
+    locale = 'zh-CN'.to_sym if locale == :zh
     I18n.locale =
       I18n.available_locales.include?(locale) ?
         locale :

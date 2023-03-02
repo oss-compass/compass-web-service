@@ -4,6 +4,7 @@ module Mutations
 
     field :status, String, null: false
     field :pr_url, String, null: true
+    field :report_url, String, null: true
 
     argument :username, String, required: true, description: 'gitee or github login/username'
     argument :project_name, String, required: true, description: 'project label for following repositories'
@@ -34,7 +35,7 @@ module Mutations
 
       case result
           in {status: :error}
-          return OpenStruct.new({ status: false, message: result[:message], pr_url: nil })
+          return OpenStruct.new({ status: false, message: result[:message], pr_url: nil, report_url: nil })
       else
         result =
           PullServer.new(
@@ -45,7 +46,7 @@ module Mutations
               extra: { username: username, origin: origin, token: token }
             }
           ).execute
-        OpenStruct.new(result.reverse_merge({pr_url: nil, message: '', status: true}))
+        OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
       end
     end
   end
