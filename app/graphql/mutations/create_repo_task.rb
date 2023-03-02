@@ -20,7 +20,7 @@ module Mutations
             extra: { username: username, origin: origin, token: token }
           }
         ).execute
-      OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, resport_url: nil }))
+      OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
     end
   end
 end
