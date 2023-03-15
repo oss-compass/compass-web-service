@@ -10,6 +10,8 @@ module Types
     field :code_quality_guarantee_updated_at, GraphQL::Types::ISO8601DateTime, description: 'latest score of code quality metric model updated_at'
     field :organizations_activity, Float, description: 'latest score of organizations activity metric model'
     field :organizations_activity_updated_at, GraphQL::Types::ISO8601DateTime, description: 'latest score of organizations activity metric model updated_at'
+    field :repos_count, Float, description: 'repositories count'
+    field :origin, String, description: 'repositories origin'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end

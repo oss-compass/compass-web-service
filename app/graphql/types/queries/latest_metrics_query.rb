@@ -10,6 +10,8 @@ module Types
 
       def resolve(label: nil, level: 'repo')
         label = normalize_label(label)
+        origin = extract_repos_source(label, level)
+        repos_count = extract_repos_count(label, level)
 
         result = {}
         [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
@@ -18,6 +20,8 @@ module Types
         keys = Types::LatestMetricsType.fields.keys
         skeleton = Hash[keys.zip([])].symbolize_keys
         skeleton = skeleton.merge(Hash[keys.map(&:underscore).zip([])].symbolize_keys)
+        skeleton['origin'] = origin
+        skeleton['repos_count'] = repos_count
         OpenStruct.new(skeleton.merge(result))
       end
 

@@ -1,6 +1,7 @@
 module Types
   module Queries
     class BaseQuery < GraphQL::Schema::Resolver
+      include Director
 
       SEVEN_DAYS = 7 * 24 * 60 * 60
       HALF_YEAR = 180 * 24 * 60 * 60
@@ -142,6 +143,35 @@ module Types
           "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
         else
           label
+        end
+      end
+
+      def extract_repos_count(label, level)
+        if level == 'community'
+          project = ProjectTask.find_by(project_name: label)
+          project ? director_repo_list(project.remote_url).length : 1
+        else
+          1
+        end
+      end
+
+      def extract_repos_source(label, level)
+        repo_list = [label]
+        if level == 'community'
+          project = ProjectTask.find_by(project_name: label)
+          repo_list = director_repo_list(project.remote_url)
+        end
+        github_count, gitee_count = 0,0
+        repo_list.each do |url|
+          gitee_count += 1 if url =~ /gitee\.com/
+          github_count += 1 if url =~ /github\.com/
+        end
+        if github_count > 0 && gitee_count == 0
+          'github'
+        elsif gitee_count > 0 && github_count == 0
+          'gitee'
+        else
+          'combine'
         end
       end
 
