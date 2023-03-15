@@ -60,13 +60,15 @@ class ActivityMetric < BaseMetric
     else
       resp = query_label_one(label, level)
       snaphost = resp&.[]('hits')&.[]('hits').first
-      {
-        label: label,
-        level: level,
-        activity_score: snaphost['_source']['activity_score'],
-        activity_delta: 0,
-        updated_at: DateTime.parse(snaphost['_source']['grimoire_creation_date'])
-      }
+      if snaphost
+        {
+          label: label,
+          level: level,
+          activity_score: snaphost['_source']['activity_score'],
+          activity_delta: 0,
+          updated_at: DateTime.parse(snaphost['_source']['grimoire_creation_date'])
+        }
+      end
     end
   end
 end

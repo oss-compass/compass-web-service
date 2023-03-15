@@ -38,6 +38,17 @@ class CollectionServer
                 job_logger.info "successfully generate snaphost of label #{label}."
               else
                 job_logger.info "metircs data of label `#{label}` is expired, please re-caculate"
+                if label =~ URI::regexp
+                  uri = Addressable::URI.parse(label)
+                  case AnalyzeServer.new(repo_url: "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}").execute(only_validate: false)
+                      in { status: 'pending' }
+                      job_logger.info "repo task #{label} dispatch successfully"
+                      in { status: :progress }
+                      job_logger.warn "last repo task #{label} is still processing"
+                      in { status: status, message: message }
+                      job_logger.error "repo task #{label} dispatch result: status #{status}, message #{message}"
+                  end
+                end
               end
             rescue => ex
               job_logger.error "failed to fetch label `#{label}`'s data, error: #{ex.message}"
