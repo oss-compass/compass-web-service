@@ -19,7 +19,7 @@ module Types
         skeleton = Hash[Types::CommunityOverviewType.fields.keys.zip([])].symbolize_keys
         result =
           if project
-            repo_list = director_repo_list(project.remote_url)
+            repo_list = director_repo_list(project&.remote_url)
             current_page = repo_list.in_groups_of(per)&.[]([page.to_i - 1, 0].max) || []
             gitee_repos = current_page.select {|row| row =~ /gitee\.com/ }
             github_repos = current_page.select {|row| row =~ /github\.com/ }

@@ -11,6 +11,7 @@ module Types
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
     field :recent_updates, resolver: Queries::ProjectRecentUpdatesQuery
     field :overview, resolver: Queries::OverviewQuery
+    field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
     field :bulk_overview, resolver: Queries::BulkOverviewQuery
 

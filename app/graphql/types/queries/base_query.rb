@@ -149,9 +149,19 @@ module Types
       def extract_repos_count(label, level)
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)
-          project ? director_repo_list(project.remote_url).length : 1
+          project ? director_repo_list(project&.remote_url).length : 1
         else
           1
+        end
+      end
+
+      def extract_name_and_full_path(label)
+        if label =~ /github\.com\/(.+)\/(.+)/
+          [$2, "#{$1}/#{$2}"]
+        elsif label =~ /gitee\.com\/(.+)\/(.+)/
+          [$2, "#{$1}/#{$2}"]
+        else
+          [label, label]
         end
       end
 
@@ -159,7 +169,7 @@ module Types
         repo_list = [label]
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)
-          repo_list = director_repo_list(project.remote_url)
+          repo_list = director_repo_list(project&.remote_url)
         end
         github_count, gitee_count = 0,0
         repo_list.each do |url|
