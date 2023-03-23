@@ -2,12 +2,12 @@
 
 module Types
   class TrendingType < Types::BaseObject
-    field :name, String
-    field :origin, String
-    field :label, String
-    field :level, String
-    field :full_path, String
-    field :activity_score, Float
-    field :repos_count, Float
+    field :name, String, description: 'repo or community name'
+    field :origin, String, description: 'repo or community origin (gitee/github/combine)'
+    field :label, String, description: 'repo or community label'
+    field :level, String, description: 'repo or community level'
+    field :full_path, String, description: 'repo or community full_path, if community: equals name'
+    field :activity_score, Float, description: 'repo or community latest activity avg'
+    field :repos_count, Float, description: 'repositories count'
   end
 end
