@@ -12,7 +12,7 @@ module Types
       def resolve(level: 'repo')
         return [] unless ['repo', 'community'].include?(level)
 
-        # Rails.cache.fetch("#{TRENDING_CACHE_KEY}-#{level}", expires_in: 2.hours) do
+        Rails.cache.fetch("#{TRENDING_CACHE_KEY}-#{level}", expires_in: 2.hours) do
           top_activity_for_trending =
             if level == 'community'
               fetch_top_activity_by_phrase(level, nil)
@@ -45,7 +45,7 @@ module Types
             end
           end
           trendings.uniq{ |row| row.label }.sample(10)
-        # end
+        end
       end
 
       def fetch_top_activity_by_phrase(level, domain, limit: 50)
