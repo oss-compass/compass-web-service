@@ -207,6 +207,12 @@ module Types
         }
       end
 
+      def filter_by_origin(list, origin, remove_suffix: true)
+        list
+          .select { |row| row =~ origin }
+          .map { |row| remove_suffix ? row.sub(/\.git/, '') : row }
+      end
+
       def build_metrics_data(resp, base_type, &builder)
         aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
         hits = resp&.[]('hits')&.[]('hits')
