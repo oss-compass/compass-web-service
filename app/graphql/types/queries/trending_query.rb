@@ -44,8 +44,8 @@ module Types
               )
             end
           end
-          trendings.uniq{ |row| row.label }.sample(10)
-        end
+          trendings.uniq{ |row| row.label }
+        end.sample(10)
       end
 
       def fetch_top_activity_by_phrase(level, domain, limit: 50)
