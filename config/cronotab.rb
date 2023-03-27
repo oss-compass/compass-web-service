@@ -23,6 +23,13 @@ class CalculateCollectionJob
   end
 end
 
+class ExportAllRepoInfoJob
+  def perform
+    ExportServer.new(ActivityMetric, 'label.keyword', 10000, 20).execute
+  end
+end
+
 Crono.perform(CalculateAllTaskJob).every 4.weeks, on: :sunday, at: "09:30"
 Crono.perform(CalculateSummaryJob).every 2.days, at: {hour: 15, min: 30}
 Crono.perform(CalculateCollectionJob).every 2.days, at: {hour: 7, min: 30}
+Crono.perform(ExportAllRepoInfoJob).every 4.days, at: {hour: 21, min: 30}
