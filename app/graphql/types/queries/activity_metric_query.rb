@@ -15,8 +15,10 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
+        limit = level == 'repo' ? 60 : 120
+
         if !interval
-          resp = ActivityMetric.query_repo_by_date(label, begin_date, end_date)
+          resp = ActivityMetric.query_repo_by_date(label, begin_date, end_date, page: 1, per: limit)
 
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)

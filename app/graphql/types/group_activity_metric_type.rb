@@ -8,6 +8,7 @@ module Types
     field :contributor_count, Float, description: 'number of active D1 developers in the past 90 days'
     field :org_count, Float, description: 'organization count'
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
+    field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end

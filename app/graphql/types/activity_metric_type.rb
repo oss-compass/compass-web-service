@@ -19,6 +19,7 @@ module Types
     field :recent_releases_count, Float, description: 'number of releases in the last 90 days'
     field :updated_since, Float, description: '(average of months from the last code commit to the time of statistics'
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
+    field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end

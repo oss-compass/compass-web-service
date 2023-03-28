@@ -24,6 +24,7 @@ module Types
     field :pr_commit_linked_count, Float, description: 'pr with commits linked count past 90 days'
     field :git_pr_linked_ratio, Float, description: 'ratio of pr_commit_linked_count and pr_commit_count'
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
+    field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end

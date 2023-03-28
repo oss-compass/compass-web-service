@@ -16,6 +16,7 @@ module Types
     field :pr_open_time_avg, Float, description: 'mean of pulls open time (days)'
     field :pr_open_time_mid, Float, description: 'middle of pulls open time (days)'
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
+    field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
   end
