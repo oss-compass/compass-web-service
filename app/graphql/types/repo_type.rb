@@ -4,6 +4,7 @@ module Types
   class RepoType < Types::BaseObject
     field :origin, String, null: false
     field :name, String
+    field :type, String
     field :language, String
     field :path, String
     field :backend, String
