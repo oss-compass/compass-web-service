@@ -82,6 +82,25 @@ class ExportServer
         end
       end
     end
+
+    # re-sort alphabetically
+    file_name = File.join(Rails.root, META_REPO, filename)
+    lines = []
+    header = ''
+    File.open(file_name, 'r') do |file|
+      header = file.gets
+
+      file.each_line do |line|
+        lines << line.chomp
+      end
+    end
+    sorted_lines = lines.sort
+    File.open(file_name, 'w') do |file|
+      file.puts header
+      sorted_lines.each do |line|
+        file.puts(line)
+      end
+    end
   rescue => ex
     job_logger.error "failed to export repo urls, error: #{ex.message}"
   end

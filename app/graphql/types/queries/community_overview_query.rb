@@ -24,7 +24,7 @@ module Types
           Rails.cache.fetch("#{OVERVIEW_CACHE_KEY}-#{label}-#{page}-#{per}-#{type}", expires_in: 2.hours) do
           if project
             repo_list = director_repo_list_with_type(project&.remote_url)
-            repo_list = repo_list.select { |repo| repo[:type] == type } if type
+            repo_list = repo_list.select { |repo| repo[:type] == type } if type && type.to_s != ''
             current_page = repo_list.in_groups_of(per)&.[]([page.to_i - 1, 0].max) || []
             current_page_with_type = current_page.group_by { |row| row.is_a?(Hash) ? row[:type] || UNKOWNN_TYPE : UNKOWNN_TYPE }
 
