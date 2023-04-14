@@ -20,7 +20,7 @@ class ExportServer
 
     chdir = "#{Rails.root + META_REPO}"
 
-    output, status = Open3.capture2('git pull', :chdir=>chdir)
+    output, status = Open3.capture2("https_proxy=#{PROXY} git pull", :chdir=>chdir)
 
     if !status.success?
       job_logger.error "failed to git pull latest, error: #{output}"
@@ -51,7 +51,7 @@ class ExportServer
       return
     end
 
-    output, status = Open3.capture2("git push origin main", :chdir=>chdir)
+    output, status = Open3.capture2("https_proxy=#{PROXY} git push origin main", :chdir=>chdir)
     if !status.success?
       job_logger.error "failed to git push, error: #{output}"
       return
