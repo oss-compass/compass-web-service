@@ -9,8 +9,7 @@ class GraphqlController < ApplicationController
     query = params[:query]
     operation_name = params[:operationName]
     context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
+      current_user: current_user,
     }
     result = CompassWebServiceSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -20,6 +19,16 @@ class GraphqlController < ApplicationController
   end
 
   private
+
+  def current_user
+    @current_user ||= fetch_current_user
+  end
+
+  def fetch_current_user
+    return unless request.headers['Authorization'].present?
+    token = request.headers['Authorization'].split(" ").last
+    warden.authenticate(auth_token: token)
+  end
 
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)
