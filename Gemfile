@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+git_source(:gitee) { |repo| "https://gitee.com/#{repo}.git" }
 
 ruby File.read('.ruby-version')
 
@@ -20,6 +21,8 @@ gem 'jbuilder'
 
 # Use Redis adapter to run Action Cable in production
 gem 'redis'
+
+gem 'redis-rails'
 
 # User RabbitMQ
 gem 'bunny'
@@ -82,6 +85,16 @@ gem 'rack-cors'
 gem 'devise'
 # a devise extension which uses JWT tokens for user authentication
 gem 'devise-jwt'
+
+# https://github.com/omniauth/omniauth
+gem 'omniauth'
+gem 'omniauth-gitee', gitee: 'oss-compass/omniauth-gitee', branch: 'master'
+# https://github.com/omniauth/omniauth-github
+gem 'omniauth-github'
+# https://github.com/cookpad/omniauth-rails_csrf_protection
+gem 'omniauth-rails_csrf_protection'
+# https://github.com/roidrage/redis-session-store
+gem 'redis-session-store'
 
 # Linting
 gem 'brakeman'

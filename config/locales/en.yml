@@ -74,3 +74,7 @@ en:
       failed: "failed to create a pull request, reason: %{reason}."
     latest_sha:
       failed: "failed to get latest sha, reason: %{reason}."
+  users:
+    login_failed: "login failed, reason: %{reason}"
+    require_login: "Operation after login is required"
+    require_bind: "The %{provider} account is not bound to the current user"

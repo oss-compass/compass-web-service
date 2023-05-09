@@ -16,6 +16,7 @@
 #  last_sign_in_ip        :string(255)
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
+#  anonymous              :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -27,5 +28,33 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :validatable, :trackable,
-         :jwt_authenticatable, jwt_revocation_strategy: self
+         :jwt_authenticatable, :omniauthable, jwt_revocation_strategy: self
+
+  has_many :login_binds, dependent: :destroy
+
+  ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
+
+  def self.from_omniauth(auth)
+    provider = auth.provider
+    uid = auth.uid
+    user = LoginBind.find_by(provider: provider, uid: uid)&.user
+    return user if user.present?
+
+    account = auth.info.name
+    nickname = auth.info.nickname
+    avatar_url = auth.info.image
+    provider_id = auth.provider == 'github' ? ENV['GITHUB_CLIENT_ID'] : ENV['GITEE_CLIENT_ID']
+
+    anonymous = auth.info.email.blank?
+    email = anonymous ? "#{provider}_#{uid}#{ANONYMOUS_EMAIL_SUFFIX}" : auth.info.email
+
+    user = User.find_by(email: email)
+    return user if user.present?
+
+    ActiveRecord::Base.transaction do
+      user = User.create!(email: email, password: Devise.friendly_token[0, 20], anonymous: anonymous)
+      user.login_binds.create!(provider: provider, uid: uid, account: account, nickname: nickname, avatar_url: avatar_url, provider_id: provider_id)
+    end
+    user
+  end
 end

@@ -20,16 +20,6 @@ class GraphqlController < ApplicationController
 
   private
 
-  def current_user
-    @current_user ||= fetch_current_user
-  end
-
-  def fetch_current_user
-    return unless request.headers['Authorization'].present?
-    token = request.headers['Authorization'].split(" ").last
-    warden.authenticate(auth_token: token)
-  end
-
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)
     case variables_param
