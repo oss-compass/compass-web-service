@@ -33,9 +33,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def redirect_url(error = nil)
     url = cookies['auth.callback-url'].presence || DEFAULT_REDIRECT_URL
     if error.present?
-      uri = URI.parse(url)
-      params = URI.decode_www_form(uri.query || '') << ['error', error]
-      uri.query = URI.encode_www_form(params)
+      uri = Addressable::URI.parse(url)
+      uri.query_values = uri.query_values.to_h.merge({ error: })
       url = uri.to_s
     end
     url
