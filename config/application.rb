@@ -27,8 +27,17 @@ module CompassWebService
       read_timeout:       0.2, # Defaults to 1 second
       write_timeout:      0.2, # Defaults to 1 second
       reconnect_attempts: 1,   # Defaults to 0
-      namespace: 'cache'
+      namespace: "#{ENV['DEFAULT_HOST']}:cache"
     }
+
+    config.session_store :redis_session_store,
+                         key: 'session',
+                         redis: {
+                           expire_after: 1.day, # cookie expiration
+                           ttl: 1.day, # Redis expiration, defaults to 'expire_after'
+                           key_prefix: "#{ENV['DEFAULT_HOST']}:session:",
+                           url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
+                         }
 
     # Set Sidekiq as the back-end for Active Job.
     config.active_job.queue_adapter = :sidekiq

@@ -74,3 +74,7 @@ zh-CN:
       failed: "创建PR失败，原因：%{reason}"
     latest_sha:
       failed: "获取最新提交信息失败，原因：%{reason}"
+  users:
+    login_failed: "登录失败，原因：%{reason}"
+    require_login: "需要登录后操作"
+    require_bind: "当前用户没有绑定 %{provider} 账号"
