@@ -3,7 +3,7 @@
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   # 默认重定向 URL
-  DEFAULT_REDIRECT_URL = '/auth/signin'
+  DEFAULT_REDIRECT_URL = '/submit-your-project'
 
   def callback
     auth = request.env["omniauth.auth"]
@@ -20,7 +20,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     error ||= exception.error if exception.respond_to?(:error)
     error ||= begin
                 type = (request.respond_to?(:get_header) ? request.get_header("omniauth.error.type") : request.env["omniauth.error.type"]).to_s
-                exception.respond_to?(:message) ? "#{type}: #{exception.message}" : type
+                (exception.respond_to?(:message) && exception.message != type) ? "#{type}: #{exception.message}" : type
               end
     error.to_s.humanize if error
   end
