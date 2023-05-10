@@ -15,10 +15,10 @@
 #
 # Indexes
 #
-#  index_login_binds_on_account           (account)
-#  index_login_binds_on_provider          (provider)
-#  index_login_binds_on_uid_and_provider  (uid,provider) UNIQUE
-#  index_login_binds_on_user_id           (user_id)
+#  index_login_binds_on_account              (account)
+#  index_login_binds_on_provider             (provider)
+#  index_login_binds_on_uid_and_provider_id  (uid,provider_id) UNIQUE
+#  index_login_binds_on_user_id              (user_id)
 #
 class LoginBind < ApplicationRecord
   belongs_to :user
