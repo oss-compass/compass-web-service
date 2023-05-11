@@ -6,6 +6,7 @@ module Types
     field :destroy_user, Boolean, description: 'Destroy user'
     field :modify_user, mutation: Mutations::ModifyUser, description: 'Modify user'
     field :user_unbind, mutation: Mutations::UserUnbind, description: 'User unbind'
+    field :send_email_verify, mutation: Mutations::SendEmailVerify, description: 'Send email verify'
 
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?

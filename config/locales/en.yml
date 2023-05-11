@@ -79,6 +79,9 @@ en:
     require_login: "Operation after login is required"
     require_bind: "The %{provider} account is not bound to the current user"
     already_banned: "%{provider}: %{nickname} Already bound to another account"
+    email_verified: "The email has been verified and passed"
+    email_change_limit: "The email address cannot be modified more than %{count} times within 24 hours"
+    send_email_limit: "Email verification cannot send more than %{count} times within 24 hours"
   user_mailer:
     email_verification:
       subject: "Verify your email address"
