@@ -4,6 +4,8 @@ module Types
     field :create_project_task, mutation: Mutations::CreateProjectTask, description: 'Submit a community analysis task'
     field :sign_out, Boolean, description: 'Sign out'
     field :destroy_user, Boolean, description: 'Destroy user'
+    field :modify_user, mutation: Mutations::ModifyUser, description: 'Modify user'
+    field :user_unbind, mutation: Mutations::UserUnbind, description: 'User unbind'
 
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?

@@ -76,6 +76,22 @@ class User < ApplicationRecord
     email_verification_sent_at < 72.hours.ago
   end
 
+  def bind_omniauth(auth)
+    provider = auth.provider
+    uid = auth.uid
+    user = LoginBind.find_by(provider: provider, uid: uid)&.user
+    return user if user.present?
+
+    login_binds.find_or_create_by(provider: provider) do |login_bind|
+      login_bind.provider_id = provider == 'github' ? ENV['GITHUB_CLIENT_ID'] : ENV['GITEE_CLIENT_ID']
+
+      login_bind.uid = uid
+      login_bind.account = auth.info.name
+      login_bind.nickname = auth.info.nickname
+      login_bind.avatar_url = auth.info.image
+    end
+  end
+
   def self.from_omniauth(auth)
     provider = auth.provider
     uid = auth.uid

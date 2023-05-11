@@ -78,6 +78,7 @@ zh-CN:
     login_failed: "登录失败，原因：%{reason}"
     require_login: "需要登录后操作"
     require_bind: "当前用户没有绑定 %{provider} 账号"
+    already_banned: "%{provider}: %{nickname} 已经绑定其他账号"
   user_mailer:
     email_verification:
       subject: "验证您的电子邮件地址"
