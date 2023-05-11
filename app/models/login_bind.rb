@@ -23,6 +23,8 @@
 class LoginBind < ApplicationRecord
   belongs_to :user
 
+  validates :uid, uniqueness: { scope: :provider_id }
+
   scope :current_host, -> { where(provider_id: [ENV['GITHUB_CLIENT_ID'], ENV['GITEE_CLIENT_ID']]) }
 
   class << self

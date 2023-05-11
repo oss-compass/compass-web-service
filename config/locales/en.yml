@@ -78,6 +78,7 @@ en:
     login_failed: "login failed, reason: %{reason}"
     require_login: "Operation after login is required"
     require_bind: "The %{provider} account is not bound to the current user"
+    already_banned: "%{provider}: %{nickname} Already bound to another account"
   user_mailer:
     email_verification:
       subject: "Verify your email address"
