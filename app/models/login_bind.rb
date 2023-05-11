@@ -29,7 +29,7 @@ class LoginBind < ApplicationRecord
 
   class << self
     def current_host_nickname(user, provider)
-      user.login_binds.current_host.find_by(provider: provider)&.nickname
+      user.login_binds.find_by(provider: provider)&.nickname
     end
   end
 end
