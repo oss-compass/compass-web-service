@@ -13,9 +13,5 @@ module Types
     def email
       object.anonymous? ? '' : object.email
     end
-
-    def login_binds
-      object.login_binds.current_host
-    end
   end
 end
