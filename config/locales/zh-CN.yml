@@ -79,6 +79,9 @@ zh-CN:
     require_login: "需要登录后操作"
     require_bind: "当前用户没有绑定 %{provider} 账号"
     already_banned: "%{provider}: %{nickname} 已经绑定其他账号"
+    email_verified: "邮箱已经验证通过"
+    email_change_limit: "邮箱24小时内修改不可以超过 %{count} 次"
+    send_email_limit: "邮箱验证24小时内发送不可以超过 %{count} 次"
   user_mailer:
     email_verification:
       subject: "验证您的电子邮件地址"
