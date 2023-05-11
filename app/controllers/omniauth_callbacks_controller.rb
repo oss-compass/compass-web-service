@@ -2,9 +2,8 @@
 
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
-  # 默认重定向 URL
   DEFAULT_REDIRECT_URL = '/submit-your-project'
-
+  ERROR_REDIRECT_URL = '/auth/signin'
   def callback
     auth = request.env["omniauth.auth"]
     user = User.from_omniauth(auth)
@@ -33,6 +32,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def redirect_url(error = nil)
     url = cookies['auth.callback-url'].presence || DEFAULT_REDIRECT_URL
     if error.present?
+      url = ERROR_REDIRECT_URL
       uri = Addressable::URI.parse(url)
       uri.query_values = uri.query_values.to_h.merge({ error: })
       url = uri.to_s

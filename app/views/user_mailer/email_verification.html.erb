@@ -1,0 +1,109 @@
+<% I18n.locale = @locale %>
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+  <meta charset="utf-8">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no, url=no">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings xmlns:o="urn:schemas-microsoft-com:office:office">
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <style>
+    td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
+  </style>
+  <![endif]-->
+  <title><%= I18n.t('user_mailer.confirm_email.subject') %></title>
+  <style>
+    img {
+      max-width: 100%;
+      vertical-align: middle;
+      line-height: 1;
+      border: 0
+    }
+    .my-12 {
+      margin-top: 48px;
+      margin-bottom: 48px
+    }
+    @media (max-width: 600px) {
+      .sm-px-4 {
+        padding-left: 16px !important;
+        padding-right: 16px !important
+      }
+      .sm-px-6 {
+        padding-left: 24px !important;
+        padding-right: 24px !important
+      }
+      .sm-leading-8 {
+        line-height: 32px !important
+      }
+    }
+  </style>
+</head>
+<body style="margin: 0; width: 100%; background-color: #fff; padding: 0; -webkit-font-smoothing: antialiased; word-break: break-word">
+
+<div role="article" aria-roledescription="email" aria-label="Confirm your email address" lang="en">
+  <div class="sm-px-4" style="background-color: #fff; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <table align="center" cellpadding="0" cellspacing="0" role="presentation">
+      <tr>
+        <td style="width: 600px; max-width: 100%">
+          <table style="margin-top: 192px; width: 100%" cellpadding="0" cellspacing="0" role="presentation">
+            <tr role="separator">
+              <td style="height: 48px; background-color: #000; text-align: center">
+                <img src="<%=@host %>/images/mail/logo.svg" width="47" style="max-width: 100%; vertical-align: middle; line-height: 1; border: 0;" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td class="sm-px-6" style="border-radius: 4px; border: 1px solid #cfcfcf; background-color: #fff; padding: 32px 40px; font-size: 16px; color: #334155; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)">
+                <h1 class="sm-leading-8" style="margin: 0 0 16px; font-size: 20px; font-weight: 600; color: #000">
+                  <%= I18n.t('user_mailer.confirm_email.verify_email') %>
+                </h1>
+                <p style="margin-bottom: 16px; line-height: 24px">
+                  <%= I18n.t('user_mailer.confirm_email.verify_email_text') %>
+                </p>
+                <div>
+                  <a href="<%=@verify_url %>" style="margin-bottom: 10px; display: inline-block; border-radius: 0px; background-color: #4338ca; padding: 16px 24px; font-size: 14px; font-weight: 600; line-height: 1; color: #f8fafc; text-decoration: none">
+                    <!--[if mso]>
+    <i style="mso-font-width: -100%; letter-spacing: 32px; mso-text-raise: 30px" hidden>&nbsp;</i>
+  <![endif]-->
+                    <span style="mso-text-raise: 16px">
+                  <%= I18n.t('user_mailer.confirm_email.verify_email') %>
+                </span>
+                    <!--[if mso]>
+    <i style="mso-font-width: -100%; letter-spacing: 32px;" hidden>&nbsp;</i>
+  <![endif]-->
+                  </a>
+                </div>
+                <p style="font-size: 14px;">
+                  <%= I18n.t('user_mailer.confirm_email.browser_text') %>
+                  <span href style="word-break: break-all"><%=@verify_url %></span>
+                </p>
+                <p style="margin-bottom: 0; font-size: 14px">
+                  <%= I18n.t('user_mailer.confirm_email.expire_text') %>
+                  <a href="<%=@host %>/settings/profile"><%= I18n.t('user_mailer.confirm_email.account_setting') %></a>to
+                  <%= I18n.t('user_mailer.confirm_email.expire_text_end') %>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left: 24px; padding-right: 24px; text-align: center; font-size: 12px; color: #475569">
+                <p style="margin: 16px 0">
+                  Copyright©2023 OSS Compass. All Rights Reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>
