@@ -27,6 +27,8 @@ class LoginBind < ApplicationRecord
 
   scope :current_host, -> { where(provider_id: [ENV['GITHUB_CLIENT_ID'], ENV['GITEE_CLIENT_ID']]) }
 
+  LOGIN_PROVIDER = [:github, :gitee]
+
   class << self
     def current_host_nickname(user, provider)
       user.login_binds.find_by(provider: provider)&.nickname
