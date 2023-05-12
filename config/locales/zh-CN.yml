@@ -82,6 +82,7 @@ zh-CN:
     email_verified: "邮箱已经验证通过"
     email_change_limit: "邮箱24小时内修改不可以超过 %{count} 次"
     send_email_limit: "邮箱验证24小时内发送不可以超过 %{count} 次"
+    keep_one_login_bind: "至少保留一个登录绑定"
   user_mailer:
     email_verification:
       subject: "验证您的电子邮件地址"
