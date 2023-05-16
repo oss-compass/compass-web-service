@@ -51,5 +51,11 @@ class GraphqlController < ApplicationController
   def sign_out(user)
     scope = Devise::Mapping.find_scope!(user)
     warden.logout(scope)
+    token = request.cookies['auth.token']
+    if token.present?
+      payload = Warden::JWTAuth::TokenDecoder.new.call(token)
+      User.revoke_jwt(payload, user)
+      cookies.delete('auth.token')
+    end
   end
 end

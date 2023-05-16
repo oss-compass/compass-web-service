@@ -318,7 +318,6 @@ Devise.setup do |config|
     ]
     jwt.revocation_requests = [
       ['DELETE', %r{^/users/logout$}],
-      ['POST', %r{^/api/graphql$}],
     ]
     jwt.expiration_time = 1.day.to_i
   end
