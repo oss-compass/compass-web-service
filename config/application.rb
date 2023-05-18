@@ -56,9 +56,10 @@ module CompassWebService
     config.action_mailer.smtp_settings = {
       address: ENV['MAIL_HOST'],
       port: ENV['MAIL_PORT'],
+      authentication: :login,
       user_name: ENV['MAIL_USER'],
       password: ENV['MAIL_PASSWORD'],
-      ssl: ENV['MAIL_SECURE'] == 'true',
+      enable_starttls_auto: ENV['MAIL_SECURE'] == 'true',
     }
 
 
