@@ -6,6 +6,65 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   ERROR_REDIRECT_URL = '/auth/signin'
   BIND_REDIRECT_URL = '/settings/profile'
 
+  def wechat_auth
+    if params[:state].present? || !is_wechat_browser? \
+      || session['openid'].present? || session[:user_id].present?
+      return redirect_to url_for(redirect_url(default_url: DEFAULT_REDIRECT_URL))
+
+    end
+    redirect_url = users_auth_wechat_callback_url(redirect_uri: OmniauthCallbacksController::BIND_REDIRECT_URL, user_token: params[:user_token])
+    state = SecureRandom.hex(24)
+    session["omniauth.state"] = state
+    sns_url = $wechat_client.authorize_url(redirect_url, ENV['WECHAT_SCOPE'], state)
+    redirect_to(sns_url, allow_other_host: true)
+  end
+
+  def wechat_callback
+    return redirect_to url_for(redirect_url(default_url: DEFAULT_REDIRECT_URL)) if params[:user_token].blank?
+    error = nil
+    default_url = BIND_REDIRECT_URL
+    begin
+      raise 'CSRF detected' if params[:state].to_s.empty? || params[:state] != session.delete("omniauth.state")
+
+      payload = Warden::JWTAuth::TokenDecoder.new.call(params[:user_token])
+      user = Warden::JWTAuth::PayloadUserHelper.find_user(payload)
+      raise 'User not found' if user.blank?
+      sign_in(user)
+      token = request.env['warden-jwt_auth.token']
+      cookies['auth.token'] = { value: token, expires: 1.day.from_now }
+
+      sns_info = $wechat_client.get_oauth_access_token(params[:code])
+      if sns_info.result['errcode'] != '40029'
+        session[:openid] = sns_info.result['openid']
+        auth = OmniAuth::AuthHash.new({
+                                        provider: 'wechat',
+                                        uid: sns_info.result['openid'],
+                                        info: {
+                                          name: sns_info.result['openid']
+                                        },
+                                        credentials: {
+                                          token: sns_info.result['access_token'],
+                                          refresh_token: sns_info.result['refresh_token'],
+                                          expires_at: Time.now.to_i + sns_info.result['expires_in'],
+                                          expires: true
+                                        },
+                                        extra: {
+                                          raw_info: sns_info.result
+                                        },
+                                        scope: ENV['WECHAT_SCOPE']
+                                      })
+
+        user.bind_omniauth(auth)
+      else
+        raise sns_info.result['errmsg']
+      end
+    rescue => e
+      Rails.logger.error "Wechat auth error: #{e.message}"
+      error = e.message
+    end
+    redirect_to url_for(redirect_url(error: error, default_url: default_url))
+  end
+
   def callback
     auth = request.env["omniauth.auth"]
     error = nil
@@ -48,5 +107,11 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       url = uri.to_s
     end
     url
+  end
+
+  private
+
+  def is_wechat_browser?
+    request.user_agent =~ /MicroMessenger/i
   end
 end

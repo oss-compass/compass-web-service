@@ -87,7 +87,7 @@ class User < ApplicationRecord
     return user if user.present?
 
     login_binds.find_or_create_by(provider: provider) do |login_bind|
-      login_bind.provider_id = provider == 'github' ? ENV['GITHUB_CLIENT_ID'] : ENV['GITEE_CLIENT_ID']
+      login_bind.provider_id = LoginBind::PROVIDER_ID_MAP[auth.provider]
 
       login_bind.uid = uid
       login_bind.account = auth.info.name
@@ -105,7 +105,7 @@ class User < ApplicationRecord
     account = auth.info.name
     nickname = auth.info.nickname
     avatar_url = auth.info.image
-    provider_id = auth.provider == 'github' ? ENV['GITHUB_CLIENT_ID'] : ENV['GITEE_CLIENT_ID']
+    provider_id = LoginBind::PROVIDER_ID_MAP[auth.provider]
 
     anonymous = auth.info.email.blank?
     email = anonymous ? gen_anonymous_email(provider, uid) : auth.info.email

@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     post '/users/login' => 'sessions#create', as: :user_session
     delete '/users/logout' => 'sessions#destroy', as: :destroy_user_session
     post '/users/signup' => 'registrations#create', as: :user_registration
+    get '/users/auth/wechat' => 'omniauth_callbacks#wechat_auth'
+    get '/users/auth/wechat/callback' => 'omniauth_callbacks#wechat_callback'
     get '/users/auth/:provider/callback' => 'omniauth_callbacks#callback', as: :user_omniauth_callback
   end
   resources :users, only: [] do
