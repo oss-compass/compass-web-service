@@ -2,6 +2,7 @@ module Common
   ORG_DIR = 'communities'
   SINGLE_DIR = 'single-repositories'
   COLLECTION_DIR = 'collections'
+  SUBSCRIPTION_QUEUE = 'subscriptions_update_v1'
   HOOK_PASS = ENV.fetch('HOOK_PASS') { 'password' }
   PROXY = ENV.fetch('PROXY') { 'http://localhost:10807' }
   HOST = ENV.fetch('DEFAULT_HOST') { 'http://localhost:3000' }
