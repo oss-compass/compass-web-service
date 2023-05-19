@@ -73,11 +73,16 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       error = I18n.t('users.already_banned', provider: auth.provider, nickname: auth.info.nickname) if login_bind.is_a?(User)
       default_url = BIND_REDIRECT_URL
     else
-      user = User.from_omniauth(auth)
-      sign_in(user)
-      token = request.env['warden-jwt_auth.token']
-      cookies['auth.token'] = { value: token, expires: 1.day.from_now }
-      default_url = DEFAULT_REDIRECT_URL
+      if auth.provider.to_sym.in?(LoginBind::LOGIN_PROVIDER)
+        user = User.from_omniauth(auth)
+        sign_in(user)
+        token = request.env['warden-jwt_auth.token']
+        cookies['auth.token'] = { value: token, expires: 1.day.from_now }
+        default_url = DEFAULT_REDIRECT_URL
+      else
+        default_url = ERROR_REDIRECT_URL
+        error = I18n.t('users.provider_not_supported', provider: auth.provider)
+      end
     end
     redirect_to url_for(redirect_url(error: error, default_url: default_url))
   end

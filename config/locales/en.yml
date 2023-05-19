@@ -83,6 +83,8 @@ en:
     email_change_limit: "The email address cannot be modified more than %{count} times within 24 hours"
     send_email_limit: "Email verification cannot send more than %{count} times within 24 hours"
     keep_one_login_bind: "Keep at least one login binding"
+    wechat_already_bind: "It has been bound to a wechat"
+    provider_not_supported: "Third-party application login currently supports only github and gitee"
   user_mailer:
     email_verification:
       subject: "Verify your email address"
