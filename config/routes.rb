@@ -44,5 +44,9 @@ Rails.application.routes.draw do
   post '/api/workflow', to: 'application#workflow', as: :workflow
   post '/api/hook', to: 'application#hook', as: :hook
 
+  get '/api/hook/we_chat/receive', to: 'we_chat#show'
+  post '/api/hook/we_chat/receive', to: 'we_chat#create'
+
+
   get '/(*path)', to: 'application#website', as: :website
 end

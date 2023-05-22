@@ -575,6 +575,13 @@ GEM
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    wechat (0.16.2)
+      activesupport (>= 6.0)
+      http (>= 1.0.4, < 6)
+      nokogiri (>= 1.6.0)
+      rexml
+      thor
+      zeitwerk (~> 2.4)
     weixin_authorize (1.6.4)
       carrierwave (>= 0.10.0)
       mini_magick (>= 3.7.0)
@@ -657,6 +664,7 @@ DEPENDENCIES
   tzinfo-data
   web-console
   webdrivers
+  wechat
   weixin_authorize
 
 RUBY VERSION

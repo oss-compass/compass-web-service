@@ -103,6 +103,8 @@ gem 'slack-ruby-client'
 gem 'redis-session-store'
 # https://github.com/lanrion/weixin_authorize
 gem 'weixin_authorize'
+# https://github.com/Eric-Guo/wechat
+gem 'wechat'
 # http://github.com/resque/redis-namespace
 gem 'redis-namespace'
 # Linting
