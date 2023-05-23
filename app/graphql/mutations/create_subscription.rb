@@ -49,7 +49,7 @@ module Mutations
 
       count = (level == 'repo' || task.blank?) ? 1 : director_repo_list_with_type(task.remote_url).length
 
-      subject = current_user.subjects.create(
+      subject = Subject.create(
         label: label,
         level: level,
         status: status,
