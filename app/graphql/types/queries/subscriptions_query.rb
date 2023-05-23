@@ -3,8 +3,8 @@ module Types
   module Queries
     class SubscriptionsQuery < BaseQuery
 
-      argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: true, description: 'repo or project level(repo/community)'
+      argument :label, String, required: false, description: 'repo or project label'
+      argument :level, String, required: false, description: 'repo or project level(repo/community)'
 
       def resolve(label: nil, level: nil)
         subscriptions = object.subscriptions.order(id: :desc)
