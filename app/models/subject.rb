@@ -19,4 +19,7 @@ class Subject < ApplicationRecord
   PENDING = 'pending'
   PROGRESS = 'progress'
   COMPLETE = 'complete'
+
+  has_many :subscriptions, dependent: :destroy
+
 end
