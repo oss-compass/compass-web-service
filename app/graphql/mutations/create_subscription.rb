@@ -6,6 +6,7 @@ module Mutations
     argument :level, String, required: true, description: 'repo or project level(repo/community)'
 
     def resolve(label: nil, level: nil)
+      current_user = context[:current_user]
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
 
       label = normalize_label(label)
