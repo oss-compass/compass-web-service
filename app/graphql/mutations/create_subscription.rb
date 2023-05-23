@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+module Mutations
+  class CreateSubscription < BaseMutation
+    field :status, String, null: false
+    argument :label, String, required: true, description: 'repo or project label'
+    argument :level, String, required: true, description: 'repo or project level(repo/community)'
+
+    def resolve(label: nil, level: nil)
+      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      label = normalize_label(label)
+
+      subject = Subject.find_by(label: label)
+      if subject.present?
+        subscription = current_user.subscriptions.find_by(subject: subject)
+        raise GraphQL::ExecutionError.new I18n.t('users.subscription_already_exist') if subscription.present?
+
+        current_user.subscriptions.create(subject: subject)
+        return { status: true }
+      end
+
+      subscription = current_user.subscriptions.joins(:subject).find_by(subjects: { label: label })
+      raise GraphQL::ExecutionError.new I18n.t('users.subscription_already_exist') if subscription.present?
+
+      task = ProjectTask.find_by(project_name: label)
+      task ||= ProjectTask.find_by(remote_url: label)
+      if task.blank?
+        existed_metrics = [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
+          result = metric.query_label_one(label, level)
+          hits = result&.[]('hits')&.[]('hits')
+          hits.present? ? hits.first['_source'] : nil
+        end
+        raise GraphQL::ExecutionError.new I18n.t('users.subject_not_exist') unless existed_metrics.any?
+
+        status_updated_at = existed_metrics.first['metadata__enriched_on']
+        status = Subject::COMPLETE
+      else
+        status_updated_at = task.updated_at
+        status = case task.status
+                 when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled
+                   Subject::COMPLETE
+                 when ProjectTask::Pending, ProjectTask::Progress
+                   Subject::PROGRESS
+                 else
+                   Subject::PENDING
+                 end
+      end
+
+      count = (level == 'repo' || task.blank?) ? 1 : director_repo_list_with_type(task.remote_url).length
+
+      subject = current_user.subjects.create(
+        label: label,
+        level: level,
+        status: status,
+        status_updated_at: status_updated_at,
+        count: count
+      )
+      current_user.subscriptions.create(subject: subject)
+      { status: true }
+    end
+  end
+end

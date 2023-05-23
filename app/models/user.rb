@@ -34,6 +34,7 @@ class User < ApplicationRecord
          :jwt_authenticatable, :omniauthable, jwt_revocation_strategy: self
 
   has_many :login_binds, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
 
   validate :check_email_change_limit
 

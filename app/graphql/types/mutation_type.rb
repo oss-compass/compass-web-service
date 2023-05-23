@@ -8,6 +8,8 @@ module Types
     field :user_unbind, mutation: Mutations::UserUnbind, description: 'User unbind'
     field :send_email_verify, mutation: Mutations::SendEmailVerify, description: 'Send email verify'
     field :bind_wechat_link, mutation: Mutations::BindWechatLink, description: 'Bind wechat link'
+    field :create_subscription, mutation: Mutations::CreateSubscription, description: 'Create subscription'
+    field :cancel_subscription, mutation: Mutations::CancelSubscription, description: 'Cancel subscription'
 
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?
