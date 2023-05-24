@@ -18,7 +18,7 @@ class SubscriptionsUpdateWorker
 
     subject = Subject.find_by(label: label)
     if subject.blank?
-      subject = Subject.create(
+      subject = Subject.create!(
         label: label,
         level: level,
         status: status,
@@ -26,7 +26,7 @@ class SubscriptionsUpdateWorker
         count: count
       )
     end
-    subject.status != status && subject.update(status: status)
+    subject.status != status && subject.update!(status: status)
 
     notification_flag = true
     case status
