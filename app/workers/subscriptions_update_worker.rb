@@ -32,7 +32,7 @@ class SubscriptionsUpdateWorker
     case status
     when Subject::COMPLETE
       notification_type = NotificationService::SUBSCRIPTION_UPDATE
-    when message['status'] == ProjectTask::Pending
+    when Subject::PENDING
       notification_type = NotificationService::SUBMISSION
     else
       notification_flag = false
