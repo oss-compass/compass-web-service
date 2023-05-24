@@ -28,12 +28,9 @@ class SubscriptionsUpdateWorker
     end
     subject.status != status && subject.update!(status: status)
 
-    notification_status = [Subject::COMPLETE, Subject::PENDING]
-
-    if notification_status.include?(status)
-      notification_type = status == Subject::COMPLETE ? NotificationService::SUBSCRIPTION_UPDATE : NotificationService::SUBMISSION
+    if subject.notify_status?
       subject.subscriptions.includes(:user).each do |subscription|
-        NotificationService.new(subscription.user, notification_type, { subject: subject }).execute
+        NotificationService.new(subscription.user, subject.notify_type, { subject: subject }).execute
       end
     end
 

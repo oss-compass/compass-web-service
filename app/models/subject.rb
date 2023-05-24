@@ -19,17 +19,37 @@ class Subject < ApplicationRecord
   PENDING = 'pending'
   PROGRESS = 'progress'
   COMPLETE = 'complete'
+  UNKNOWN = 'unknown'
+
+  NOTIFY_STATUS = [COMPLETE, PROGRESS]
 
   has_many :subscriptions, dependent: :destroy
 
   def self.task_status_converter(task_status)
     case task_status.to_s
     when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled
-      Subject::COMPLETE
-    when ProjectTask::Pending, ProjectTask::Progress
-      Subject::PROGRESS
+      COMPLETE
+    when ProjectTask::Progress
+      PROGRESS
+    when ProjectTask::Pending
+      PENDING
     else
-      Subject::PENDING
+      UNKNOWN
+    end
+  end
+
+  def notify_status?
+    NOTIFY_STATUS.include?(status)
+  end
+
+  def notify_type
+    case status
+    when COMPLETE
+      NotificationService::SUBSCRIPTION_UPDATE
+    when PENDING
+      NotificationService::SUBMISSION
+    else
+      nil
     end
   end
 end
