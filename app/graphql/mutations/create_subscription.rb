@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module Mutations
   class CreateSubscription < BaseMutation
+    include Director
+
     field :status, String, null: false
     argument :label, String, required: true, description: 'repo or project label'
     argument :level, String, required: true, description: 'repo or project level(repo/community)'
@@ -37,14 +39,7 @@ module Mutations
         status = Subject::COMPLETE
       else
         status_updated_at = task.updated_at
-        status = case task.status
-                 when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled
-                   Subject::COMPLETE
-                 when ProjectTask::Pending, ProjectTask::Progress
-                   Subject::PROGRESS
-                 else
-                   Subject::PENDING
-                 end
+        status = Subject.task_status_converter(task.status)
       end
 
       count = (level == 'repo' || task.blank?) ? 1 : director_repo_list_with_type(task.remote_url).length

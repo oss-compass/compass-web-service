@@ -17,4 +17,16 @@ class Subscription < ApplicationRecord
   belongs_to :subject
   delegate :label, :level, :status, :count, :status_updated_at, to: :subject, allow_nil: true
 
+  after_create :notify_subscription
+  after_destroy :notify_unsubscription
+
+  private
+
+  def notify_subscription
+    NotificationService.new(user, NotificationService::SUBSCRIPTION_CREATE, { subject: subject }).execute
+  end
+
+  def notify_unsubscription
+    NotificationService.new(user, NotificationService::SUBSCRIPTION_DELETE, { subject: subject }).execute
+  end
 end

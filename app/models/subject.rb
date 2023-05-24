@@ -22,4 +22,14 @@ class Subject < ApplicationRecord
 
   has_many :subscriptions, dependent: :destroy
 
+  def self.task_status_converter(task_status)
+    case task_status.to_s
+    when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled
+      Subject::COMPLETE
+    when ProjectTask::Pending, ProjectTask::Progress
+      Subject::PROGRESS
+    else
+      Subject::PENDING
+    end
+  end
 end
