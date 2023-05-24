@@ -17,7 +17,9 @@ class Subscription < ApplicationRecord
   belongs_to :subject
   delegate :label, :level, :status, :count, :status_updated_at, to: :subject, allow_nil: true
 
-  after_create :notify_subscription
+  attr_accessor :skip_notify_subscription
+
+  after_create :notify_subscription, unless: :skip_notify_subscription
   after_destroy :notify_unsubscription
 
   private

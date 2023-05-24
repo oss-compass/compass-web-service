@@ -30,7 +30,13 @@ module Mutations
           subject.count = 1
           subject.status_updated_at = Time.current
         end
-        current_user.subscriptions.find_or_create_by(subject_id: subject.id)
+        subscription = current_user.subscriptions.find_by(subject_id: subject.id)
+        if subscription.blank?
+          subscription = Subscription.new({ subject_id: subject.id, user_id: current_user.id })
+          subscription.skip_notify_subscription = true
+          subscription.save
+          NotificationService.new(current_user, NotificationService::SUBMISSION, { subject: subject }).execute
+        end
       end
 
       result =
