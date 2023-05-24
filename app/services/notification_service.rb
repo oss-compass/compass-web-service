@@ -32,7 +32,7 @@ class NotificationService
   end
 
   def explore_url
-    "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_ANALYZE_URL']}"
+    "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_EXPLORE_URL']}"
   end
 
   def subscription_url
