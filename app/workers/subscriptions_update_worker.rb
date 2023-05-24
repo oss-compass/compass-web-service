@@ -10,7 +10,7 @@ class SubscriptionsUpdateWorker
     puts "Receiving a deserialization message is:"
     puts message
 
-    status = Subject::task_status_converter(message['status'])
+    status = message['status']
     label = message['label']
     level = message['level']
     count = message['count']
