@@ -7,7 +7,9 @@ class AnalyzeGroupServer
   include Common
 
   class TaskExists < StandardError; end
+
   class ValidateError < StandardError; end
+
   class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
@@ -67,6 +69,32 @@ class AnalyzeGroupServer
     { status: nil, message: ex.message }
   end
 
+  def repos_count
+    count = 0
+    begin
+      @raw_yaml['resource_types'].each do |project_type, project_info|
+        suffix = nil
+        if %w[software-artifact-repositories software-artifact-resources software-artifact-projects].include?(project_type)
+          suffix = 'software-artifact'
+        end
+        if %w[governance-repositories governance-resources governance-projects].include?(project_type)
+          suffix = 'governance'
+        end
+        if suffix
+          urls = project_info['repo_urls']
+          urls.each do |project_url|
+            uri = Addressable::URI.parse(project_url)
+            next unless uri.scheme.present? && uri.host.present?
+            count += 1
+          end
+        end
+      end
+      count
+    rescue
+      count
+    end
+  end
+
   private
 
   def validate!
@@ -114,32 +142,6 @@ class AnalyzeGroupServer
         callback: @callback
       }
     }
-  end
-
-  def repos_count
-    count = 0
-    begin
-      @raw_yaml['resource_types'].each do |project_type, project_info|
-        suffix = nil
-        if ['software-artifact-repositories', 'software-artifact-resources', 'software-artifact-projects'].include?(project_type)
-          suffix = 'software-artifact'
-        end
-        if ['governance-repositories', 'governance-resources', 'governance-projects'].include?(project_type)
-          suffix = 'governance'
-        end
-        if suffix
-          urls = project_info['repo_urls']
-          urls.each do |project_url|
-            uri = Addressable::URI.parse(project_url)
-            next unless uri.scheme.present? && uri.host.present?
-            count += 1
-          end
-        end
-      end
-      count
-    rescue
-      count
-    end
   end
 
   def submit_task_status

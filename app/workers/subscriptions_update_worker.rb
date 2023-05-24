@@ -23,10 +23,10 @@ class SubscriptionsUpdateWorker
       subject.status_updated_at = status_updated_at
     end
 
-    notification_type =  message['status'] == ProjectTask::Pending ? NotificationService::SUBMISSION : NotificationService::SUBSCRIPTION_UPDATE
+    notification_type = message['status'] == ProjectTask::Pending ? NotificationService::SUBMISSION : NotificationService::SUBSCRIPTION_UPDATE
 
     subject.subscriptions.includes(:user).each do |subscription|
-      NotificationService.new(subscription.user,notification_type, {subject: subject}).execute
+      NotificationService.new(subscription.user, notification_type, { subject: subject }).execute
     end
 
     ack!
