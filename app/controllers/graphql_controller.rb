@@ -10,6 +10,7 @@ class GraphqlController < ApplicationController
     operation_name = params[:operationName]
     context = {
       current_user: current_user,
+      sign_out: method(:sign_out)
     }
     result = CompassWebServiceSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -45,5 +46,16 @@ class GraphqlController < ApplicationController
     logger.error e.backtrace.join("\n")
 
     render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+  end
+
+  def sign_out(user)
+    scope = Devise::Mapping.find_scope!(user)
+    warden.logout(scope)
+    token = request.cookies['auth.token']
+    if token.present?
+      payload = Warden::JWTAuth::TokenDecoder.new.call(token)
+      User.revoke_jwt(payload, user)
+      cookies.delete('auth.token')
+    end
   end
 end

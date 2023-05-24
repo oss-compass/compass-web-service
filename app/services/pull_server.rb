@@ -30,9 +30,6 @@ class PullServer
   end
 
   def update_workflow
-    result = validate
-    return result unless result[:status]
-
     result = duplicate_validate
     return result unless result[:status]
 
@@ -126,30 +123,6 @@ class PullServer
 
   def execute
     update_workflow
-  end
-
-  def validate
-    case @extra
-         in { username: username, origin: origin, token: token }
-         result =
-           if origin == 'gitee'
-             gitee_get_user_info(token)
-           else
-             github_get_user_info(token)
-           end
-         case result
-             in { status: true, username: real_login }
-             if username.downcase == real_login.downcase
-               { status: true, message: I18n.t('pull.user.validation.pass') }
-             else
-                { status: false, message: I18n.t('pull.user.validation.failed') }
-             end
-         else
-           { status: false, message: result[:message] }
-         end
-    else
-      { status: false, message: I18n.t('pull.user.invalid') }
-    end
   end
 
   def duplicate_validate

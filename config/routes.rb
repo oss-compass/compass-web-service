@@ -34,7 +34,11 @@ Rails.application.routes.draw do
     post '/users/signup' => 'registrations#create', as: :user_registration
     get '/users/auth/:provider/callback' => 'omniauth_callbacks#callback', as: :user_omniauth_callback
   end
-
+  resources :users, only: [] do
+    collection do
+      get 'verify_email/:token' => 'users#verify_email'
+    end
+  end
   post '/api/workflow', to: 'application#workflow', as: :workflow
   post '/api/hook', to: 'application#hook', as: :hook
 

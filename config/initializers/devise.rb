@@ -317,7 +317,7 @@ Devise.setup do |config|
       ['GET', /^\/users\/auth\/\w+\/callback$/],
     ]
     jwt.revocation_requests = [
-      ['DELETE', %r{^/users/logout$}]
+      ['DELETE', %r{^/users/logout$}],
     ]
     jwt.expiration_time = 1.day.to_i
   end

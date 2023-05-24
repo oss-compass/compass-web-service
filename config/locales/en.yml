@@ -78,3 +78,19 @@ en:
     login_failed: "login failed, reason: %{reason}"
     require_login: "Operation after login is required"
     require_bind: "The %{provider} account is not bound to the current user"
+    already_banned: "%{provider}: %{nickname} Already bound to another account"
+    email_verified: "The email has been verified and passed"
+    email_change_limit: "The email address cannot be modified more than %{count} times within 24 hours"
+    send_email_limit: "Email verification cannot send more than %{count} times within 24 hours"
+    keep_one_login_bind: "Keep at least one login binding"
+  user_mailer:
+    email_verification:
+      subject: "Verify your email address"
+    confirm_email:
+      subject: "Confirm your email address"
+      verify_email: "Verify your email address"
+      verify_email_text: "Please click on the button below to verify your email address. This is required to confirm ownership of the email address."
+      browser_text: "If that doesn't work, try copying and pasting the following URL into your browser:"
+      expire_text: "This link is valid for 72 hour only. If it has expired, log in to your"
+      account_setting: "account settings"
+      expire_text_end: "request a new link."

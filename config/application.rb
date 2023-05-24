@@ -40,7 +40,7 @@ module CompassWebService
                          }
 
     # Set Sidekiq as the back-end for Active Job.
-    config.active_job.queue_adapter = :sidekiq
+    config.active_job.queue_adapter = :sneakers
 
     # Mount Action Cable outside the main process or domain.
     config.action_cable.mount_path = nil
@@ -52,6 +52,18 @@ module CompassWebService
     config.action_cable.allowed_request_origins = origins
 
     config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address: ENV['MAIL_HOST'],
+      port: ENV['MAIL_PORT'],
+      authentication: :login,
+      user_name: ENV['MAIL_USER'],
+      password: ENV['MAIL_PASSWORD'],
+      enable_starttls_auto: ENV['MAIL_SECURE'] == 'true',
+    }
+
+
+
 
     config.i18n.available_locales = %i[en zh-CN]
     config.i18n.default_locale = :en
