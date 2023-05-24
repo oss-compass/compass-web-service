@@ -25,10 +25,14 @@ class Subscription < ApplicationRecord
   private
 
   def notify_subscription
-    NotificationService.new(user, NotificationService::SUBSCRIPTION_CREATE, { subject: subject }).execute
+    Rails.cache.fetch("notify_subscription:#{user_id}:#{subject_id}", expires_in: 1.days) do
+      NotificationService.new(user, NotificationService::SUBSCRIPTION_CREATE, { subject: subject }).execute
+    end
   end
 
   def notify_unsubscription
-    NotificationService.new(user, NotificationService::SUBSCRIPTION_DELETE, { subject: subject }).execute
+    Rails.cache.fetch("notify_unsubscription:#{user_id}:#{subject_id}", expires_in: 1.days) do
+      NotificationService.new(user, NotificationService::SUBSCRIPTION_DELETE, { subject: subject }).execute
+    end
   end
 end
