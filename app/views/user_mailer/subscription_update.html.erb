@@ -17,7 +17,10 @@
     </xml>
   </noscript>
   <style>
-    td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
+    td, th, div, p, a, h1, h2, h3, h4, h5, h6 {
+      font-family: "Segoe UI", sans-serif;
+      mso-line-height-rule: exactly;
+    }
   </style>
   <![endif]-->
   <title><%= "OSS Compass project subscription update - #{@subject_name}" %></title>
@@ -28,19 +31,23 @@
       line-height: 1;
       border: 0
     }
+
     .my-12 {
       margin-top: 48px;
       margin-bottom: 48px
     }
+
     @media (max-width: 600px) {
       .sm-px-4 {
         padding-left: 16px !important;
         padding-right: 16px !important
       }
+
       .sm-px-6 {
         padding-left: 24px !important;
         padding-right: 24px !important
       }
+
       .sm-leading-8 {
         line-height: 32px !important
       }
@@ -56,38 +63,41 @@
         <td style="width: 600px; max-width: 100%">
           <table style="margin-top: 16px; width: 100%" cellpadding="0" cellspacing="0" role="presentation">
             <tr role="separator">
-              <td style="height: 48px; background-color: #000; text-align: center">
+              <td style="height: 48px; background-color: #000; text-align: center;">
                 <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDdweCIgaGVpZ2h0PSIzMnB4IiB2aWV3Qm94PSIwIDAgNDcgMzIiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+bG9nbzwvdGl0bGU+CiAgICA8ZyBpZD0iQWNjb3VudCIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IkVtYWlsIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtNjk2LjAwMDAwMCwgLTE5Ny4wMDAwMDApIiBmaWxsPSIjRkZGRkZGIj4KICAgICAgICAgICAgPGcgaWQ9Ikdyb3VwLTYiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQyMC4wMDAwMDAsIDE4OS4wMDAwMDApIj4KICAgICAgICAgICAgICAgIDxnIGlkPSJHcm91cC1Db3B5IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyNzcuMDAwMDAwLCA4LjAwMDAwMCkiPgogICAgICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0yMi41LDI3LjgzMDAyOTEgQzI1LjAyMTM5ODksMjcuODMwMDI5MSAyNy4zNTc2NDUxLDI3LjAzMzUwNzEgMjkuMjczMDk3NywyNS42NzcyMzAyIEwzMi4yNDMzODI2LDI4LjY2MTQwNjkgQzI5LjY0NTI0OTUsMzAuNjgzMjI3OSAyNi40MDc3OTkyLDMxLjkxNTQzNTQgMjIuODg3NDY3MywzMS45OTk4OTAzIEwyMi4xMTI1MzI3LDMxLjk5OTg5MDMgQzE4LjU4NDIxNywzMS45MTUyNDM5IDE1LjM0MDA2NzYsMzAuNjc3NjMzIDEyLjczODk1MDQsMjguNjQ3NjM4OSBMMTUuNzA3ODY4NSwyNS42NjM3MjQ2IEMxNy42MjY4Njg4LDI3LjAyODIxNzggMTkuOTcwMjQzMywyNy44MzAwMjkxIDIyLjUsMjcuODMwMDI5MSBaIE0zNS4xNzQsNi4xMDQgTDQ1LjA0NjI3NjgsMTUuOTc1NTg5MiBMMzUuMTQ4LDI1Ljg3MyBMMzIuMjE3LDIyLjkyOCBMMzkuMTU3NDkxNSwxNS45ODk3MzE0IEwzMi4yMyw5LjA2MiBMMzUuMTc0LDYuMTA0IFogTTkuODA5LDYuMTIgTDEyLjc1NCw5LjA3OCBMNS44NDI1MDg0OSwxNS45ODk3MzE0IEwxMi43NjYsMjIuOTEyIEw5LjgzNSwyNS44NTcgTC0wLjA0NjI3Njc4ODYsMTUuOTc1NTg5MiBMOS44MDksNi4xMiBaIE0yMi41LDAgQzI2LjE3MDMxMzEsMCAyOS41NTA2NDIsMS4yNDc1MDQgMzIuMjQzOTA3NCwzLjM0MzUzNDkgTDI5LjI3MzIxNjMsNi4zMjczODcyIEMyNy4zNTc3NDE1LDQuOTcxMDU5MTkgMjUuMDIxNDUwOSw0LjE3NDUwNDM2IDIyLjUsNC4xNzQ1MDQzNiBDMTkuOTcwMzM5Niw0LjE3NDUwNDM2IDE3LjYyNzA0NzMsNC45NzYyNTQ1NCAxNS43MDgwODc3LDYuMzQwNjUyOTUgTDEyLjczODY0MzMsMy4zNTcxMzQxOCBDMTUuNDM0NzUwOCwxLjI1MjkwMTA3IDE4LjgyMTc1NiwwIDIyLjUsMCBaIiBpZD0iQ29tYmluZWQtU2hhcGUiPjwvcGF0aD4KICAgICAgICAgICAgICAgICAgICA8cGF0aCBkPSJNMjIuNSw3LjA5NjY1NzQyIEMyNy4zOTUwMzY5LDcuMDk2NjU3NDIgMzEuMzYzMjQ4NCwxMS4wODM4MzQ1IDMxLjM2MzI0ODQsMTYuMDAyMjY2NyBDMzEuMzYzMjQ4NCwyMC45MjA2OTg5IDI3LjM5NTAzNjksMjQuOTA3ODc2IDIyLjUsMjQuOTA3ODc2IEMxNy42MDQ5NjMxLDI0LjkwNzg3NiAxMy42MzY3NTE2LDIwLjkyMDY5ODkgMTMuNjM2NzUxNiwxNi4wMDIyNjY3IEMxMy42MzY3NTE2LDExLjA4MzgzNDUgMTcuNjA0OTYzMSw3LjA5NjY1NzQyIDIyLjUsNy4wOTY2NTc0MiBaIE0yMi40MTU0OTgyLDcuNjQ4MTY3OSBMMTkuMjAyMDEyLDE1LjcyMDI3OTcgQzE5LjEzMTIyNTUsMTUuODk4MDkxNiAxOS4xMzEyMjU1LDE2LjA5NjI2MTYgMTkuMjAyMDEyLDE2LjI3NDA3MzYgTDE5LjIwMjAxMiwxNi4yNzQwNzM2IEwyMi40MTU0OTgyLDI0LjM0NjE4NTQgTDI1LjYyODk4NDQsMTYuMjc0MDczNiBDMjUuNjk5NzcwOSwxNi4wOTYyNjE2IDI1LjY5OTc3MDksMTUuODk4MDkxNiAyNS42Mjg5ODQ0LDE1LjcyMDI3OTcgTDI1LjYyODk4NDQsMTUuNzIwMjc5NyBMMjIuNDE1NDk4Miw3LjY0ODE2NzkgWiBNMjIuNDE1NDk4MiwxNS4yNTUwNDI1IEMyMi44MjgzMjE5LDE1LjI1NTA0MjUgMjMuMTYyOTgxNiwxNS41ODczMDczIDIzLjE2Mjk4MTYsMTUuOTk3MTc2NiBDMjMuMTYyOTgxNiwxNi40MDcwNDYgMjIuODI4MzIxOSwxNi43MzkzMTA3IDIyLjQxNTQ5ODIsMTYuNzM5MzEwNyBDMjIuMDAyNjc0NSwxNi43MzkzMTA3IDIxLjY2ODAxNDgsMTYuNDA3MDQ2IDIxLjY2ODAxNDgsMTUuOTk3MTc2NiBDMjEuNjY4MDE0OCwxNS41ODczMDczIDIyLjAwMjY3NDUsMTUuMjU1MDQyNSAyMi40MTU0OTgyLDE1LjI1NTA0MjUgWiIgaWQ9IkNvbWJpbmVkLVNoYXBlIj48L3BhdGg+CiAgICAgICAgICAgICAgICA8L2c+CiAgICAgICAgICAgIDwvZz4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==" width="47" style="max-width: 100%; vertical-align: middle; line-height: 1; border: 0;" alt="">
               </td>
             </tr>
             <tr>
-              <td class="sm-px-6" style="border-radius: 4px; border: 1px solid #cfcfcf; background-color: #fff; padding: 32px 40px; font-size: 16px; color: #334155; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)">
-                <h4>OSS Compass project subscription update - <%= @subject_name %></h4>
+              <td class="sm-px-6" style="border: 1px solid #cfcfcf; background-color: #fff; padding: 32px 40px; font-size: 16px; color: #334155; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)">
+                <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">
+                  OSS Compass project subscription update - <%= @subject_name %>
+                </h1>
                 <div>
                   Hi <%= @user.name %>,
                 </div>
-                <div>
-                  There has been a recent update to the project report you subscribed to on OSS Compass, as follows:
+
+                <div style="padding-top: 20px;">
+                  &nbsp;&nbsp;&nbsp;&nbsp; There has been a recent update to the project report you subscribed to on OSS Compass, as
+                  follows:
                 </div>
 
-                <div>
-                  <ul>
-                    <li><a href="<%= @subject_url %>"><%= @subject_name %></a></li>
-                  </ul>
+                <ul>
+                  <li><a href="<%= @subject_url %>"><%= @subject_name %></a></li>
+                </ul>
+
+                <div style="padding-top: 20px;">
+                  Click the link above to view the updated report. If you need to manage your OSS Compass project
+                  subscription, <a href="<%= @subscription_url %>">please click here</a>.
                 </div>
 
-                <div>
-                  Click the link above to view the updated report. If you need to manage your OSS Compass project subscription, <a href="<%= @subscription_url %>">please click here</a>.
+                <div style="padding-top: 20px;">
+                  For more insight into open source software project analysis, visit:
+                  <a href="<%= @explore_url %>">OSS Compass</a>.
                 </div>
 
-                <div>
-                  For more insight into open source software project analysis, visit: <a href="<%= @explore_url %>">OSS Compass</a>.
-                </div>
-
-                <div>
+                <div style="text-align: right;padding-top: 20px;">
                   <a href="<%= @about_url %>">OSS Compass team</a>
                 </div>
-
               </td>
             </tr>
             <tr>
