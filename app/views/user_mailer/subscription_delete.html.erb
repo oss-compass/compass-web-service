@@ -72,15 +72,17 @@
                 <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">OSS
                   Compass project unsubscription
                 </h1>
+
                 <div>
                   Hi <%= @user.name %>,
                 </div>
+
                 <div style="padding-top: 20px;">
                   &nbsp;&nbsp;&nbsp;&nbsp; You have successfully unsubscribed the analysis report for the
                   <a href="<%= @subject_url %>"><%= @subject_name %></a>.
                 </div>
 
-                <div style="padding-top: 20px;font-size: 14px;">
+                <div style="padding-top: 20px;">
                   Click the link above to view the updated report. If you need to manage your OSS Compass project
                   subscription, <a href="<%= @subscription_url %>">please click here</a>.
                 </div>

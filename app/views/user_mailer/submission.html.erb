@@ -65,14 +65,16 @@
                 <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">
                   OSS Compass project subscription
                 </h1>
+
                 <div>
                   Hi <%= @user.name %>,
                 </div>
+
                 <div style="padding-top: 20px;">
                   &nbsp;&nbsp;&nbsp;&nbsp; You analysis request for <a href="<%= @subject_url %>"><%= @subject_name %></a> on the OSS Compass website has been submitted and subscribed. We will synchronize the relevant report information with you after we confirm and complete the analysis.
                 </div>
 
-                <div style="padding-top: 20px;font-size: 14px;">
+                <div style="padding-top: 20px;">
                   Click the link above to view the updated report. If you need to manage your OSS Compass project subscription, <a href="<%= @subscription_url %>">please click here</a>.
                 </div>
 
