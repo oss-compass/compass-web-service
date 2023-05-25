@@ -17,7 +17,13 @@ class WeChatController < ApplicationController
   end
 
   on :event, with: 'scan' do |request|
-    request.reply.text scan_bind(params, request)
+    response_data = scan_bind(params, request)
+
+    if response_data.is_a?(String)
+      request.reply.text response_data
+    else
+      $wechat_client.send_template_msg(params[:openid], ENV['NOTIFICATION_WECHAT_ACCOUNT_BIND_TEMPLATE_ID'], '', '', response_data)
+    end
   end
 
   def scan_bind(params, request)
@@ -43,7 +49,10 @@ class WeChatController < ApplicationController
     login_bind = user.bind_omniauth(auth)
     return "该微信已经绑定 #{user.name}" if login_bind.is_a?(User)
 
-    "#{user.name} 绑定成功！"
+    {
+      keyword1: { value: "#{user.name} (绑定成功)" },
+      keyword2: { value: Time.current.in_time_zone("Beijing").strftime("%Y-%m-%d %H:%M:%S") }
+    }
   end
 end
 

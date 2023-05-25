@@ -11,28 +11,30 @@ class Notification::Wechat < NotificationService
   end
 
   def subscription_update
-    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_SUBSCRIPTION_UPDATE_TEMPLATE_ID'], subject_url, '', {
-      name: { value: subject_name },
-      date: { value: params[:subject].status_updated_at.strftime("%Y-%m-%d") },
-      status: { value: params[:subject].status }
+    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_REPORT_GENERATE_TEMPLATE_ID'], subject_url, '', {
+      keyword1: { value: "#{subject_name} 报告更新" },
+      keyword2: { value: params[:subject].status_updated_at.in_time_zone("Beijing").strftime("%Y-%m-%d %H:%M:%S") },
     })
   end
 
   def submission
-    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_SUBMISSION_TEMPLATE_ID'], subscription_url, '', {
-      name: { value: subject_name },
+    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_REPORT_GENERATE_TEMPLATE_ID'], subscription_url, '', {
+      keyword1: { value: "#{subject_name} 报告提交" },
+      keyword2: { value: params[:subject].status_updated_at.in_time_zone("Beijing").strftime("%Y-%m-%d %H:%M:%S") },
     })
   end
 
   def subscription_create
-    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_SUBSCRIPTION_CREATE_TEMPLATE_ID'], subject_url, '', {
-      name: { value: subject_name },
+    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_REPORT_SUBSCRIPTION_UPDATE_TEMPLATE_ID'], subject_url, '', {
+      keyword1: { value: '项目订阅' },
+      keyword2: { value: "新增 #{subject_name} 报告更新订阅" },
     })
   end
 
   def subscription_delete
-    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_SUBSCRIPTION_DELETE_TEMPLATE_ID'], subscription_url, '', {
-      name: { value: subject_name },
+    $wechat_client.send_template_msg(login_bind.uid, ENV['NOTIFICATION_WECHAT_REPORT_SUBSCRIPTION_UPDATE_TEMPLATE_ID'], subscription_url, '', {
+      keyword1: { value: '项目订阅' },
+      keyword2: { value: "取消 #{subject_name} 报告更新订阅" },
     })
   end
 
