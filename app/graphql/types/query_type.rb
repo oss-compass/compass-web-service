@@ -37,5 +37,6 @@ module Types
 
     # field :keyword_overview, resolver: Queries::Keywords::KeywordOverviewQuery
     field :current_user, resolver: Queries::CurrentUserQuery
+    field :subject_subscription_count, resolver: Queries::SubjectSubscriptionCountQuery
   end
 end

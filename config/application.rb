@@ -51,7 +51,8 @@ module CompassWebService
     origins.map! { |url| /#{url}/ }
     config.action_cable.allowed_request_origins = origins
 
-    config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+    default_host = URI.parse(ENV['DEFAULT_HOST'])
+    config.action_mailer.default_url_options = { host: default_host.host, protocol: default_host.scheme }
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address: ENV['MAIL_HOST'],

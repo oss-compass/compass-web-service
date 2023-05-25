@@ -93,9 +93,20 @@ gem 'omniauth-gitee', gitee: 'oss-compass/omniauth-gitee', branch: 'master'
 gem 'omniauth-github'
 # https://github.com/cookpad/omniauth-rails_csrf_protection
 gem 'omniauth-rails_csrf_protection'
+# https://github.com/omniauth/omniauth_openid_connect
+gem 'omniauth_openid_connect'
+# https://github.com/nevermin/omniauth-wechat-oauth2
+gem 'omniauth-wechat-oauth2'
+# https://github.com/slack-ruby/slack-ruby-client
+gem 'slack-ruby-client'
 # https://github.com/roidrage/redis-session-store
 gem 'redis-session-store'
-
+# https://github.com/lanrion/weixin_authorize
+gem 'weixin_authorize'
+# https://github.com/Eric-Guo/wechat
+gem 'wechat'
+# http://github.com/resque/redis-namespace
+gem 'redis-namespace'
 # Linting
 gem 'brakeman'
 gem 'bundler-audit'

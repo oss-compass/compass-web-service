@@ -7,7 +7,9 @@ class AnalyzeServer
   include Common
 
   class TaskExists < StandardError; end
+
   class ValidateError < StandardError; end
+
   class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
@@ -140,6 +142,9 @@ class AnalyzeServer
         project_name: @project_name
       )
     end
+
+    message = { label: @repo_url, level: 'repo', status: Subject.task_status_converter(task_resp['status']), count: 1, status_updated_at: DateTime.now.iso8601 }
+    RabbitMQ.publish(SUBSCRIPTION_QUEUE, message)
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
     Rails.logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")

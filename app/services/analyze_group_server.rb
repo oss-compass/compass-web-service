@@ -7,7 +7,9 @@ class AnalyzeGroupServer
   include Common
 
   class TaskExists < StandardError; end
+
   class ValidateError < StandardError; end
+
   class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
@@ -65,6 +67,32 @@ class AnalyzeGroupServer
     { status: :error, message: ex.message }
   rescue ValidateError => ex
     { status: nil, message: ex.message }
+  end
+
+  def repos_count
+    count = 0
+    begin
+      @raw_yaml['resource_types'].each do |project_type, project_info|
+        suffix = nil
+        if %w[software-artifact-repositories software-artifact-resources software-artifact-projects].include?(project_type)
+          suffix = 'software-artifact'
+        end
+        if %w[governance-repositories governance-resources governance-projects].include?(project_type)
+          suffix = 'governance'
+        end
+        if suffix
+          urls = project_info['repo_urls']
+          urls.each do |project_url|
+            uri = Addressable::URI.parse(project_url)
+            next unless uri.scheme.present? && uri.host.present?
+            count += 1
+          end
+        end
+      end
+      count
+    rescue
+      count
+    end
   end
 
   private
@@ -139,6 +167,11 @@ class AnalyzeGroupServer
         project_name: @project_name
       )
     end
+    count = repos_count
+
+    message = { label: @project_name, level: @level, status: Subject.task_status_converter(task_resp['status']), count: count, status_updated_at: DateTime.now.iso8601 }
+
+    RabbitMQ.publish(SUBSCRIPTION_QUEUE, message) if count > 0
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
     Rails.logger.error("Failed to sumbit task #{@yaml_url} status, #{ex.message}")

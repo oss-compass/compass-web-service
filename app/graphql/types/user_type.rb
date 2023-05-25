@@ -6,6 +6,7 @@ module Types
     field :name, String, null: false
     field :email, String, null: false
     field :email_verified, Boolean, null: false
+    field :subscriptions, Types::Subscription::SubscriptionPageType, null: false, resolver: Queries::SubscriptionsQuery
 
     def email_verified
       object.email_verified?

@@ -21,25 +21,41 @@ module Mutations
       yaml_template['community_name'] = project_name
       yaml_template['resource_types'] =
         project_types.reduce({}) do |result, type|
-        result.merge({type.type => { 'repo_urls' => type.repo_list }})
-      end
+          result.merge({ type.type => { 'repo_urls' => type.repo_list } })
+        end
       raw_yaml = YAML.dump(yaml_template)
-      result =
-        AnalyzeGroupServer.new(
-          {
-            raw_yaml: raw_yaml,
-            raw: true,
-            enrich: true,
-            activity: true,
-            community: true,
-            codequality: true,
-            group_activity: true,
-          }
-        ).execute(only_validate: true)
+
+      analyze_group_server = AnalyzeGroupServer.new(
+        {
+          raw_yaml: raw_yaml,
+          raw: true,
+          enrich: true,
+          activity: true,
+          community: true,
+          codequality: true,
+          group_activity: true,
+        }
+      )
+
+      subject = Subject.find_or_create_by(label: project_name) do |subject|
+        subject.level = 'community'
+        subject.status = Subject::PENDING
+        subject.count = analyze_group_server.repos_count
+        subject.status_updated_at = Time.current
+      end
+
+      subscription = current_user.subscriptions.find_by(subject_id: subject.id)
+      if subscription.blank?
+        subscription = Subscription.new({ subject_id: subject.id, user_id: current_user.id })
+        subscription.skip_notify_subscription = true
+        subscription.save
+        NotificationService.new(current_user, NotificationService::SUBMISSION, { subject: subject }).execute
+      end
+      result = analyze_group_server.execute(only_validate: true)
 
       case result
-          in {status: :error}
-          return OpenStruct.new({ status: false, message: result[:message], pr_url: nil, report_url: nil })
+      in { status: :error }
+        return OpenStruct.new({ status: false, message: result[:message], pr_url: nil, report_url: nil })
       else
         result =
           PullServer.new(

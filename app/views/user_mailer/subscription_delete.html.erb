@@ -17,10 +17,13 @@
     </xml>
   </noscript>
   <style>
-    td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
+    td, th, div, p, a, h1, h2, h3, h4, h5, h6 {
+      font-family: "Segoe UI", sans-serif;
+      mso-line-height-rule: exactly;
+    }
   </style>
   <![endif]-->
-  <title><%= I18n.t('user_mailer.confirm_email.subject') %></title>
+  <title>OSS Compass project unsubscription</title>
   <style>
     img {
       max-width: 100%;
@@ -28,19 +31,23 @@
       line-height: 1;
       border: 0
     }
+
     .my-12 {
       margin-top: 48px;
       margin-bottom: 48px
     }
+
     @media (max-width: 600px) {
       .sm-px-4 {
         padding-left: 16px !important;
         padding-right: 16px !important
       }
+
       .sm-px-6 {
         padding-left: 24px !important;
         padding-right: 24px !important
       }
+
       .sm-leading-8 {
         line-height: 32px !important
       }
@@ -62,38 +69,33 @@
             </tr>
             <tr>
               <td class="sm-px-6" style="border: 1px solid #cfcfcf; background-color: #fff; padding: 32px 40px; font-size: 16px; color: #334155; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)">
-                <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">
-                  <%= I18n.t('user_mailer.confirm_email.verify_email') %>
+                <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">OSS
+                  Compass project unsubscription
                 </h1>
 
-                <p style="margin-bottom: 16px; line-height: 24px">
-                  <%= I18n.t('user_mailer.confirm_email.verify_email_text') %>
-                </p>
-
-                <div style="min-height: 46px;">
-                  <a href="<%=@verify_url %>" style="margin-bottom: 10px; display: inline-block; border-radius: 0px; background-color: #4338ca; padding: 16px 24px; font-size: 14px; font-weight: 600; line-height: 1; color: #f8fafc; text-decoration: none">
-                    <!--[if mso]>
-    <i style="mso-font-width: -100%; letter-spacing: 32px; mso-text-raise: 30px" hidden>&nbsp;</i>
-  <![endif]-->
-                    <span style="mso-text-raise: 16px">
-                  <%= I18n.t('user_mailer.confirm_email.verify_email') %>
-                </span>
-                    <!--[if mso]>
-    <i style="mso-font-width: -100%; letter-spacing: 32px;" hidden>&nbsp;</i>
-  <![endif]-->
-                  </a>
+                <div>
+                  Hi <%= @user.name %>,
                 </div>
 
-                <p style="font-size: 14px;">
-                  <%= I18n.t('user_mailer.confirm_email.browser_text') %>
-                  <span href style="word-break: break-all; color: #4338ca;"><%=@verify_url %></span>
-                </p>
+                <div style="padding-top: 20px;">
+                  &nbsp;&nbsp;&nbsp;&nbsp; You have successfully unsubscribed the analysis report for the
+                  <a href="<%= @subject_url %>"><%= @subject_name %></a>.
+                </div>
 
-                <p style="margin-bottom: 0; font-size: 14px">
-                  <%= I18n.t('user_mailer.confirm_email.expire_text') %>
-                  <a href="<%=@host %>/settings/profile"><%= I18n.t('user_mailer.confirm_email.account_setting') %></a>
-                  <%= I18n.t('user_mailer.confirm_email.expire_text_end') %>
-                </p>
+                <div style="padding-top: 20px;">
+                  Click the link above to view the updated report. If you need to manage your OSS Compass project
+                  subscription, <a href="<%= @subscription_url %>">please click here</a>.
+                </div>
+
+                <div style="padding-top: 20px;font-size: 14px;">
+                  For more insight into open source software project analysis, visit:
+                  <a href="<%= @explore_url %>">OSS Compass</a>.
+                </div>
+
+                <div style="text-align: right;padding-top: 20px;">
+                  <a href="<%= @about_url %>">OSS Compass team</a>
+                </div>
+
               </td>
             </tr>
             <tr>

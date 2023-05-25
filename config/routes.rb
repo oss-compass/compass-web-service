@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     post '/users/login' => 'sessions#create', as: :user_session
     delete '/users/logout' => 'sessions#destroy', as: :destroy_user_session
     post '/users/signup' => 'registrations#create', as: :user_registration
+    get '/users/auth/wechat' => 'omniauth_callbacks#wechat_auth'
+    get '/users/auth/wechat/callback' => 'omniauth_callbacks#wechat_callback'
     get '/users/auth/:provider/callback' => 'omniauth_callbacks#callback', as: :user_omniauth_callback
   end
   resources :users, only: [] do
@@ -41,6 +43,10 @@ Rails.application.routes.draw do
   end
   post '/api/workflow', to: 'application#workflow', as: :workflow
   post '/api/hook', to: 'application#hook', as: :hook
+
+  get '/api/hook/we_chat/receive', to: 'we_chat#show'
+  post '/api/hook/we_chat/receive', to: 'we_chat#create'
+
 
   get '/(*path)', to: 'application#website', as: :website
 end

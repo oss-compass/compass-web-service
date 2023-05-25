@@ -29,6 +29,13 @@ class LoginBind < ApplicationRecord
 
   LOGIN_PROVIDER = [:github, :gitee]
 
+  PROVIDER_ID_MAP = {
+    'github' => ENV['GITHUB_CLIENT_ID'],
+    'gitee' => ENV['GITEE_CLIENT_ID'],
+    'wechat' => ENV['WECHAT_CLIENT_ID'],
+    'slack' => ENV['SLACK_CLIENT_ID']
+  }
+
   class << self
     def current_host_nickname(user, provider)
       user.login_binds.find_by(provider: provider)&.nickname

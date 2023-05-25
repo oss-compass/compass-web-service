@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_10_091128) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
   create_table "allowlisted_jwts", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -130,6 +130,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_091128) do
     t.text "extra"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "subjects", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "label", null: false
+    t.string "level", default: "repo", null: false, comment: "repo/community"
+    t.string "status", default: "pending", null: false, comment: "pending/progress/complete"
+    t.integer "count", default: 0, null: false
+    t.datetime "status_updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["label"], name: "index_subjects_on_label", unique: true
+  end
+
+  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "subject_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|

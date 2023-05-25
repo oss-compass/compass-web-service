@@ -9,6 +9,8 @@ module Types
       argument :label, String, required: true, description: 'repo or project label'
 
       def resolve(label: nil)
+        label = normalize_label(label)
+
         existed_metrics =
           [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
           metric.exist_one?('label', label)
@@ -17,8 +19,6 @@ module Types
         if existed_metrics.any?
           return ProjectTask::Success
         end
-
-        label = normalize_label(label)
 
         task = ProjectTask.find_by(project_name: label)
         task ||= ProjectTask.find_by(remote_url: label)
