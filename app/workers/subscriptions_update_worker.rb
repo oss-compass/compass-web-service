@@ -7,8 +7,7 @@ class SubscriptionsUpdateWorker
 
   def work(msg)
     message = JSON.parse(msg)
-    puts "Receiving a deserialization message is:"
-    puts message
+    Sneakers.logger.info "Receiving a deserialization message is: #{message}"
 
     status = message['status']
     label = message['label']
