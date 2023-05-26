@@ -27,9 +27,7 @@ class WeChatController < ApplicationController
   end
 
   def scan_bind(params, request)
-    cache_key = "wechat_bind:#{request[:Ticket]}"
-    user_id = Rails.cache.read(cache_key)
-    Rails.cache.delete(cache_key)
+    user_id = Rails.cache.redis.getdel("wechat_bind:#{request[:Ticket]}")
     return '绑定二维码已过期,请重新绑定！' if user_id.blank?
 
     bind_user = LoginBind.find_by(provider: 'wechat', uid: params[:openid])&.user
