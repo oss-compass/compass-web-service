@@ -12,6 +12,7 @@ module Types
         label = normalize_label(label)
         origin = extract_repos_source(label, level)
         repos_count = extract_repos_count(label, level)
+        reference_url = extract_label_reference(label, level)
 
         result = {}
         [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|
@@ -22,6 +23,7 @@ module Types
         skeleton = skeleton.merge(Hash[keys.map(&:underscore).zip([])].symbolize_keys)
         skeleton['origin'] = origin
         skeleton['repos_count'] = repos_count
+        skeleton['reference_url'] = reference_url
         OpenStruct.new(skeleton.merge(result))
       end
 
