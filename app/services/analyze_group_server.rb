@@ -157,6 +157,12 @@ class AnalyzeGroupServer
 
     if repo_task.present?
       repo_task.update(status: task_resp['status'], task_id: task_resp['id'])
+      if repo_task.extra.present?
+        extra = JSON.parse(repo_task.extra) rescue {}
+        if @raw_yaml['community_url'] && extra['community_url'] != @raw_yaml['community_url']
+          repo_task.update(extra: extra.merge({community_url: @raw_yaml['community_url']}).to_json)
+        end
+      end
     else
       ProjectTask.create(
         task_id: task_resp['id'],
@@ -164,6 +170,7 @@ class AnalyzeGroupServer
         status: task_resp['status'],
         payload: payload.to_json,
         level: @level,
+        extra: ({community_url: @raw_yaml['community_url']}.to_json if @raw_yaml['community_url'] rescue nil),
         project_name: @project_name
       )
     end

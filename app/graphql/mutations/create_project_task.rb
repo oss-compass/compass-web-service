@@ -9,8 +9,9 @@ module Mutations
     argument :project_name, String, required: true, description: 'project label for following repositories'
     argument :project_types, [Input::ProjectTypeInput], required: true, description: 'project detail information'
     argument :origin, String, required: true, description: "user's origin (gitee/github)"
+    argument :project_url, String, required: false, description: 'project homepage url'
 
-    def resolve(project_name:, project_types:, origin:)
+    def resolve(project_name:, project_types:, origin:, project_url: nil)
       current_user = context[:current_user]
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
 
@@ -19,6 +20,7 @@ module Mutations
 
       yaml_template = {}
       yaml_template['community_name'] = project_name
+      yaml_template['community_url'] = project_url if project_url
       yaml_template['resource_types'] =
         project_types.reduce({}) do |result, type|
           result.merge({ type.type => { 'repo_urls' => type.repo_list } })
@@ -63,7 +65,7 @@ module Mutations
               label: project_name,
               level: 'community',
               project_types: project_types,
-              extra: { username: username, origin: origin }
+              extra: { username: username, origin: origin, community_url: project_url }
             }
           ).execute
         OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))

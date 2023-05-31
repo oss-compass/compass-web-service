@@ -155,6 +155,15 @@ module Types
         end
       end
 
+      def extract_label_reference(label, level)
+        if level == 'community'
+          project = ProjectTask.find_by(project_name: label)
+          JSON.parse(project.extra)['community_url'] rescue nil
+        else
+          label
+        end
+      end
+
       def extract_name_and_full_path(label)
         if label =~ /github\.com\/(.+)\/(.+)/
           [$2, "#{$1}/#{$2}"]
