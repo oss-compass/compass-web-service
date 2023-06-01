@@ -59,10 +59,11 @@ module GiteeApplication
   end
 
   def gitee_post_file(path, message, content_base64, branch_name)
+    signed_off_message = message + "\n\nSigned-off-by: #{BOT_NAME} <#{BOT_EMAIL}>"
     resp =
       Faraday.post(
         "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner}/#{gitee_repo}/contents/#{path}",
-        { message: message, content: content_base64, branch: branch_name, access_token: GITEE_TOKEN }.to_json,
+        { message: signed_off_message, content: content_base64, branch: branch_name, access_token: GITEE_TOKEN }.to_json,
         { 'Content-Type' => 'application/json'}
       )
     case JSON.parse(resp.body).symbolize_keys

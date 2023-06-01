@@ -9,6 +9,8 @@ module Common
   CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
   SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
   SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
+  BOT_NAME = ENV.fetch('BOT_NAME') { 'compass-bot' }
+  BOT_EMAIL = ENV.fetch('BOT_EMAIL') { 'compass-bot@gitee.com' }
   GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
   GITHUB_REPO = ENV.fetch('GITHUB_WORKFLOW_REPO')
   META_REPO = ENV.fetch('WORKFLOW_REPO_NAME') { 'compass-projects-information' }

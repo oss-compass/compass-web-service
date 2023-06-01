@@ -83,11 +83,12 @@ module GithubApplication
   end
 
   def github_put_file(path, message, content_base64, branch_name)
+    signed_off_message = message + "\n\nSigned-off-by: #{BOT_NAME} <#{BOT_EMAIL}>"
     resp =
       RestClient::Request.new(
         method: :put,
         url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/contents/#{path}",
-        payload: { message: message, content: content_base64, branch: branch_name }.to_json,
+        payload: { message: signed_off_message, content: content_base64, branch: branch_name }.to_json,
         headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
         proxy: PROXY
       ).execute
