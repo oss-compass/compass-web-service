@@ -33,7 +33,7 @@ class ExportServer
       return
     end
 
-    output, status = Open3.capture2("git commit -m 'Update at #{DateTime.now.to_s}'", :chdir=>chdir)
+    output, status = Open3.capture2("git commit -s -m 'Update at #{DateTime.now.to_s}'", :chdir=>chdir)
     if !status.success?
       job_logger.error "failed to git commit, error: #{output}"
       return
