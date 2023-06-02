@@ -18,6 +18,7 @@
 #  email_verification_token   :string(255)
 #  email_verification_sent_at :datetime
 #  name                       :string(255)
+#  language                   :string(255)      default("en")
 #
 # Indexes
 #

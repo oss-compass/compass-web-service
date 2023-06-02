@@ -99,3 +99,64 @@ en:
       expire_text: "This link is valid for 72 hour only. If it has expired, log in to your"
       account_setting: "account settings"
       expire_text_end: "request a new link."
+  notification:
+    slack:
+      subscription_update_content: |- 
+        ## OSS Compass project subscription update - %{subject_name}
+        
+        Hi %{user_name},
+        
+        There has been a recent update to the project report you subscribed to on OSS Compass, as follows:
+        
+        - [%{subject_name}](%{subject_url})
+        
+        Click the link above to view the updated report. To manage OSS Compass project subscriptions, [please click here](%{subscription_url}).
+        For more insight into open source software project analysis, visit: [OSS Compass](%{explore_url}).
+        
+        [OSS Compass team](%{about_url})
+      submission_content: |-
+        ## OSS Compass project subscription
+
+        Hi %{user_name},
+
+        Your analysis request for [%{subject_name}](%{subject_url}) on the OSS Compass website has been submitted and subscribed. We will synchronize the relevant report information with you after we confirm and complete the analysis.
+
+        To manage OSS Compass project subscriptions, [please click here](%{subscription_url}).
+        For more insight into open source software project analysis, visit: [OSS Compass](%{explore_url}).
+
+        [OSS Compass team](%{about_url})
+      subscription_create_content: |-
+        ## OSS Compass project subscription
+
+        Hi %{user_name},
+
+        You have successfully subscribed to the analysis report of the [%{subject_name}](%{subject_url}). We will update the report information with you when the project report is updated.
+
+        To manage OSS Compass project subscriptions, [please click here](%{subscription_url}).
+        For more insight into open source software project analysis, visit: [OSS Compass](%{explore_url}).
+
+        [OSS Compass team](%{about_url})
+      subscription_delete_content: |-
+        ## OSS Compass project unsubscription
+
+        Hi #{user_name},
+
+        You have successfully unsubscribed the analysis report for the [%{subject_name}](%{subject_url}).
+
+        To manage OSS Compass project subscriptions, [please click here](%{subscription_url}).
+        For more insight into open source software project analysis, visit: [OSS Compass](%{explore_url}).
+
+        [OSS Compass team](%{about_url})
+    email:
+      project_subscription_update: "OSS Compass project subscription update"
+      project_subscription: "OSS Compass project subscription"
+      project_unsubscription: "OSS Compass project unsubscription"
+      please_click_here: "please click here"
+      project_update: "There has been a recent update to the project report you subscribed to on OSS Compass, as follows:"
+      project_update_description: "Click the link above to view the updated report. If you need to manage your OSS Compass project subscription, "
+      more_info: "For more insight into open source software project analysis, visit:"
+      team: "team"
+      submission_description: "You analysis request for <a href='%{subject_url}'>%{subject_name}</a> on the OSS Compass website has been submitted and subscribed. We will synchronize the relevant report information with you after we confirm and complete the analysis."
+      manage_subscription: "To manage OSS Compass project subscriptions,<a href='%{subscription_url}'>please click here</a>.。"
+      subscription_create_description: "You have successfully subscribed to the analysis report of the <a href='%{subject_url}'> %{subject_name}</a>. We will update the report information with you when the project report is updated."
+      subscription_delete_description: "You have successfully unsubscribed the analysis report for the <a href='%{subject_url}'>%{subject_name}</a>."

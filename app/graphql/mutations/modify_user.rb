@@ -6,16 +6,19 @@ module Mutations
 
     argument :name, String, required: true, description: 'user name'
     argument :email, String, required: true, description: 'user email'
+    argument :language, Types::LanguageEnum, required: false, description: 'user language'
 
-    def resolve(name:, email:)
+    def resolve(name:, email:, language:)
       current_user = context[:current_user]
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
 
-      current_user.update!(name: name, email: email)
+      update_attrs = { name: name, email: email }
+      update_attrs[:language] = language if language.present?
+      current_user.update!(update_attrs)
 
-      OpenStruct.new({ status: true, message: '' })
+      { status: true, message: '' }
     rescue => ex
-      OpenStruct.new({ status: false, message: ex.message })
+      { status: false, message: ex.message }
     end
   end
 end
