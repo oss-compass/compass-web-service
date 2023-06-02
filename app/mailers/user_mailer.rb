@@ -29,7 +29,7 @@ class UserMailer < ApplicationMailer
   end
 
   def submission_params
-    @locale = user.language
+    @locale = params[:user].language
     @user = params[:user]
     @subject_name = params[:subject_name]
     @subject_url = params[:subject_url]
