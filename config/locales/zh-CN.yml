@@ -139,7 +139,7 @@ zh-CN:
       subscription_delete_content: |-
         ## OSS Compass 项目退订
         
-        Hi #{user_name},
+        Hi %{user_name},
         
         你已成功退订项目 [%{subject_name}](%{subject_url}) 的分析报告。
         

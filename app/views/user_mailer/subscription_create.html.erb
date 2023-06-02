@@ -78,7 +78,7 @@
                 </div>
 
                 <div style="padding-top: 20px;">
-                  &nbsp;<%= raw I18n.t('notification.email.subscription_create_description') %>
+                  &nbsp;<%= raw I18n.t('notification.email.subscription_create_description', subject_url: @subject_url, subject_name: @subject_name) %>
                 </div>
 
                 <div style="padding-top: 20px;">

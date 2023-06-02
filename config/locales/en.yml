@@ -139,7 +139,7 @@ en:
       subscription_delete_content: |-
         ## OSS Compass project unsubscription
 
-        Hi #{user_name},
+        Hi %{user_name},
 
         You have successfully unsubscribed the analysis report for the [%{subject_name}](%{subject_url}).
 
