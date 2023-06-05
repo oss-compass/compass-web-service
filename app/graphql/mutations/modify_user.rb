@@ -6,7 +6,7 @@ module Mutations
 
     argument :name, String, required: true, description: 'user name'
     argument :email, String, required: true, description: 'user email'
-    argument :language, Types::LanguageEnum, required: false, description: 'user language'
+    argument :language, String, required: false, description: 'user language'
 
     def resolve(name:, email:, language:)
       current_user = context[:current_user]
