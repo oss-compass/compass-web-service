@@ -31,16 +31,20 @@ class NotificationService
     false
   end
 
+  def notification_url
+    user.language == 'zh-CN' ? ENV['NOTIFICATION_ZH_URL'] : ENV['NOTIFICATION_URL']
+  end
+
   def explore_url
-    "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_EXPLORE_URL']}"
+    "#{notification_url}#{ENV['NOTIFICATION_EXPLORE_URL']}"
   end
 
   def subscription_url
-    "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_SUBSCRIPTION_URL']}"
+    "#{notification_url}#{ENV['NOTIFICATION_SUBSCRIPTION_URL']}"
   end
 
   def about_url
-    "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_ABOUT_URL']}"
+    "#{notification_url}#{ENV['NOTIFICATION_ABOUT_URL']}"
   end
 
   def subject_name
@@ -53,7 +57,7 @@ class NotificationService
   end
 
   def subject_url
-    compass_analyze_url = "#{ENV['NOTIFICATION_URL']}#{ENV['NOTIFICATION_ANALYZE_URL']}"
+    compass_analyze_url = "#{notification_url}#{ENV['NOTIFICATION_ANALYZE_URL']}"
     compass_analyze_uri = Addressable::URI.parse(compass_analyze_url)
     compass_analyze_uri.query_values = {
       label: params[:subject].label,

@@ -99,3 +99,64 @@ zh-CN:
       expire_text: "此链接仅在60分钟内有效。如果它已经过期，请登录您的"
       account_setting: "账户设置"
       expire_text_end: "请求一个新的链接。"
+  notification:
+    slack:
+      subscription_update_content: |-
+        ## OSS Compass 项目订阅更新 - %{subject_name}
+        
+        Hi %{user_name},
+        
+        你在 OSS Compass 上订阅的项目报告近期有 1 项更新，具体如下：
+        
+        - [%{subject_name}](%{subject_url})
+        
+        点击上方链接可查阅更新后报告内容，如需管理 OSS Compass 项目订阅，[请点击此处](%{subscription_url})。
+        更多开源软件项目分析洞察请访问： [OSS Compass](%{explore_url})。
+        
+        [OSS Compass 团队](%{about_url})
+      submission_content: |-
+        ## OSS Compass 项目订阅
+
+        Hi %{user_name},
+
+        你在 OSS Compass 网站上有关 [%{subject_name}](%{subject_url}) 的分析请求已提交并订阅，我们将在确认并完成分析后与你同步相关的报告信息。
+  
+        如需管理 OSS Compass 项目订阅，[请点击此处](%{subscription_url})。
+        更多开源软件项目分析洞察请访问： [OSS Compass](%{explore_url})。
+
+        [OSS Compass 团队](%{about_url})
+      subscription_create_content: |-
+        ## OSS Compass 项目订阅
+        
+        Hi %{user_name},
+        
+        你已成功订阅项目 [%{subject_name}](%{subject_url}) 的分析报告，我们将在项目报告更新时与你同步相关的报告信息。
+        
+        如需管理 OSS Compass 项目订阅，[请点击此处](%{subscription_url})。
+        更多开源软件项目分析洞察请访问： [OSS Compass](%{explore_url})。
+
+        [OSS Compass 团队](%{about_url})
+      subscription_delete_content: |-
+        ## OSS Compass 项目退订
+        
+        Hi %{user_name},
+        
+        你已成功退订项目 [%{subject_name}](%{subject_url}) 的分析报告。
+        
+        如需管理 OSS Compass 项目订阅，[请点击此处](%{subscription_url})。
+        更多开源软件项目分析洞察请访问： [OSS Compass](%{explore_url})。
+
+        [OSS Compass 团队](%{about_url})
+    email:
+      project_subscription_update: "OSS Compass 项目订阅更新"
+      project_subscription: "OSS Compass 项目订阅"
+      project_unsubscription: "OSS Compass 项目退订"
+      please_click_here: "请点击此处"
+      project_update: "你在 OSS Compass 上订阅的项目报告近期有 1 项更新，具体如下："
+      project_update_description: "点击上方链接可查阅更新后报告内容，如需管理 OSS Compass 项目订阅，"
+      more_info: "更多开源软件项目分析洞察请访问："
+      team: "团队"
+      submission_description: "你在 OSS Compass 网站上有关 <a href='%{subject_url}'>%{subject_name}</a> 的分析请求已提交并订阅，我们将在确认并完成分析后与你同步相关的报告信息。"
+      manage_subscription: "如需管理 OSS Compass 项目订阅，<a href='%{subscription_url}'>请点击此处</a>.。"
+      subscription_create_description: "你已成功订阅项目 <a href='%{subject_url}'> %{subject_name}</a> 的分析报告，我们将在项目报告更新时与你同步相关的报告信息。"
+      subscription_delete_description: "你已成功退订项目 <a href='%{subject_url}'> %{subject_name}</a> 的分析报告。"

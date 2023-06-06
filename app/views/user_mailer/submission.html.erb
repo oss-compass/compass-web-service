@@ -20,7 +20,7 @@
     td,th,div,p,a,h1,h2,h3,h4,h5,h6 {font-family: "Segoe UI", sans-serif; mso-line-height-rule: exactly;}
   </style>
   <![endif]-->
-  <title>OSS Compass project subscription</title>
+  <title><%= I18n.t('notification.email.project_subscription') %></title>
   <style>
     img {
       max-width: 100%;
@@ -63,7 +63,7 @@
             <tr>
               <td class="sm-px-6" style="border: 1px solid #cfcfcf; background-color: #fff; padding: 32px 40px; font-size: 16px; color: #334155; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)">
                 <h1 class="sm-leading-8" style="margin: 0 0 20px; font-size: 20px; font-weight: 600; color: #000">
-                  OSS Compass project subscription
+                  <%= I18n.t('notification.email.project_subscription') %>
                 </h1>
 
                 <div>
@@ -71,19 +71,20 @@
                 </div>
 
                 <div style="padding-top: 20px;">
-                  &nbsp;&nbsp;&nbsp;&nbsp; You analysis request for <a href="<%= @subject_url %>"><%= @subject_name %></a> on the OSS Compass website has been submitted and subscribed. We will synchronize the relevant report information with you after we confirm and complete the analysis.
+                  <%= raw I18n.t('notification.email.submission_description', subject_url: @subject_url, subject_name: @subject_name) %>
                 </div>
 
                 <div style="padding-top: 20px;">
-                  Click the link above to view the updated report. If you need to manage your OSS Compass project subscription, <a href="<%= @subscription_url %>">please click here</a>.
+                  <%= raw I18n.t('notification.email.manage_subscription',subscription_url: @subscription_url) %>
                 </div>
 
                 <div style="padding-top: 20px;font-size: 14px;">
-                  For more insight into open source software project analysis, visit: <a href="<%= @explore_url %>">OSS Compass</a>.
+                  <%= I18n.t('notification.email.more_info') %>
+                  <a href="<%= @explore_url %>">OSS Compass</a>.
                 </div>
 
-                <div style="text-align: right; padding-top: 25px;">
-                  <a href="<%= @about_url %>">OSS Compass team</a>
+                <div style="text-align: right;padding-top: 20px;">
+                  <a href="<%= @about_url %>">OSS Compass <%= I18n.t('notification.email.team') %></a>
                 </div>
 
               </td>

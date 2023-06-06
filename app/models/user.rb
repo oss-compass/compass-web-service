@@ -20,6 +20,7 @@
 #  email_verification_token   :string(255)
 #  email_verification_sent_at :datetime
 #  name                       :string(255)
+#  language                   :string(255)      default("en")
 #
 # Indexes
 #
@@ -37,6 +38,7 @@ class User < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
 
   validate :check_email_change_limit
+  after_initialize :set_default_language, if: :new_record?
 
   after_update :send_email_verification, if: -> { saved_changes.keys.include?('email') }
 
@@ -170,5 +172,10 @@ class User < ApplicationRecord
     Rails.cache.write(email_change_limit_key, 1, expires_in: 1.day, raw: true) if count == 1
     max_count = ENV.fetch('MAX_EMAIL_CHANGE_COUNT') { 3 }.to_i
     errors.add(:base, I18n.t("users.email_change_limit", count: max_count)) if count > max_count
+  end
+
+  def set_default_language
+    self.language = I18n.locale
+    self.language ||= I18n.default_locale
   end
 end
