@@ -27,9 +27,9 @@ class SubscriptionsUpdateWorker
     end
     if subject.status != status
       update_attributes = { status: status, status_updated_at: status_updated_at }
-      if subject.status == Subject::PROGRESS
+      if status == Subject::PROGRESS
         update_attributes.merge!({ collect_at: status_updated_at })
-      elsif subject.status == Subject::COMPLETE
+      elsif status == Subject::COMPLETE
         update_attributes.merge!({ complete_at: status_updated_at })
       end
       subject.update!(update_attributes)
