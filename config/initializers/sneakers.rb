@@ -10,4 +10,5 @@ opts = {
 }
 
 Sneakers.configure(opts)
+Sneakers.logger.formatter = ::Logger::Formatter.new
 Sneakers.logger.level = Logger::INFO
