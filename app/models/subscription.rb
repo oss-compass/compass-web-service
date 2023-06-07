@@ -15,7 +15,7 @@
 class Subscription < ApplicationRecord
   belongs_to :user
   belongs_to :subject
-  delegate :label, :level, :status, :count, :status_updated_at, to: :subject, allow_nil: true
+  delegate :label, :level, :status, :count, :status_updated_at, :collect_at, :complete_at, to: :subject, allow_nil: true
 
   attr_accessor :skip_notify_subscription
 

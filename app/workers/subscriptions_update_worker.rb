@@ -25,7 +25,15 @@ class SubscriptionsUpdateWorker
         count: count
       )
     end
-    subject.status != status && subject.update!(status: status)
+    if subject.status != status
+      update_attributes = { status: status, status_updated_at: status_updated_at }
+      if subject.status == Subject::PROGRESS
+        update_attributes.merge!({ collect_at: status_updated_at })
+      elsif subject.status == Subject::COMPLETE
+        update_attributes.merge!({ complete_at: status_updated_at })
+      end
+      subject.update!(update_attributes)
+    end
 
     if subject.status == Subject::COMPLETE
       subject.subscriptions.includes(:user).each do |subscription|
