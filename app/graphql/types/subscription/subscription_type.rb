@@ -8,7 +8,9 @@ module Types
       field :level, String, null: false
       field :status, String, null: false
       field :count, Integer, null: false
-      field :status_updated_at, GraphQL::Types::ISO8601DateTime, null: false
+      field :status_updated_at, GraphQL::Types::ISO8601DateTime, null: true
+      field :collect_at, GraphQL::Types::ISO8601DateTime, null: true
+      field :complete_at, GraphQL::Types::ISO8601DateTime, null: true
     end
   end
 end
