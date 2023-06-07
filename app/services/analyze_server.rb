@@ -143,7 +143,7 @@ class AnalyzeServer
       )
     end
 
-    message = { label: @repo_url, level: 'repo', status: Subject.task_status_converter(task_resp['status']), count: 1, status_updated_at: DateTime.now.iso8601 }
+    message = { label: @repo_url, level: 'repo', status: Subject.task_status_converter(task_resp['status']), count: 1, status_updated_at: DateTime.now.utc.iso8601 }
     RabbitMQ.publish(SUBSCRIPTION_QUEUE, message)
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
