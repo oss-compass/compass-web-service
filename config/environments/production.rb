@@ -76,6 +76,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
+  config.logger = ::Logger.new("log/production.log", 5, 20.megabytes)
   config.log_formatter = ::Logger::Formatter.new
 
   # Use a different logger for distributed setups.

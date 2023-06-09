@@ -72,6 +72,7 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
+  config.logger = ::Logger.new("log/development.log", 5, 50.megabytes)
   config.log_formatter = ::Logger::Formatter.new
 
   # Mailer configs
