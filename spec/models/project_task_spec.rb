@@ -3,8 +3,8 @@
 # Table name: project_tasks
 #
 #  id           :bigint           not null, primary key
-#  task_id      :string(255)      not null
-#  remote_url   :string(255)      not null
+#  task_id      :string(255)
+#  remote_url   :string(255)
 #  status       :string(255)
 #  payload      :text(65535)
 #  extra        :text(65535)

@@ -266,6 +266,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.3.0)
     mysql2 (0.5.4)
+    nanoid (2.0.0)
     net-imap (0.2.3)
       digest
       net-protocol
@@ -822,6 +823,7 @@ DEPENDENCIES
   jsonapi.rb
   license_finder
   mysql2
+  nanoid
   omniauth
   omniauth-gitee!
   omniauth-github
