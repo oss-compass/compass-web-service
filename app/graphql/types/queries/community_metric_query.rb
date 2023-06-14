@@ -21,6 +21,7 @@ module Types
           resp = CommunityMetric.query_repo_by_date(label, begin_date, end_date, page: 1, per: limit)
 
           build_metrics_data(resp, Types::CommunityMetricType) do |skeleton, raw|
+            skeleton['short_code'] = ShortenedLabel.convert(raw['label'], raw['level'])
             OpenStruct.new(skeleton.merge(raw))
           end
         else
@@ -34,6 +35,7 @@ module Types
               key = k.to_s.underscore
               skeleton[key] = data&.[](key)&.[]('value') || template[key]
             end
+            skeleton['short_code'] = ShortenedLabel.convert(skeleton['label'], skeleton['level'])
             skeleton['grimoire_creation_date'] =
               DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
             OpenStruct.new(skeleton)

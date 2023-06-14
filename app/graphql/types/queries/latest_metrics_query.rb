@@ -24,6 +24,7 @@ module Types
         skeleton['origin'] = origin
         skeleton['repos_count'] = repos_count
         skeleton['reference_url'] = reference_url
+        skeleton['short_code'] = ShortenedLabel.convert(label, level)
         OpenStruct.new(skeleton.merge(result))
       end
 

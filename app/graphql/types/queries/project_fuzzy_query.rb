@@ -47,7 +47,12 @@ module Types
                 candidate = OpenStruct.new(
                   item['_source']
                     .slice(*fields)
-                    .merge({status: 'success', updated_at: updated_at})
+                    .merge(
+                      {
+                        status: 'success',
+                        updated_at: updated_at,
+                        short_code: ShortenedLabel.convert(item['_source']['label'], item['_source']['level'])
+                      })
                 )
                 unless existed[candidate.label]
                   existed[candidate.label] = true
@@ -63,7 +68,15 @@ module Types
           level.present? ? can.where(level: level) : can
         end.limit(5).map do |item|
           unless existed[item.project_name]
-            candidates << OpenStruct.new({level: item.level, label: item.project_name, status: item.status, updated_at: item.updated_at})
+            candidates << OpenStruct.new(
+              {
+                level: item.level,
+                label: item.project_name,
+                status: item.status,
+                updated_at: item.updated_at,
+                short_code: ShortenedLabel.convert(item.project_name, item.level)
+              }
+            )
           end
         end
 

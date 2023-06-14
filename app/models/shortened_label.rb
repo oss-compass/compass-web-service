@@ -3,9 +3,9 @@
 # Table name: shortened_labels
 #
 #  id         :bigint           not null, primary key
-#  label      :string(255)
-#  short_code :string(255)
-#  level      :string(255)
+#  label      :string(255)      not null
+#  short_code :string(255)      not null
+#  level      :string(255)      not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
@@ -18,10 +18,44 @@ class ShortenedLabel < ApplicationRecord
   validates :short_code, presence: true, uniqueness: true
   before_validation :generate_short_code
 
-  CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  CacheTTL = 1.week
+  CharacterSet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+  def self.convert(label, level)
+    label = normalize_label(label)
+    Rails.cache.fetch("#{self.name}:#{level}:#{label}", expires_in: CacheTTL) do
+      ShortenedLabel.find_or_create_by(label: label, level: level).short_code
+    end
+  end
+
+  def self.revert(short_code)
+    short = Rails.cache.read("#{self.name}:#{short_code.to_s.upcase}")
+    return short if short
+    short = ShortenedLabel.find_by(short_code: short_code)
+    Rails.cache.write("#{self.name}:#{short.short_code}", short, expires_in: CacheTTL) if short
+    short
+  end
+
+  def self.expire_cache(label, level)
+    label = normalize_label(label)
+    Rails.cache.delete("#{self.name}:#{level}:#{label}")
+  end
+
+  def self.normalize_label(label)
+    if label =~ URI::regexp
+      uri = Addressable::URI.parse(label)
+      "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
+    else
+      label
+    end
+  end
 
   private
   def generate_short_code
-    self.short_code = Nanoid.generate(size: 7, alphabet: CharacterSet)
+    self.short_code = loop do
+      nanoid = Nanoid.generate(size: 7, alphabet: CharacterSet)
+      short_code = "#{self.level == 'repo' ? 'S' : 'C'}#{nanoid}"
+      break short_code unless ShortenedLabel.exists?(short_code: short_code)
+    end
   end
 end
