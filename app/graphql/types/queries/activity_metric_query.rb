@@ -23,6 +23,7 @@ module Types
           build_metrics_data(resp, Types::ActivityMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
             ActivityMetric.fields_aliases.map { |alias_key, key| skeleton[alias_key] = raw[key] }
+            skeleton['short_code'] = ShortenedLabel.convert(skeleton['label'], skeleton['level'])
             OpenStruct.new(skeleton)
           end
         else
@@ -42,6 +43,7 @@ module Types
               key = k.to_s.underscore
               skeleton[key] = data&.[](key)&.[]('value') || template[key]
             end
+            skeleton['short_code'] = ShortenedLabel.convert(skeleton['label'], skeleton['level'])
             skeleton['grimoire_creation_date'] =
               DateTime.parse(data&.[]('key_as_string')).strftime rescue data&.[]('key_as_string')
             OpenStruct.new(skeleton)

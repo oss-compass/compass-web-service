@@ -22,5 +22,6 @@ module Types
     field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
+    field :short_code, String, description: 'metric model object short code'
   end
 end

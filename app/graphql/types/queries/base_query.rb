@@ -15,14 +15,10 @@ module Types
       def build_repo_activity(label)
         build_metrics_data(
           ActivityMetric.query_repo_by_date(label, Date.today.end_of_day - 90.days, Date.today.end_of_day),
-          Types::ActivityMetricType) do |metric, raw|
-          metric.merge!(raw)
-          metric['active_c1_pr_create_contributor_count'] = raw['active_C1_pr_create_contributor']
-          metric['active_c2_contributor_count'] = raw['active_C2_contributor_count']
-          metric['active_c1_pr_comments_contributor_count'] = raw['active_C1_pr_comments_contributor']
-          metric['active_c1_issue_create_contributor_count'] = raw['active_C1_issue_create_contributor']
-          metric['active_c1_issue_comments_contributor_count'] = raw['active_C1_issue_comments_contributor']
-          OpenStruct.new(metric)
+          Types::ActivityMetricType) do |skeleton, raw|
+          skeleton.merge!(raw)
+          ActivityMetric.fields_aliases.map { |alias_key, key| skeleton[alias_key] = raw[key] }
+          OpenStruct.new(skeleton)
         end
       end
 

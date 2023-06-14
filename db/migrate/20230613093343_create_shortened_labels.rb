@@ -1,9 +1,9 @@
 class CreateShortenedLabels < ActiveRecord::Migration[7.0]
   def change
     create_table :shortened_labels do |t|
-      t.string :label
-      t.string :short_code
-      t.string :level
+      t.string :label, null: false
+      t.string :short_code, null: false
+      t.string :level, null: false
 
       t.timestamps
     end

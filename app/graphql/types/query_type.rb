@@ -13,6 +13,8 @@ module Types
     field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
     field :bulk_overview, resolver: Queries::BulkOverviewQuery
+    field :bulk_shortened_label, resolver: Queries::BulkShortenedLabelQuery
+    field :bulk_label_with_level, resolver: Queries::BulkLabelWithLevelQuery
 
     field :metric_activity, resolver: Queries::ActivityMetricQuery
     field :metric_community, resolver: Queries::CommunityMetricQuery

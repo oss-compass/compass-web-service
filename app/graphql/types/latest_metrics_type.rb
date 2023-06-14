@@ -15,5 +15,6 @@ module Types
     field :reference_url, String, description: 'repository or community reference url'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
+    field :short_code, String, description: 'metric model object short code'
   end
 end
