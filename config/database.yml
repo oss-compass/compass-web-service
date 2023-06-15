@@ -7,7 +7,7 @@ default: &default
   host: <%= ENV.fetch("MARIADB_HOST") { "localhost" } %>
   port: <%= ENV.fetch("MARIADB_PORT") { 3306 } %>
   # http://guides.rubyonrails.org/configuring.html#database-pooling
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 200 } %>
+  pool: <%= ENV.fetch("MARIADB_POOL") { 200 } %>
   checkout_timeout: <%= ENV.fetch("RAILS_MAX_TIMEOUT") { 15 } %>
 
 development:
