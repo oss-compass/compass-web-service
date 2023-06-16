@@ -37,6 +37,7 @@ module Types
                   origin: origin,
                   label: set[:label],
                   level: set[:level],
+                  short_code: ShortenedLabel.convert(set[:label], set[:level]),
                   full_path: full_path,
                   activity_score: set[:activity_score],
                   repos_count: repos_count,

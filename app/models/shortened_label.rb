@@ -19,7 +19,7 @@ class ShortenedLabel < ApplicationRecord
   before_validation :generate_short_code
 
   CacheTTL = 1.week
-  CharacterSet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
 
   def self.convert(label, level)
     label = normalize_label(label)
@@ -29,9 +29,9 @@ class ShortenedLabel < ApplicationRecord
   end
 
   def self.revert(short_code)
-    short = Rails.cache.read("#{self.name}:#{short_code.to_s.upcase}")
+    short = Rails.cache.read("#{self.name}:#{short_code.to_s.downcase}")
     return short if short
-    short = ShortenedLabel.find_by(short_code: short_code)
+    short = ShortenedLabel.find_by(short_code: short_code.to_s.downcase)
     Rails.cache.write("#{self.name}:#{short.short_code}", short, expires_in: CacheTTL) if short
     short
   end
@@ -54,7 +54,7 @@ class ShortenedLabel < ApplicationRecord
   def generate_short_code
     self.short_code = loop do
       nanoid = Nanoid.generate(size: 7, alphabet: CharacterSet)
-      short_code = "#{self.level == 'repo' ? 'S' : 'C'}#{nanoid}"
+      short_code = "#{self.level == 'repo' ? 's' : 'c'}#{nanoid}"
       break short_code unless ShortenedLabel.exists?(short_code: short_code)
     end
   end

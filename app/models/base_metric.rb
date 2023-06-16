@@ -106,4 +106,13 @@ class BaseMetric < BaseIndex
   def self.exist_one?(field, value, keyword: true)
     self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value }).total_entries > 0
   end
+
+  def self.find_one(field, value, keyword: true)
+    self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value })
+      .page(1)
+      .per(1)
+      .execute
+      .raw_response
+      .dig('hits', 'hits', 0, '_source')
+  end
 end
