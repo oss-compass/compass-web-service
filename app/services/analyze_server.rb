@@ -94,7 +94,7 @@ class AnalyzeServer
       end
     raise ValidateFailed.new(I18n.t('analysis.validation.cannot_access')) unless ret_code == 200
   rescue => ex
-    Rails.logger.error("This repository can not access, error: #{ex.message}")
+    Rails.logger.error("This repository `#{@repo_url}` can not access, error: #{ex.message}")
     raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))
   end
 
