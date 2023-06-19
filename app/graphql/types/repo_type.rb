@@ -5,6 +5,7 @@ module Types
     field :origin, String, null: false
     field :name, String
     field :type, String
+    field :short_code, String
     field :language, String
     field :path, String
     field :backend, String

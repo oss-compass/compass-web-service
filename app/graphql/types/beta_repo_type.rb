@@ -4,6 +4,7 @@ module Types
   class BetaRepoType < Types::BaseObject
     field :origin, String, null: false
     field :name, String
+    field :short_code, String
     field :language, String
     field :path, String
     field :backend, String

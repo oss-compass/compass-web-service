@@ -18,6 +18,7 @@ module Types
           list.each do |item|
             level = item['_source']['level']
             label = item['_source']['label']
+            short_code = ShortenedLabel.convert(label, level)
             updated_at = item['_source']['updated_at']
             candidates << OpenStruct.new({label: label, level: level, status: 'success', updated_at: updated_at})
           end

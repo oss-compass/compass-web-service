@@ -35,6 +35,7 @@ module Types
     field :beta_metric_overview, resolver: Queries::BetaMetricOverviewQuery
 
     field :collection_hottest, resolver: Queries::CollectionHottestQuery
+    field :collection_list, resolver: Queries::CollectionListQuery
     # field :collection_detail, resolver: Queries::Collections::CollectionDetailQuery
     # field :collection_overview, resolver: Queries::Collections::CollectionOverviewQuery
 

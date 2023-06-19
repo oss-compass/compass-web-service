@@ -7,5 +7,6 @@ module Types
     field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model creatiton time'
     field :label, String, description: 'metric model object identification'
     field :level, String, description: 'metric model object level'
+    field :short_code, String, description: 'metric model object short code'
   end
 end

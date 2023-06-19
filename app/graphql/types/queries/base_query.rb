@@ -32,6 +32,7 @@ module Types
           score['score'] = raw[beta_metric.op_index]
           score['label'] = raw['label']
           score['level'] = raw['level']
+          score['short_code'] = ShortenedLabel.convert(raw['label'], raw['level'])
           score['grimoire_creation_date'] = raw['grimoire_creation_date']
           OpenStruct.new(score)
         end
@@ -47,6 +48,7 @@ module Types
             if data.present?
               skeleton['origin'] = data['origin']
               skeleton['name'] = data['data']['name']
+              skeleton['short_code'] = ShortenedLabel.convert(data['origin'], 'repo')
               skeleton['language'] = data['data']['language']
               skeleton['path'] = data['data']['full_name']
               skeleton['backend'] = data['backend_name']
@@ -70,6 +72,7 @@ module Types
             if data.present?
               skeleton['origin'] = data['origin']
               skeleton['name'] = data['data']['name']
+              skeleton['short_code'] = ShortenedLabel.convert(data['origin'], 'repo')
               skeleton['language'] = data['data']['language']
               skeleton['path'] = data['data']['full_name']
               skeleton['backend'] = data['backend_name']
@@ -97,6 +100,7 @@ module Types
             if data.present?
               skeleton['origin'] = data['origin']
               skeleton['name'] = data['data']['name']
+              skeleton['short_code'] = ShortenedLabel.convert(data['origin'], 'repo')
               skeleton['language'] = data['data']['language']
               skeleton['path'] = data['data']['full_name']
               skeleton['backend'] = data['backend_name']
