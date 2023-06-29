@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
-  create_table "allowlisted_jwts", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
+  create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
     t.datetime "exp", null: false
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
   end
 
-  create_table "beta_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "beta_metrics", charset: "utf8mb4", force: :cascade do |t|
     t.string "dimensionality"
     t.string "metric"
     t.string "desc"
@@ -36,7 +36,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "collection_keyword_refs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "collection_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
     t.integer "collection_id", null: false
     t.integer "keyword_id", null: false
     t.datetime "created_at", null: false
@@ -46,7 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["keyword_id"], name: "index_collection_keyword_refs_on_keyword_id"
   end
 
-  create_table "collections", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "collections", charset: "utf8mb4", force: :cascade do |t|
     t.string "title", null: false
     t.text "desc"
     t.datetime "created_at", null: false
@@ -54,7 +54,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["title"], name: "index_collections_on_title"
   end
 
-  create_table "crono_jobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "crono_jobs", charset: "utf8mb4", force: :cascade do |t|
     t.string "job_id", null: false
     t.text "log", size: :long
     t.datetime "last_performed_at", precision: nil
@@ -64,7 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
-  create_table "keywords", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "keywords", charset: "utf8mb4", force: :cascade do |t|
     t.string "title", null: false
     t.text "desc"
     t.datetime "created_at", null: false
@@ -72,7 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["title"], name: "index_keywords_on_title"
   end
 
-  create_table "login_binds", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "login_binds", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider", null: false
     t.string "account", null: false
@@ -88,7 +88,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["user_id"], name: "index_login_binds_on_user_id"
   end
 
-  create_table "project_collection_refs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "project_collection_refs", charset: "utf8mb4", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "collection_id", null: false
     t.datetime "created_at", null: false
@@ -98,7 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["project_name"], name: "index_project_collection_refs_on_project_name"
   end
 
-  create_table "project_keyword_refs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "project_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
     t.string "project_name", null: false
     t.integer "keyword_id", null: false
     t.datetime "created_at", null: false
@@ -108,9 +108,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["project_name"], name: "index_project_keyword_refs_on_project_name"
   end
 
-  create_table "project_tasks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
-    t.string "task_id", null: false
-    t.string "remote_url", null: false
+  create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
+    t.string "task_id"
+    t.string "remote_url"
     t.string "status"
     t.text "payload"
     t.text "extra"
@@ -122,7 +122,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
   end
 
-  create_table "reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "reports", charset: "utf8mb4", force: :cascade do |t|
     t.text "content"
     t.string "lang"
     t.string "associated_id"
@@ -132,7 +132,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "subjects", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "shortened_labels", charset: "utf8mb4", force: :cascade do |t|
+    t.string "label", null: false
+    t.string "short_code", null: false
+    t.string "level", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["label", "level"], name: "index_shortened_labels_on_label_and_level", unique: true
+    t.index ["short_code"], name: "index_shortened_labels_on_short_code", unique: true
+  end
+
+  create_table "subjects", charset: "utf8mb4", force: :cascade do |t|
     t.string "label", null: false
     t.string "level", default: "repo", null: false, comment: "repo/community"
     t.string "status", default: "pending", null: false, comment: "pending/progress/complete"
@@ -140,10 +150,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.datetime "status_updated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "collect_at"
+    t.datetime "complete_at"
     t.index ["label"], name: "index_subjects_on_label", unique: true
   end
 
-  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "subscriptions", charset: "utf8mb4", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "subject_id", null: false
     t.datetime "created_at", null: false
@@ -151,7 +163,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -167,6 +179,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_031139) do
     t.string "email_verification_token"
     t.datetime "email_verification_sent_at"
     t.string "name"
+    t.string "language", default: "en"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
