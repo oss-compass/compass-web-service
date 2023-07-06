@@ -20,7 +20,7 @@ module Types
             label = item['_source']['label']
             short_code = ShortenedLabel.convert(label, level)
             updated_at = item['_source']['updated_at']
-            candidates << OpenStruct.new({label: label, level: level, status: 'success', updated_at: updated_at})
+            candidates << OpenStruct.new({label: label, level: level, short_code: short_code, status: 'success', updated_at: updated_at})
           end
         end
         candidates
