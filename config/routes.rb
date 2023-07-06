@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   get '/api/hook/we_chat/receive', to: 'we_chat#show'
   post '/api/hook/we_chat/receive', to: 'we_chat#create'
 
+  get '/badge/:id.svg', to: 'badge#show', constraint: { id:  /[a-z0-9]{8}/ }
 
   get '/(*path)', to: 'application#website', as: :website
 end

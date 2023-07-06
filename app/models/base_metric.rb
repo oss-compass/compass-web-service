@@ -111,8 +111,40 @@ class BaseMetric < BaseIndex
     self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value })
       .page(1)
       .per(1)
+      .sort(grimoire_creation_date: :desc)
       .execute
       .raw_response
       .dig('hits', 'hits', 0, '_source')
+  end
+
+  def self.main_score
+    'score'
+  end
+
+  def self.scaled_value(source)
+    scale = -> (value, from_min, from_max, to_min, to_max) {
+      (to_min + ((value - from_min) / (from_max - from_min)) * (to_max - to_min)).truncate
+    }
+    value = source&.dig(self.main_score)
+    case value
+    when 0..0.1
+      scale.(value, 0, 0.1, 0, 60)
+    when 0.1..0.2
+      scale.(value, 0.1, 0.2, 60, 65)
+    when 0.2..0.3
+      scale.(value, 0.2, 0.3, 65, 75)
+    when 0.3..0.5
+      scale.(value, 0.3, 0.5, 75, 80)
+    when 0.5..0.6
+      scale.(value, 0.5, 0.6, 80, 85)
+    when 0.6..0.7
+      scale.(value, 0.6, 0.7, 85, 90)
+    when 0.7..0.8
+      scale.(value, 0.7, 0.8, 90, 95)
+    when 0.8..1
+      scale.(value, 0.8, 1, 95, 100)
+    else
+      -1
+    end
   end
 end

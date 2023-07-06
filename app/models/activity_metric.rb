@@ -13,6 +13,10 @@ class ActivityMetric < BaseMetric
     }
   end
 
+  def self.main_score
+    'activity_score'
+  end
+
   def self.build_snapshot(label)
     snaphost =
       self

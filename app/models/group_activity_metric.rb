@@ -3,6 +3,10 @@ class GroupActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_group_activity"
   end
 
+  def self.main_score
+    'organizations_activity'
+  end
+
   def self.query_label_one(label, level)
     Rails.cache.fetch(
       "#{self.name}-#{__method__}-#{label}-#{level}",
@@ -18,6 +22,17 @@ class GroupActivityMetric < BaseMetric
         .execute
         .raw_response
     end
+  end
+
+  def self.find_one(field, value, keyword: true)
+    self.must(match: { "#{field}#{keyword ? '.keyword' : ''}" => value })
+      .where(is_org: true)
+      .page(1)
+      .per(1)
+      .sort(grimoire_creation_date: :desc)
+      .execute
+      .raw_response
+      .dig('hits', 'hits', 0, '_source')
   end
 
   def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)

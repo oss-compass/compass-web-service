@@ -19,4 +19,8 @@ class CodequalityMetric < BaseMetric
       'pr_issue_linked_count' => ['pr_issue_linked_ratio', 'pr_count']
     }
   end
+
+  def self.main_score
+    'code_quality_guarantee'
+  end
 end
