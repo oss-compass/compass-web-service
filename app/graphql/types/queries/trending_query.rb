@@ -121,7 +121,7 @@ module Types
       end
 
       def filter_by_other_metric_models(candidate_labels, level)
-        return candidate_labels if level == 'community'
+        return candidate_labels if level == 'community' || candidate_labels.blank?
         { community_support_score: CommunityMetric, code_quality_guarantee: CodequalityMetric }.map do |score, metric|
           metric
             .where(level: level)
