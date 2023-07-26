@@ -75,9 +75,6 @@ gem 'jsonapi-serializer'
 gem 'jsonapi.rb'
 gem 'ransack'
 
-# Simple, efficient background processing for Ruby
-gem 'sidekiq'
-
 # provides support for Cross-Origin Resource Sharing (CORS)
 gem 'rack-cors'
 

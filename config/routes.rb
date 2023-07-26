@@ -19,7 +19,6 @@ Rails.application.routes.draw do
   end
 
   post "/api/graphql", to: "graphql#execute"
-  # mount Sidekiq::Web => '/sidekiq'
   mount with_dev_auth.call(Crono::Engine), at: '/crono'
 
   root to: 'application#website'

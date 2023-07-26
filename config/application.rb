@@ -1,7 +1,6 @@
 require_relative 'boot'
 
 require 'rails/all'
-require 'sidekiq/web'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -39,7 +38,7 @@ module CompassWebService
                            url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
                          }
 
-    # Set Sidekiq as the back-end for Active Job.
+    # Set Sneakers as the back-end for Active Job.
     config.active_job.queue_adapter = :sneakers
 
     # Mount Action Cable outside the main process or domain.
