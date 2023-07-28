@@ -12,6 +12,20 @@ class CollectionServer
       return
     end
 
+    collections =
+      "#{Rails.root + META_REPO + directory}.yml"
+        .then { File.read _1 }
+        .then { YAML.load _1 }
+        .reduce({}) do |acc, col|
+      items = col['items']
+      ident = col['ident']
+      if items.is_a?(Array) && ident.is_a?(String)
+        items.reduce(acc) { |acc, item| acc.merge({ item => ident }) }
+      else
+        acc
+      end
+    end
+
     Dir.glob("#{Rails.root + META_REPO + directory}/*.yml").each do |file|
       job_logger.info("begin to refresh #{file}")
       begin
@@ -30,7 +44,8 @@ class CollectionServer
                     model.merge(
                       {
                         id: Digest::SHA1.hexdigest("#{collection}-#{label}"),
-                        collection: collection
+                        collection: collection,
+                        first_collection: (collections[collection] || 'unknown')
                       }
                     )
                   )
@@ -59,6 +74,21 @@ class CollectionServer
         job_logger.error "failed to refresh collection #{file}, error: #{ex.message}"
       end
       job_logger.info("finished to refresh #{file}")
+    end
+  end
+
+  def clean_expired(lte: 6.months)
+    job_logger.info("begin to clean expired collection data")
+    response = BaseCollection.range(:updated_at, lte: Date.today.end_of_day - lte).execute.raw_response
+    items = response&.[]('hits')&.[]('hits')
+    if items.present?
+      models = items.map { |item| OpenStruct.new(item['_source']) }
+      models.each do |model|
+        job_logger.info("cleaning #{model.to_h}")
+        BaseCollection.delete(model)
+      end
+    else
+      job_logger.info("no expired data")
     end
   end
 
