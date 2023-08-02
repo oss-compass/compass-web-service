@@ -49,7 +49,7 @@ module Types
               AnalyzeGroupServer.new(yaml_url: task.remote_url).check_task_status
             end
           result[:label] = label
-          reuslt[:level] = task.level
+          result[:level] = task.level
           result[:status] = task_status
           result[:short_code] = ShortenedLabel.convert(label, task.level)
           result[:updated_at] = task.updated_at
