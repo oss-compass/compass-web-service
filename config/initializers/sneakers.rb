@@ -7,6 +7,14 @@ opts = {
   pid_path: "tmp/pids/sneakers.pid",
   threads: 32,
   workers: 4,
+  hooks: {
+    before_fork: lambda do
+      ::ActiveRecord::Base.clear_all_connections!
+    end,
+    after_fork: lambda do
+      ::ActiveRecord::Base.establish_connection
+    end
+  }
 }
 
 Sneakers.configure(opts)
