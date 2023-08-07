@@ -24,8 +24,14 @@ class LoginBind < ApplicationRecord
   belongs_to :user
 
   validates :uid, uniqueness: { scope: :provider_id }
+  validates :account, presence: true
+  validates :provider, presence: true
 
   scope :current_host, -> { where(provider_id: [ENV['GITHUB_CLIENT_ID'], ENV['GITEE_CLIENT_ID']]) }
+
+  include Censoring
+
+  censoring only: [:nickname], img: [:avatar_url]
 
   LOGIN_PROVIDER = [:github, :gitee]
 

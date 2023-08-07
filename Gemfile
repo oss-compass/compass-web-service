@@ -24,9 +24,13 @@ gem 'redis'
 
 gem 'redis-rails'
 
-# User RabbitMQ
+# Use RabbitMQ
 gem 'bunny'
 gem 'sneakers'
+
+# Use Kafka (only for Content Review)
+gem 'connection_pool'
+gem 'waterdrop'
 
 # Use OpenSearch
 gem 'search_flip'
@@ -62,6 +66,8 @@ gem 'bootsnap', require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
+gem 'aws-sdk-s3', '~> 1'
+gem 'active_storage_base64'
 
 # paginator for Ruby
 gem 'pagy'
@@ -148,6 +154,7 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem 'active_record_doctor'
 
   gem "rack-reverse-proxy", require: "rack/reverse_proxy"
 end
@@ -166,4 +173,7 @@ group :test do
 end
 
 gem "graphql", "~> 2.0"
+gem 'graphql-batch'
 gem "graphiql-rails", group: :development
+
+gem "pundit", "~> 2.3"

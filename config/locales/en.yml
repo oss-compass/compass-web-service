@@ -46,6 +46,9 @@ en:
     detach_keyword_failed: 'failed to detach keyword from collection, reason: %{reason}.'
     append_project_failed: 'failed to append repo or community to collection, reason: %{reason}.'
     detach_project_failed: 'failed to detach repo or community from collection, reason: %{reason}.'
+  censoring:
+    illegal: "Illegal content, will not be displayed"
+    illegal_img: "/images/og.png"
   keyword:
     invalid: 'invalid keyword.'
     create_success: 'keyword created successfully.'

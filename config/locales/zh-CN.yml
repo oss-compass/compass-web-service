@@ -46,6 +46,9 @@ zh-CN:
     detach_keyword_failed: '取消 collection 与 该keyword的关联 失败, 原因： %{reason}'
     append_project_failed: '添加 repo 或 community 到 collection 失败, 原因： %{reason}'
     detach_project_failed: '从 collection 中移除 repo 或 community 失败, 原因： %{reason}'
+  censoring:
+    illegal: "违规内容，不予展示"
+    illegal_img: "/images/og.png"
   keyword:
     invalid: '无效的keyword'
     create_success: 'keyword 创建成功'

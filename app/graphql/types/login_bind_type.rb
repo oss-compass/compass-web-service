@@ -7,4 +7,12 @@ module Types
     field :nickname, String
     field :avatar_url, String
   end
+
+  def nickname
+    object.nickname_after_reviewed
+  end
+
+  def avatar_url
+    object.avatar_url_after_reviewed
+  end
 end

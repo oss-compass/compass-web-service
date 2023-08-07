@@ -39,6 +39,9 @@ yarn-error.log*
 # Ignore SampleCov files
 /coverage/*
 
+# Ignore projects-information
+/compass-projects-information
+
 # Ignore env files
 .env*
 !.env.example
