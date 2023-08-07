@@ -13,6 +13,7 @@ KAFKA_PRODUCERS_CP = ConnectionPool.new do
         'sasl.username': ENV.fetch('KAFKA_USERNAME') { 'username' },
         'sasl.password': ENV.fetch('KAFKA_PASSWORD') { 'password' },
         'sasl.mechanism': ENV.fetch('KAFKA_MECHANISM') { 'SCRAM-SHA-256' }
+        'security.protocol': ENV.fetch('KAFKA_PROTOCOL') { 'SASL_PLAINTEXT' }
       }
     else
       config.kafka = {
