@@ -28,9 +28,9 @@ module Censoring
     Rails.cache.redis.get(censoring_key(field)) rescue nil
   end
 
-  def processing_censoring(field, type: 'text')
+  def processing_censoring(field, type: 'text', is_attr: true)
     key = field
-    value = send(field)
+    value = is_attr ? self[field] : send(field)
     if type == 'image'
       type = 'url'
       key = 'url'
@@ -77,30 +77,34 @@ module Censoring
       class_attribute :censoring_options, instance_writer: false
       class_attribute :censoring_attributes, instance_writer: false
       class_attribute :censoring_img_attributes, instance_writer: false
+      class_attribute :censoring_internal_attrs, instance_writer: false
 
       self.censoring_options = options
       self.censoring_attributes = options[:only] || []
       self.censoring_img_attributes = options[:img] || []
+      self.censoring_internal_attrs = options[:attrs] || []
 
       after_commit :censoring_update, on: [:create, :update]
 
       censoring_attributes.each do |key|
         define_method("#{key}_after_reviewed") do
-          return send(key) unless Enable
+          is_attr = self.censoring_internal_attrs.include?(key)
+          return is_attr ? self[key] : send(key) unless Enable
           result = censoring_result(key)
           return I18n.t('censoring.illegal') if result == Failed
-          processing_censoring(key) if result.nil?
-          send(key)
+          processing_censoring(key, type: 'text', is_attr: is_attr) if result.nil?
+          is_attr ? self[key] : send(key)
         end
       end
 
       censoring_img_attributes.each do |key|
         define_method("#{key}_after_reviewed") do
-          return send(key) unless Enable
+          is_attr = self.censoring_internal_attrs.include?(key)
+          return is_attr ? self[key] : send(key) unless Enable
           result = censoring_result(key)
           return Addressable::URI.join(Host, I18n.t('censoring.illegal_img')).to_s if result == Failed
-          processing_censoring(key, type: 'image') if result.nil?
-          send(key)
+          processing_censoring(key, type: 'image', is_attr: is_attr) if result.nil?
+          is_attr ? self[key] : send(key)
         end
       end
     end

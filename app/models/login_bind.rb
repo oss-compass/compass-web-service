@@ -31,7 +31,7 @@ class LoginBind < ApplicationRecord
 
   include Censoring
 
-  censoring only: [:nickname], img: [:avatar_url]
+  censoring only: [:nickname], img: [:avatar_url], attrs: [:nickname, :avatar_url]
 
   LOGIN_PROVIDER = [:github, :gitee]
 
@@ -41,6 +41,14 @@ class LoginBind < ApplicationRecord
     'wechat' => ENV['WECHAT_CLIENT_ID'],
     'slack' => ENV['SLACK_CLIENT_ID']
   }
+
+  def avatar_url
+    avatar_url_after_reviewed
+  end
+
+  def nickname
+    nickname_after_reviewed
+  end
 
   class << self
     def current_host_nickname(user, provider)
