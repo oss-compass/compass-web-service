@@ -26,4 +26,12 @@ class ProjectTask < ApplicationRecord
   Canceled = 'canceled'
   UnSubmit = 'unsumbit'
   Processing = [Pending, Progress]
+
+  validates :task_id, length: { maximum: 255 }
+  validates :remote_url, length: { maximum: 255 }
+  validates :status, length: { maximum: 255 }
+  validates :payload, length: { maximum: 65535 }
+  validates :extra, length: { maximum: 65535 }
+  validates :length, length: { maximum: 255 }
+  validates :project_name, length: { maximum: 255 }
 end

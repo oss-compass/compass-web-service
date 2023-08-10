@@ -38,6 +38,8 @@ class User < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
 
   validate :check_email_change_limit
+  validates :sign_in_count, presence: true
+  validates :encrypted_password, presence: true
   after_initialize :set_default_language, if: :new_record?
 
   after_update :send_email_verification, if: -> { saved_changes.keys.include?('email') }

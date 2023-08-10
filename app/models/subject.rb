@@ -25,6 +25,11 @@ class Subject < ApplicationRecord
 
   has_many :subscriptions, dependent: :destroy
 
+  validates :label, presence: true, length: { maximum: 255 }
+  validates :level, presence: true, length: { maximum: 255 }
+  validates :status, presence: true, length: { maximum: 255 }
+  validates :count, presence: true
+
   def self.task_status_converter(task_status)
     case task_status.to_s
     when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled
