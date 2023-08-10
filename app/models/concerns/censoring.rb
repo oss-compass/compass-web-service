@@ -31,28 +31,30 @@ module Censoring
   def processing_censoring(field, type: 'text', is_attr: true)
     key = field
     value = is_attr ? self[field] : send(field)
-    if type == 'image'
-      type = 'url'
-      key = 'url'
-      value = value.starts_with?('http') ? value : Addressable::URI.join(Host, value).to_s
-    end
-    body = {
-      redis_key: censoring_key(field),
-      origin_url: Host,
-      gvp: false, # whilelist
-      author_id: nil,
-      app_name: AppNumber,
-      resource: enum_id,
-      resource_type: self.class.to_s,
-      resource_id: self.id,
-      repository: 0, # whilelist
-      repository_url: Host,
-      user_id: nil,
-      type: type,
-      data: { key => "#{value}" }
-    }
-    CompassKafka.pool.with do |producer|
-      producer.produce_async(topic: CensoringTopic, payload: body.to_json)
+    if value.present?
+      if type == 'image'
+        type = 'url'
+        key = 'url'
+        value = value.starts_with?('http') ? value : Addressable::URI.join(Host, value).to_s
+      end
+      body = {
+        redis_key: censoring_key(field),
+        origin_url: Host,
+        gvp: false, # whilelist
+        author_id: nil,
+        app_name: AppNumber,
+        resource: enum_id,
+        resource_type: self.class.to_s,
+        resource_id: self.id,
+        repository: 0, # whilelist
+        repository_url: Host,
+        user_id: nil,
+        type: type,
+        data: { key => "#{value}" }
+      }
+      CompassKafka.pool.with do |producer|
+        producer.produce_async(topic: CensoringTopic, payload: body.to_json)
+      end
     end
   end
 
