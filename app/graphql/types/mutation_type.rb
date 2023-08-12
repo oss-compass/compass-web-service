@@ -23,19 +23,5 @@ module Types
       user.destroy
       true
     end
-
-    # field :create_collection, mutation: Mutations::CreateCollection, description: 'Create a compass collection'
-    # field :delete_collection, mutation: Mutations::DeleteCollection, description: 'Delete a compass collection'
-    # field :create_keyword, mutation: Mutations::CreateKeyword, description: 'Create a compass keyword'
-    # field :delete_keyword, mutation: Mutations::DeleteKeyword, description: 'Delete a compass keyword'
-
-    # field :append_keyword_to_collection, mutation: Mutations::AppendKeywordToCollection, description: 'Append a keyword to a collection'
-    # field :detach_keyword_from_collection, mutation: Mutations::DetachKeywordFromCollection, description: 'Detach a keyword from a collection'
-
-    # field :append_project_to_collection, mutation: Mutations::AppendProjectToCollection, description: 'Append a repo or community to a collection'
-    # field :detach_project_from_collection, mutation: Mutations::DetachProjectFromCollection, description: 'Detach a repo or community from a collection'
-
-    # field :append_keyword_to_project, mutation: Mutations::AppendKeywordToProject, description: 'Append a keyword to a repo or community'
-    # field :detach_keyword_from_project, mutation: Mutations::DetachKeywordFromProject, description: 'Detach a keyword from a repo or community'
   end
 end

@@ -36,10 +36,7 @@ module Types
 
     field :collection_hottest, resolver: Queries::CollectionHottestQuery
     field :collection_list, resolver: Queries::CollectionListQuery
-    # field :collection_detail, resolver: Queries::Collections::CollectionDetailQuery
-    # field :collection_overview, resolver: Queries::Collections::CollectionOverviewQuery
 
-    # field :keyword_overview, resolver: Queries::Keywords::KeywordOverviewQuery
     field :current_user, resolver: Queries::CurrentUserQuery
     field :subject_subscription_count, resolver: Queries::SubjectSubscriptionCountQuery
   end
