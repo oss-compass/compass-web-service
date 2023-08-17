@@ -10,7 +10,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_17_071253) do
+  create_table "active_storage_attachments", charset: "utf8mb4",
+  force: :cascade do |t| t.string "name", null: false t.string
+  "record_type", null: false t.bigint "record_id", null: false
+  t.bigint "blob_id", null: false t.datetime "created_at", null: false
+  t.index ["blob_id"], name:
+  "index_active_storage_attachments_on_blob_id" t.index
+  ["record_type", "record_id", "name", "blob_id"], name:
+  "index_active_storage_attachments_uniqueness", unique: true end
+
+  create_table "active_storage_blobs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "utf8mb4", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
   create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
@@ -36,6 +63,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "collection_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.integer "keyword_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id", "keyword_id"], name: "index_collection_keyword_refs_on_collection_id_and_keyword_id", unique: true
+    t.index ["collection_id"], name: "index_collection_keyword_refs_on_collection_id"
+    t.index ["keyword_id"], name: "index_collection_keyword_refs_on_keyword_id"
+  end
+
+  create_table "collections", charset: "utf8mb4", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "desc"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_collections_on_title"
+  end
+
   create_table "crono_jobs", charset: "utf8mb4", force: :cascade do |t|
     t.string "job_id", null: false
     t.text "log", size: :long
@@ -46,8 +91,106 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
+  create_table "keywords", charset: "utf8mb4", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "desc"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["title"], name: "index_keywords_on_title"
+  end
+
+  create_table "lab_algorithms", charset: "utf8mb4", force: :cascade do |t|
+    t.string "ident", null: false
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "lab_datasets", charset: "utf8mb4", force: :cascade do |t|
+    t.string "ident"
+    t.string "name"
+    t.integer "lab_model_version_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "lab_metrics", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "ident", null: false
+    t.string "category", null: false
+    t.string "from"
+    t.float "default_weight"
+    t.float "default_threshold"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "extra", default: "{}"
+  end
+
+  create_table "lab_model_comments", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.text "content", null: false
+    t.integer "reply_to"
+    t.integer "lab_model_id", null: false
+    t.integer "lab_model_version_id"
+    t.integer "lab_model_metric_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lab_model_id", "lab_model_version_id", "lab_model_metric_id"], name: "index_comments_on_m_v_m"
+    t.index ["reply_to"], name: "index_lab_model_comments_on_reply_to"
+    t.index ["user_id"], name: "index_lab_model_comments_on_user_id"
+  end
+
+  create_table "lab_model_invitations", charset: "utf8mb4", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "token", null: false
+    t.integer "lab_model_id", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "user_id", null: false
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lab_model_id"], name: "index_lab_model_invitations_on_lab_model_id"
+  end
+
+  create_table "lab_model_members", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "lab_model_id", null: false
+    t.integer "permission", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lab_model_id", "user_id"], name: "index_lab_model_members_on_lab_model_id_and_user_id", unique: true
+  end
+
+  create_table "lab_model_metrics", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "lab_metric_id", null: false
+    t.integer "lab_model_version_id", null: false
+    t.float "weight"
+    t.float "threshold"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lab_model_version_id", "lab_metric_id"], name: "index_metrics_on_v_m"
+  end
+
+  create_table "lab_model_versions", charset: "utf8mb4", force: :cascade do |t|
+    t.string "version", default: ""
+    t.integer "lab_model_id", null: false
+    t.integer "lab_dataset_id", null: false
+    t.integer "lab_algorithm_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lab_model_id", "version"], name: "index_lab_model_versions_on_lab_model_id_and_version"
+  end
+
+  create_table "lab_models", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "user_id", null: false
+    t.integer "dimension", null: false
+    t.boolean "is_general", null: false
+    t.boolean "is_public", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "default_version_id"
   end
 
   create_table "login_binds", charset: "utf8mb4", force: :cascade do |t|
@@ -66,6 +209,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
     t.index ["user_id"], name: "index_login_binds_on_user_id"
   end
 
+  create_table "project_collection_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "project_name", null: false
+    t.integer "collection_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_project_collection_refs_on_collection_id"
+    t.index ["project_name", "collection_id"], name: "index_project_collection_refs_on_project_name_and_collection_id", unique: true
+    t.index ["project_name"], name: "index_project_collection_refs_on_project_name"
+  end
+
+  create_table "project_keyword_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "project_name", null: false
+    t.integer "keyword_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["keyword_id"], name: "index_project_keyword_refs_on_keyword_id"
+    t.index ["project_name", "keyword_id"], name: "index_project_keyword_refs_on_project_name_and_keyword_id", unique: true
+    t.index ["project_name"], name: "index_project_keyword_refs_on_project_name"
+  end
+
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
     t.string "task_id"
     t.string "remote_url"
@@ -78,6 +241,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
     t.string "project_name"
     t.index ["project_name"], name: "index_project_tasks_on_project_name", unique: true
     t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
+  end
+
+  create_table "reports", charset: "utf8mb4", force: :cascade do |t|
+    t.text "content"
+    t.string "lang"
+    t.string "associated_id"
+    t.string "associated_type"
+    t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "shortened_labels", charset: "utf8mb4", force: :cascade do |t|
@@ -132,5 +305,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_13_093343) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
 end
