@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   resources :users, only: [] do
     collection do
       get 'verify_email/:token' => 'users#verify_email'
+      get 'accept_invitation/:token' => 'users#accept_invitation'
     end
   end
   post '/api/workflow', to: 'application#workflow', as: :workflow
@@ -47,6 +48,4 @@ Rails.application.routes.draw do
   post '/api/hook/we_chat/receive', to: 'we_chat#create'
 
   get '/badge/:id.svg', to: 'badge#show', constraint: { id:  /[a-z0-9]{8}/ }
-
-  get '/(*path)', to: 'application#website', as: :website
 end

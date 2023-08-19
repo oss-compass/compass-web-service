@@ -8,6 +8,20 @@ class UserMailer < ApplicationMailer
     mail(to: @user.email, subject: I18n.t('user_mailer.email_verification.subject'))
   end
 
+  def email_invitation
+    @user = params[:user]
+    @host = params[:host]
+    @locale = params[:locale]
+    @model = params[:model]
+    @token = params[:token]
+    @email = params[:email]
+    I18n.locale = @locale
+    accept_url = "#{@host}/users/accept_invitation/#{@token}"
+    params_encoded = Addressable::URI.encode("?accept_url=#{accept_url}&invitee=#{@user.name}&model=#{@model.name_after_reviewed}")
+    @confirm_url = "#{@host}/lab/model/invite/confirm#{params_encoded}"
+    mail(to: @email, subject: I18n.t('user_mailer.email_invitation.subject'))
+  end
+
   def subscription_update
     submission_params
     mail(to: @user.email, subject: "#{I18n.t('notification.email.project_subscription_update', locale: @user.language)} - #{@subject_name}")

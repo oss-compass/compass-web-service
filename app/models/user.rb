@@ -34,8 +34,13 @@ class User < ApplicationRecord
          :recoverable, :validatable, :trackable,
          :jwt_authenticatable, :omniauthable, jwt_revocation_strategy: self
 
+  alias_attribute :metric_models, :lab_models
+  alias_attribute :invitations, :lab_model_invitations
+
   has_many :login_binds, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+  has_many :lab_models, dependent: :destroy
+  has_many :lab_model_invitations
 
   validate :check_email_change_limit
   validates :sign_in_count, presence: true
@@ -60,8 +65,26 @@ class User < ApplicationRecord
     end
   end
 
+  def avatar_url
+    login_binds.first.avatar_url_after_reviewed
+  end
+
+  def send_email_invitation(email, model, permission)
+    return unless check_send_email_limit(send_email_invite_limit_key)
+
+    email_invitation_token = loop do
+      random_token = SecureRandom.urlsafe_base64(nil, false)
+      break random_token unless LabModelInvitation.exists?(token: random_token)
+    end
+
+    extra = JSON.dump(permission: permission)
+
+    self.invitations.create!(lab_model: model, email: email, token: email_invitation_token, extra: extra)
+
+  end
+
   def send_email_verification
-    return unless check_send_email_limit
+    return unless check_send_email_limit(send_email_limit_key)
 
     generate_email_verification_token
     UserMailer.with(
@@ -70,6 +93,16 @@ class User < ApplicationRecord
       locale: I18n.locale
     ).email_verification.deliver_later
     true
+  end
+
+  def my_member_permission_of(model)
+    policy = ::Pundit.policy(self, model)
+    {
+      can_read: policy.read?,
+      can_update: policy.update?,
+      can_execute: policy.execute?,
+      can_destroy: policy.destroy?
+    }
   end
 
   def generate_email_verification_token
@@ -140,6 +173,10 @@ class User < ApplicationRecord
     user
   end
 
+  def lab_models_has_participated_in
+    LabModel.joins(:lab_model_members).where(lab_model_members: { user_id: id }).order(:name)
+  end
+
   def self.gen_anonymous_email(provider, uid)
     "#{provider}_#{uid}#{ANONYMOUS_EMAIL_SUFFIX}"
   end
@@ -154,12 +191,21 @@ class User < ApplicationRecord
     "user:send_email_limit:#{id}:#{email}"
   end
 
-  def check_send_email_limit
-    count = Rails.cache.increment(send_email_limit_key)
-    Rails.cache.write(send_email_limit_key, 1, expires_in: 1.day, raw: true) if count == 1
+  def send_email_invite_limit_key
+    "user:send_email_invite_limit:#{id}"
+  end
+
+  def check_send_email_limit(cache_key)
+    count = Rails.cache.increment(cache_key)
+    Rails.cache.write(cache_key, 1, expires_in: 1.day, raw: true) if count == 1
     max_count = ENV.fetch('MAX_SEND_EMAIL_COUNT') { 3 }.to_i
     if count > max_count
-      errors.add(:base, I18n.t("users.send_email_limit", count: max_count))
+      case cache_key
+      when send_email_invite_limit_key
+        errors.add(:base, I18n.t("users.send_email_limit", count: max_count))
+      else
+        errors.add(:base, I18n.t("users.send_email_limit", count: max_count))
+      end
       return false
     end
     true

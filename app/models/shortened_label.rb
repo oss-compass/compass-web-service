@@ -16,6 +16,8 @@
 #
 class ShortenedLabel < ApplicationRecord
   validates :short_code, presence: true, uniqueness: true
+  validates :label, presence: true
+  validates :level, presence: true
   before_validation :generate_short_code
 
   CacheTTL = 1.week
