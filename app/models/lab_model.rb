@@ -38,7 +38,7 @@ class LabModel < ApplicationRecord
 
   include Censoring
 
-  censoring only: [:name]
+  censoring only: [:name], attrs: [:name]
 
   Productivity = 0
   Robustness = 1

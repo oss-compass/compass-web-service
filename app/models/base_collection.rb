@@ -23,6 +23,79 @@ class BaseCollection < BaseIndex
       .raw_response
   end
 
+  def self.distinct_first_idents
+    self
+      .per(0)
+      .page(0)
+      .aggregate({ values: { terms: { field: 'first_collection.keyword'} } })
+      .execute
+      .aggregations
+      &.[]('values')
+      &.[]('buckets')
+      &.map{|item| item['key'] }
+  end
+
+  def self.distinct_second_idents(first_ident)
+    self
+      .per(0)
+      .page(0)
+      .where('first_collection.keyword' => first_ident)
+      .aggregate({ values: { terms: { field: 'collection.keyword'} } })
+      .execute
+      .aggregations
+      &.[]('values')
+      &.[]('buckets')
+      &.map{|item| item['key'] }
+  end
+
+  def self.distinct_labels(first_ident, second_ident)
+    self
+      .per(0)
+      .page(0)
+      .where('first_collection.keyword' => first_ident)
+      .where('collection.keyword' => second_ident)
+      .aggregate({ values: { terms: { field: 'label.keyword'} } })
+      .execute
+      .aggregations
+      &.[]('values')
+      &.[]('buckets')
+      &.map{|item| item['key'] }
+  end
+
+  def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
+    base =
+      self
+        .search(keyword, default_field: field)
+        .per(limit)
+    filters.map do |k, value|
+      if value.present?
+        base = base.where(k => value)
+      end
+    end
+
+    base
+      .source(fields)
+      .execute
+      .raw_response
+  end
+
+  def self.prefix_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
+    base =
+      self
+        .must(prefix: { field => keyword })
+        .per(limit)
+    filters.map do |k, value|
+      if value.present?
+        base = base.where(k => value)
+      end
+    end
+
+    base
+      .source(fields)
+      .execute
+      .raw_response
+  end
+
   def self.hottest(collection, level, limit: 5)
     base =
       self

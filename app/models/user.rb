@@ -70,7 +70,7 @@ class User < ApplicationRecord
   end
 
   def send_email_invitation(email, model, permission)
-    return unless check_send_email_limit(send_email_invite_limit_key)
+    return unless check_send_email_limit(send_email_invite_limit_key(email))
 
     email_invitation_token = loop do
       random_token = SecureRandom.urlsafe_base64(nil, false)
@@ -174,7 +174,11 @@ class User < ApplicationRecord
   end
 
   def lab_models_has_participated_in
-    LabModel.joins(:lab_model_members).where(lab_model_members: { user_id: id }).order(:name)
+    LabModel
+      .joins(:lab_model_members)
+      .where(lab_model_members: { user_id: id })
+      .order('updated_at desc')
+      .order(:name)
   end
 
   def self.gen_anonymous_email(provider, uid)
@@ -191,8 +195,8 @@ class User < ApplicationRecord
     "user:send_email_limit:#{id}:#{email}"
   end
 
-  def send_email_invite_limit_key
-    "user:send_email_invite_limit:#{id}"
+  def send_email_invite_limit_key(email)
+    "user:send_email_invite_limit:#{id}:#{email}"
   end
 
   def check_send_email_limit(cache_key)
@@ -201,7 +205,7 @@ class User < ApplicationRecord
     max_count = ENV.fetch('MAX_SEND_EMAIL_COUNT') { 3 }.to_i
     if count > max_count
       case cache_key
-      when send_email_invite_limit_key
+      when send_email_limit_key
         errors.add(:base, I18n.t("users.send_email_limit", count: max_count))
       else
         errors.add(:base, I18n.t("users.send_email_limit", count: max_count))

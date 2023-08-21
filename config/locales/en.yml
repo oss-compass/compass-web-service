@@ -47,7 +47,7 @@ en:
     append_project_failed: 'failed to append repo or community to collection, reason: %{reason}.'
     detach_project_failed: 'failed to detach repo or community from collection, reason: %{reason}.'
   censoring:
-    illegal: "Illegal content, will not be displayed"
+    illegal: "[Illegal content, will not be displayed]"
     illegal_img: "/images/og.png"
   keyword:
     invalid: 'invalid keyword.'
@@ -102,6 +102,9 @@ en:
     invalid_dataset: "Invalid dataset"
     invalid_algorithm: "Invalid algorithm"
     invalid_version: "Invalid version"
+    invalid_invitation: "Invalid invitation"
+    invitation_expired: "Invitation expired"
+    already_memeber: "You are already a member"
     datasets_too_large: "The dataset exceeds the maximum length limit: %{limit}"
     metrics_too_large: "The metrics exceeds the maximum length limit: %{limit}"
     not_found: "No corresponding resources found"

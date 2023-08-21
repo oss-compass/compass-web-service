@@ -47,7 +47,7 @@ zh-CN:
     append_project_failed: '添加 repo 或 community 到 collection 失败, 原因： %{reason}'
     detach_project_failed: '从 collection 中移除 repo 或 community 失败, 原因： %{reason}'
   censoring:
-    illegal: "违规内容，不予展示"
+    illegal: "[违规内容，不予展示]"
     illegal_img: "/images/og.png"
   keyword:
     invalid: '无效的keyword'
@@ -102,6 +102,9 @@ zh-CN:
     invalid_dataset: "无效的数据集"
     invalid_algorithm: "无效的算法"
     invalid_version: "无效的版本"
+    invalid_invitation: "无效的邀请"
+    invitation_expired: "该邀请已过期"
+    already_memeber: "您已经是协作成员了"
     datasets_too_large: "数据集超过了最大长度限制：%{limit}"
     metrics_too_large: "指标集超过了最大长度限制：%{limit}"
     not_found: "未找到对应资源"

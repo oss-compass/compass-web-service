@@ -14,6 +14,9 @@ module Censoring
   ClassIds = {
     'LabModel' => 0,
     'LoginBind' => 1,
+    'LabModelVersion' => 2,
+    'LabModelComment' => 3,
+    'Types::ImageType' => 4,
   }
 
   def enum_id
@@ -86,7 +89,7 @@ module Censoring
       self.censoring_img_attributes = options[:img] || []
       self.censoring_internal_attrs = options[:attrs] || []
 
-      after_commit :censoring_update, on: [:create, :update]
+      after_commit :censoring_update, on: [:create, :update] if respond_to?(:after_commit)
 
       censoring_attributes.each do |key|
         define_method("#{key}_after_reviewed") do

@@ -11,6 +11,25 @@ module Types
     field :create_subscription, mutation: Mutations::CreateSubscription, description: 'Create subscription'
     field :cancel_subscription, mutation: Mutations::CancelSubscription, description: 'Cancel subscription'
 
+    # Lab Model Management
+    field :create_lab_model, mutation: Mutations::CreateLabModel, description: 'Create a Lab model'
+    field :delete_lab_model, mutation: Mutations::DeleteLabModel, description: 'Delete a Lab model'
+    field :update_lab_model, mutation: Mutations::UpdateLabModel, description: 'Update a Lab model'
+    field :create_lab_model_version, mutation: Mutations::CreateLabModelVersion, description: 'Create a Lab model version'
+    field :delete_lab_model_version, mutation: Mutations::DeleteLabModelVersion, description: 'Delete a Lab model version'
+    field :update_lab_model_version, mutation: Mutations::UpdateLabModelVersion, description: 'Update a Lab model version'
+    field :trigger_lab_model_version, mutation: Mutations::TriggerLabModelVersion, description: 'Trigger the analysis of a Lab model version'
+
+    field :send_member_invite, mutation: Mutations::SendMemberInvite, description: 'Send member invitation'
+    field :cancel_member_invite, mutation: Mutations::CancelMemberInvite, description: 'Cancel a member invitation'
+    field :update_member_permission, mutation: Mutations::UpdateMemberPermission, description: 'Update a member permission'
+    field :delete_lab_member, mutation: Mutations::DeleteLabMember, description: 'Delete a lab member'
+
+    field :create_lab_model_comment, mutation: Mutations::CreateLabModelComment, description: 'Create a comment for a lab model'
+    field :update_lab_model_comment, mutation: Mutations::UpdateLabModelComment, description: 'Update a comment for a lab model'
+    field :delete_lab_model_comment, mutation: Mutations::DeleteLabModelComment, description: 'Delete a comment for a lab model'
+
+    # User Cancellation
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?
       true

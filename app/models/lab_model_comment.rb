@@ -39,6 +39,14 @@ class LabModelComment < ApplicationRecord
 
   validates :content, presence: true
 
+  include Censoring
+
+  censoring only: [:content], attrs: [:content]
+
+  def content
+    content_after_reviewed
+  end
+
   def self.sortable_fields
     %w(created_at updated_at)
   end

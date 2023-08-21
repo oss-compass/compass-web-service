@@ -222,6 +222,65 @@ module Types
           .map { |row| remove_suffix ? row.sub(/\.git/, '') : row }
       end
 
+      def build_report_data(label, model, version, resp)
+        hits = resp&.fetch('hits', {})&.fetch('hits', [])
+        metric_with_fields = version.metrics.reduce({}) do |acc, metric|
+          acc.merge(metric => metric.extra_fields)
+        end
+        fields_key = metric_with_fields.values.flatten
+        fields_set = fields_key.to_h { |m| [m, []] }
+        dates = []
+        scores = []
+        panels = []
+        hits.each do |hit|
+          data = hit['_source']
+          dates << data['grimoire_creation_date']
+          scores << data['score']
+          fields_key.each do |key|
+            fields_set[key] << data[key]
+          end
+        end
+
+        metric_with_fields.each do |metric, fields|
+          diagrams = fields.map { |field| { tab_ident: field, type: metrics_graph_mapping(field), dates: dates, values: fields_set[field] } }
+          panels << {
+            metric: metric,
+            diagrams: diagrams
+          }
+        end
+
+        {
+          label: label,
+          level: 'repo',
+          short_code: ShortenedLabel.convert(label, 'repo'),
+          type: nil,
+          main_score: { tab_ident: 'score', type: 'line', dates: dates, values: scores },
+          panels: panels,
+        }
+      end
+
+      def build_simple_report_data(aggs)
+        reports = aggs&.fetch('reports', {})&.fetch('buckets', [])
+        skeletons = []
+        reports.each do |report|
+          hits = report.fetch('docs', {})&.fetch('hits', [])
+          values = []
+          dates = []
+          hits.each do |hit|
+            dates << hit['_source']['grimoire_creation_date']
+            values << hit['_source']['score']
+          end
+          skeletons << {
+            label: report['key'],
+            level: 'repo',
+            short_code: ShortenedLabel.convert(report['key'], 'repo'),
+            type: nil,
+            main_score: { tab_ident: 'score', type: 'line', dates: dates, values: values }
+          }
+        end
+        skeletons
+      end
+
       def build_metrics_data(resp, base_type, &builder)
         aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
         hits = resp&.[]('hits')&.[]('hits')
@@ -247,6 +306,15 @@ module Types
         end
 
         skeletons
+      end
+
+      def metrics_graph_mapping(field)
+        case field
+        when 'lines_of_code_frequency', 'lines_add_of_code_frequency','lines_remove_of_code_frequency'
+          'bar'
+        else
+          'line'
+        end
       end
 
       def aggs_distinct(index, field, threshold=100)

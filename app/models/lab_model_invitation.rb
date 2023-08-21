@@ -71,16 +71,17 @@ class LabModelInvitation < ApplicationRecord
     return false unless pending?
     if !expired? && token == self.token
       if lab_model.has_member?(user)
-        false
+        [false, I18n.t('lab_models.already_memeber')]
       else
         ActiveRecord::Base.transaction do
           lab_model.members.create!(user: user, permission: permission)
           self.update!(status: :finished)
         end
+        [true, nil]
       end
     else
       self.update(status: :expired)
-      false
+      [false, I18n.t('lab_models.invitation_expired')]
     end
   end
 end

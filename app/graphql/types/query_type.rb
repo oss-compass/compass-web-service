@@ -22,6 +22,26 @@ module Types
     field :metric_codequality, resolver: Queries::CodequalityMetricQuery
     field :metric_group_activity, resolver: Queries::GroupActivityMetricQuery
 
+    ## Compass Lab Model Management
+    field :custom_analysis_status, resolver: Queries::Lab::CustomAnalysisStatusQuery
+    field :metric_set_overview, resolver: Queries::Lab::MetricSetOverviewQuery
+    field :my_models, resolver: Queries::Lab::MyModelsQuery
+    field :lab_model_detail, resolver: Queries::Lab::ModelDetailQuery
+    field :lab_model_version, resolver: Queries::Lab::ModelVersionQuery
+    field :lab_model_version_report_list, resolver: Queries::Lab::ModelVersionReportListQuery
+    field :lab_model_version_report_detail, resolver: Queries::Lab::ModelVersionReportDetailQuery
+    field :lab_model_comments, resolver: Queries::Lab::ModelCommentsQuery
+    field :lab_model_comment_detail, resolver: Queries::Lab::ModelCommentDetailQuery
+    field :lab_model_public_overview, resolver: Queries::Lab::ModelPublicOverviewQuery
+
+    field :dataset_overview, resolver: Queries::Lab::DatasetOverviewQuery
+    field :dataset_fuzzy_search, resolver: Queries::Lab::DatasetFuzzyQuery
+
+    field :member_overview, resolver: Queries::Lab::MemberOverviewQuery
+    field :invitation_overview, resolver: Queries::Lab::InvitationOverviewQuery
+    field :my_member_permission, resolver: Queries::Lab::MyMemberPermissionQuery
+
+
     ## Lab Metrics
     field :metric_starter_project_health, resolver: Queries::StarterProjectHealthMetricQuery
 
