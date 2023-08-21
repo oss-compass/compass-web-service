@@ -32,6 +32,5 @@ class ProjectTask < ApplicationRecord
   validates :status, length: { maximum: 255 }
   validates :payload, length: { maximum: 65535 }
   validates :extra, length: { maximum: 65535 }
-  validates :length, length: { maximum: 255 }
   validates :project_name, length: { maximum: 255 }
 end
