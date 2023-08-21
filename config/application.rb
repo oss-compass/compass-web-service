@@ -69,6 +69,11 @@ module CompassWebService
     config.i18n.default_locale = :en
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '*', '*.{rb,yml}')]
 
+    # ActiveStorageSupport
+    config.active_storage.routes_prefix = '/files'
+    config.active_storage.draw_routes = true
+    config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
     # config.middleware.insert(0, Rack::ReverseProxy) do
     #   reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
     #   reverse_proxy '/analyze', 'http://localhost:5000/'

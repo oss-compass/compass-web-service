@@ -3,8 +3,20 @@ test:
   root: <%= Rails.root.join("tmp/storage") %>
 
 local:
-  service: Disk
-  root: <%= Rails.root.join("storage") %>
+  service: S3
+  endpoint: <%= ENV.fetch("S3_ENDPOINT") { "compass-web-endpoint" } %>
+  access_key_id: <%= ENV.fetch("S3_ACCESS_KEY_ID") { "compass-web-service-access-key" } %>
+  secret_access_key: <%= ENV.fetch("S3_SECRET_KEY") { "compass-web-secret-key" } %>
+  region: <%= ENV.fetch("S3_REGION") { "compass-web-region" } %>
+  bucket: <%= ENV.fetch("S3_BUCKET") { "compass-web-bucket" } %>
+
+production:
+  service: S3
+  endpoint: <%= ENV.fetch("S3_ENDPOINT") { "compass-web-endpoint" } %>
+  access_key_id: <%= ENV.fetch("S3_ACCESS_KEY_ID") { "compass-web-service-access-key" } %>
+  secret_access_key: <%= ENV.fetch("S3_SECRET_KEY") { "compass-web-secret-key" } %>
+  region: <%= ENV.fetch("S3_REGION") { "compass-web-region" } %>
+  bucket: <%= ENV.fetch("S3_BUCKET") { "compass-web-bucket" } %>
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
 # amazon:
