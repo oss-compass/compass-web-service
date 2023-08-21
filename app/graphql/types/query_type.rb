@@ -9,8 +9,8 @@ module Types
 
     field :analysis_status, resolver: Queries::AnalysisStatusQuery
     field :analysis_status_verify, resolver: Queries::AnalysisStatusVerifyQuery
+
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
-    field :recent_updates, resolver: Queries::ProjectRecentUpdatesQuery
     field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
     field :bulk_overview, resolver: Queries::BulkOverviewQuery
