@@ -48,7 +48,7 @@ zh-CN:
     detach_project_failed: '从 collection 中移除 repo 或 community 失败, 原因： %{reason}'
   censoring:
     illegal: "[违规内容，不予展示]"
-    illegal_img: "/images/og.png"
+    illegal_img: "/images/illegal.svg"
   keyword:
     invalid: '无效的keyword'
     create_success: 'keyword 创建成功'

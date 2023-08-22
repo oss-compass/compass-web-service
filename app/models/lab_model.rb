@@ -34,7 +34,7 @@ class LabModel < ApplicationRecord
   # validates :is_general, presence: true
   # validates :is_public, presence: true
 
-  CacheTTL = 1.day
+  CacheTTL = 7.day
 
   include Censoring
 

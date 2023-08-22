@@ -22,7 +22,7 @@ metrics_set =
   },
   {
     name: 'Org Commit Frequency', ident: 'org_commit_frequency', default_weight: 0, default_threshold: 800, category: 'git',
-    extra: { extra_fields: ['org_commit_frequency', 'org_commit_frequency_bot', 'org_commit_frequency_without_bot', 'org_commit_frequency_list'] }.to_json
+    extra: { extra_fields: ['org_commit_frequency', 'org_commit_frequency_bot', 'org_commit_frequency_without_bot'] }.to_json
   },
   {
     name: 'Org Contribution Last', ident: 'org_contribution_last', default_weight: 0, default_threshold: 160,  category: 'git',
