@@ -1,4 +1,7 @@
 class BaseCollection < BaseIndex
+
+  MaxItems = 2000
+
   def self.index_name
     "#{MetricsIndexPrefix}_collection"
   end
@@ -27,12 +30,13 @@ class BaseCollection < BaseIndex
     self
       .per(0)
       .page(0)
-      .aggregate({ values: { terms: { field: 'first_collection.keyword'} } })
+      .aggregate({ values: { terms: { field: 'first_collection.keyword', size: MaxItems } } })
       .execute
       .aggregations
       &.[]('values')
       &.[]('buckets')
       &.map{|item| item['key'] }
+      &.sort
   end
 
   def self.distinct_second_idents(first_ident)
@@ -40,12 +44,13 @@ class BaseCollection < BaseIndex
       .per(0)
       .page(0)
       .where('first_collection.keyword' => first_ident)
-      .aggregate({ values: { terms: { field: 'collection.keyword'} } })
+      .aggregate({ values: { terms: { field: 'collection.keyword', size: MaxItems } } })
       .execute
       .aggregations
       &.[]('values')
       &.[]('buckets')
-      &.map{|item| item['key'] }
+      &.map { |item| item['key'] }
+      &.sort
   end
 
   def self.distinct_labels(first_ident, second_ident)
@@ -54,12 +59,13 @@ class BaseCollection < BaseIndex
       .page(0)
       .where('first_collection.keyword' => first_ident)
       .where('collection.keyword' => second_ident)
-      .aggregate({ values: { terms: { field: 'label.keyword'} } })
+      .aggregate({ values: { terms: { field: 'label.keyword', size: MaxItems } } })
       .execute
       .aggregations
       &.[]('values')
       &.[]('buckets')
       &.map{|item| item['key'] }
+      &.sort
   end
 
   def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
