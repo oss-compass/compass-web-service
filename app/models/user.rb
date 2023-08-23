@@ -43,7 +43,6 @@ class User < ApplicationRecord
   has_many :lab_model_invitations
 
   validate :check_email_change_limit
-  validates :sign_in_count, presence: true
   validates :encrypted_password, presence: true
   after_initialize :set_default_language, if: :new_record?
 
@@ -58,6 +57,7 @@ class User < ApplicationRecord
   def verify_email(token)
     if !email_verification_expired? && email_verification_token == token
       self.email_verification_token = nil
+      self.anonymous = false
       save
       true
     else
