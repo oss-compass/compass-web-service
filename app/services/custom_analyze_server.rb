@@ -87,7 +87,9 @@ class CustomAnalyzeServer
     if task_id.present?
       update_task_status(task_id)
     end
-    task_info&.[]('updated_at')
+    DateTime.parse(task_info&.[]('updated_at'))
+  rescue
+    nil
   end
 
   def execute
