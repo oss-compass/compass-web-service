@@ -8,7 +8,7 @@ module Mutations
     argument :email, String, required: true, description: 'user email'
     argument :language, String, required: false, description: 'user language'
 
-    def resolve(name:, email:, language:)
+    def resolve(name:, email:, language: nil)
       current_user = context[:current_user]
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
 
