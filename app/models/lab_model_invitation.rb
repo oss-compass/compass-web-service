@@ -71,6 +71,7 @@ class LabModelInvitation < ApplicationRecord
     return false unless pending?
     if !expired? && token == self.token
       if lab_model.has_member?(user)
+        self.update!(status: :cancel)
         [false, I18n.t('lab_models.already_memeber')]
       else
         ActiveRecord::Base.transaction do
