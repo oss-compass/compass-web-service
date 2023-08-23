@@ -19,7 +19,7 @@ class UsersController < ApplicationController
 
     if error.present?
       uri = Addressable::URI.parse('/lab/model/my')
-      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: Time.now.to_i })
+      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
       redirect_to url_for(uri.to_s)
     else
       redirect_to url_for("/lab/model/#{invitation.lab_model.id}/user")

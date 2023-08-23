@@ -108,7 +108,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     url = default_url if skip_cookies
     if error.present?
       uri = Addressable::URI.parse(url)
-      uri.query_values = uri.query_values.to_h.merge({ error:, ts: Time.now.to_i })
+      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
       url = uri.to_s
     end
     url
