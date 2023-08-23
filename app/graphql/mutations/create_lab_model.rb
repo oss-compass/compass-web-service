@@ -55,6 +55,8 @@ module Mutations
       end
 
       { data: model }
+    rescue => ex
+      raise GraphQL::ExecutionError.new I18n.t('lab_models.create_failed', reason: ex.message)
     end
   end
 end

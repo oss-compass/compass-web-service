@@ -109,6 +109,7 @@ zh-CN:
     metrics_too_large: "指标集超过了最大长度限制：%{limit}"
     not_found: "未找到对应资源"
     forbidden: "没有访问权限"
+    create_failed: "创建失败，原因：%{reason}"
     update_failed: "更新失败，原因：%{reason}"
     delete_failed: "删除失败, 原因： %{reason}"
     delete_success: "删除成功"

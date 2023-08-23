@@ -109,6 +109,7 @@ en:
     metrics_too_large: "The metrics exceeds the maximum length limit: %{limit}"
     not_found: "No corresponding resources found"
     forbidden: "No permission to access the corresponding resources"
+    create_failed: "Failed to create, reason: %{reason}"
     update_failed: "Update failed with reason: %{reason}"
     delete_failed: "Deletion failed, reason: %{reason}"
     trigger_failed: "Failed to trigger model analysis "

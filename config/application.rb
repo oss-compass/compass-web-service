@@ -23,9 +23,9 @@ module CompassWebService
     config.cache_store = :redis_cache_store, {
       url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
       connect_timeout:    30,  # Defaults to 20 seconds
-      read_timeout:       0.2, # Defaults to 1 second
-      write_timeout:      0.2, # Defaults to 1 second
-      reconnect_attempts: 1,   # Defaults to 0
+      read_timeout:       2, # Defaults to 1 second
+      write_timeout:      2, # Defaults to 1 second
+      reconnect_attempts: 2,   # Defaults to 0
       namespace: "#{ENV['DEFAULT_HOST']}:cache"
     }
 
