@@ -104,14 +104,16 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def redirect_url(error: nil, default_url: nil, skip_cookies: false)
+    default_host = Addressable::URI.parse(ENV['DEFAULT_HOST'])
     url = cookies['auth.callback-url'].presence || default_url
     url = default_url if skip_cookies
+    uri = Addressable::URI.parse(url)
+    uri.scheme = 'http'
+    uri.host = default_host.host
     if error.present?
-      uri = Addressable::URI.parse(url)
       uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
-      url = uri.to_s
     end
-    url
+    uri.to_s
   end
 
   private

@@ -82,11 +82,6 @@ class ApplicationController < ActionController::Base
     Rails.logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
   end
 
-  def default_url_options
-    @default_host ||= URI.parse(ENV['DEFAULT_HOST'])
-    { protocol: @default_host.scheme }
-  end
-
   private
 
   def user_agent

@@ -63,8 +63,6 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "base_app_production"
 
   config.action_mailer.perform_caching = false
-  default_host = URI.parse(ENV['DEFAULT_HOST'])
-  config.default_url_options = { host: default_host.host, protocol: default_host.scheme }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
