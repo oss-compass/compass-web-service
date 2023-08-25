@@ -6,6 +6,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   ERROR_REDIRECT_URL = '/auth/signin'
   BIND_REDIRECT_URL = '/settings/profile'
 
+  include Utils
+
   def wechat_auth
     if params[:state].present? || !is_wechat_browser? \
       || session['openid'].present? || session[:user_id].present?
@@ -103,21 +105,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     redirect_to url_for(redirect_url(error: message, default_url: ERROR_REDIRECT_URL, skip_cookies: true))
   end
 
-  def redirect_url(error: nil, default_url: nil, skip_cookies: false)
-    default_host = Addressable::URI.parse(ENV['DEFAULT_HOST'])
-    url = cookies['auth.callback-url'].presence || default_url
-    url = default_url if skip_cookies
-    uri = Addressable::URI.parse(url)
-    uri.scheme = default_host.scheme
-    uri.host = default_host.host
-    if error.present?
-      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
-    end
-    uri.to_s
-  end
-
   private
-
   def is_wechat_browser?
     request.user_agent =~ /MicroMessenger/i
   end
