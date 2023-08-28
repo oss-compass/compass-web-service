@@ -18,9 +18,9 @@ class UsersController < ApplicationController
     ok, error = invitation.verify_and_finish!(current_user, token) if error.blank?
 
     if error.present?
-      redirect_to url_for(redirect_url(error: error, default_url: '/lab/model/my'))
+      redirect_to url_for(redirect_url(error: error, default_url: '/lab/model/my', skip_cookies: true))
     else
-      redirect_to url_for(redirect_url(default_url: "/lab/model/#{invitation.lab_model.id}/user"))
+      redirect_to url_for(redirect_url(default_url: "/lab/model/#{invitation.lab_model.id}/user", skip_cookies: true))
     end
   end
 end
