@@ -3,6 +3,13 @@ class CustomV1Metric < BaseMetric
     "#{MetricsIndexPrefix}_custom_v1"
   end
 
+  def self.exist_model_and_version(model_id, version_id)
+    self
+      .where(model_id: model_id)
+      .where(version_id: version_id)
+      .total_entries > 0
+  end
+
   def self.query_by_model_and_version(model_id, version_id, begin_date, end_date, limit: 30)
     Rails.cache.fetch(
       "#{self.name}:#{__method__}:#{model_id}:#{version_id}:#{begin_date}:#{end_date}:#{limit}",

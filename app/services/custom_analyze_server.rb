@@ -79,7 +79,10 @@ class CustomAnalyzeServer
     if task_id.present?
       update_task_status(task_id)
     end
-    task_info&.[]('status')
+    status = task_info&.[]('status')
+    return status if status != ProjectTask::UnSubmit
+    return ProjectTask::Success if CustomV1Metric.exist_model_and_version(model.id, version.id)
+    status
   end
 
   def check_task_updated_time
