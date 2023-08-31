@@ -174,11 +174,11 @@ module Types
         end
       end
 
-      def extract_namespace(label)
+      def extract_logo_url(label)
         if label =~ /github\.com\/(.+)\/(.+)/
-          $1
+          "https://github.com/#{$1}.png"
         elsif label =~ /gitee\.com\/(.+)\/(.+)/
-          $1
+          "https://gitee.com/#{$1}.png"
         else
           JSON.parse(ProjectTask.find_by(project_name: label).extra)['community_logo_url'] rescue nil
         end

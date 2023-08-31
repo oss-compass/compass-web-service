@@ -31,13 +31,13 @@ module Types
               repos_count = extract_repos_count(set[:label], set[:level])
               origin = extract_repos_source(set[:label], set[:level])
               name, full_path = extract_name_and_full_path(set[:label])
-              namespace = extract_namespace(set[:label])
+              logo_url = extract_logo_url(set[:label])
               collections = set[:level] == 'repo' ? BaseCollection.collections_of(set[:label]) : []
               trendings << OpenStruct.new(
                 {
                   name: name,
                   origin: origin,
-                  namespace: namespace,
+                  logo_url: logo_url,
                   label: set[:label],
                   level: set[:level],
                   short_code: ShortenedLabel.convert(set[:label], set[:level]),
