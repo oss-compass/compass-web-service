@@ -10,9 +10,9 @@ module Mutations
     argument :project_types, [Input::ProjectTypeInput], required: true, description: 'project detail information'
     argument :origin, String, required: true, description: "user's origin (gitee/github)"
     argument :project_url, String, required: false, description: 'project homepage url'
-    argument :project_namespace, String, required: false, description: 'project default namespace, for avatar generate'
+    argument :project_logo_url, String, required: false, description: 'project logo url'
 
-    def resolve(project_name:, project_types:, origin:, project_url: nil, project_namespace: nil)
+    def resolve(project_name:, project_types:, origin:, project_url: nil, project_logo_url: nil)
       current_user = context[:current_user]
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
 
@@ -21,8 +21,8 @@ module Mutations
 
       yaml_template = {}
       yaml_template['community_name'] = project_name
-      yaml_template['community_namespace'] = project_namespace if project_namespace
-      yaml_template['community_url'] = project_url if project_url
+      yaml_template['community_logo_url'] = project_logo_url if project_logo_url
+      yaml_template['community_org_url'] = project_url if project_url
       yaml_template['resource_types'] =
         project_types.reduce({}) do |result, type|
           result.merge({ type.type => { 'repo_urls' => type.repo_list } })
@@ -67,7 +67,7 @@ module Mutations
               label: project_name,
               level: 'community',
               project_types: project_types,
-              extra: { username: username, origin: origin, community_url: project_url, community_namespace: project_namespace }
+              extra: { username: username, origin: origin, community_org_url: project_url, community_logo_url: project_logo_url }
             }
           ).execute
         OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))

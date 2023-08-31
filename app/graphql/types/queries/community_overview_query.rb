@@ -18,7 +18,7 @@ module Types
 
       def resolve(label: nil, page: 1, per: 9, type: nil)
         project = ProjectTask.find_by(project_name: label)
-        community_url = JSON.parse(project.extra)['community_url'] rescue nil
+        community_org_url = JSON.parse(project.extra)['community_org_url'] rescue nil
         skeleton = Hash[Types::CommunityOverviewType.fields.keys.zip([])].symbolize_keys
 
         result =
@@ -44,12 +44,12 @@ module Types
               skeleton['trends'] += build_gitee_repo(resp2).map { |repo| repo_extander.(repo, type) }
             end
             skeleton['projects_count'] = repo_list.length
-            skeleton['community_url'] = community_url
+            skeleton['community_org_url'] = community_org_url
             skeleton
           else
             skeleton['projects_count'] = 0
             skeleton['trends'] = []
-            skeleton['community_url'] = community_url
+            skeleton['community_org_url'] = community_org_url
             skeleton
           end
         end

@@ -158,7 +158,7 @@ module Types
       def extract_label_reference(label, level)
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)
-          JSON.parse(project.extra)['community_url'] rescue nil
+          JSON.parse(project.extra)['community_org_url'] rescue nil
         else
           label
         end
@@ -180,7 +180,7 @@ module Types
         elsif label =~ /gitee\.com\/(.+)\/(.+)/
           $1
         else
-          JSON.parse(ProjectTask.find_by(project_name: label).extra)['community_namespace'] rescue nil
+          JSON.parse(ProjectTask.find_by(project_name: label).extra)['community_logo_url'] rescue nil
         end
       end
 

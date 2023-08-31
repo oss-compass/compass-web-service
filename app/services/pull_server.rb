@@ -101,8 +101,8 @@ class PullServer
       branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
       project = {}
       project['community_name'] = @label
-      project['community_url'] = @extra[:community_url] if @extra[:community_url]
-      project['community_namespace'] = @extra[:community_namespace] if @extra[:community_namespace]
+      project['community_org_url'] = @extra[:community_org_url] if @extra[:community_org_url]
+      project['community_logo_url'] = @extra[:community_logo_url] if @extra[:community_logo_url]
       project['resource_types'] =
         @project_types.reduce({}) do |result, type|
         result.merge({ type.type => { 'repo_urls' => type.repo_list } })
