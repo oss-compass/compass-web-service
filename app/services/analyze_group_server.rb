@@ -162,15 +162,21 @@ class AnalyzeGroupServer
         if @raw_yaml['community_url'] && extra['community_url'] != @raw_yaml['community_url']
           repo_task.update(extra: extra.merge({community_url: @raw_yaml['community_url']}).to_json)
         end
+        if @raw_yaml['community_namespace'] && extra['community_namespace'] != @raw_yaml['community_namespace']
+          repo_task.update(extra: extra.merge({community_namespace: @raw_yaml['community_namespace']}).to_json)
+        end
       end
     else
+      extra = {}
+      extra['community_url'] = @raw_yaml['community_url'] if @raw_yaml['community_url']
+      extra['community_namespace'] = @raw_yaml['community_namespace'] if @raw_yaml['community_namespace']
       ProjectTask.create(
         task_id: task_resp['id'],
         remote_url: @yaml_url,
         status: task_resp['status'],
         payload: payload.to_json,
         level: @level,
-        extra: ({community_url: @raw_yaml['community_url']}.to_json if @raw_yaml['community_url'] rescue nil),
+        extra: (extra.to_json if extra.present? rescue nil),
         project_name: @project_name
       )
     end

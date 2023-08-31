@@ -102,6 +102,7 @@ class PullServer
       project = {}
       project['community_name'] = @label
       project['community_url'] = @extra[:community_url] if @extra[:community_url]
+      project['community_namespace'] = @extra[:community_namespace] if @extra[:community_namespace]
       project['resource_types'] =
         @project_types.reduce({}) do |result, type|
         result.merge({ type.type => { 'repo_urls' => type.repo_list } })

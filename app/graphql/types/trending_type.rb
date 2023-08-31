@@ -4,6 +4,7 @@ module Types
   class TrendingType < Types::BaseObject
     field :name, String, description: 'repo or community name'
     field :origin, String, description: 'repo or community origin (gitee/github/combine)'
+    field :namespace, String, description: 'repo or community namespace'
     field :label, String, description: 'repo or community label'
     field :level, String, description: 'repo or community level'
     field :short_code, String, description: 'repo or community short code'

@@ -174,6 +174,16 @@ module Types
         end
       end
 
+      def extract_namespace(label)
+        if label =~ /github\.com\/(.+)\/(.+)/
+          $1
+        elsif label =~ /gitee\.com\/(.+)\/(.+)/
+          $1
+        else
+          JSON.parse(ProjectTask.find_by(project_name: label).extra)['community_namespace'] rescue nil
+        end
+      end
+
       def extract_repos_source(label, level)
         repo_list = [label]
         if level == 'community'
