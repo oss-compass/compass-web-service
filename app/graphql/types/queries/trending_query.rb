@@ -31,6 +31,7 @@ module Types
               repos_count = extract_repos_count(set[:label], set[:level])
               origin = extract_repos_source(set[:label], set[:level])
               name, full_path = extract_name_and_full_path(set[:label])
+              collections = set[:level] == 'repo' ? BaseCollection.collections_of(set[:label]) : []
               trendings << OpenStruct.new(
                 {
                   name: name,
@@ -39,6 +40,7 @@ module Types
                   level: set[:level],
                   short_code: ShortenedLabel.convert(set[:label], set[:level]),
                   full_path: full_path,
+                  collections: collections,
                   activity_score: set[:activity_score],
                   repos_count: repos_count,
                 }

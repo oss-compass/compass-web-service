@@ -85,6 +85,22 @@ class BaseCollection < BaseIndex
       .raw_response
   end
 
+  def self.collections_of(label, limit: 10, field: 'collection')
+    self
+      .must(match: { 'label.keyword' => label })
+      .custom(collapse: { field: "#{field}.keyword" })
+      .per(limit)
+      .source(field)
+      .execute
+      .raw_response
+      .dig('hits', 'hits')
+      .map { |row| row['_source'][field] }
+      .compact
+  rescue => ex
+    Rails.logger.error("Failed to get collections of #{label}, #{ex.message}")
+    []
+  end
+
   def self.prefix_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
     base =
       self

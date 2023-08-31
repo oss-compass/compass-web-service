@@ -9,6 +9,7 @@ module Types
     field :short_code, String, description: 'repo or community short code'
     field :full_path, String, description: 'repo or community full_path, if community: equals name'
     field :activity_score, Float, description: 'repo or community latest activity avg'
+    field :collections, [String], description: 'second collections of this label'
     field :repos_count, Float, description: 'repositories count'
   end
 end
