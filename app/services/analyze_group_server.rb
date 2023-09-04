@@ -154,20 +154,21 @@ class AnalyzeGroupServer
         { 'Content-Type' => 'application/json' }
       )
     task_resp = JSON.parse(response.body)
+    extra = {}
 
     if repo_task.present?
       repo_task.update(status: task_resp['status'], task_id: task_resp['id'])
       if repo_task.extra.present?
         extra = JSON.parse(repo_task.extra) rescue {}
-        if @raw_yaml['community_org_url'] && extra['community_org_url'] != @raw_yaml['community_org_url']
-          repo_task.update(extra: extra.merge({community_org_url: @raw_yaml['community_org_url']}).to_json)
-        end
-        if @raw_yaml['community_logo_url'] && extra['community_logo_url'] != @raw_yaml['community_logo_url']
-          repo_task.update(extra: extra.merge({community_logo_url: @raw_yaml['community_logo_url']}).to_json)
-        end
       end
+      if @raw_yaml['community_org_url'] && extra['community_org_url'] != @raw_yaml['community_org_url']
+        extra['community_org_url'] = @raw_yaml['community_org_url']
+      end
+      if @raw_yaml['community_logo_url'] && extra['community_logo_url'] != @raw_yaml['community_logo_url']
+        extra['community_logo_url'] = @raw_yaml['community_logo_url']
+      end
+      repo_task.update(extra: extra.to_json)
     else
-      extra = {}
       extra['community_org_url'] = @raw_yaml['community_org_url'] if @raw_yaml['community_org_url']
       extra['community_logo_url'] = @raw_yaml['community_logo_url'] if @raw_yaml['community_logo_url']
       ProjectTask.create(
