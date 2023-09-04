@@ -1,5 +1,6 @@
 class BadgeController < ActionController::Base
   skip_before_action :verify_authenticity_token
+  include Common
 
   def show
     short_code = params[:id]
@@ -22,12 +23,14 @@ class BadgeController < ActionController::Base
     if short_code.present?
       label = ShortenedLabel.revert(short_code)&.label
       if label.present?
-        latest_metric = metrics.find_one('label', label)
-        @score = latest_metric.present? ? metrics.scaled_value(latest_metric) : '--'
-        if is_metric_badge
-          return render template: "badge/#{metric}", layout: false, content_type: 'image/svg+xml'
-        else
-          return render template: 'badge/shield', layout: false, content_type: 'image/svg+xml'
+        if !RESTRICTED_LABEL_LIST.include?(label)
+          latest_metric = metrics.find_one('label', label)
+          @score = latest_metric.present? ? metrics.scaled_value(latest_metric) : '--'
+          if is_metric_badge
+            return render template: "badge/#{metric}", layout: false, content_type: 'image/svg+xml'
+          else
+            return render template: 'badge/shield', layout: false, content_type: 'image/svg+xml'
+          end
         end
       end
     end

@@ -16,6 +16,8 @@ module Common
   META_REPO = ENV.fetch('WORKFLOW_REPO_NAME') { 'compass-projects-information' }
   ADMIN_WEB_TOKEN = ENV.fetch('ADMIN_WEB_TOKEN')
   ADMIN_SLACK_WEBHOOK = ENV.fetch('ADMIN_SLACK_WEBBHOOK') { nil }
+  RESTRICTED_LABEL_LIST = (ENV.fetch('RESTRICTED_LABEL_LIST') { '' })&.split(',')
+  RESTRICTED_LABEL_VIEWERS = (ENV.fetch('RESTRICTED_LABEL_VIEWERS') { '' })&.split(',')
 
   Faraday.ignore_env_proxy = true
 

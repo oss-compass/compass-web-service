@@ -23,7 +23,7 @@ module Types
           activity_upward_trending = fetch_top_activity_upward_trending(level)
           candidate_set = activity_upward_trending + top_activity_for_trending
           candidates_labels = candidate_set.map { |set| set[:label] }
-          after_filter_labels = filter_by_other_metric_models(candidates_labels, level)
+          after_filter_labels = filter_by_other_metric_models(candidates_labels, level) - RESTRICTED_LABEL_LIST
 
           trendings = []
           candidate_set.each do |set|

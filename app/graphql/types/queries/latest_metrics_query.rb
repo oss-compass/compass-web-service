@@ -10,6 +10,12 @@ module Types
 
       def resolve(label: nil, level: 'repo')
         label = normalize_label(label)
+
+        current_user = context[:current_user]
+        if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id)
+          raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+        end
+
         origin = extract_repos_source(label, level)
         repos_count = extract_repos_count(label, level)
         reference_url = extract_label_reference(label, level)

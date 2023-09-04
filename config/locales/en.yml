@@ -79,6 +79,7 @@ en:
       failed: "failed to get latest sha, reason: %{reason}."
   users:
     login_failed: "login failed, reason: %{reason}"
+    forbidden: "access forbidden"
     require_login: "Operation after login is required"
     require_bind: "The %{provider} account is not bound to the current user"
     already_banned: "%{provider}: %{nickname} Already bound to another account"
