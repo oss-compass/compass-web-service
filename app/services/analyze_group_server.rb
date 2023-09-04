@@ -145,7 +145,7 @@ class AnalyzeGroupServer
   end
 
   def submit_task_status
-    repo_task = ProjectTask.find_by(remote_url: @yaml_url)
+    repo_task = ProjectTask.find_by(remote_url: @yaml_url) || ProjectTask.find_by(project_name: @project_name)
 
     response =
       Faraday.post(
