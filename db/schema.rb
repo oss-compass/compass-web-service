@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_07_081549) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_07_090449) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -239,7 +239,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_081549) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "level"
-    t.string "project_name"
+    t.string "project_name", collation: "utf8mb4_bin"
     t.index ["project_name"], name: "index_project_tasks_on_project_name", unique: true
     t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
   end
@@ -265,7 +265,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_07_081549) do
   end
 
   create_table "subjects", charset: "utf8mb4", force: :cascade do |t|
-    t.string "label", null: false
+    t.string "label", null: false, collation: "utf8mb4_bin"
     t.string "level", default: "repo", null: false, comment: "repo/community"
     t.string "status", default: "pending", null: false, comment: "pending/progress/complete"
     t.integer "count", default: 0, null: false
