@@ -48,4 +48,5 @@ Rails.application.routes.draw do
   post '/api/hook/we_chat/receive', to: 'we_chat#create'
 
   get '/badge/:id.svg', to: 'badge#show', constraint: { id:  /[a-z0-9]{8}/ }
+  get '/chart/:id.svg', to: 'chart#show', constraint: { id:  /[a-z0-9]{8}/ }
 end

@@ -1,127 +1,1193 @@
 en:
-  basic:
-    too_long: "Your request params is too long, limit is %{long}"
-  dispatch:
-    project:
-      no_exists: "no such task with project name: %{project_name}."
-      invalid: "invalid project name: %{project_name}."
-      processed: "Your submission is being processed."
+  about:
+    our_vision: Our Vision
+    our_vision_desc1: Through <s>{{v}}</s>, we help people who need community data
+      analysis, including but not limited to OSPOs, community managers, academic researchers,
+      project owners, maintainers, developers, etc.
+    our_vision_desc2: By analyzing real data from a large number of open source projects,
+      and referring to research results from industry best practices and academics,
+      we create an open source community <m>{{e}}</m> that can be continuously improved
+      and evolved, and give back to the general open source communities by means of
+      <s>{{v}}</s>.
+    ecosystem_evaluation_system: Ecosystem Evaluation System
+    communication: Communication
+    communication_desc: We have multiple communication channels such as chat, issues,
+      etc. You can refer to <l>{{v}}</l>.
+    this_page: this page
+    acknowledgements: Acknowledgements
+    acknowledgements_desc: OSS Compass follows the best practices of the CHAOSS projects,
+      including metrics models and metrics, with some back-end components originally
+      from Grimoirelabs. Our heartfelt thanks to the <l>{{v}}</l>.
+    chaoss_community: CHAOSS Community
+    governing_board: Governing Board
+    welcome_to_the_oss_compass_community: Welcome to the OSS Compass Community!
+    we_provide_a_public_saas_platform_oss_compass_for: We provide a public SaaS platform
+      OSS Compass for open source community health analytics, that is open for all
+      the projects hosted on Github, Gitee, etc.
+    members: Members
+    platinum_members: Platinum Members
+    community_members: Community Members
+    partners: Partners
+    technical_committee: Technical Committee
+    outreach_committee: Outreach Committee
+    assessment_model_working_group: Assessment Model Working Group
+    saas_working_group: SaaS Working Group
+    organization_member: Organization Member
+    individual_members: Individual Members
   analysis:
     task:
-      submitted: "task already sumbitted."
-      pending: "The submission has entered the analysis service queue, and we will synchronize the analysis report address under this Pull Request after the analysis is completed."
-      unsubmit: "failed to sumbit task, please retry."
+      submitted: task already sumbitted.
+      pending: The submission has entered the analysis service queue, and we will
+        synchronize the analysis report address under this Pull Request after the
+        analysis is completed.
+      unsubmit: failed to sumbit task, please retry.
     validation:
-      pass: "Thanks for the submission, we will analyze the project information after the Pull Request is merged. You can follow the progress of this Pull Request and keep in touch."
+      pass: Thanks for the submission, we will analyze the project information after
+        the Pull Request is merged. You can follow the progress of this Pull Request
+        and keep in touch.
       missing: "`%{field}` is required."
-      not_support: "no support data source from %{source} now."
-      no_tasks: "no tasks enabled."
-      cannot_access: "this repository can not access."
-      cannot_access_with_tip: "this repository can not access now. system is busy, please try again later."
-  pull:
-    too_many_repositories: "too many repositories, please create a pull request manually."
-    invalid_level: "invalid resource type."
-    duplicate: "analysis report already exists, please visit follow url"
-    welcome_collection: 'Welcome to submit Collection changes. After the PR is reviewd and merged, the new Collection information will be automatically updated and displayed in the next period.'
-    user:
-      validation:
-        pass: "user verification passed."
-        failed: "user verification failed."
-      invalid: "invalid user information."
-  yaml:
-    path:
-      invalid: "invaild configure yaml path: %{path}."
-    diff_url:
-      invalid: "invalid diff url."
+      not_support: no support data source from %{source} now.
+      no_tasks: no tasks enabled.
+      cannot_access: this repository can not access.
+      cannot_access_with_tip: this repository can not access now. system is busy,
+        please try again later.
+  analyze:
+    overview: Overview
+    repos: repositories
+    repositories: Repositories ({{count}})
+    topic:
+      productivity: Productivity
+      robustness: Robustness
+      niche_creation: Niche Creation
+    confirm: OK
+    custom: Custom
+    display: Charts Display
+    compare: Compare
+    search_repo_input_placeholder: please input repo
+    search_community_input_placeholder: please input community
+    explore_other_projects: Explore other projects
+    the_current_project_is_under_analysis_please_visit: The current project is under
+      analysis, please visit later.
+    subscribe: Subscribe
+    subscribed: Subscribed
+    score_conversion:
+      on_point: "[0, 1]: absolute score of the model"
+      hundred_mark: "[0, 100]: distribution result based on [0, 1]"
+    median: Median
+    average: Average
+    avg_line:
+      show: show average
+      hide: hide average
+    median_line:
+      show: show median
+      hide: hide median
+    y_axis_scale: Y axis scale
+    unit_label: 'Unit: {{unit}}'
+    unit_day: day
+    positive_indicators: Positive indicators
+    negative_indicators: Negative indicators
+    full_screen: full screen
+    full_screen_exit: exit full screen
+    download_chart_img: download image
+    total: Total
+    code_reviewer: Code Reviewer
+    pr_creator: PR Creator
+    commit_author: Commit Author
+    commit_pr_linked_ratio: Commit PR Linked Ratio
+    commit_pr: Commit PR
+    commit_pr_linked: Commit PR Linked
+    linked_issue_ratio: Linked Issue Ratio
+    total_pr: Total PR
+    linked_issue: Linked Issue
+    lines_remove: Lines Remove
+    lines_add: Lines Add
+    code_review_ratio: Code Review Ratio
+    code_review: Code Review
+    code_merge_ratio: Code Merge Ratio
+    code_merge: Code Merge
+    mark:
+      point: point system
+      percentage: percentage system
+    updated_on: Updated on
+    there_is_currently_no_data_in_the_chart: There is currently no data in the chart,
+    please_contact_us_if_you_have: Please <l>{{e}}</l> if you have any questions.
+    contact_us: contact us
+    repos_type:
+      all: All
+      governance_repository: Governance Repository
+      software_artifact_repository: Software Artifact Repository
+    repo_filter: Repository filter
+    ratio: Ratio
+    closed: Closed
+    created: Created
+    doc_popper:
+      definition: Definition
+      weight: Weight
+      threshold: Threshold
+      notes: Notes
+    badge:
+      text: Badge
+      title: Compass Badge
+    function_menu: Function
+  auth:
+    email_verification_successful: Email verification successful
+    email_verification_expired: Email verification has expired
+    the_email_address: The email address
+    has_been_successfully: has been successfully bound to your OSS Compass account
+    resend_email: Please go to the account settings page and resend the verification
+      email.
+    account_setting: Account Setting
+    auth_failed: Login failed
+  basic:
+    too_long: Your request params is too long, limit is %{long}
   censoring:
     illegal: "[Illegal content, will not be displayed]"
     illegal_img: "/images/illegal.svg"
-  oauth:
+  collection:
+    more_repositories: More repositories
+    recently_hottest: Recently hottest
+    repositories: "{{length}} repositories"
+    collections: Collections
+    please_select_two_or_more_repositories_below: Please select two or more repositories
+      below
+    cancel: Cancel
+    compare: Compare
+    pick_for_compare: Pick for compare
+  common:
+    oss_compass: Oss Compass
+    header:
+      home: Home
+      explore: Explore
+      metrics_models: Metrics Models
+      community: Community
+      blog: Blog
+      news: News
+      lab: Lab
+      about: About
+      submit_your_project: Submit your project
+    range:
+      3M: Last 3 months
+      6M: Last 6 months
+      1Y: Last year
+      2Y: Last 2 years
+      3Y: Last 3 years
+      5Y: Last 5 years
+      Since2000: Since inception
+    community:
+      code_base: Repository
+      discussion: Discussion
+      slack: Slack
+      join_slack: Join our community channel on Slack
+      wechat: WeChat
+      join_wechat: Scan our group chat QR code to join
+      github: GitHub
+      official_repository_on_github: Official repository on GitHub
+      gitee: Gitee
+      official_repository_on_gitee: Official repository on Gitee
+      meeting: Weekly Meeting
+      join_meeting: Technical Seminar Weekly Meeting
+    footer:
+      tutorial: Tutorial
+      quick_start: Quick Start
+      dimensions_define: Dimensions Define
+      legal: Legal
+      terms: Terms
+      privacy: Privacy
+      built_with: Built With
+      community: Community
+      slack: Slack
+      wechat: WeChat
+      code: Code
+    error:
+      url_404: 404 Not Found
+      invalid_url_query: invalid url query
+      something_went_wrong: 'Something went wrong:'
+      try_to_refresh_this_page_or_feel_free_to_contact_u: Try to refresh this page
+        or feel free to contact us if the problem presists.
+      try_again: Try again
+      oops: "<s> Oops! </s> {{message}}"
+    search:
+      no_result: No result
+    topic:
+      productivity: Productivity
+      robustness: Robustness
+      niche_creation: Niche Creation
+    no_data: No data available
+    next: Next
+    know_more: more
+    ago: ago
+    signin: Sign In
+    subscribe: My Subscriptions
+    profile_setting: Account Setting
+    my_models: My Models
+    signout: Sign Out
+    btn:
+      create: Create
+      back: Back
+      confirm: Confirm
+      save: Save
+      delete: Delete
+      edit: Edit
+      cancel: Cancel
+      func_disabled: The feature is temporarily disabled
+    prompt:
+      please_enter: Please enter
+    confirm:
+      delete: Are you sure you want to delete?
+    toast:
+      modification_successful: Modification Successful
+      modification_failed: Modification Failed
+    loading: Loading...
+    loading_more: Loading more...
+    load_more: Load More
+    nothing_more_to_load: Nothing more to load
+    copy:
+      click_to_copy: click to copy
+      copy_successfully: copy successfully
+    contact_us: 'Contact us through <s> the community </s>. '
+    powered_by_chaoss: Powered by CHAOSS
+  dispatch:
+    project:
+      no_exists: 'no such task with project name: %{project_name}.'
+      invalid: 'invalid project name: %{project_name}.'
+      processed: Your submission is being processed.
+  home:
+    projects: Projects
+    dimensions: Dimensions
+    models: Models
+    metrics: Metrics
+    activity: Activity
+    how_compass_working: How Compass working
+    it_points_to_the_thing_you_want_most_in_open_source: It points to the thing <br/>
+      you want most in <br/> open source world
+    we_help_open_source_projects_gain_insight_into_its: We help open source projects
+      gain insight into its trends, and getting more value of it.
+    type_the_name_to_insight_into_your_project: Type the name to insight into your
+      project
+    please_enter_repository_name_or_community: Please enter GitHub/Gitee repository
+      name or community name
+    a_special_thank_you: A special thank you…
+    oss_compass_follows_the_best_practices_and_specifi: OSS Compass follows the best
+      practices and specifications of the CHAOSS project, including metrics models
+      and metrics, with some back-end components originally from Grimoirelabs.
+    submit_your_project: Submit your project
+    community: Community
+    compass_report: Compass report
+    nothing_about_yet: Nothing about <s> {{expr}} </s> yet.
+    cant_find_the_right_option: Can't find the right option?
+    oss_eco_evaluation_system: OSS ECO Evaluation System
+    facts: Facts
+    recently: Recently update
+    trends: Activity Trends
+    coming_soon: Coming Soon
+    hot_fields: Hot Fields
+    hot_fields_content:
+      artificial_intelligence: Artificial Intelligence
+      server_os: Big Data
+      database: Database
+      machine_learning_framework: Deep Learning Framework
+      intelligent_terminal_distributed_os: Web
+      relational_db: Relational DB
+      document_db: Document DB
+      time_series_db: Time series DB
+      graph_db: Graph DB
+      big_data_framework: Big Data Framework
+      web_framework: Web Framework
+    trending:
+      repository_weekly_activity_board: Repository Weekly Activity Board
+      community_weekly_activity_board: Community Weekly Activity Board
+    hot_projects: Hot Projects
+    hot_collection: Hot Collection
+    more: more
+    repositories: "{{length}} repositories"
+    the_latest_from: The Latest from OSS Compass
+    announcement: Announcement
+    report: Report
+    event: Event
+    read_more: Read more
+  lab:
+    back_my_lab: Back to My Lab
+    the_locale_names_are_used_for: Compass Lab is a sandbox that helps people quickly
+      create and validate metrics models of their interest, which can be used for
+      proprietary domain evaluations or as general models. It provides over 20,000
+      open-source project datasets from over 200 categories, 100+ CHAOSS metrics,
+      and custom algorithms to promote continuous innovation in modeling.
+    discuss: Discuss
+    create_a_model: Create a model
+    pick_for_compare: Pick for compare
+    datasets: Datasets
+    metrics: Metrics
+    algorithm: Algorithm
+    projects_in_datasets: "{{length}} projects in datasets are using this model"
+    create_your_own_model_in_5_minutes: Create your own model in 5 minutes
+    create_a_model_now: Create a model now
+    select_dataset: Select dataset
+    covering_datasets: Covering 200+ datasets in various fields and industries
+    select_metrics: Select metrics
+    metrics_in_three_dimensions: 100+ metrics originated from CHAOSS
+    select_algorithm: Select algorithm
+    support_AHP: Support AHP and other self-defined algorithms
+    release_model: Publish model
+    expose_the_model: Publish the model and invite partners to improve it
+    add_dataset: Add Dataset
+    add_metric: Add Metric
+    my_models: My Models
+    new_model: New Model
+    versions: Versions
+    default_display_version: Default display version
+    user_management: Member
+    model_name: Model Name
+    version_name: Version Name
+    selected_count: Selected {{value}} items
+    search_dataset_placeholder: Search repository
+    search_metric_placeholder: Search metrics
+    commit_enter: Press Enter to send a comment
+    reply: reply
     user:
-      missing: "authorization information has expired or not logged in, please re-login again."
-      failed: "failed to get the user info, reason: %{reason}."
-    branch:
-      failed: "failed to create a ref, reason: %{reason}."
-    validate:
-      fork: "the analysis of the fork repository is not currently supported, please submit the upstream repository."
-      retry: "failed to validate the repository, please try again."
-    file:
-      failed: "failed to put the file, reason: %{reason}."
-      submitted: "alreadly submitted."
-    pull:
-      failed: "failed to create a pull request, reason: %{reason}."
-    latest_sha:
-      failed: "failed to get latest sha, reason: %{reason}."
-  users:
-    login_failed: "login failed, reason: %{reason}"
-    forbidden: "access forbidden"
-    require_login: "Operation after login is required"
-    require_bind: "The %{provider} account is not bound to the current user"
-    already_banned: "%{provider}: %{nickname} Already bound to another account"
-    email_verified: "The email has been verified and passed"
-    email_change_limit: "The email address cannot be modified more than %{count} times within 24 hours"
-    send_email_limit: "Email verification cannot send more than %{count} times within 24 hours"
-    send_invite_limit: "Invitation emails cannot be sent more than %{count} times in 24 hours."
-    keep_one_login_bind: "Keep at least one login binding"
-    wechat_already_bind: "It has been bound to a wechat"
-    provider_not_supported: "Third-party application login currently supports only github and gitee"
-    subscription_already_exist: "Already subscribed."
-    subject_not_exist: "Subscription object does not exist"
-    subscription_not_exist: "Subscription does not exist"
+      invite_users: Invite member
+      input_email: Please input the email address of the invitee, multiple email addresses
+        are separated by commas
+      send_email: Send email
+      please_enter_the_correct_email_format: Please enter the correct email format
+      multiple: Multiple
+      browsable: Browsable
+      view_and_comment_the_report: View and comment on reports
+      trigger_analysis: Triggerable analysis
+      can_trigger_model_report_scan: Trigger model report scanning
+      modifiable_model: Modifiable models
+      can_modifiable_model_parameter: Modify parameter configurations in the model
+      send_successful: Send successful
+      send_failed: Send failed
+      member: Member
+      owner: Owner
+      join_at: Join at
+      member_to_be_added: Member to be added
+      waiting_for_confirmation_to_join: Invitation sent, waiting to join
+      uninvite: Cancel invitation
+      confirm_cancel_invitation: Confirm cancel invitation
+      confirm_delete: Confirm delete
+      quit: quit
+      confirm_quit: Confirm quit
+      quit_successful: Quit successful
+    remaining_times_of_analysis_performed_this_week: 'Remaining times of analysis
+      performed this week: '
+    view_report: View report
+    click_on_the_left_menu_and_select_a_category: Click on the left menu and select
+      a category.
+    cant_find_a_suitable_dataset: 'Can''t find a suitable dataset? '
+    cant_find_a_suitable_metric: 'Can''t find a suitable metric? '
+    ecological_dimension: Ecological Dimension
+    industry_options:
+      is_it_applicable_to_general_industries_fields: Is it applicable to general industries/fields?
+      'yes': 'Yes'
+      not: No, this is an industry specific model.
+    is_public: Public
+    is_public_options:
+      label: Is public
+      public: public
+      public_desc: This is an open evaluation model that allows display on the Compass
+        LAB homepage for user participation in assessment evolution.
+      non_public: non public
+      non_public_desc: This is a confidential internal evaluation model. I only wish
+        to conduct evaluations and iterations with my collaborative team members.
+    weight_threshold_settings:
+      label: Weight & Threshold Settings
+      metrics: Metrics
+      weight_percentage: Weight percentage
+      threshold: Threshold
+      between: Between 0 and {{end}}
+    algorithm_selection:
+      label: Algorithm selection
+      default: System default algorithm
+      default_desc: The default <s> algorithm </s> used in our models is derived from
+        <b>Rob Pike</b>, and it was initially employed by the openSSF <c> criticality
+        score </c> (a big thank you to Rob and the criticality score!). Taking into
+        account considerations of time series and value ranges, we have made improvements
+        to this algorithm in its implementation. For more details, please refer to
+        the <d> source code </d> and <e>article</e>.
+      contact_us: Have more ideas about model algorithms? Welcome to join the <s>
+        official Slack community </s> and discuss with us.
+      metrics_value: Metrics Value
+      metrics_threshold: Metrics Threshold
+      metrics_weight: Metrics Weight
+    trigger_analysis:
+      card_btn: Analysis
+      title: Confirm trigger analysis?
+      retry_title: Confirm analysis again?
+      status: 'Last time trigger status: '
+      time: 'Last time trigger time: '
+      analyzing: Analyzing...
+      times_limit: Not enough times
+    analysis_status:
+      tips: 'Report analysis not completed: '
+      pending: pending
+      progress: progress
+      success: success
+      unsumbit: unsumbit
+      error: error
+    threshold_range: Between 0 and {{value}}
+    select_over_tips: Cannot exceed 10 items
+    create: Create
+    edit: Edit
+    new_version: New Version
+    edit_comment: Edit comment
+    create_failed: Create failed
+    create_succeed: Create succeed
+    edit_failed: Edit failed
+    edit_succeed: Edit succeed
+    joining_the_compass: Joining the Compass Lab
+    agree_to_join: Agree to Join
+    i_have_understood_and_agreed_to_the: I have understood and agreed to the
+    experimental_model_terms_of_use: Experimental Model Terms of Use
+    please_check_the_terms: Please check the Terms of Use
+    you_are_here_because_you_have_been_invited: You are here because you have been
+      invited by <s>{{invitee}}</s> to join the Compass Lab to collaborate in building
+      the model <s>{{modelName}}</s>, do you agree to join?
+    form_tips:
+      name_require: Please enter model name
+      version_require: Please enter version name
+      dataset_require: Please select dataset
+      metric_require: Please select metric
+    projects_selected: "{{count}} repository selected"
+    no_comment_data: No comments yet
+  lab_metrics:
+    contributor:
+      title: Contributor
+      contributor_count: Contributor Count
+      contributor_count_desc: Determine how many active code commit authors, pr authors,
+        review participants, issue authors, and issue comments participants there
+        are in the past 90 days.
+      contributor_count_value:
+        threshold: Between 0 and 2000
+      commit_contributor_count: Commit Contributor Count
+      commit_contributor_count_desc: Determine how many active code commit authors
+        participants there are in the past 90 days.
+      commit_contributor_count_value:
+        threshold: Between 0 and 1000
+      pr_authors_contributor_count: PR Authors Contributor Count
+      pr_authors_contributor_count_desc: Determine how many active pr authors participants
+        there are in the past 90 days.
+      pr_authors_contributor_count_value:
+        threshold: Between 0 and 1000
+      pr_review_contributor_count: PR Review Contributor Count
+      pr_review_contributor_count_desc: Determine how many active pr review participants
+        there are in the past 90 days.
+      pr_review_contributor_count_value:
+        threshold: Between 0 and 1000
+      issue_authors_contributor_count: Issue Authors Contributor Count
+      issue_authors_contributor_count_desc: Determine how many active issue authors
+        participants there are in the past 90 days.
+      issue_authors_contributor_count_value:
+        threshold: Between 0 and 1000
+      issue_comments_contributor_count: Issue Comments Contributor Count
+      issue_comments_contributor_count_desc: " Determine how many active issue comments
+        participants there are in the past 90 days."
+      issue_comments_contributor_count_value:
+        threshold: Between 0 and 1000
+      code_contributor_count: Code Contributor Count
+      code_contributor_count_desc: Determine how many active pr creators, code reviewers,
+        commit authors there are in the past 90 days.
+      code_contributor_count_value:
+        threshold: Between 0 and 1000
+      org_contributor_count: Organization Contributor Count
+      org_contributor_count_desc: Number of active code contributors with organization
+        affiliation in the past 90 days.
+      org_contributor_count_value:
+        threshold: Between 0 and 300
+      bus_factor: Bus Factor
+      bus_factor_desc: Determine the smallest number of people that make 50% of contributions
+        in the past 90 days.
+      bus_factor_value:
+        threshold: Between 0 and 5
+    git:
+      title: Git
+      commit_frequency: Commit Frequency
+      commit_frequency_desc: Determine the average number of commits per week in the
+        past 90 days.
+      commit_frequency_value:
+        threshold: Between 0 and 1000
+      commit_frequency_more:
+        weight: 16.363%
+        threshold: '1000'
+        detail: As an outcome indicator of this model, it identifies the sustainability
+          and quantity of project contributions. Refers to the overall workload of
+          the project.
+      is_maintained: Is Maintained
+      is_maintained_desc: Percentage of weeks with at least one code commit in the
+        past 90 days(single repository). Percentage of code repositories with at least
+        one code commit in the last 30 days(multiple repositories).
+      is_maintained_value:
+        threshold: Between 0 and 1
+      is_maintained_more:
+        weight: 13.853%
+        threshold: 100%
+        detail: This metric is used to determine whether the repository is being maintained
+          on an ongoing basis. An actively maintained projects may be more resistant
+          to risks such as vulnerabilities. It is related to the Commit Frequency,
+          but the focus is different. The former focuses on the number of code contributions
+          during the cycle, while the latter focuses on the continuity of the code
+          contributions. But we should not draw any direct conclusions about projects
+          that are low on this indicator, and further insights are needed.
+        notes: definitions of single repository and multiple repositories are differerent.
+      commit_pr_linked_ratio: Commit PR Linked Ratio
+      commit_pr_linked_ratio_desc: Determine the percentage of new code commit link
+        pull request in the last 90 days.
+      commit_pr_linked_ratio_value:
+        threshold: Between 0 and 1
+      commit_pr_linked_ratio_more:
+        weight: 12.612%
+        threshold: 100%
+        detail: This indicator is used to determine whether the code submission has
+          gone through the PR process. To determine whether a project is open source,
+          perhaps we can verify the License it declares. But whether open source projects
+          use open community collaboration model to develop, and whether the community
+          is willing to build community with open source contributors and organizational
+          partners, it is not enough to rely on License alone. Here we examine the
+          project's willingness to collaborate by informing contributors in an open
+          and transparent manner about the purpose of the code submission, whether
+          it is a PR or not, and by being reviewed.
+      commit_count: Commit Count
+      commit_count_desc: Determine the number of commits in the past 90 days.
+      commit_pr_linked_count: Commit PR Linked Count
+      commit_pr_linked_count_desc: Determine the numbers of new code commit link pull
+        request in the last 90 days.
+      created_since: Created Since
+      created_since_desc: Determine how long a repository has existed since it was
+        created (in months).
+      created_since_value:
+        threshold: Between 0 and 120
+      updated_since: Updated Since
+      updated_since_desc: Determine the average time per repository since the repository
+        was last updated (in days).
+      updated_since_value:
+        threshold: Between 0 and 0.25
+      updated_since_more:
+        weight: 12.74%
+        threshold: 0.25 months
+        detail: This metric is used to indicate how often the project is updated.
+          It identifies good communities for development collaboration and management,
+          and makes frequent iterative and incremental development to promote continuous
+          improvement in software quality. But the industr domains of a software project
+          also determines that the frequency of its iterations is not always as high
+          as possible, some Linux distribution projects, for example, exhibit a very
+          typical pattern of code iterations with periodic release planning. Here
+          we focus on the trend of the project during each cycle, and the relative
+          results compared with the projects belong to the similar domains.
+      org_count: Org Count
+      org_count_desc: Number of organizations to which active code contributors belong
+        in the past 90 days.
+      org_count_value:
+        threshold: Between 0 and 30
+      org_count_more:
+        weight: 32.258%
+        threshold: '30'
+        detail: What we count here are the organizations that contribute code. The
+          reason for only counting code contributions is that code contributions have
+          the highest technical threshold compared to other types of community contributions,
+          and are the most direct manifestation of an organization's participation
+          in community contributions. At the same time through the analysis of the
+          organization's categories, we can also be more in-depth insight, such as
+          understanding of the project's north-south ecological construction, etc.
+      org_commit_frequency: Org Commit Frequency
+      org_commit_frequency_desc: 'Definition: Determine the average number of commits
+        with organization affiliation per week in the past 90 days.'
+      org_commit_frequency_value:
+        threshold: Between 0 and 800
+      org_contribution_last: Org contribution last
+      org_contribution_last_desc: Total contribution time of all organizations to
+        the community in the past 90 days (weeks).
+      org_contribution_last_value:
+        threshold: Between 0 and 160
+      lines_of_code_frequency: Lines of Code Frequency
+      lines_of_code_frequency_desc: Determine the average number of lines touched
+        (lines added plus lines removed) per week in the past 90 days.
+      lines_of_code_frequency_value:
+        threshold: Between 0 and 300000
+      lines_of_code_frequency_more:
+        weight: 5.640%
+        threshold: '300000'
+        detail: The number of lines of source code is indeed strongly correlated with
+          the amount of work, but it is less correlated with the value created. What
+          forms of code can be counted in the LOC, are uncertain factors. We do not
+          care so much about the code form(program language, configuration files etc),
+          only use it as the description of the workload, so its weight in the overall
+          metrics model is low.
+      lines_add_of_code_frequency: Lines Add of Code Frequency
+      lines_add_of_code_frequency_desc: Determine the average number of lines touched
+        (lines added) per week in the past 90.
+      lines_remove_of_code_frequency: Lines Remove of Code Frequency
+      lines_remove_of_code_frequency_desc: Determine the average number of lines touched
+        (lines removed) per week in the past 90.
+    issue:
+      title: Issue
+      issue_first_reponse: Issue First Response
+      issue_first_reponse_desc: Average/Median first comments response (in days) for
+        new issues created in the last 90 days. This excludes bot responses, the creator's
+        own comment, or an action assigned by the issue. If the issue has been unanswered,
+        the first response time is not counted.
+      bug_issue_open_time: Bug Issue Open Time
+      bug_issue_open_time_desc: Average/Median time (days) that bug issues have been
+        opened for issues created in the last 90 days.
+      comment_frequency: Comment Frequency
+      comment_frequency_desc: Determine the average number of comments per issue created
+        in the last 90 days.
+      updated_issues_count: Updated Issues Count
+      updated_issues_count_desc: Determine the number of issues updated in the last
+        90 days.
+      closed_issues_count: Closed Issues Count
+      closed_issues_count_desc: Determine the number of issues closed in the last
+        90 days.
+    pr:
+      title: PR
+      pr_issue_linked_ratio: PR Issue Linked Ratio
+      pr_issue_linked_ratio_desc: Determine the percentage of new pull request link
+        issues in the last 90 days.
+      pr_issue_linked_ratio_value:
+        threshold: Between 0 and 0.2
+      pr_open_time: PR Open Time
+      pr_open_time_desc: Average/Median processing time (days) for new change requests
+        created in the last 90 days, including closed/accepted change requests and
+        unresolved change requests.
+      pr_open_time_value:
+        threshold: Between 0 and 30
+      code_review_count: Code Review Count
+      code_review_count_desc: Determine the average number of review comments per
+        pull request created in the last 90 days.
+      code_review_count_value:
+        threshold: Between 0 and 8
+      close_pr_count: Close PR Count
+      close_pr_count_desc: The number of PR accepted and declined in the last 90 days.
+      close_pr_count_value:
+        threshold: Between 0 and 4500
+      pr_time_to_first_response: PR Time to First Response
+      pr_time_to_first_response_desc: Determine the amount of time between when a
+        PR was created and when it received the first response from a human in the
+        past 90 days.
+      pr_time_to_first_response_value:
+        threshold: Between 0 and 15
+      change_request_closure_ratio: Change Request Closure Ratio
+      change_request_closure_ratio_desc: Measures the ratio between the total number
+        of open change requests and the total number of closed change requests from
+        the beginning to now.
+      change_request_closure_ratio_value:
+        threshold: Between 0 and 1
+      change_request_closure_ratio_recently_period: Change Request Closure Ratio Recently
+        Period
+      change_request_closure_ratio_recently_period_desc: Measures the ratio between
+        the total number of open change requests and the total number of closed change
+        requests in the last 90 days.
+      change_request_closure_ratio_recently_period_value:
+        threshold: Between 0 and 1
+      code_review_ratio: Code Review Ratio
+      code_review_ratio_desc: Determine the percentage of code commits with at least
+        one reviewer (not PR creator) in the last 90 days.
+      code_review_ratio_value:
+        threshold: Between 0 and 1
+      code_merge_ratio: Code Merge Ratio
+      code_merge_ratio_desc: Determine the percentage of PR Mergers and PR authors
+        who are not the same person in the last 90 days of commits.
+      code_merge_ratio_value:
+        threshold: Between 0 and 1
+      pr_count: PR Count
+      pr_count_desc: Determine the number of PR created in the last 90 days.
+      pr_count_with_review: PR Count With Review
+      pr_count_with_review_desc: Determine the Number of pr with review in the last
+        90 days.
+      total_create_close_pr_count: Total Create Close PR Count
+      total_create_close_pr_count_desc: Determine the number of pr created from the
+        beginning to now and it has been accepted and declined.
+      total_pr_count: Total PR Count
+      total_pr_count_desc: Determine the number of PR created from the beginning to
+        now.
+      create_close_pr_count: Create Close PR Count
+      create_close_pr_count_desc: Determine the number of pr created in the last 90
+        days and it has been accepted and declined.
+      code_merge_count_with_non_author: Code Merge Count With non Author
+      code_merge_count_with_non_author_desc: Determine the Numbers of PR Mergers and
+        PR authors who are not the same person in the last 90 days of commits.
+      code_merge_count: Code Merge Count
+      code_merge_count_desc: Determine the Numbers of PR Mergers and PR authors who
+        are not the same person in the last 90 days of commits.
+      pr_issue_linked_count: PR Issue linked Count
+      pr_issue_linked_count_desc: Determine the Numbers of new pull request link issues
+        in the last 90 days.
+    repo:
+      title: Repository
+      recent_releases_count: Recent Releases Count
+      recent_releases_count_desc: Determine the number of releases in the last year.
+      recent_releases_count_value:
+        threshold: Between 0 and 12
   lab_models:
-    datasets_required: "The dataset cannot be empty"
-    metrics_required: "The metrics cannot be empty"
-    emails_required: "The emails cannot be empty"
-    content_required: "The content of comment cannot be empty"
-    invalid_name: "Invalid name"
-    invalid_dimension: "Invalid dimension"
-    invalid_dataset: "Invalid dataset"
-    invalid_algorithm: "Invalid algorithm"
-    invalid_version: "Invalid version"
-    invalid_invitation: "Invalid invitation"
-    invitation_expired: "Invitation expired"
-    already_memeber: "You are already a member"
-    datasets_too_large: "The dataset exceeds the maximum length limit: %{limit}"
-    metrics_too_large: "The metrics exceeds the maximum length limit: %{limit}"
-    not_found: "No corresponding resources found"
-    forbidden: "No permission to access the corresponding resources"
-    create_failed: "Failed to create, reason: %{reason}"
-    update_failed: "Update failed with reason: %{reason}"
-    delete_failed: "Deletion failed, reason: %{reason}"
-    trigger_failed: "Failed to trigger model analysis "
-    delete_success: "Deleted successfully"
-    reaching_daily_limit: "The daily analysis limit has been reached"
-    reach_limit: "Parameter exceeds maximum limit"
-  user_mailer:
-    email_verification:
-      subject: "Verify your email address"
-    email_invitation:
-      subject: "Invitation to join the Lab Model"
-      body: "We are pleased to invite you to join the %{model_name} modeling project. We are looking for enthusiastic partners who are willing to contribute their time and skills, and we believe that your expertise will be a valuable asset to the project. If you are interested in joining the project, please click the link below:"
-      accept: "Accept invitation"
-    confirm_email:
-      subject: "Confirm your email address"
-      verify_email: "Verify your email address"
-      verify_email_text: "Please click on the button below to verify your email address. This is required to confirm ownership of the email address."
-      browser_text: "If that doesn't work, try copying and pasting the following URL into your browser:"
-      expire_text: "This link is valid for 72 hour only. If it has expired, log in to your"
-      expire_text_2: "This link is only valid for 60 minutes. If it has expired, please contact the sender to resend the invitation."
-      account_setting: "account settings"
-      expire_text_end: "request a new link."
+    datasets_required: The dataset cannot be empty
+    metrics_required: The metrics cannot be empty
+    emails_required: The emails cannot be empty
+    content_required: The content of comment cannot be empty
+    invalid_name: Invalid name
+    invalid_dimension: Invalid dimension
+    invalid_dataset: Invalid dataset
+    invalid_algorithm: Invalid algorithm
+    invalid_version: Invalid version
+    invalid_invitation: Invalid invitation
+    invitation_expired: Invitation expired
+    already_memeber: You are already a member
+    datasets_too_large: 'The dataset exceeds the maximum length limit: %{limit}'
+    metrics_too_large: 'The metrics exceeds the maximum length limit: %{limit}'
+    not_found: No corresponding resources found
+    forbidden: No permission to access the corresponding resources
+    create_failed: 'Failed to create, reason: %{reason}'
+    update_failed: 'Update failed with reason: %{reason}'
+    delete_failed: 'Deletion failed, reason: %{reason}'
+    trigger_failed: 'Failed to trigger model analysis '
+    delete_success: Deleted successfully
+    reaching_daily_limit: The daily analysis limit has been reached
+    reach_limit: Parameter exceeds maximum limit
+  metrics_models:
+    collaboration_development_index:
+      title: Collaboration Development Index
+      desc: Open source projects, as a typical manifestation of human group intelligence,
+        the ability to establish collaborative development management is a key element
+        contributing to the success of the project. And code, as the final output
+        of a project, is the essence of the entire community's contribution. So we
+        evaluate how well the development process is managed and how well the community
+        does collaborative development around a series of indirect metrics related
+        to code contribution.
+      metrics:
+        contributor_count: Code Contributor Count
+        contributor_count_desc: Determine how many active pr creators, code reviewers,
+          commit authors there are in the past 90 days.
+        contributor_count_more:
+          weight: 19.987%
+          threshold: '1000'
+          detail: Here we focus on the number of contributors directly related to
+            the code contribution. As a result of this model, it identifies a well-managed
+            community of development collaborations that are gathering more and more
+            active code contributors. We believe that some types of the Issue are
+            also related to code contributions, such as Bug , new requirements, and
+            so on, and will eventually introduce code contributions. But as a general
+            indicator, it is difficult to identify issues in a uniform way (such as
+            a Bug type) within the specific type of each project, because each project
+            has a different definition and understanding of the Bug type. So we made
+            a trade-off, choosing only PR-related and Code Commit-related contributors
+            as insight objects.
+        commit_frequency: Commit Frequency
+        commit_frequency_desc: Determine the average number of commits per week in
+          the past 90 days.
+        commit_frequency_more:
+          weight: 16.363%
+          threshold: '1000'
+          detail: As an outcome indicator of this model, it identifies the sustainability
+            and quantity of project contributions. Refers to the overall workload
+            of the project.
+        is_maintained: Is Maintained
+        is_maintained_desc: Percentage of weeks with at least one code commit in the
+          past 90 days(single repository). Percentage of code repositories with at
+          least one code commit in the last 30 days(multiple repositories).
+        is_maintained_more:
+          weight: 13.853%
+          threshold: 100%
+          detail: This metric is used to determine whether the repository is being
+            maintained on an ongoing basis. An actively maintained projects may be
+            more resistant to risks such as vulnerabilities. It is related to the
+            Commit Frequency, but the focus is different. The former focuses on the
+            number of code contributions during the cycle, while the latter focuses
+            on the continuity of the code contributions. But we should not draw any
+            direct conclusions about projects that are low on this indicator, and
+            further insights are needed.
+          notes: definitions of single repository and multiple repositories are differerent.
+        commit_pr_linked_ratio: Commit PR Linked Ratio
+        commit_pr_linked_ratio_desc: Determine the percentage of new code commit link
+          pull request in the last 90 days.
+        commit_pr_linked_ratio_more:
+          weight: 12.612%
+          threshold: 100%
+          detail: This indicator is used to determine whether the code submission
+            has gone through the PR process. To determine whether a project is open
+            source, perhaps we can verify the License it declares. But whether open
+            source projects use open community collaboration model to develop, and
+            whether the community is willing to build community with open source contributors
+            and organizational partners, it is not enough to rely on License alone.
+            Here we examine the project's willingness to collaborate by informing
+            contributors in an open and transparent manner about the purpose of the
+            code submission, whether it is a PR or not, and by being reviewed.
+        pr_issue_linked_ratio: PR Issue Linked Ratio
+        pr_issue_linked_ratio_desc: Determine the percentage of new pull request link
+          issues in the last 90 days.
+        pr_issue_linked_ratio_more:
+          weight: 11.319%
+          threshold: 100%
+          detail: This metric is used to see if the code contributions are based upon
+            open discussion, for example using the Issue. Note that not all issues
+            result in code contributions, such as an Issue for the advisory type,
+            there would be no code modifications generally . At the same time, we
+            should also note that if PR goes through public discussion, Issue is not
+            the only way, it may come from discussion in the forum. Therefore, we
+            can not blindly pursue the high proportion of this indicator.
+        code_review_ratio: Code Review Ratio
+        code_review_ratio_desc: Determine the percentage of code commits with at least
+          one reviewer (not PR creator) in the last 90 days.
+        code_review_ratio_more:
+          weight: 10.113%
+          threshold: 100%
+          detail: If a PR is merged without being reviewed by others, the probability
+            of a code defect or vulnerability being introduced, intentionally or unintentionally,
+            is greatly increased. Code reviews do not fully protect against this risk,
+            but they greatly improve the introduction of risk.
+        code_merge_ratio: Code Merge Ratio
+        code_merge_ratio_desc: Determine the percentage of PR Mergers and PR authors
+          who are not the same person in the last 90 days of commits.
+        code_merge_ratio_more:
+          weight: 10.113%
+          threshold: 100%
+          detail: This metric was observed in conjunction with the Code Review Ratio.
+            When we introduced a third-party review, but if the PR creator intentionally
+            or unintentionally ignored the third-party review and merged the code
+            directly, there are also risks. It's important to note that the Code Review
+            Ratio and Code Merge Ratio are one best practices we observe in opensource
+            communities, but rather the only standards. We also see in some communities
+            based on trust in some good, long-term contributors, these people are
+            granted the right to merge their own code direclty.
+        lines_of_code_frequency: Lines of Code Frequency
+        lines_of_code_frequency_desc: Determine the average number of lines touched
+          (lines added plus lines removed) per week in the past 90 days.
+        lines_of_code_frequency_more:
+          weight: 5.640%
+          threshold: '300000'
+          detail: The number of lines of source code is indeed strongly correlated
+            with the amount of work, but it is less correlated with the value created.
+            What forms of code can be counted in the LOC, are uncertain factors. We
+            do not care so much about the code form(program language, configuration
+            files etc), only use it as the description of the workload, so its weight
+            in the overall metrics model is low.
+    community_service_and_support:
+      title: Community Service and Support
+      desc: Community Service and Support measures the quality of services and support
+        provided by the community as directly perceived by a developer during the
+        contribution process. The emphasis on direct perception comes from the fact
+        that many of the underlying services provided by the community, such as the
+        Devops infrastructure involved in the development, are also key elements in
+        building community services, but are difficult for the community participants
+        to perceive. At the same time, they are also lack of a universal means of
+        assessment. We use the metric dimension that participants perceive in community-based
+        development to indirectly evaluate the community's entire 'Marathon-like logistic
+        system in open source contribution'. It should be noted that this does not
+        mean that only the metrics mentioned in the model are sufficient, in order
+        to ensure the independence of indicators, the model has done a strong correlation
+        index dimension reduction; So if you want to maintain the long-term positive
+        development of the model, the community's efforts go far beyond what the current
+        metrics contain.
+      metrics:
+        updated_issues_count: Updated Issues Count
+        updated_issues_count_desc: Determine the number of issues updated in the last
+          90 days.
+        updated_issues_count_more:
+          weight: 19.721%
+          threshold: '2000'
+          detail: There are two reasons why we chose to use the number of Issue updates
+            instead of counting the number of issues that were closed or resolved.
+            First, there are many different types of issues, such as bugs, new function
+            requirements, user inquiries, and CVEs. Only certain types of problems,
+            such as CVES, must be resolved quickly. For other types of issues, quick
+            Issue resolution is not pursued usually, and we need to communicate with
+            the issue creator multiple times to better understand the details that
+            takes time. If the functional requirements, from acceptance to resolution,
+            are in accordance with the release plan, such scenarios may also take
+            several months. Second, from the number of Issue updates, we can monitor
+            the activity of the Issue processing. The issue update can also include
+            reopening the issue, indicating concern about changes in the understanding
+            of the issue.
+        close_pr_count: Close PR Count
+        close_pr_count_desc: The number of PR accepted and declined in the last 90
+          days.
+        close_pr_count_more:
+          weight: 19.721%
+          threshold: '4500'
+          detail: The more code you contribute, the more PR requests you need to close
+            (accept or reject) . This indicates that the community is actively dealing
+            with the PR. We use this metric together with Close PR Count as an outcome
+            measure of the model, to provide an overall view of community service
+            and support.
+        issue_first_response: Issue First Response
+        issue_first_response_desc: Average/Median first comments response (in days)
+          for new issues created in the last 90 days. This excludes bot responses,
+          the creator's own comment, or an action assigned by the issue. If the issue
+          has been unanswered, the first response time is not counted.
+        issue_first_response_more:
+          weight: 14.372%
+          threshold: 15 days
+          detail: We use this indicator to sense "Community temperature". And for
+            contributors who join the community, if their questions are answered in
+            a timely manner by the community, there's a good chance that they would
+            be retained and continue to contribute to the community (according to
+            Mozilla Research) . At the same time, we found that more and more robots
+            have been used to assist with Issue processing in recent years, so we
+            eliminated robot interference and focused on human replies.
+        bug_issue_open_time: Bug Issue Open Time
+        bug_issue_open_time_desc: Average/Median time (days) that bug issues have
+          been opened for issues created in the last 90 days.
+        bug_issue_open_time_more:
+          weight: 12.88%
+          threshold: 60 days
+          notes: Issue that labeled by Bugs.
+          detail: The Bug type Issue represents how efficiently the community handles
+            issues that need to be resolved quickly. We chose to use Bug Issue to
+            represent this type of Issues, which of course has its limitations, because
+            not all bugs are high-priority ones, but rather than not distinguishing
+            the Issue types, this index has some representativeness.
+        pr_open_time: PR Open Time
+        pr_open_time_desc: Average/Median processing time (days) for new change requests
+          created in the last 90 days, including closed/accepted change requests and
+          unresolved change requests.
+        pr_open_time_more:
+          weight: 12.88%
+          threshold: 30 days
+          detail: We are seeking for the change request fast close, including code
+            merged or rejected. Otherwise the longer it takes for a change request
+            to be resolved, the greater the risk that merge-conflict will occur, while
+            other change requests that depend on it will also be stalled.
+        comment_frequency: Comment Frequency
+        comment_frequency_desc: Determine the average number of comments per issue
+          created in the last 90 days.
+        comment_frequency_more:
+          weight: 10.217%
+          threshold: '5'
+          detail: We would like to see the community encourage open and transparent
+            discussion around specific bugs or requirements through Issue. The corresponding
+            conclusions of the Issue can also be accumulated as a knowledge base and
+            made available to more people.
+        code_review_count: Code Review Count
+        code_review_count_desc: Determine the average number of review comments per
+          pull request created in the last 90 days.
+        code_review_count_more:
+          weight: 10.217%
+          threshold: '8'
+          detail: We hope that code could be reviewed publicly by PR that shows how
+            much the community values code quality and security management, and helps
+            new people grow quickly.
+    community_activity:
+      title: Community Activity
+      desc: Community Activity is used to describe how active an open source community
+        is.In order for an open source project to be sustainable, it must continue
+        to be maintained and improved following its initial release. Activity describes
+        how much work is being done on a project over time. High levels of community
+        activity may indicate that a project is sustainable and low levels of community
+        activity may indicate that a project is at risk.
+      metrics:
+        contributor_count: Contributor Count
+        contributor_count_desc: Determine how many active code commit authors, pr
+          authors, review participants, issue authors, and issue comments participants
+          there are in the past 90 days.
+        contributor_count_more:
+          weight: 18.01%
+          threshold: '2000'
+          notes: when a person has more than one contributions with different roles
+            in multiple repositories, like code commit author and issue author, we
+            only count once.
+          detail: In this model, we include all types of contributors to the project
+            hosted by code host platform(Github, Gitee etc). Because we think that
+            project activity is made up of all types of contributing behavior, and
+            the more active contributors there are, the more important the project
+            is.
+        commit_frequency: Commit Frequency
+        commit_frequency_desc: Determine the average number of commits per week in
+          the past 90 days.
+        commit_frequency_more:
+          weight: 18.01%
+          threshold: '1000'
+          detail: As an outcome indicator of this model, it identifies the sustainability
+            and quantity of project contributions. Refers to the overall workload
+            of the project.
+        updated_since: Updated Since
+        updated_since_desc: Determine the average time per repository since the repository
+          was last updated (in days).
+        updated_since_more:
+          weight: 12.74%
+          threshold: 0.25 months
+          detail: This metric is used to indicate how often the project is updated.
+            It identifies good communities for development collaboration and management,
+            and makes frequent iterative and incremental development to promote continuous
+            improvement in software quality. But the industr domains of a software
+            project also determines that the frequency of its iterations is not always
+            as high as possible, some Linux distribution projects, for example, exhibit
+            a very typical pattern of code iterations with periodic release planning.
+            Here we focus on the trend of the project during each cycle, and the relative
+            results compared with the projects belong to the similar domains.
+        organization_count: Organization Count
+        organization_count_desc: Number of organizations to which active code contributors
+          belong in the past 90 days.
+        organization_count_more:
+          weight: 11.50%
+          threshold: '10'
+          detail: The more organizations that participate in the project's ongoing
+            contribution, the more organizations that rely heavily on the project.
+            This will greatly promote the establishment and prosperity of ecology.
+        created_since: Created Since
+        created_since_desc: Determine how long a repository has existed since it was
+          created (in months).
+        comment_frequency: Comment Frequency
+        comment_frequency_desc: Determine the average number of comments per issue
+          created in the last 90 days.
+        comment_frequency_more:
+          weight: 7.77%
+          threshold: '5'
+          detail: We would like to see the community encourage open and transparent
+            discussion around specific bugs or requirements through Issue. The corresponding
+            conclusions of the Issue can also be accumulated as a knowledge base and
+            made available to more people.
+        code_review_count: Code Review Count
+        code_review_count_desc: Determine the average number of review comments per
+          pull request created in the last 90 days.
+        code_review_count_more:
+          weight: 4.92%
+          threshold: '8'
+          detail: We hope that code could be reviewed publicly by PR that shows how
+            much the community values code quality and security management, and helps
+            new people grow quickly.
+        updated_issues_count: Updated Issues Count
+        updated_issues_count_desc: Determine the number of issues updated in the last
+          90 days.
+        updated_issues_count_more:
+          weight: 4.92%
+          threshold: '2500'
+          detail: There are two reasons why we chose to use the number of Issue updates
+            instead of counting the number of issues that were closed or resolved.
+            First, there are many different types of issues, such as bugs, new function
+            requirements, user inquiries, and CVEs. Only certain types of problems,
+            such as CVES, must be resolved quickly. For other types of issues, quick
+            Issue resolution is not pursued usually, and we need to communicate with
+            the issue creator multiple times to better understand the details that
+            takes time. If the functional requirements, from acceptance to resolution,
+            are in accordance with the release plan, such scenarios may also take
+            several months. Second, from the number of Issue updates, we can monitor
+            the activity of the Issue processing. The issue update can also include
+            reopening the issue, indicating concern about changes in the understanding
+            of the issue.
+        recent_releases_count: Recent Releases Count
+        recent_releases_count_desc: Determine the number of releases in the last year.
+        recent_releases_count_more:
+          weight: 3.18%
+          threshold: '12'
+          detail: The high frequency of releases indicates that software artifacts
+            are iterating rapidly to respond to user needs. Of course, software projects
+            belong to different industries and fields, also decided that the frequency
+            of its iterations is not always as high as possible, for example, large
+            platform software project release cycle is six months to a year.
+    organization_activity:
+      title: Organizations Activity
+      desc: Organizational activity is used to assess the activity of organizations
+        in the community (Business Companies, colleges, etc.) . For an open source
+        project, especially for a platform-based software project, the more organizations
+        participate in community contributions, indicating that the ecological construction
+        of the community is towards prosperity. Because software projects provide
+        the business value or academic value-binding that organizations need, organizations
+        are willing to participate in community contributions using organizations
+        identities.
+      metrics:
+        org_count: Org Count
+        org_count_desc: Number of organizations to which active code contributors
+          belong in the past 90 days.
+        org_count_more:
+          weight: 32.258%
+          threshold: '30'
+          detail: What we count here are the organizations that contribute code. The
+            reason for only counting code contributions is that code contributions
+            have the highest technical threshold compared to other types of community
+            contributions, and are the most direct manifestation of an organization's
+            participation in community contributions. At the same time through the
+            analysis of the organization's categories, we can also be more in-depth
+            insight, such as understanding of the project's north-south ecological
+            construction, etc.
+        contributor_count: Organization Contributor Count
+        contributor_count_desc: Number of active code contributors with organization
+          affiliation in the past 90 days.
+        contributor_count_more:
+          weight: 25.806%
+          threshold: '300'
+          detail: Here we count the number of code contributors with organized attributes.
+            We are here to examine the organization's continued investment in community
+            human resources.
+        commit_frequency: Commit Frequency
+        commit_frequency_desc: 'Definition: Determine the average number of commits
+          with organization affiliation per week in the past 90 days.'
+        commit_frequency_more:
+          weight: 25.81%
+          threshold: '800'
+          detail: This indicator is similar to the number of contributors and measures
+            the organization's input to the community in terms of the number of code
+            contributions.
+        contribution_last: Contribution Last
+        contribution_last_desc: Total contribution time of all organizations to the
+          community in the past 90 days (weeks).
+        contribution_last_more:
+          weight: 16.13%
+          threshold: '200'
+          detail: We look at the development of ecology in terms of the time dimension,
+            through how the organization participates and invests as time goes by.
+    developer_attraction:
+      title: Developer Attraction
+    organizations_activity:
+      title: Organizations Activity
+    technological_advancement:
+      title: Technological Advancement
+    code_security_guarantee:
+      title: Code Security Guarantee
+    code_compliance_guarantee:
+      title: Code Compliance Guarantee
+    content:
+      title: Content
+    activity:
+      title: Activity
+    developer_convertion:
+      title: Developer Convertion
+    developer_retention:
+      title: Developer Retention
+    inner_connectedness:
+      title: Inner Connectedness
+    organization_collaboration_relationships:
+      title: Organization Collaboration Relationships
+    outbound_connectedness:
+      title: Outbound Connectedness
+    starter_project_health:
+      title: Starter Project Health
+      desc: Starter Project Health is designed to help people get started with four
+        key project health metrics that they can expand on and customize to meet their
+        unique needs later.
+      metrics:
+        time_to_first_response: PR Time to First Response
+        time_to_first_response_desc: Determine the amount of time between when a PR
+          was created and when it received the first response from a human in the
+          past 90 days.
+        change_request_closure_ratio_all_period: Change Request Closure Ratio
+        change_request_closure_ratio_all_period_desc: Measures the ratio between the
+          total number of open change requests and the total number of closed change
+          requests from the beginning to now.
+        change_request_closure_ratio_same_period: Change Request Closure Ratio Recently
+          Period
+        change_request_closure_ratio_same_period_desc: Measures the ratio between
+          the total number of open change requests and the total number of closed
+          change requests in the last 90 days.
+        pr_time_to_close: PR Time To Close
+        pr_time_to_close_desc: Determine the amount of time between when a PR was
+          created and when it was closed in the past 90 days.
+        bus_factor: Bus Factor
+        bus_factor_desc: Determine the smallest number of people that make 50% of
+          contributions in the past 90 days.
+        release_frequency: Release Frequency
+        release_frequency_desc: Determine the frequency of project releases (including
+          point releases with bug fixes) in the last year.
   notification:
     slack:
-      subscription_update_content: |- 
+      subscription_update_content: |-
         ## OSS Compass project subscription update - %{subject_name}
-        
+
         Hi %{user_name},
-        
+
         There has been a recent update to the project report you subscribed to on OSS Compass, as follows:
-        
+
         - [%{subject_name}](%{subject_url})
-        
+
         Click the link above to view the updated report. To manage OSS Compass project subscriptions, [please click here](%{subscription_url}).
         For more insight into open source software project analysis, visit: [OSS Compass](%{explore_url}).
-        
+
         [OSS Compass team](%{about_url})
       submission_content: |-
         ## OSS Compass project subscription
@@ -157,15 +1223,217 @@ en:
 
         [OSS Compass team](%{about_url})
     email:
-      project_subscription_update: "OSS Compass project subscription update"
-      project_subscription: "OSS Compass project subscription"
-      project_unsubscription: "OSS Compass project unsubscription"
-      please_click_here: "please click here"
-      project_update: "There has been a recent update to the project report you subscribed to on OSS Compass, as follows:"
-      project_update_description: "Click the link above to view the updated report. If you need to manage your OSS Compass project subscription, "
-      more_info: "For more insight into open source software project analysis, visit:"
-      team: "team"
-      submission_description: "You analysis request for <a href='%{subject_url}'>%{subject_name}</a> on the OSS Compass website has been submitted and subscribed. We will synchronize the relevant report information with you after we confirm and complete the analysis."
-      manage_subscription: "To manage OSS Compass project subscriptions,<a href='%{subscription_url}'>please click here</a>.。"
-      subscription_create_description: "You have successfully subscribed to the analysis report of the <a href='%{subject_url}'> %{subject_name}</a>. We will update the report information with you when the project report is updated."
-      subscription_delete_description: "You have successfully unsubscribed the analysis report for the <a href='%{subject_url}'>%{subject_name}</a>."
+      project_subscription_update: OSS Compass project subscription update
+      project_subscription: OSS Compass project subscription
+      project_unsubscription: OSS Compass project unsubscription
+      please_click_here: please click here
+      project_update: 'There has been a recent update to the project report you subscribed
+        to on OSS Compass, as follows:'
+      project_update_description: 'Click the link above to view the updated report.
+        If you need to manage your OSS Compass project subscription, '
+      more_info: 'For more insight into open source software project analysis, visit:'
+      team: team
+      submission_description: You analysis request for <a href='%{subject_url}'>%{subject_name}</a>
+        on the OSS Compass website has been submitted and subscribed. We will synchronize
+        the relevant report information with you after we confirm and complete the
+        analysis.
+      manage_subscription: To manage OSS Compass project subscriptions,<a href='%{subscription_url}'>please
+        click here</a>.。
+      subscription_create_description: You have successfully subscribed to the analysis
+        report of the <a href='%{subject_url}'> %{subject_name}</a>. We will update
+        the report information with you when the project report is updated.
+      subscription_delete_description: You have successfully unsubscribed the analysis
+        report for the <a href='%{subject_url}'>%{subject_name}</a>.
+  oauth:
+    user:
+      missing: authorization information has expired or not logged in, please re-login
+        again.
+      failed: 'failed to get the user info, reason: %{reason}.'
+    branch:
+      failed: 'failed to create a ref, reason: %{reason}.'
+    validate:
+      fork: the analysis of the fork repository is not currently supported, please
+        submit the upstream repository.
+      retry: failed to validate the repository, please try again.
+    file:
+      failed: 'failed to put the file, reason: %{reason}.'
+      submitted: alreadly submitted.
+    pull:
+      failed: 'failed to create a pull request, reason: %{reason}.'
+    latest_sha:
+      failed: 'failed to get latest sha, reason: %{reason}.'
+  pull:
+    too_many_repositories: too many repositories, please create a pull request manually.
+    invalid_level: invalid resource type.
+    duplicate: analysis report already exists, please visit follow url
+    welcome_collection: Welcome to submit Collection changes. After the PR is reviewd
+      and merged, the new Collection information will be automatically updated and
+      displayed in the next period.
+    user:
+      validation:
+        pass: user verification passed.
+        failed: user verification failed.
+      invalid: invalid user information.
+  setting:
+    profile:
+      avatar: Avatar
+      userinfo: Profile
+      account_setting: Account Setting
+      form:
+        name: Name
+        name_placeholder: Please enter your name
+        email: Email
+        email_ques_icon: The email is used to receive project update notifications.
+        email_placeholder: Please enter your email address
+        error_require: "{{field}} is a required field"
+        error_name_max_len: nickname cannot exceed {{length}} characters
+        error_email_format: email format is incorrect
+      connected_accounts: Connected Accounts
+      bound_already: Bound already
+      wechat_connect: Connect Wechat
+      connect: Connect
+      disconnect: Disconnect
+      connect_multiple_accounts_to_your_user_and_sign_in: Connect multiple accounts
+        to your user and sign in with any of them
+      delete_account: Delete account
+      delete_account_btn: Delete account
+      delete_account_warning: " Once you delete your account, there is no going back.
+        Please be certain when taking this action."
+      can_be_used_to_submit_project_after_binding: Can be used to submit project after
+        binding
+      can_be_used_to_receive_notifications_for_analysis_reports: Can be used to receive
+        notifications for analysis reports
+      verified: Verified
+      unverified_yet: Unverified yet,
+      email_sent: Verification email has been sent，
+      email_sent_later: Send again after {{sec}} seconds
+      resend_verification_email: resend verification email
+      language_preferences: Notification language preference
+      language_preferences_desc: Language options for receiving notifications, including
+        email notifications and Slack notifications
+    subscriptions:
+      title: My Subscriptions
+      submit_a_project: Submit a project
+      unsubscribe: Unsubscribe
+      empty_list: No subscription data
+      updated_on: 'Updated on '
+      collect_at: Last data update time
+      complete_at: Analysis report update time
+      analyzing: Analyzing
+      confirm_cancel: Confirm unsubscribe
+      after_unsubscribing_you_will_no_longer_receive_any: After unsubscribing, you
+        will no longer receive any notifications related to this project.
+  submit_project:
+    enroll_your_project: Enroll your project
+    please_select_the_platform_where_your_project_is_h: Please select the platform
+      where your project is hosted
+    sign_in_with_gitee: Sign in with Gitee
+    sign_in_with_github: Sign in with GitHub
+    submit_your_project: Submit your project
+    single_repository: Single repository
+    your_project_hosting_on: Your project hosting on
+    switch_gitee: Use Gitee account
+    switch_github: Use GitHub account
+    select_your_own_repository_on: Select your own repository on {{providerName}}
+    type_the_address_of_any_repository: Type the address of any repository
+    pick_your_own_repository_on: Pick your own repository on {{providerName}}
+    type_address_of: Type address of {{providerName}} repository
+    please_enter_a_valid: please enter a valid {{provider}} url
+    eg: eg
+    submit: Submit
+    select_repository: Select repository
+    please_choose_owner_and_pick_your_repository: Please choose owner and pick your
+      repository
+    add_organization: Add Organization
+    grant_organization_access: Grant Organization access
+    search: Search...
+    no_result: No Result!
+    fetching: fetching...
+    failed_to_fetch_data: failed to fetch data !
+    load_more: load more
+    no_more_data: No more data !
+    pick_it: Pick it
+    error: Error!
+    run_for_a_community_with_multiple_repositories: Run for a community with multiple
+      repositories?
+    submit_as_community: Submit as community
+    please_note_that_when_submitted_as_a_community: Please note that when submitted
+      as a community, all analysis dimensions will be derived from community standards,
+      which differ from the standards for single repository.
+    community_name: Community Name
+    community: Community
+    software_artifact_repository: Software Artifact Repository
+    governance_repository: Governance Repository
+    select_or_type: Select or type
+    optional: Optional
+    add_repository: Add repository
+    input_any_repository_address: Input any {{providerName}} repository address
+    run_for_a_single_repository: Run for a single repository?
+    submit_a_single_repository: Submit a single repository
+    please_note_that_when_submitted_as_single_repository: Please note that when submitted
+      as single repository, all analysis dimensions will be derived from single repository
+      standards, which differ from the standards for community.
+    manually_enter_repository_url: manual input
+    choose_a_repository: selecting from {{providerName}}
+    submit_success: Submit success!
+    welcome_to: Welcome to OSS Compass
+    continue_with_github: Continue with GitHub
+    continue_with_gitee: Continue with Gitee
+    by_creating_an_account: By creating an account, you agree to the
+    as_well_as: as well as
+    terms_of_use: " Terms of Use "
+    privacy_policy: " Non-active Account Processing Specification."
+    email_verification_successful: Email verification successful
+    the_email_address: The email address
+    has_been_successfully: has been successfully bound to your OSS Compass account
+    account_setting: Account Setting
+    bind_other_code_hosting_platforms: Bind other code hosting platforms?
+  user_mailer:
+    email_verification:
+      subject: Verify your email address
+    email_invitation:
+      subject: Invitation to join the Lab Model
+      body: 'We are pleased to invite you to join the %{model_name} modeling project.
+        We are looking for enthusiastic partners who are willing to contribute their
+        time and skills, and we believe that your expertise will be a valuable asset
+        to the project. If you are interested in joining the project, please click
+        the link below:'
+      accept: Accept invitation
+    confirm_email:
+      subject: Confirm your email address
+      verify_email: Verify your email address
+      verify_email_text: Please click on the button below to verify your email address.
+        This is required to confirm ownership of the email address.
+      browser_text: 'If that doesn''t work, try copying and pasting the following
+        URL into your browser:'
+      expire_text: This link is valid for 72 hour only. If it has expired, log in
+        to your
+      expire_text_2: This link is only valid for 60 minutes. If it has expired, please
+        contact the sender to resend the invitation.
+      account_setting: account settings
+      expire_text_end: request a new link.
+  users:
+    login_failed: 'login failed, reason: %{reason}'
+    forbidden: access forbidden
+    require_login: Operation after login is required
+    require_bind: The %{provider} account is not bound to the current user
+    already_banned: "%{provider}: %{nickname} Already bound to another account"
+    email_verified: The email has been verified and passed
+    email_change_limit: The email address cannot be modified more than %{count} times
+      within 24 hours
+    send_email_limit: Email verification cannot send more than %{count} times within
+      24 hours
+    send_invite_limit: Invitation emails cannot be sent more than %{count} times in
+      24 hours.
+    keep_one_login_bind: Keep at least one login binding
+    wechat_already_bind: It has been bound to a wechat
+    provider_not_supported: Third-party application login currently supports only
+      github and gitee
+    subscription_already_exist: Already subscribed.
+    subject_not_exist: Subscription object does not exist
+    subscription_not_exist: Subscription does not exist
+  yaml:
+    path:
+      invalid: 'invaild configure yaml path: %{path}.'
+    diff_url:
+      invalid: invalid diff url.

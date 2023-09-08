@@ -3,6 +3,10 @@ class CodequalityMetric < BaseMetric
     "#{MetricsIndexPrefix}_codequality"
   end
 
+  def self.text_ident
+    'collaboration_development_index'
+  end
+
   def self.fields_aliases
     {
       'loc_frequency' => 'LOC_frequency',

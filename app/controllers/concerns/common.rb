@@ -7,6 +7,7 @@ module Common
   PROXY = ENV.fetch('PROXY') { 'http://localhost:10807' }
   HOST = ENV.fetch('DEFAULT_HOST') { 'http://localhost:3000' }
   CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
+  ECHARTS_SERVER = ENV.fetch('ECHARTS_SERVER') { 'http://localhost:8084' }
   SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
   SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
   BOT_NAME = ENV.fetch('BOT_NAME') { 'compass-bot' }

@@ -1,3 +1,6 @@
 [submodule "compass-projects-information"]
 	path = compass-projects-information
 	url = https://github.com/oss-compass/compass-projects-information
+[submodule "i18n"]
+	path = i18n
+	url = https://github.com/oss-compass/i18n

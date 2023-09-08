@@ -3,6 +3,10 @@ class ActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_activity"
   end
 
+  def self.text_ident
+    'community_activity'
+  end
+
   def self.fields_aliases
     {
       'active_c1_pr_create_contributor_count' => 'active_C1_pr_create_contributor',

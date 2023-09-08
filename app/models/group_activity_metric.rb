@@ -3,6 +3,10 @@ class GroupActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_group_activity"
   end
 
+  def self.text_ident
+    'organization_activity'
+  end
+
   def self.main_score
     'organizations_activity'
   end
