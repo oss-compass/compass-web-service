@@ -41,7 +41,7 @@ class ApplicationController < ActionController::Base
       RabbitMQ.publish(queue, { user_agent: user_agent, payload: payload })
     end
 
-    render json: { status: true, message: I18n.t('workflow.processed') }
+    render json: { status: true, message: I18n.t('dispatch.project.processed') }
   end
 
   def hook

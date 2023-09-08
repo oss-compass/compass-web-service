@@ -1,12 +1,11 @@
 zh-CN:
-  hello: "你好"
-  too_long: "请求参数过长，限制为：%{long}"
-  workflow:
-    processed: "您提交的请求正在处理中"
+  basic:
+    too_long: "请求参数过长，限制为：%{long}"
   dispatch:
     project:
       no_exists: "该项目 %{project_name} 不存在对应的任务"
       invalid: "无效的项目: %{project_name}"
+      processed: "您提交的请求正在处理中"
   analysis:
     task:
       submitted: "任务已经提交"
@@ -21,6 +20,7 @@ zh-CN:
       cannot_access_with_tip: "尝试访问该仓库失败；系统正忙，请稍后重试"
   pull:
     too_many_repositories: "提交的仓库数量过多，请手动创建PR"
+    welcome_collection: '欢迎提交 Collection 变更，在PR审查合并后，新的 Collection 信息会在下一个周期自动更新展示'
     invalid_level: "无效的资源类型"
     duplicate: "分析报告已存在，请访问以下地址查看"
     user:
@@ -33,34 +33,9 @@ zh-CN:
       invalid: "无效的YAML文件路径: %{path}"
     diff_url:
       invalid: "无效的Diff链接地址"
-  collection:
-    invalid: '无效的collection'
-    welcome: '欢迎提交 Collection 变更，在PR审查合并后，新的 Collection 信息会在下一个周期自动更新展示'
-    no_such_keyword: 'collection 未关联该 keyword'
-    no_such_project: 'collection 未包含该 repo 或 community'
-    create_success: 'collection 创建成功'
-    create_failed: 'collection 创建失败, 原因： %{reason}'
-    delete_success: 'collection 删除成功'
-    delete_failed: 'collection 删除失败, 原因： %{reason}'
-    append_keyword_failed: 'collection 的 keyword 添加失败, 原因： %{reason}'
-    detach_keyword_failed: '取消 collection 与 该keyword的关联 失败, 原因： %{reason}'
-    append_project_failed: '添加 repo 或 community 到 collection 失败, 原因： %{reason}'
-    detach_project_failed: '从 collection 中移除 repo 或 community 失败, 原因： %{reason}'
   censoring:
     illegal: "[违规内容，不予展示]"
     illegal_img: "/images/illegal.svg"
-  keyword:
-    invalid: '无效的keyword'
-    create_success: 'keyword 创建成功'
-    create_failed: 'keyword创建失败, 原因： %{reason}'
-    delete_success: 'keyword 删除成功'
-    delete_failed: 'keyword 删除失败, 原因： %{reason}'
-  project:
-    no_such_keyword: 'repo 或 community 未关联该 keyword'
-    append_keyword_failed: 'repo 或 community 的 keyword 添加失败, 原因： %{reason}'
-    detach_keyword_failed: '取消 repo 或 community 与 该keyword的关联 失败, 原因： %{reason}'
-  admin:
-    invalid_token: "无效的管理 Token"
   oauth:
     user:
       missing: "授权信息已经过期或未登录，请重新登录授权"

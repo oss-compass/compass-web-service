@@ -49,7 +49,7 @@ class YamlCheckWorker
           if analyzer && !is_collection
             items << analyze_or_submit_yaml_file(analyzer, user_agent, branch, patch.file, extra)
           elsif is_collection
-            items << { status: true, message: I18n.t('collection.welcome') }
+            items << { status: true, message: I18n.t('pull.welcome_collection') }
           else
             items << { status: false, message: I18n.t('yaml.path.invalid', path: patch.file) }
           end

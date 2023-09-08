@@ -11,7 +11,7 @@ module Types
       argument :labels, [String], required: true, description: 'a list of label'
 
       def resolve(labels: )
-        raise GraphQL::ExecutionError, I18n.t('too_long', long: MAX_BULK_LIMIT) if labels.length > MAX_BULK_LIMIT
+        raise GraphQL::ExecutionError, I18n.t('basic.too_long', long: MAX_BULK_LIMIT) if labels.length > MAX_BULK_LIMIT
         result =
           if labels.present?
             gitee_repos = labels.select {|row| row =~ /gitee\.com/ }

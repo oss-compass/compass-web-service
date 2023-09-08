@@ -1,12 +1,11 @@
 en:
-  hello: "Hello world."
-  too_long: "Your request params is too long, limit is %{long}"
-  workflow:
-    processed: "Your submission is being processed."
+  basic:
+    too_long: "Your request params is too long, limit is %{long}"
   dispatch:
     project:
       no_exists: "no such task with project name: %{project_name}."
       invalid: "invalid project name: %{project_name}."
+      processed: "Your submission is being processed."
   analysis:
     task:
       submitted: "task already sumbitted."
@@ -23,6 +22,7 @@ en:
     too_many_repositories: "too many repositories, please create a pull request manually."
     invalid_level: "invalid resource type."
     duplicate: "analysis report already exists, please visit follow url"
+    welcome_collection: 'Welcome to submit Collection changes. After the PR is reviewd and merged, the new Collection information will be automatically updated and displayed in the next period.'
     user:
       validation:
         pass: "user verification passed."
@@ -33,34 +33,9 @@ en:
       invalid: "invaild configure yaml path: %{path}."
     diff_url:
       invalid: "invalid diff url."
-  collection:
-    invalid: 'invalid collection.'
-    welcome: 'Welcome to submit Collection changes. After the PR is reviewd and merged, the new Collection information will be automatically updated and displayed in the next period.'
-    no_such_keyword: 'this keyword is is not associated with this collection.'
-    no_such_project: 'this collection does not contain such repo or community.'
-    create_success: 'collection created successfully.'
-    create_failed: 'failed to create collection, reason: %{reason}.'
-    delete_success: 'collection deleted successfully.'
-    delete_failed: 'failed to delete collection, reason: %{reason}.'
-    append_keyword_failed: 'failed to append keyword to collection, reason: %{reason}.'
-    detach_keyword_failed: 'failed to detach keyword from collection, reason: %{reason}.'
-    append_project_failed: 'failed to append repo or community to collection, reason: %{reason}.'
-    detach_project_failed: 'failed to detach repo or community from collection, reason: %{reason}.'
   censoring:
     illegal: "[Illegal content, will not be displayed]"
     illegal_img: "/images/illegal.svg"
-  keyword:
-    invalid: 'invalid keyword.'
-    create_success: 'keyword created successfully.'
-    create_failed: 'failed to create keyword, reason: %{reason}.'
-    delete_success: 'keyword deleted successfully.'
-    delete_failed: 'failed to delete keyword, reason: %{reason}.'
-  project:
-    no_such_keyword: 'this keyword is is not associated with this repo or community.'
-    append_keyword_failed: 'failed to append keyword to repo or community, reason: %{reason}.'
-    detach_keyword_failed: 'failed to detach keyword from repo or community, reason: %{reason}.'
-  admin:
-    invalid_token: "invalid admin token."
   oauth:
     user:
       missing: "authorization information has expired or not logged in, please re-login again."
