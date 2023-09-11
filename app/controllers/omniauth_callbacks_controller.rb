@@ -6,7 +6,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   ERROR_REDIRECT_URL = '/auth/signin'
   BIND_REDIRECT_URL = '/settings/profile'
 
-  include Utils
+  include CompassUtils
 
   def wechat_auth
     if params[:state].present? || !is_wechat_browser? \

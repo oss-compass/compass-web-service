@@ -1,18 +1,18 @@
 class ChartController < ActionController::Base
   skip_before_action :verify_authenticity_token
-  include Utils
   include Common
+  include CompassUtils
 
   def show
     short_code = params[:id]
-    params[:begin_date], params[:end_date], interval =
+    params[:begin_date], params[:end_date], params[:interval] =
                                             extract_date(params[:begin_date], params[:end_date])
 
     if short_code.present?
       label = ShortenedLabel.revert(short_code)&.label
       if label.present?
         if !RESTRICTED_LABEL_LIST.include?(label)
-          if !interval
+          if !params[:interval]
             params[:label] = label
             svg = ChartRenderServer.new(params).render_single_chart!
             return render xml: svg, layout: false, content_type: 'image/svg+xml'

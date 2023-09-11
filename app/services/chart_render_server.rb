@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 class ChartRenderServer
-  include Utils
   include Common
+  include CompassUtils
 
   def initialize(params = {})
     @short_code = params[:short_code] || params[:id]
     @begin_date = params[:begin_date]
     @end_date = params[:end_date]
+    @interval = params[:interval] ? params[:interval] : '1w'
     @metric = params[:metric]
     @field = params[:field]
     @chart = params[:chart] || 'line'
@@ -34,16 +35,30 @@ class ChartRenderServer
         ActivityMetric
       end
 
+    x,y = [], []
     @field ||= metrics.main_score
-
-    resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, per: limit)
-    hits = resp&.[]('hits')&.[]('hits')
-    if hits.present?
-      x,y = [], []
-      hits.each do |hit|
-        source = hit['_source']
-        x << source['grimoire_creation_date'].slice(0, 10)
-        y << (source[@field] || source[metrics.fields_aliases[@field.to_s]])
+    if @metric != 'organizations_activity'
+      resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, per: limit)
+      hits = resp&.[]('hits')&.[]('hits')
+      if hits.present?
+        hits.each do |hit|
+          source = hit['_source']
+          x << source['grimoire_creation_date'].slice(0, 10)
+          y << (source[@field] || source[metrics.fields_aliases[@field.to_s]])
+        end
+      end
+    else
+      aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, @interval)
+      resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs)
+      aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
+      hits = resp&.[]('hits')&.[]('hits')
+      if aggs.present?
+        template = hits.first&.[]('_source')
+        aggs.map do |data|
+          x << data['key_as_string'].slice(0, 10)
+          y << (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
+                template[@field] || template[metrics.fields_aliases[@field.to_s]])
+        end
       end
     end
 

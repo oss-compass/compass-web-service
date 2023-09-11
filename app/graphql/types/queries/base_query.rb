@@ -2,12 +2,8 @@ module Types
   module Queries
     class BaseQuery < GraphQL::Schema::Resolver
       include Director
+      include CompassUtils
 
-      SEVEN_DAYS = 7 * 24 * 60 * 60
-      HALF_YEAR = 180 * 24 * 60 * 60
-      ONE_YEAR = 2 * HALF_YEAR
-      TWO_YEARS = 2 * ONE_YEAR
-      FIVE_YEARS = 5 * ONE_YEAR
       # methods that should be inherited can go here.
       # like a `current_tenant` method, or methods related
       # to the `context` object
@@ -118,25 +114,6 @@ module Types
         skeletons
       end
 
-      def extract_date(begin_date, end_date)
-        today = Date.today.end_of_day
-
-        begin_date = begin_date || today - 3.months
-        end_date = [end_date || today, today].min
-        diff_seconds = end_date.to_i - begin_date.to_i
-
-        if diff_seconds < SEVEN_DAYS
-          begin_date = today - 3.months
-          end_date = today
-          interval = false
-        elsif diff_seconds <= TWO_YEARS
-          interval = false
-        else
-          interval = '1M'
-        end
-        [begin_date, end_date, interval]
-      end
-
       def normalize_label(label)
         if label =~ URI::regexp
           uri = Addressable::URI.parse(label)
@@ -202,28 +179,6 @@ module Types
         else
           'combine'
         end
-      end
-
-      def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={}, suffixs=[])
-        metric_fields =
-          base_type.fields.select{|k, v| v.type.name.end_with?(avg_type)}.keys.map(&:underscore)
-        aggregate_inteval = {
-          aggsWithDate: {
-            date_histogram: {
-              field: date_field,
-              calendar_interval: interval_str
-            },
-            aggs: metric_fields.reduce({}) do |aggs, field|
-              if suffixs.present?
-                suffixs.reduce(aggs) do |results, suffix|
-                  results.merge({ "#{field}#{suffix}" => { avg: { field: "#{aliases[field]}#{suffix}" || "#{field}#{suffix}" } } })
-                end
-              else
-                aggs.merge({ field => { avg: { field: aliases[field] || field } } })
-              end
-            end
-          }
-        }
       end
 
       def filter_by_origin(list, origin, remove_suffix: true)

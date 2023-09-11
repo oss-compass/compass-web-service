@@ -1,4 +1,4 @@
-module Utils
+module CompassUtils
 
   SEVEN_DAYS = 7 * 24 * 60 * 60
   HALF_YEAR = 180 * 24 * 60 * 60
@@ -53,5 +53,27 @@ module Utils
       interval = '1M'
     end
     [begin_date, end_date, interval]
+  end
+
+  def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={}, suffixs=[])
+    metric_fields =
+      base_type.fields.select{|k, v| v.type.name.end_with?(avg_type)}.keys.map(&:underscore)
+    aggregate_inteval = {
+      aggsWithDate: {
+        date_histogram: {
+          field: date_field,
+          calendar_interval: interval_str
+        },
+        aggs: metric_fields.reduce({}) do |aggs, field|
+          if suffixs.present?
+            suffixs.reduce(aggs) do |results, suffix|
+              results.merge({ "#{field}#{suffix}" => { avg: { field: "#{aliases[field]}#{suffix}" || "#{field}#{suffix}" } } })
+            end
+          else
+            aggs.merge({ field => { avg: { field: aliases[field] || field } } })
+          end
+        end
+      }
+    }
   end
 end
