@@ -11,15 +11,16 @@ class ChartRenderServer
     @metric = params[:metric]
     @field = params[:field]
     @chart = params[:chart] || 'line'
-    @width = params[:width] || 400
-    @height = params[:height] || 300
+    @width = params[:width] || 800
+    @height = params[:height] || 600
     @y_abs = params[:y_abs].to_s == '1'
     @label = params[:lable] || ShortenedLabel.revert(@short_code)&.label
+    @repo_type = params[:repo_type]
   end
 
   def render_single_chart!()
 
-    limit = @short_code&.start_with?('c') ? 120 : 60
+    type = @short_code&.start_with?('c') ? @repo_type || 'software-artifact' : nil
 
     metrics =
       case @metric
@@ -38,7 +39,7 @@ class ChartRenderServer
     x,y = [], []
     @field ||= metrics.main_score
     if @metric != 'organizations_activity'
-      resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, per: limit)
+      resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, type: type)
       hits = resp&.[]('hits')&.[]('hits')
       if hits.present?
         hits.each do |hit|
@@ -49,7 +50,7 @@ class ChartRenderServer
       end
     else
       aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, @interval)
-      resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs)
+      resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs, type: type)
       aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
       hits = resp&.[]('hits')&.[]('hits')
       if aggs.present?

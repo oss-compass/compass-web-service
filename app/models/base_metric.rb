@@ -1,11 +1,12 @@
 class BaseMetric < BaseIndex
-  def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 60)
+  def self.query_repo_by_date(repo_url, begin_date, end_date, page: 1, per: 60, type: nil)
     Rails.cache.fetch(
-      "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}-#{page}-#{per}",
+      "#{self.name}:#{__method__}:#{repo_url}:#{begin_date}:#{end_date}:#{page}:#{per}:#{type}",
       expires_in: CacheTTL
     ) do
       self
         .must(match: { 'label.keyword': repo_url })
+        .where('type.keyword': type)
         .page(page)
         .per(per)
         .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
@@ -46,13 +47,14 @@ class BaseMetric < BaseIndex
     end
   end
 
-  def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
+  def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs, type: nil)
     Rails.cache.fetch(
-      "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}",
+      "#{self.name}:#{__method__}:#{repo_url}:#{begin_date}:#{end_date}:#{type}",
       expires_in: CacheTTL
     ) do
       self
         .must(match: { 'label.keyword': repo_url })
+        .where('type.keyword': type)
         .page(1)
         .per(1)
         .range(:grimoire_creation_date, gte: begin_date, lte: end_date)

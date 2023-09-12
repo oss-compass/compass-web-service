@@ -1,8 +1,4 @@
-class ChartController < ActionController::Base
-  skip_before_action :verify_authenticity_token
-  include Common
-  include CompassUtils
-
+class ChartController < ApplicationController
   def show
     short_code = params[:id]
     params[:begin_date], params[:end_date], params[:interval] =

@@ -7,10 +7,11 @@ module Types
       description 'Get group activity metrics data of compass'
       argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
+      argument :repo_type, String, required: false, description: 'repo type, for repo level default: null and community level default: software-artifact'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
-      def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
+      def resolve(label: nil, level: 'repo', repo_type: nil, begin_date: nil, end_date: nil)
         label = normalize_label(label)
 
         current_user = context[:current_user]
@@ -21,9 +22,10 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         interval = '1w' if !interval
+        repo_type = level == 'repo' ? nil : repo_type || 'software-artifact'
 
         aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, interval)
-        resp = GroupActivityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs)
+        resp = GroupActivityMetric.aggs_repo_by_date(label, begin_date, end_date, aggs, type: repo_type)
 
         build_metrics_data(resp, Types::GroupActivityMetricType) do |skeleton, raw|
           data = raw[:data]

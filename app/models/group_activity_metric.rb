@@ -39,14 +39,15 @@ class GroupActivityMetric < BaseMetric
       .dig('hits', 'hits', 0, '_source')
   end
 
-  def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
+  def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs, type: nil)
     Rails.cache.fetch(
-      "#{self.name}-#{__method__}-#{repo_url}-#{begin_date}-#{end_date}",
+      "#{self.name}:#{__method__}:#{repo_url}:#{begin_date}:#{end_date}",
       expires_in: CacheTTL
     ) do
       self
         .must(match: { 'label.keyword': repo_url })
         .where(is_org: true)
+        .where('type.keyword': type)
         .page(1)
         .per(1)
         .range(:grimoire_creation_date, gte: begin_date, lte: end_date)

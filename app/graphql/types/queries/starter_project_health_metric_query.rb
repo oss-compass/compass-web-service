@@ -15,10 +15,8 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        limit = level == 'repo' ? 60 : 120
-
         if !interval
-          resp = StarterProjectHealthMetric.query_repo_by_date(label, begin_date, end_date, page: 1, per: limit)
+          resp = StarterProjectHealthMetric.query_repo_by_date(label, begin_date, end_date, page: 1)
 
           build_metrics_data(resp, Types::StarterProjectHealthMetricType) do |skeleton, raw|
             skeleton.merge!(raw)
