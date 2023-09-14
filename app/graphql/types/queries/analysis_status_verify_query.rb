@@ -33,6 +33,7 @@ module Types
           result[:label] = metric['label']
           result[:level] = metric['level']
           result[:short_code] = ShortenedLabel.convert(metric['label'], metric['level'])
+          result[:collections] = BaseCollection.collections_of(metric['label'], level: metric['level'])
           metadata__enriched_on = metric['metadata__enriched_on']
           result[:updated_at] = DateTime.parse(metadata__enriched_on).strftime rescue metadata__enriched_on
           return result
@@ -52,6 +53,7 @@ module Types
           result[:level] = task.level
           result[:status] = task_status
           result[:short_code] = ShortenedLabel.convert(label, task.level)
+          result[:collections] = BaseCollection.collections_of(label, level: task.level)
           result[:updated_at] = task.updated_at
         end
 

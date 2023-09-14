@@ -12,18 +12,21 @@ module Types
 
       def resolve(ident:, level: nil, limit: 5)
         resp = BaseCollection.hottest(ident, level, limit: limit)
-        list = resp&.[]('hits')&.[]('hits')
-        candidates = []
-        if list.present?
-          list.each do |item|
-            level = item['_source']['level']
-            label = item['_source']['label']
-            short_code = ShortenedLabel.convert(label, level)
-            updated_at = item['_source']['updated_at']
-            candidates << OpenStruct.new({label: label, level: level, short_code: short_code, status: 'success', updated_at: updated_at})
-          end
+        list = resp&.[]('hits')&.[]('hits') || []
+        list.map do |item|
+          level = item['_source']['level']
+          label = item['_source']['label']
+          short_code = ShortenedLabel.convert(label, level)
+          updated_at = item['_source']['updated_at']
+          {
+            label: label,
+            level: level,
+            short_code: short_code,
+            status: ProjectTask::Success,
+            updated_at: updated_at,
+            collections: [ident]
+          }
         end
-        candidates
       end
     end
   end

@@ -1,6 +1,7 @@
 class BaseIndex
   MetricsIndexPrefix = ENV.fetch('METRICS_OUT_INDEX') { 'compass_metric' }
   CacheTTL = 2.minutes
+  MiddleCacheTTL = 2.hours
   LongCacheTTL = 1.day
   include SearchFlip::Index
 

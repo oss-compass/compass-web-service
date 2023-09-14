@@ -49,10 +49,12 @@ module Types
                     .slice(*fields)
                     .merge(
                       {
-                        status: 'success',
+                        status: ProjectTask::Success,
                         updated_at: updated_at,
-                        short_code: ShortenedLabel.convert(item['_source']['label'], item['_source']['level'])
-                      })
+                        short_code: ShortenedLabel.convert(item['_source']['label'], item['_source']['level']),
+                        collections: BaseCollection.collections_of(item['_source']['label'], level: item['_source']['level'])
+                      }
+                    )
                 )
                 unless existed[candidate.label]
                   existed[candidate.label] = true
@@ -68,15 +70,14 @@ module Types
           level.present? ? can.where(level: level) : can
         end.limit(5).map do |item|
           unless existed[item.project_name]
-            candidates << OpenStruct.new(
-              {
-                level: item.level,
-                label: item.project_name,
-                status: item.status,
-                updated_at: item.updated_at,
-                short_code: ShortenedLabel.convert(item.project_name, item.level)
-              }
-            )
+            candidates << {
+              level: item.level,
+              label: item.project_name,
+              status: item.status,
+              updated_at: item.updated_at,
+              short_code: ShortenedLabel.convert(item.project_name, item.level),
+              collections: BaseCollection.collections_of(item.project_name, level: item.level)
+            }
           end
         end
 

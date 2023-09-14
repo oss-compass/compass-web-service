@@ -85,17 +85,20 @@ class BaseCollection < BaseIndex
       .raw_response
   end
 
-  def self.collections_of(label, limit: 10, field: 'collection')
-    self
-      .must(match: { 'label.keyword' => label })
-      .custom(collapse: { field: "#{field}.keyword" })
-      .per(limit)
-      .source(field)
-      .execute
-      .raw_response
-      .dig('hits', 'hits')
-      .map { |row| row['_source'][field] }
-      .compact
+  def self.collections_of(label, limit: 10, field: 'collection', level: 'repo')
+    return [] unless level == 'repo'
+    Rails.cache.fetch("#{self.name}:#{__method__}:#{label}:#{limit}:#{field}:#{level}", expires_in: MiddleCacheTTL) do
+      self
+        .must(match: { 'label.keyword' => label })
+        .custom(collapse: { field: "#{field}.keyword" })
+        .per(limit)
+        .source(field)
+        .execute
+        .raw_response
+        .dig('hits', 'hits')
+        .map { |row| row['_source'][field] }
+        .compact
+    end
   rescue => ex
     Rails.logger.error("Failed to get collections of #{label}, #{ex.message}")
     []
