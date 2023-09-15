@@ -14,6 +14,7 @@ class ChartRenderServer
     @width = params[:width] || 800
     @height = params[:height] || 600
     @y_abs = params[:y_abs].to_s == '1'
+    @y_trans = params[:y_trans].to_s == '1'
     @label = params[:lable] || ShortenedLabel.revert(@short_code)&.label
     @repo_type = params[:repo_type]
   end
@@ -45,7 +46,8 @@ class ChartRenderServer
         hits.each do |hit|
           source = hit['_source']
           x << source['grimoire_creation_date'].slice(0, 10)
-          y << (source[@field] || source[metrics.fields_aliases[@field.to_s]])
+          y_src = (source[@field] || source[metrics.fields_aliases[@field.to_s]])
+          y << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
         end
       end
     else
@@ -57,8 +59,9 @@ class ChartRenderServer
         template = hits.first&.[]('_source')
         aggs.map do |data|
           x << data['key_as_string'].slice(0, 10)
-          y << (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
-                template[@field] || template[metrics.fields_aliases[@field.to_s]])
+          y_src = (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
+                   template[@field] || template[metrics.fields_aliases[@field.to_s]])
+          y << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
         end
       end
     end

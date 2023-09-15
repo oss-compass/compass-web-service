@@ -123,11 +123,11 @@ class BaseMetric < BaseIndex
     'score'
   end
 
-  def self.scaled_value(source)
+  def self.scaled_value(source, target_value: nil)
     scale = -> (value, from_min, from_max, to_min, to_max) {
       (to_min + ((value - from_min) / (from_max - from_min)) * (to_max - to_min)).truncate
     }
-    value = source&.dig(self.main_score)
+    value = (target_value || source&.dig(self.main_score)).to_f
     case value
     when 0..0.1
       scale.(value, 0, 0.1, 0, 60)
