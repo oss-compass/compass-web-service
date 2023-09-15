@@ -2,8 +2,9 @@ class ChartController < ApplicationController
   def show
     short_code = params[:id]
     params[:begin_date], params[:end_date], params[:interval] =
-                                            extract_date(params[:begin_date], params[:end_date])
-
+                                            extract_date(
+                                              params[:begin_date] && DateTime.parse(params[:begin_date]),
+                                              params[:end_date] && DateTime.parse(params[:end_date]))
     if short_code.present?
       label = ShortenedLabel.revert(short_code)&.label
       if label.present?
