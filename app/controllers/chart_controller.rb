@@ -11,7 +11,7 @@ class ChartController < ApplicationController
         if !RESTRICTED_LABEL_LIST.include?(label)
           if !params[:interval]
             params[:label] = label
-            svg = ChartRenderServer.new(params).render_single_chart!
+            svg = ChartRenderServer.new(params).render!
             return render xml: svg, layout: false, content_type: 'image/svg+xml'
           end
         end

@@ -123,6 +123,14 @@ class BaseMetric < BaseIndex
     'score'
   end
 
+  def self.text_ident
+    'text_ident'
+  end
+
+  def self.i18n_name
+    I18n.t("metrics_models.#{self.text_ident}.title")
+  end
+
   def self.scaled_value(source, target_value: nil)
     scale = -> (value, from_min, from_max, to_min, to_max) {
       (to_min + ((value - from_min) / (from_max - from_min)) * (to_max - to_min)).truncate

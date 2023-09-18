@@ -3,7 +3,7 @@ class CommunityMetric < BaseMetric
     "#{MetricsIndexPrefix}_community"
   end
 
-  def text_ident
+  def self.text_ident
     'community_service_and_support'
   end
 

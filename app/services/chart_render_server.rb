@@ -19,7 +19,15 @@ class ChartRenderServer
     @repo_type = params[:repo_type]
   end
 
-  def render_single_chart!()
+  def render!
+    if @metric == 'overview'
+      render_overview_chart!
+    else
+      render_single_chart!
+    end
+  end
+
+  def render_single_chart!
 
     type = @short_code&.start_with?('c') ? @repo_type || 'software-artifact' : nil
 
@@ -37,60 +45,140 @@ class ChartRenderServer
         ActivityMetric
       end
 
-    x,y = [], []
     @field ||= metrics.main_score
-    if @metric != 'organizations_activity'
-      resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, type: type)
-      hits = resp&.[]('hits')&.[]('hits')
-      if hits.present?
-        hits.each do |hit|
-          source = hit['_source']
-          x << source['grimoire_creation_date'].slice(0, 10)
-          y_src = (source[@field] || source[metrics.fields_aliases[@field.to_s]])
-          y << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
-        end
-      end
-    else
-      aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, @interval)
-      resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs, type: type)
-      aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
-      hits = resp&.[]('hits')&.[]('hits')
-      if aggs.present?
-        template = hits.first&.[]('_source')
-        aggs.map do |data|
-          x << data['key_as_string'].slice(0, 10)
-          y_src = (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
-                   template[@field] || template[metrics.fields_aliases[@field.to_s]])
-          y << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
-        end
-      end
+
+    x_values, y_values =
+              if @metric != 'organizations_activity'
+                build_metrics_with_search(metrics, type)
+              else
+                build_metrics_with_agg(metrics, type)
+              end
+
+    x = generate_x_axis(data: x_values)
+
+    y = [
+      generate_y_axis(
+        name: @field,
+        min: @y_abs ? 0 : y_values.min.floor,
+        max: y_values.max < 1000 ? y_values.max.ceil : (y_values.max / 1000 + 1).to_i * 1000,
+        data: y_values,
+        chart: @chart
+      )
+    ]
+
+    request_svg(
+      options(
+        x: x, y: y,
+        legend: [@field],
+        width: @width,
+        height: @height,
+        title: generate_title(metrics, @field),
+        subtext: auto_break_line(
+          generate_subtext(metrics, @field),
+          max_length: (0.1 * @width.to_i).to_i
+        )
+      )
+    )
+  end
+
+  def render_overview_chart!
+    type = @short_code&.start_with?('c') ? @repo_type || 'software-artifact' : nil
+
+    x_final_values = []
+
+    y_final_values =
+      [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metrics|
+
+      @field = metrics.main_score
+
+      x_values, y_values =
+                if metrics != GroupActivityMetric
+                  build_metrics_with_search(metrics, type)
+                else
+                  build_metrics_with_agg(metrics, type)
+                end
+
+      x_final_values = x_values if x_values.length > x_final_values.length
+      [metrics, y_values]
+    end
+
+    x = generate_x_axis(data: x_final_values)
+
+    y_final_values_flatten = y_final_values.map { |pair| pair[1] }.flatten.compact
+
+    y_min_value = @y_abs ? 0 : y_final_values_flatten.min ? y_final_values_flatten.min.floor : 0
+
+    y_max_value = @y_abs ?
+                    @y_trans ? 100 : 1 :
+                    y_final_values_flatten.max ?
+                      y_final_values_flatten.max.ceil :
+                      @y_trans ? 100 : 1
+    y_legends = []
+
+    y = y_final_values.map do |metric_pair|
+      y_legends << metric_pair[0].i18n_name
+      generate_y_axis(
+        name: metric_pair[0].i18n_name,
+        color: metrics_mapping_colors[metric_pair[0]],
+        min: y_min_value,
+        max: y_max_value,
+        data: metric_pair[1],
+        chart: @chart
+      )
     end
 
     payload = options(
       x: x, y: y,
+      legend: y_legends,
       width: @width,
       height: @height,
-      chart: @chart,
-      title: generate_title(metrics, @field),
+      title: generate_title('overview', @field),
       subtext: auto_break_line(
-        generate_subtext(metrics, @field),
+        generate_subtext('overview', @field),
         max_length: (0.1 * @width.to_i).to_i
-      ),
-      min_y: @y_abs ? 0 : y.min.floor,
-      max_y: y.max < 1000 ? y.max.ceil : (y.max / 1000 + 1).to_i * 1000,
-      y_legend: @field
-    )
-    resp =
-      Faraday.post(
-        "#{ECHARTS_SERVER}/api/image",
-        payload.to_json,
-        { 'Content-Type' => 'application/json'}
       )
-    resp.body
+    )
+
+    request_svg(payload)
+  end
+
+  def build_metrics_with_search(metrics, type)
+    x_values, y_values = [], []
+    resp = metrics.query_repo_by_date(@label, @begin_date, @end_date, page: 1, type: type)
+    hits = resp&.[]('hits')&.[]('hits')
+    if hits.present?
+      hits.each do |hit|
+        source = hit['_source']
+        x_values << source['grimoire_creation_date'].slice(0, 10)
+        y_src = (source[@field] || source[metrics.fields_aliases[@field.to_s]])
+        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
+      end
+    end
+    [x_values, y_values]
+  end
+
+  def build_metrics_with_agg(metrics, type)
+    x_values, y_values = [], []
+    aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, @interval)
+    resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs, type: type)
+    aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
+    hits = resp&.[]('hits')&.[]('hits')
+    if aggs.present?
+      template = hits.first&.[]('_source')
+      aggs.map do |data|
+        x_values << data['key_as_string'].slice(0, 10)
+        y_src = (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
+                 template[@field] || template[metrics.fields_aliases[@field.to_s]])
+        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
+      end
+    end
+    [x_values, y_values]
   end
 
   def generate_title(metrics, field)
-    if field == metrics.main_score
+    if metrics == 'overview'
+      I18n.t("analyze.overview")
+    elsif field == metrics.main_score
       I18n.t("metrics_models.#{metrics.text_ident}.title")
     else
       I18n.t("metrics_models.#{metrics.text_ident}.metrics.#{field}")
@@ -98,73 +186,123 @@ class ChartRenderServer
   end
 
   def generate_subtext(metrics, field)
-    if field == metrics.main_score
+    if metrics == 'overview'
+      ''
+    elsif field == metrics.main_score
       ''
     else
       I18n.t("metrics_models.#{metrics.text_ident}.metrics.#{field}_desc")
     end
   end
 
+  def metrics_mapping_colors
+    {
+      CodequalityMetric => '#5470c6',
+      CommunityMetric => '#91cc75',
+      ActivityMetric => '#fac858',
+      GroupActivityMetric => '#ee6666'
+    }
+  end
+
+  def generate_y_axis(name: '', color: '#5470c6', min: 0, max: 0, data: [], chart: 'line')
+    {
+      color: color,
+      axis: {
+        type: 'value',
+        min: min,
+        max: max,
+        scale: true,
+        axisLabel: {}
+      },
+      series: {
+        name: name,
+        data: data,
+        type: chart,
+        smooth: true
+      }
+    }
+  end
+
+  def generate_x_axis(data: [], type: 'category')
+    {
+      type: type,
+      data: data,
+      axisLabel: {
+        interval: 0,
+        rotate: 45
+      }
+    }
+  end
+
   private
   def options(
-        x: [], y: [],
+        x: {}, y: [],
+        legend: [],
         width: 800, height: 600,
-        x_type: 'category', y_type: 'value',
-        x_legend: 'date', y_legend: 'value',
-        chart: 'line',
+        x_type: 'category',
+        x_legend: 'date',
         background: '#fff',
         title: '',
-        subtext: '',
-        min_y: 0, max_y: 1
+        subtext: ''
       )
+    init_opts = default_option
+    init_opts[:width] = width
+    init_opts[:height] = height
+    init_opts[:option][:title][:text] = title
+    init_opts[:option][:legend][:data] = legend
+    init_opts[:option][:title][:subtext] = subtext
+    init_opts[:option][:backgroundColor] = background
+    init_opts[:option][:xAxis] = x
+    init_opts[:option][:color] = y.map { |y| y[:color] }
+    init_opts[:option][:yAxis] = y.map { |y| y[:axis] }
+    init_opts[:option][:series] = y.map { |y| y[:series] }
+    init_opts
+  end
+
+  def request_svg(payload)
+    Faraday.post(
+      "#{ECHARTS_SERVER}/api/image",
+      payload.to_json,
+      { 'Content-Type' => 'application/json'}
+    ).body
+  end
+
+  def default_option
     {
-      "width" => width,
-      "height" => height,
-      "type" => "svg",
-      "option" => {
-        "grid" => {
-          "left" => "10%",
-          "right" => "10%",
-          "top" => "15%",
-          "bottom" => "10%"
+      width: 800,
+      height: 600,
+      type: 'svg',
+      option: {
+        grid: {
+          left: '10%',
+          right: '10%',
+          top: '15%',
+          bottom: '10%'
         },
-        "title" => {
-          "text" => title,
-          "subtext" => subtext,
-          "left" => "center",
-          "textStyle" => {
-            "fontSize" => 18,
-            "fontWeight" => "bold",
-          }
+        legend: {
+          data: [],
+          padding: [35, 0, 0, 0]
         },
-        "backgroundColor" => background,
-        "xAxis" => {
-          "type" => x_type,
-          "data" => x,
-          "axisLabel" => {
-            "interval" => 0,
-            "rotate" => 45
+        title: {
+          text: 'Title',
+          subtext: 'Sub Title',
+          left: 'center',
+          textStyle: {
+            fontSize: 18,
+            fontWeight: 'bold'
           }
         },
-        "yAxis" => [
-          {
-            "type" => y_type,
-            "scale" => true,
-            "min" => min_y,
-            "max" => max_y,
-            "axisLabel" => {}
+        backgroundColor: '#fff',
+        xAxis: {
+          type: 'category',
+          data: [],
+          axisLabel: {
+            interval: 0,
+            rotate: 45
           }
-        ],
-        "series" => [
-          {
-            "data" => y,
-            "type" => chart,
-            "smooth" => true
-          }
-        ],
-        "legend" => {
-          "data" => [y_legend]
-        }
+        },
+        yAxis: [],
+        series: [],
       }
     }
   end
