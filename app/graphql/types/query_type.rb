@@ -59,5 +59,9 @@ module Types
 
     field :current_user, resolver: Queries::CurrentUserQuery
     field :subject_subscription_count, resolver: Queries::SubjectSubscriptionCountQuery
+
+    ## Metrics Details
+    field :pulls_detail_list, resolver: Queries::PullsDetailListQuery
+    field :issues_detail_list, resolver: Queries::IssuesDetailListQuery
   end
 end
