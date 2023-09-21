@@ -14,10 +14,7 @@ module Types
       def resolve(label: nil, level: 'repo', repo_type: nil, begin_date: nil, end_date: nil)
         label = normalize_label(label)
 
-        current_user = context[:current_user]
-        if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)
-          raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
-        end
+        validate_by_label!(context[:current_user], label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 

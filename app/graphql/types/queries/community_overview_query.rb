@@ -21,10 +21,7 @@ module Types
         community_org_url = JSON.parse(project.extra)['community_org_url'] rescue nil
         skeleton = Hash[Types::CommunityOverviewType.fields.keys.zip([])].symbolize_keys
 
-        current_user = context[:current_user]
-        if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)
-          raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
-        end
+        validate_by_label!(context[:current_user], label)
 
         result =
           Rails.cache.fetch("#{OVERVIEW_CACHE_KEY}-#{label}-#{page}-#{per}-#{type}", expires_in: 2.hours) do

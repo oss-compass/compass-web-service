@@ -2,10 +2,7 @@
 
 module Types
   module Lab
-    class InvitationPageType < Types::BaseObject
-      field :count, Integer
-      field :total_page, Integer
-      field :page, Integer
+    class InvitationPageType < BasePageObject
       field :items, [Types::Lab::LabInvitationType]
     end
   end

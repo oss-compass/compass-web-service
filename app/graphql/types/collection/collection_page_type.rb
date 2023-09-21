@@ -2,10 +2,7 @@
 
 module Types
   module Collection
-    class CollectionPageType < Types::BaseObject
-      field :count, Integer
-      field :total_page, Integer
-      field :page, Integer
+    class CollectionPageType < BasePageObject
       field :items, [Types::RepoType]
     end
   end

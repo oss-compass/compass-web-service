@@ -2,10 +2,7 @@
 
 module Types
   module Lab
-    class MyModelsType < Types::BaseObject
-      field :count, Integer
-      field :total_page, Integer
-      field :page, Integer
+    class MyModelsType < BasePageObject
       field :items, [Types::Lab::ModelDetailType]
     end
   end

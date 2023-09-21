@@ -114,6 +114,12 @@ module Types
         skeletons
       end
 
+      def validate_by_label!(current_user, label)
+        if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)
+          raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+        end
+      end
+
       def normalize_label(label)
         if label =~ URI::regexp
           uri = Addressable::URI.parse(label)
