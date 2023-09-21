@@ -56,11 +56,14 @@ class ChartRenderServer
 
     x = generate_x_axis(data: x_values)
 
+    y_min = y_values.min
+    y_max = y_values.max
+
     y = [
       generate_y_axis(
         name: @field,
-        min: @y_abs ? 0 : y_values.min.floor,
-        max: y_values.max < 1000 ? y_values.max.ceil : (y_values.max / 1000 + 1).to_i * 1000,
+        min: @y_abs ? 0 : y_min < 1 ? y_min.floor(2) - 0.01 : y_min.floor - 1,
+        max: y_max < 1000 ? y_max < 1 ? y_max.ceil(2) + 0.01 : y_max.ceil + 1 : (y_max / 1000 + 1).to_i * 1000,
         data: y_values,
         chart: @chart
       )
@@ -151,7 +154,7 @@ class ChartRenderServer
         source = hit['_source']
         x_values << source['grimoire_creation_date'].slice(0, 10)
         y_src = (source[@field] || source[metrics.fields_aliases[@field.to_s]])
-        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
+        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src).round(2)
       end
     end
     [x_values, y_values]
@@ -169,7 +172,7 @@ class ChartRenderServer
         x_values << data['key_as_string'].slice(0, 10)
         y_src = (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
                  template[@field] || template[metrics.fields_aliases[@field.to_s]])
-        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src)
+        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src).round(2)
       end
     end
     [x_values, y_values]
@@ -212,13 +215,15 @@ class ChartRenderServer
         min: min,
         max: max,
         scale: true,
+
         axisLabel: {}
       },
       series: {
         name: name,
         data: data,
         type: chart,
-        smooth: true
+        smooth: true,
+        showSymbol: false
       }
     }
   end
@@ -276,12 +281,12 @@ class ChartRenderServer
         grid: {
           left: '10%',
           right: '10%',
-          top: '15%',
+          top: '18%',
           bottom: '10%'
         },
         legend: {
           data: [],
-          padding: [35, 0, 0, 0]
+          padding: [85, 0, 0, 0]
         },
         title: {
           text: 'Title',
