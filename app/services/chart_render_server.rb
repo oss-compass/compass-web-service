@@ -282,7 +282,7 @@ class ChartRenderServer
           left: '10%',
           right: '10%',
           top: '18%',
-          bottom: '10%'
+          bottom: '20%'
         },
         legend: {
           data: [],
@@ -308,6 +308,18 @@ class ChartRenderServer
         },
         yAxis: [],
         series: [],
+        graphic: [
+          {
+            type: 'text',
+            left: '5%',
+            bottom: '8%',
+            style: {
+              text: 'Powered by oss-compass.org',
+              fill: '#ADADAD',
+              fontSize: 12
+            }
+          }
+        ]
       }
     }
   end
