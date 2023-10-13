@@ -6,6 +6,27 @@ class GiteeRepo < GiteeBase
     'gitee-repo_raw'
   end
 
+  def self.mapping
+    {"dynamic"=>"true",
+     "dynamic_templates"=>
+     [{"notanalyzed"=>{"match"=>"*", "match_mapping_type"=>"string", "mapping"=>{"type"=>"keyword"}}},
+      {"formatdate"=>{"match"=>"*", "match_mapping_type"=>"date", "mapping"=>{"format"=>"strict_date_optional_time||epoch_millis", "type"=>"date"}}}],
+     "properties"=>
+     {"backend_name"=>{"type"=>"keyword"},
+      "backend_version"=>{"type"=>"keyword"},
+      "category"=>{"type"=>"keyword"},
+      "data"=>{"type"=>"object", "dynamic"=>"false"},
+      "metadata__timestamp"=>{"type"=>"date"},
+      "metadata__updated_on"=>{"type"=>"date"},
+      "origin"=>{"type"=>"keyword"},
+      "perceval_version"=>{"type"=>"keyword"},
+      "search_fields"=>{"properties"=>{"item_id"=>{"type"=>"keyword"}, "owner"=>{"type"=>"keyword"}, "repo"=>{"type"=>"keyword"}}},
+      "tag"=>{"type"=>"keyword"},
+      "timestamp"=>{"type"=>"float"},
+      "updated_on"=>{"type"=>"float"},
+      "uuid"=>{"type"=>"keyword"}}}
+  end
+
   def self.only(origins)
     self
       .where(origin: origins)

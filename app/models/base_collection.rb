@@ -6,6 +6,18 @@ class BaseCollection < BaseIndex
     "#{MetricsIndexPrefix}_collection"
   end
 
+  def self.mapping
+    {"properties"=>
+     {"activity_delta"=>{"type"=>"float"},
+      "activity_score"=>{"type"=>"float"},
+      "collection"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "first_collection"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "id"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "label"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "level"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "updated_at"=>{"type"=>"date"}}}
+  end
+
   def self.count_by(collection, level)
     base =
       self

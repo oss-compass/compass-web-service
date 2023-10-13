@@ -3,6 +3,32 @@ class GroupActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_group_activity"
   end
 
+  def self.mapping
+    {"properties"=>
+     {"commit_frequency"=>{"type"=>"float"},
+      "commit_frequency_bot"=>{"type"=>"float"},
+      "commit_frequency_org"=>{"type"=>"long"},
+      "commit_frequency_org_percentage"=>{"type"=>"float"},
+      "commit_frequency_percentage"=>{"type"=>"float"},
+      "commit_frequency_without_bot"=>{"type"=>"float"},
+      "contribution_last"=>{"type"=>"long"},
+      "contributor_count"=>{"type"=>"long"},
+      "contributor_count_bot"=>{"type"=>"long"},
+      "contributor_count_without_bot"=>{"type"=>"long"},
+      "contributor_org_count"=>{"type"=>"long"},
+      "grimoire_creation_date"=>{"type"=>"date"},
+      "is_org"=>{"type"=>"boolean"},
+      "label"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "level"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "metadata__enriched_on"=>{"type"=>"date"},
+      "model_name"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "org_count"=>{"type"=>"long"},
+      "org_name"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "organizations_activity"=>{"type"=>"float"},
+      "type"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}
+  end
+
   def self.text_ident
     'organization_activity'
   end

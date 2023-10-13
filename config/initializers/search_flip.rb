@@ -15,3 +15,6 @@ AuthSearchConn = SearchFlip::Connection.new(
   base_url: ENV.fetch('OPENSEARCH_URL') { 'http://localhost:9200' },
   http_client: http_client
 )
+AuthSearchConn.define_singleton_method(:version) do
+  "7.10.2"
+end

@@ -2,6 +2,6 @@
 
 class GithubRepoEnrich < GithubBase
   def self.index_name
-    'github_repo-enriched'
+    'github-repo_enriched'
   end
 end

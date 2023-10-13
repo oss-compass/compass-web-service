@@ -3,6 +3,14 @@ class GroupActivitySummary < BaseSummary
     "#{MetricsIndexPrefix}_group_activity_summary"
   end
 
+  def self.mapping
+    {"properties"=>
+     {"grimoire_creation_date"=>{"type"=>"date"},
+      "metadata__enriched_on"=>{"type"=>"date"},
+      "model_name"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
+      "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}
+  end
+
   def self.aggs_repo_by_date(begin_date, end_date, aggs)
     Rails.cache.fetch(
       "#{self.name}-#{__method__}-#{begin_date}-#{end_date}",

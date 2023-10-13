@@ -10,7 +10,12 @@ indices = [
   GithubIssueEnrich, GithubPullEnrich, GithubRepoEnrich,
   GithubRepo, GroupActivityMetric, GroupActivitySummary,
   StarterProjectHealthMetric
-].each { |indexer| indexer.create_index unless indexer.index_exists? }
+].each do |indexer|
+  unless indexer.index_exists?
+    indexer.create_index
+    indexer.update_mapping
+  end
+end
 
 metrics_set =
 [
