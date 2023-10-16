@@ -7,7 +7,7 @@ class ChartRenderServer
     @short_code = params[:short_code] || params[:id]
     @begin_date = params[:begin_date]
     @end_date = params[:end_date]
-    @interval = params[:interval] ? params[:interval] : '1w'
+    @interval = params[:interval]
     @metric = params[:metric]
     @field = params[:field]
     @chart = params[:chart] || 'line'
@@ -48,7 +48,7 @@ class ChartRenderServer
     @field ||= metrics.main_score
 
     x_values, y_values =
-              if @metric != 'organizations_activity'
+              if @metric != 'organizations_activity' && !@interval
                 build_metrics_with_search(metrics, type)
               else
                 build_metrics_with_agg(metrics, type)
@@ -56,8 +56,8 @@ class ChartRenderServer
 
     x = generate_x_axis(data: x_values)
 
-    y_min = y_values.min
-    y_max = y_values.max
+    y_min = y_values.min || 0
+    y_max = y_values.max || 0
 
     y = [
       generate_y_axis(
@@ -162,8 +162,9 @@ class ChartRenderServer
 
   def build_metrics_with_agg(metrics, type)
     x_values, y_values = [], []
-    aggs = generate_interval_aggs(Types::GroupActivityMetricType, :grimoire_creation_date, @interval)
-    resp = GroupActivityMetric.aggs_repo_by_date(@label, @begin_date, @end_date, aggs, type: type)
+    @interval ||= '1w'
+    aggs = generate_interval_aggs("Types::#{metrics.to_s}Type".constantize, :grimoire_creation_date, @interval)
+    resp = metrics.aggs_repo_by_date(@label, @begin_date, @end_date, aggs, type: type)
     aggs = resp&.[]('aggregations')&.[]('aggsWithDate')&.[]('buckets')
     hits = resp&.[]('hits')&.[]('hits')
     if aggs.present?
