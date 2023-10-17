@@ -57,9 +57,13 @@ module CompassWebService
       address: ENV['MAIL_HOST'],
       port: ENV['MAIL_PORT'],
       authentication: :login,
+      ssl: ENV['MAIL_SSL'] == 'true',
+      domain: ENV['MAIL_USER'],
       user_name: ENV['MAIL_USER'],
       password: ENV['MAIL_PASSWORD'],
       enable_starttls_auto: ENV['MAIL_SECURE'] == 'true',
+      open_timeout: ENV['MAIL_TIMEOUT'] || 15,
+      read_timeout: ENV['MAIL_TIMEOUT'] || 15
     }
 
 
