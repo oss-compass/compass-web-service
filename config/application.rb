@@ -56,14 +56,13 @@ module CompassWebService
     config.action_mailer.smtp_settings = {
       address: ENV['MAIL_HOST'],
       port: ENV['MAIL_PORT'],
-      authentication: :login,
+      authentication: ENV["MAIL_AUTH"]&.to_sym || :login,
       ssl: ENV['MAIL_SSL'] == 'true',
-      domain: ENV['MAIL_USER'],
       user_name: ENV['MAIL_USER'],
       password: ENV['MAIL_PASSWORD'],
       enable_starttls_auto: ENV['MAIL_SECURE'] == 'true',
-      open_timeout: ENV['MAIL_TIMEOUT'] || 15,
-      read_timeout: ENV['MAIL_TIMEOUT'] || 15
+      open_timeout: ENV['MAIL_TIMEOUT']&.to_i || 15,
+      read_timeout: ENV['MAIL_TIMEOUT']&.to_i || 15
     }
 
 
