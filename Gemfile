@@ -156,6 +156,8 @@ group :development do
   # gem "spring"
   gem 'active_record_doctor'
 
+  gem 'bullet'
+
   gem "rack-reverse-proxy", require: "rack/reverse_proxy"
 end
 

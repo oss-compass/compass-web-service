@@ -49,7 +49,10 @@ class LabModel < ApplicationRecord
 
   def latest_versions
     # No paging for now, but limit the overall return to only the most recent 100 versions.
-    versions.order('updated_at desc').limit(LIMIT)
+    versions
+      .includes([:lab_dataset, :lab_algorithm, lab_model_metrics: :lab_metric])
+      .order('updated_at desc')
+      .limit(LIMIT)
   end
 
   def default_version

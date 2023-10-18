@@ -111,6 +111,9 @@ GEM
       msgpack (~> 1.2)
     brakeman (5.2.3)
     builder (3.2.4)
+    bullet (7.1.2)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.11)
     bundler-audit (0.9.1)
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
@@ -771,6 +774,7 @@ GEM
       unf_ext
     unf_ext (0.0.8.2)
     unicode-display_width (2.1.0)
+    uniform_notifier (1.16.0)
     validate_email (0.1.6)
       activemodel (>= 3.0)
       mail (>= 2.2.5)
@@ -837,6 +841,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1)
   bootsnap
   brakeman
+  bullet
   bundler-audit
   bunny
   capybara

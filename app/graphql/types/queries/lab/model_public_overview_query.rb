@@ -16,7 +16,7 @@ module Types
         def resolve(sort: 'updated_at', direction: 'desc', page: 1, per: 9)
           raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if per > 20
 
-          models = LabModel.where(is_public: true)
+          models = LabModel.where(is_public: true).includes([:mainline_version])
           models = models.order(sort => direction) if LabModel.sortable_fields.include?(sort) && LabModel.sortable_directions.include?(direction)
 
           pagyer, records = pagy(models, { page: page, items: per })
