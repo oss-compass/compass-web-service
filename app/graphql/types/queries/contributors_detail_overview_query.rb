@@ -77,11 +77,11 @@ module Types
         indexer
           .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
           .must(terms: { 'repo_name.keyword': repo_urls })
-          .aggregate({ count_of_uuid: { cardinality: { field: "#{contributor_type}.keyword" } }})
+          .aggregate({ count: { cardinality: { field: "#{contributor_type}.keyword" } }})
           .per(0)
           .execute
           .aggregations
-          .dig('count_of_uuid', 'value')
+          .dig('count', 'value')
       end
     end
   end
