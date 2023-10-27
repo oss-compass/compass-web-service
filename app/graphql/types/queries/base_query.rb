@@ -187,6 +187,19 @@ module Types
         end
       end
 
+      def select_idx_repos_by_lablel_and_level(label, level, gitee_idx, github_idx)
+        if level == 'repo' && label =~ /gitee\.com/
+          [gitee_idx, [label], 'gitee']
+        elsif level == 'repo'&& label =~ /github\.com/
+          [github_idx, [label], 'github']
+        else
+          project = ProjectTask.find_by(project_name: label)
+          repo_list = director_repo_list(project&.remote_url)
+          origin = extract_repos_source(label, level)
+          [origin == 'gitee' ? gitee_idx : github_idx, repo_list, origin]
+        end
+      end
+
       def filter_by_origin(list, origin, remove_suffix: true)
         list
           .select { |row| row =~ origin }

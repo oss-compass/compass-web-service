@@ -19,16 +19,7 @@ module Types
         begin_date, end_date, interval = extract_date(nil, nil)
 
         indexer, repo_urls =
-          if level == 'repo' && label =~ /gitee\.com/
-            [GiteeIssueEnrich, [label]]
-          elsif level == 'repo'&& label =~ /github\.com/
-            [GithubIssueEnrich, [label]]
-          else
-            project = ProjectTask.find_by(project_name: label)
-            repo_list = director_repo_list(project&.remote_url)
-            origin = extract_repos_source(label, level)
-            [origin == 'gitee' ? GiteeIssueEnrich : GithubIssueEnrich, repo_list]
-          end
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)
 
         resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: per, page: page)
 

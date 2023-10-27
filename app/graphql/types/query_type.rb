@@ -63,5 +63,6 @@ module Types
     ## Metrics Details
     field :pulls_detail_list, resolver: Queries::PullsDetailListQuery
     field :issues_detail_list, resolver: Queries::IssuesDetailListQuery
+    field :contributors_detail_overview, resolver: Queries::ContributorsDetailOverviewQuery
   end
 end
