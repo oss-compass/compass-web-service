@@ -3,10 +3,10 @@
 module Types
   module Meta
     class ContributorDetailOverviewType < Types::BaseObject
-      field :top_contributing_individual, ContributorType
-      field :top_contributing_organization, ContributorType
-      field :individual_participants_contribution_ratio, Float
-      field :organization_managers_contribution_ratio, Float
+      field :highest_contribution_contributor, ContributorType
+      field :highest_contribution_organization, ContributorType
+      field :org_all_count, Float
+      field :contributor_all_count, Float
     end
   end
 end

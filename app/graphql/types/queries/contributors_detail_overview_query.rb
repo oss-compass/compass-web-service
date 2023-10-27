@@ -25,19 +25,15 @@ module Types
                                 GiteeContributorEnrich,
                                 GithubContributorEnrich
                               )
-        all_contribution = contributing_percentage_of(label, level, 'all')
-        org_managers_contribution = contributing_percentage_of(label, level, 'organization manager')
-        individual_participants_contribution = contributing_percentage_of(label, level, 'individual participant')
-
         {
-          top_contributing_individual: top_contributing_of(label, level, 'individual'),
-          top_contributing_organization: top_contributing_of(label, level, 'orgranization'),
-          individual_participants_contribution_ratio: (individual_participants_contribution / all_contribution).round(2),
-          organization_managers_contribution_ratio: (org_managers_contribution / all_contribution).round(2)
+          highest_contribution_contributor: top_contributing_of('individual'),
+          highest_contribution_organization: top_contributing_of('orgranization', count_field: 'orgranization' ),
+          org_all_count: org_all_count,
+          contributor_all_count: contributor_all_count
         }
       end
 
-      def top_contributing_of(label, level, contributor_type)
+      def top_contributing_of(contributor_type, count_field: 'contributor')
         resp = indexer
                  .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
                  .must(match_phrase: {ecological_type: contributor_type})
@@ -46,7 +42,7 @@ module Types
                  .aggregate(
                    {
                      count_of_uuid: {
-                       terms: { field: 'contributor.keyword' },
+                       terms: { field: "#{count_field}.keyword" },
                        aggs: {
                          sum_contribution: {
                            sum: {
@@ -69,21 +65,23 @@ module Types
         { name: resp['keys'].first, type: 'orgranization', value: resp['value'], origin: origin }
       end
 
-      def contributing_percentage_of(label, level, contributor_type)
-        base = indexer
-                 .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-        if contributor_type != 'all'
-          base = base
-            .must(match_phrase: {ecological_type: contributor_type})
-            .where(is_bot: false)
-        end
-        base
+      def org_all_count
+        count_of('orgranization')
+      end
+
+      def contributor_all_count
+        count_of('contributor')
+      end
+
+      def count_of(contributor_type)
+        indexer
+          .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
           .must(terms: { 'repo_name.keyword': repo_urls })
-          .aggregate({ count: { sum: { field: 'contribution' } } })
+          .aggregate({ count_of_uuid: { cardinality: { field: "#{contributor_type}.keyword" } }})
           .per(0)
           .execute
           .aggregations
-          .dig('count', 'value')
+          .dig('count_of_uuid', 'value')
       end
     end
   end
