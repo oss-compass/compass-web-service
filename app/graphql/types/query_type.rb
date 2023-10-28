@@ -65,6 +65,6 @@ module Types
     field :issues_detail_list, resolver: Queries::IssuesDetailListQuery
     field :contributors_detail_overview, resolver: Queries::ContributorsDetailOverviewQuery
     field :issues_detail_overview, resolver: Queries::IssuesDetailOverviewQuery
-    # field :pulls_detail_overview, resolver: Queries::PullsDetailOverviewQuery
+    field :pulls_detail_overview, resolver: Queries::PullsDetailOverviewQuery
   end
 end

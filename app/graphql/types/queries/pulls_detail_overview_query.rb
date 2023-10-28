@@ -1,0 +1,70 @@
+# frozen_string_literal: true
+
+module Types
+  module Queries
+    class PullsDetailOverviewQuery < BaseQuery
+
+      attr_accessor :pull_indexer, :git_indexer, :repo_urls, :begin_date, :end_date
+
+      type Types::Meta::PullDetailOverviewType, null: false
+      description 'Get overview data of a pull detail'
+      argument :label, String, required: true, description: 'repo or project label'
+      argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
+
+      def resolve(label: nil, level: 'repo')
+        label = normalize_label(label)
+
+        validate_by_label!(context[:current_user], label)
+
+        @begin_date, @end_date, interval = extract_date(nil, nil)
+        @begin_date = @begin_date.to_date.to_s
+        @end_date = @end_date.to_date.to_s
+
+        indexers, @repo_urls =
+                  select_idx_repos_by_lablel_and_level(
+                    label,
+                    level,
+                    [GiteePullEnrich, GiteeGitEnrich],
+                    [GithubPullEnrich, GithubGitEnrich]
+                  )
+
+        @pull_indexer, @git_indexer = indexers
+
+        pull_base =
+          pull_indexer
+            .where(pull_request: true)
+            .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+            .must(terms: { tag: repo_urls })
+
+        git_base =
+          git_indexer
+            .must(range: { utc_commit: { gte: begin_date, lte: end_date } } )
+            .must(terms: { tag: repo_urls.map { |url| "#{url}.git" } })
+
+        closed_pull_count =
+          pull_base
+            .range(:closed_at, gte: begin_date, lte: end_date)
+            .total_entries
+
+        pull_unresponsive_count =
+          pull_base
+            .where(num_review_comments_without_bot: 0)
+            .must(terms: { state: ['open'] })
+            .total_entries
+
+        commit_count = git_base.total_entries
+
+        count = pull_base.total_entries
+
+        {
+          pull_count: count,
+          pull_completion_count: closed_pull_count,
+          pull_completion_ratio: count == 0 ? 0 : (closed_pull_count.to_f / count.to_f),
+          pull_unresponsive_count: pull_unresponsive_count,
+          pull_unresponsive_ratio: count == 0 ? 0 : (pull_unresponsive_count.to_f / count.to_f),
+          commit_count: commit_count,
+        }
+      end
+    end
+  end
+end

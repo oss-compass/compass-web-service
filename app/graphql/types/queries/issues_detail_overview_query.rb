@@ -56,10 +56,10 @@ module Types
         {
           issue_count: count,
           issue_completion_count: closed_issue_count,
-          issue_completion_ratio: (closed_issue_count.to_f / count.to_f),
+          issue_completion_ratio: count == 0 ? 0 : (closed_issue_count.to_f / count.to_f),
           issue_unresponsive_count: issue_unresponsive_count,
-          issue_unresponsive_ratio: (issue_unresponsive_count.to_f / count.to_f),
-          issue_comment_frequency_mean: (issue_comments_count.to_f / count.to_f)
+          issue_unresponsive_ratio: count == 0 ? 0 : (issue_unresponsive_count.to_f / count.to_f),
+          issue_comment_frequency_mean: count == 0 ? 0 : (issue_comments_count.to_f / count.to_f)
         }
       end
     end
