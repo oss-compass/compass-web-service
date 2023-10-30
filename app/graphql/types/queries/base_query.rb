@@ -200,13 +200,20 @@ module Types
         end
       end
 
-      def distribute_by_field(base_indexer, field, total_count)
-        base_indexer
-          .aggregate({ distribution: { terms: { field: field } } })
-          .per(0)
-          .execute
-          .aggregations
-          .dig('distribution', 'buckets')
+      def distribute_by_field(base_indexer, field, total_count = nil)
+        resp =
+          base_indexer
+            .aggregate({ distribution: { terms: { field: field } } })
+            .per(0)
+            .execute
+            .aggregations
+            .dig('distribution', 'buckets')
+
+        if total_count.nil?
+          total_count = resp.reduce(0) { |acc, bucket| acc += bucket['doc_count'] }
+        end
+
+        resp
           .map do |bucket|
             {
               sub_count: bucket['doc_count'],
