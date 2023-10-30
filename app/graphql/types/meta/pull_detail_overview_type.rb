@@ -9,6 +9,8 @@ module Types
       field :pull_unresponsive_count, Integer
       field :pull_unresponsive_ratio, Float
       field :commit_count, Integer
+      field :pull_state_distribution, [DistributionType]
+      field :pull_comment_distribution, [DistributionType]
     end
   end
 end

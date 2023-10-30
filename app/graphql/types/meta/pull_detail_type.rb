@@ -15,6 +15,8 @@ module Types
       field :labels, [String]
       field :user_login, String
       field :merge_author_login, String
+      field :reviewers_login, [String]
+      field :num_review_comments, Integer
     end
   end
 end

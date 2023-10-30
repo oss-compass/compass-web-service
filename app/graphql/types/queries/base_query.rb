@@ -200,6 +200,23 @@ module Types
         end
       end
 
+      def distribute_by_field(base_indexer, field, total_count)
+        base_indexer
+          .aggregate({ distribution: { terms: { field: field } } })
+          .per(0)
+          .execute
+          .aggregations
+          .dig('distribution', 'buckets')
+          .map do |bucket|
+            {
+              sub_count: bucket['doc_count'],
+              sub_ratio: total_count == 0 ? 0 : (bucket['doc_count'].to_f / total_count.to_f),
+              sub_name: bucket['key'],
+              total_count: total_count
+            }
+        end
+      end
+
       def filter_by_origin(list, origin, remove_suffix: true)
         list
           .select { |row| row =~ origin }

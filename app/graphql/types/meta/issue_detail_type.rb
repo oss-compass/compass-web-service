@@ -14,7 +14,8 @@ module Types
       field :time_to_first_attention_without_bot, Float
       field :labels, [String]
       field :user_login, String
-      field :assignees_login, [String]
+      field :assignee_login, String
+      field :num_of_comments_without_bot, Integer
     end
   end
 end

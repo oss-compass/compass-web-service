@@ -41,6 +41,9 @@ module Types
             .must(range: { utc_commit: { gte: begin_date, lte: end_date } } )
             .must(terms: { tag: repo_urls.map { |url| "#{url}.git" } })
 
+        count = pull_base.total_entries
+        commit_count = git_base.total_entries
+
         closed_pull_count =
           pull_base
             .range(:closed_at, gte: begin_date, lte: end_date)
@@ -52,9 +55,8 @@ module Types
             .must(terms: { state: ['open'] })
             .total_entries
 
-        commit_count = git_base.total_entries
-
-        count = pull_base.total_entries
+        pull_state_distribution = distribute_by_field(pull_base, 'state', count)
+        pull_comment_distribution = distribute_by_field(pull_base, 'num_review_comments_without_bot', count)
 
         {
           pull_count: count,
@@ -63,6 +65,8 @@ module Types
           pull_unresponsive_count: pull_unresponsive_count,
           pull_unresponsive_ratio: count == 0 ? 0 : (pull_unresponsive_count.to_f / count.to_f),
           commit_count: commit_count,
+          pull_state_distribution: pull_state_distribution,
+          pull_comment_distribution: pull_comment_distribution
         }
       end
     end

@@ -9,6 +9,8 @@ module Types
       field :issue_unresponsive_count, Integer
       field :issue_unresponsive_ratio, Float
       field :issue_comment_frequency_mean, Float
+      field :issue_state_distribution, [DistributionType]
+      field :issue_comment_distribution, [DistributionType]
     end
   end
 end

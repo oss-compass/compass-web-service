@@ -32,6 +32,8 @@ module Types
             .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
             .must(terms: { tag: repo_urls })
 
+        count = issue_base.total_entries
+
         closed_issue_count =
           issue_base
             .range(:closed_at, gte: begin_date, lte: end_date)
@@ -51,7 +53,8 @@ module Types
             .aggregations
             .dig('count', 'value')
 
-        count = issue_base.total_entries
+        issue_state_distribution = distribute_by_field(issue_base, 'state', count)
+        issue_comment_distribution = distribute_by_field(issue_base, 'num_of_comments_without_bot', count)
 
         {
           issue_count: count,
@@ -59,7 +62,9 @@ module Types
           issue_completion_ratio: count == 0 ? 0 : (closed_issue_count.to_f / count.to_f),
           issue_unresponsive_count: issue_unresponsive_count,
           issue_unresponsive_ratio: count == 0 ? 0 : (issue_unresponsive_count.to_f / count.to_f),
-          issue_comment_frequency_mean: count == 0 ? 0 : (issue_comments_count.to_f / count.to_f)
+          issue_comment_frequency_mean: count == 0 ? 0 : (issue_comments_count.to_f / count.to_f),
+          issue_state_distribution: issue_state_distribution,
+          issue_comment_distribution: issue_comment_distribution
         }
       end
     end
