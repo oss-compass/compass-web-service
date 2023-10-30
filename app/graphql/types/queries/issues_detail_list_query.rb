@@ -5,9 +5,9 @@ module Types
     class IssuesDetailListQuery < BaseQuery
 
       type Types::Meta::IssueDetailPageType, null: false
-      description 'Get overview data of a repo'
+      description 'Get issues detail list of a repo or community'
       argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
+      argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'per page number'
 
