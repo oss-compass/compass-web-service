@@ -10,10 +10,11 @@ module Types
       argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'page size'
+      argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'
 
       MAX_PER_PAGE = 2000
 
-      def resolve(label: nil, level: 'repo', page: 1, per: 9)
+      def resolve(label: nil, level: 'repo', page: 1, per: 9, filter_opts: [])
         label = normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
@@ -22,6 +23,11 @@ module Types
 
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+
+        contribution_count = 0
+        acc_contribution_count = 0
+        mileage_step = 0
+        mileage_types = ['core', 'regular', 'guest']
 
         contributors_list =
           indexer
@@ -36,19 +42,30 @@ module Types
             .dig('hits', 'hits')
             .map { |hit| hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore)) }
             .reduce({}) do |map, row|
-               map[row['contributor']] =
-                 map[row['contributor']] ?
-                   merge_contributor(map[row['contributor']], row) :
-                   row
+               key = row['contributor']
+               map[key] = map[key] ? merge_contributor(map[key], row) : row
+               contribution_count += row['contribution'].to_i
                map
              end
-            .map {|_, row| row}
+            .sort_by { |_, row| -row['contribution'].to_i }
+            .map do |_, row|
+               row['mileage_type'] = mileage_types[mileage_step]
+               acc_contribution_count += row['contribution'].to_i
+               mileage_step += 1 if mileage_step == 0 && acc_contribution_count >= contribution_count * 0.5
+               mileage_step += 1 if mileage_step == 1 && acc_contribution_count >= contribution_count * 0.8
+               row
+            end
 
+        if filter_opts.present?
+          filter_opts.each do |filter_opt|
+            contributors_list = contributors_list.select { |row| row[filter_opt.type] == filter_opt.value }
+          end
+        end
 
         current_page =
           (contributors_list.in_groups_of(per)&.[]([page.to_i - 1, 0].max) || [])
             .compact
-            .map{ |row| OpenStruct.new(row.merge('mileage_type' => nil)) }
+            .map{ |row| OpenStruct.new(row) }
 
         count = contributors_list.length
 
@@ -57,20 +74,16 @@ module Types
 
       def merge_contributor(source, target)
         base = source.merge(target)
-        contribution = source['contribution'].to_i + target['contribution'].to_i
-        contribution_without_observe =
+        base['contribution'] = source['contribution'].to_i + target['contribution'].to_i
+        base['contribution_without_observe'] =
           source['contribution_without_observe'].to_i + target['contribution_without_observe'].to_i
-        base['contribution'] = contribution
-        base['contribution_without_observe'] = contribution_without_observe
         total_contribution_type_list = source['contribution_type_list'] + target['contribution_type_list']
         base['contribution_type_list'] =
-          total_contribution_type_list.reduce({}) do |map, row|
-          map[row['contribution_type']] =
-            map[row['contribution_type']] ?
-              map[row['contribution_type']] + row['contribution'] :
-              row['contribution']
-          map
-        end.map {|k, v| {'contribution_type' => k, 'contribution' => v}}
+          total_contribution_type_list
+            .group_by { |row| row['contribution_type'] }
+            .map do |type, rows|
+          { 'contribution_type' => type, 'contribution' => rows.sum { |row| row['contribution'].to_i } }
+        end
         base
       end
     end
