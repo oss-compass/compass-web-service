@@ -11,15 +11,17 @@ module Types
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'page size'
       argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'
+      argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
+      argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       MAX_PER_PAGE = 2000
 
-      def resolve(label: nil, level: 'repo', page: 1, per: 9, filter_opts: [])
+      def resolve(label: nil, level: 'repo', page: 1, per: 9, filter_opts: [], begin_date: nil, end_date: nil)
         label = normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
 
-        begin_date, end_date, interval = extract_date(nil, nil)
+        begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)

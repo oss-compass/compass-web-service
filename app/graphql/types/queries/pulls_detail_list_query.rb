@@ -10,13 +10,15 @@ module Types
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'per page number'
+      argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
+      argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
-      def resolve(label: nil, level: 'repo', page: 1, per: 9)
+      def resolve(label: nil, level: 'repo', page: 1, per: 9, begin_date: nil, end_date: nil)
         label = normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
 
-        begin_date, end_date, interval = extract_date(nil, nil)
+        begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
