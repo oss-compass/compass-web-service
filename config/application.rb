@@ -65,9 +65,7 @@ module CompassWebService
       read_timeout: ENV['MAIL_TIMEOUT']&.to_i || 15
     }
 
-
-
-
+    config.i18n.raise_on_missing_translations = false
     config.i18n.available_locales = %i[en zh-CN]
     config.i18n.default_locale = :en
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '*', '*.{rb,yml}')]
@@ -76,6 +74,10 @@ module CompassWebService
     config.active_storage.routes_prefix = '/files'
     config.active_storage.draw_routes = true
     config.active_storage.resolve_model_to_route = :rails_storage_proxy
+
+    # https://edgeguides.rubyonrails.org/configuring.html#config-active-record-encryption-hash-digest-class
+    config.active_record.encryption.hash_digest_class = OpenSSL::Digest::SHA256
+    config.active_record.encryption.support_sha1_for_non_deterministic_encryption = true
 
     # config.middleware.insert(0, Rack::ReverseProxy) do
     #   reverse_proxy_options preserve_host: true, timeout: 24 * 60 * 1000
