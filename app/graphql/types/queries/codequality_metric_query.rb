@@ -45,7 +45,7 @@ module Types
             template = raw[:template]
             skeleton.keys.map do |k|
               key = k.to_s.underscore
-              skeleton[key] = data&.[](key)&.[]('value') || template[key]
+              skeleton[key] = data.key?(key) ?  data[key]&.[]('value') : template[key]
             end
             pr_count = data&.[]('pr_count')&.[]('value').to_f
             CodequalityMetric.calc_fields.map do |key, sources|

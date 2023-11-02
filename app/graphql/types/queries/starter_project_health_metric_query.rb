@@ -39,7 +39,7 @@ module Types
             template = raw[:template]
             skeleton.keys.map do |k|
               key = k.to_s.underscore
-              skeleton[key] = data&.[](key)&.[]('value') || template[key]
+              skeleton[key] = data.key?(key) ?  data[key]&.[]('value') : template[key]
             end
             skeleton['short_code'] = ShortenedLabel.convert(skeleton['label'], skeleton['level'])
             skeleton['grimoire_creation_date'] =
