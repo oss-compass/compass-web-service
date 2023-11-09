@@ -3,6 +3,6 @@
 module Input
   class FilterOptionInput < Types::BaseInputObject
     argument :type, String, required: true, description: 'filter option type'
-    argument :value, String, required: true, description: 'filter option value'
+    argument :values, [String], required: true, description: 'filter option value'
   end
 end

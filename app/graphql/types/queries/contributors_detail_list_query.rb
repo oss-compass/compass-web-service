@@ -11,12 +11,18 @@ module Types
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'page size'
       argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'
+      argument :sort_opts, [Input::SortOptionInput], required: false, description: 'sort options'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       MAX_PER_PAGE = 2000
 
-      def resolve(label: nil, level: 'repo', page: 1, per: 9, filter_opts: [], begin_date: nil, end_date: nil)
+      def resolve(
+            label: nil, level: 'repo',
+            page: 1, per: 9,
+            filter_opts: [], sort_opts: [],
+            begin_date: nil, end_date: nil
+          )
         label = normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
@@ -60,7 +66,16 @@ module Types
 
         if filter_opts.present?
           filter_opts.each do |filter_opt|
-            contributors_list = contributors_list.select { |row| row[filter_opt.type] == filter_opt.value }
+            contributors_list = contributors_list.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
+          end
+        end
+
+        if sort_opts.present?
+          sort_opts.each do |sort_opt|
+            contributors_list =
+              contributors_list
+                .sort_by { |row| row[sort_opt.type] }
+            contributors_list = contributors_list.reverse unless sort_opt.direction == 'asc'
           end
         end
 
