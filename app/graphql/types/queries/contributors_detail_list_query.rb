@@ -66,7 +66,12 @@ module Types
 
         if filter_opts.present?
           filter_opts.each do |filter_opt|
-            contributors_list = contributors_list.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
+            contributors_list =
+              if filter_opt.type == 'contribution_type'
+                contributors_list.select { |row| !(filter_opt.values & row['contribution_type_list'].map{|c| c['contribution_type']}).empty? }
+              else
+                contributors_list.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
+              end
           end
         end
 
