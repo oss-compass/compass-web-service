@@ -68,5 +68,7 @@ module Types
     field :contributors_detail_overview, resolver: Queries::ContributorsDetailOverviewQuery
     field :issues_detail_overview, resolver: Queries::IssuesDetailOverviewQuery
     field :pulls_detail_overview, resolver: Queries::PullsDetailOverviewQuery
+
+    field :contributors_top_overview, resolver: Queries::ContributorsTopOverviewQuery
   end
 end

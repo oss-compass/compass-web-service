@@ -73,7 +73,9 @@ zh-CN:
     negative_indicators: 负向化指标
     full_screen: 全屏
     full_screen_exit: 退出全屏
-    download_chart_img: 下载图表
+    download_chart_img: 下载与分享
+    download: 下载
+    file_format: 文件格式
     total: 总共
     code_reviewer: 代码审查者
     pr_creator: PR 提交者
@@ -124,12 +126,13 @@ zh-CN:
     auth_failed: 登录失败
   basic:
     too_long: 请求参数过长，限制为：%{long}
+    invalid_range: 请求参数 %{param} 范围无效, 有效范围为 %{min} ~ %{max}
   censoring:
     illegal: "[违规内容，不予展示]"
     illegal_img: "/images/illegal.svg"
   collection:
-    more_repositories: More repositories
-    recently_hottest: Recently hottest
+    more_repositories: 更多仓库
+    recently_hottest: 近期热门
     repositories: "{{length}} 个仓库"
     collections: 分类
     please_select_two_or_more_repositories_below: 请选择以下两个或多个仓库
@@ -276,11 +279,12 @@ zh-CN:
     hot_collection: 热门分类
     more: 更多
     repositories: "{{length}} 个仓库"
-    the_latest_from: 最近热点
+    the_latest_from: 最新动态
     announcement: 公告
     report: 新闻
     event: 事件
     read_more: 阅读更多
+    scan_the_code_to_follow: 扫码关注微信公众号
   lab:
     back_my_lab: 返回我的模型
     the_locale_names_are_used_for: Compass Lab is a sandbox that helps people quickly
@@ -1064,6 +1068,8 @@ zh-CN:
     has_been_successfully: 与您的 OSS Compass 帐户绑定
     account_setting: 账号设置
     bind_other_code_hosting_platforms: 绑定其它代码托管平台？
+    community_home_page: 社区主页
+    community_avatar: 社区头像
   user_mailer:
     email_verification:
       subject: 验证您的电子邮件地址
