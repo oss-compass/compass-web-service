@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class GiteeContributorEnrich < GiteeBase
+  include ContributorEnrich
+
   def self.index_name
     'gitee-contributors_org_repo_enriched'
   end
