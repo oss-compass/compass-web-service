@@ -35,17 +35,13 @@ module Types
             .must(terms: { 'repo_name.keyword': repo_urls })
 
         ecological_distribution = distribute_by_field(contributor_base, 'ecological_type.keyword', nil)
-        organization_distribution = distribute_by_field(contributor_base, 'organization.keyword', nil)
-        contributor_distribution = distribute_by_field(contributor_base, 'contributor.keyword', nil)
 
         {
           highest_contribution_contributor: top_contributing_of('individual'),
           highest_contribution_organization: top_contributing_of('organization', count_field: 'organization' ),
           org_all_count: org_all_count,
           contributor_all_count: contributor_all_count,
-          ecological_distribution: ecological_distribution,
-          organization_distribution: organization_distribution,
-          contributor_distribution: contributor_distribution
+          ecological_distribution: ecological_distribution
         }
       end
 

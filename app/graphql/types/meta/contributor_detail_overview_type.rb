@@ -8,8 +8,6 @@ module Types
       field :org_all_count, Float
       field :contributor_all_count, Float
       field :ecological_distribution, [DistributionType]
-      field :organization_distribution, [DistributionType]
-      field :contributor_distribution, [DistributionType]
     end
   end
 end
