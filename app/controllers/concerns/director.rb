@@ -8,7 +8,7 @@ module Director
 
   def director_repo_list(remote_url)
     begin
-      Rails.cache.fetch("#{COMMUNITY_CACHE_KEY}-#{__method__}-#{remote_url}-list", expires_in: 15.minutes) do
+      Rails.cache.fetch("#{COMMUNITY_CACHE_KEY}:#{__method__}:#{remote_url}", expires_in: 15.minutes) do
         encode_url = URI.encode_www_form_component(remote_url)
         response =
           Faraday.get(
