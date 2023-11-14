@@ -13,7 +13,8 @@ module Types
 
         def resolve(page: 1, per: 3)
           current_user = context[:current_user]
-          raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+          login_required!(current_user)
 
           pagyer, records = pagy(current_user.lab_models_has_participated_in, { page: page, items: per })
           { count: pagyer.count, total_page: pagyer.pages, page: pagyer.page, items: records }

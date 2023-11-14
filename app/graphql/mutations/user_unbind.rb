@@ -7,7 +7,8 @@ module Mutations
 
     def resolve(provider:)
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
 
       providers = current_user.login_binds.where(provider: [:gitee, :github]).distinct.pluck(:provider)
       raise GraphQL::ExecutionError.new I18n.t('users.keep_one_login_bind') if (providers - [provider]).blank?

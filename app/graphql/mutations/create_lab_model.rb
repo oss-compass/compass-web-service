@@ -21,7 +21,9 @@ module Mutations
                 metrics: [],
                 algorithm: 'default')
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
+
       raise GraphQL::ExecutionError.new I18n.t('lab_models.metrics_required') unless metrics.present?
       raise GraphQL::ExecutionError.new I18n.t('lab_models.datasets_required') unless datasets.present?
 

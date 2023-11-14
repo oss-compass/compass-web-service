@@ -10,7 +10,8 @@ module Mutations
 
     def resolve(name:, email:, language: nil)
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
 
       update_attrs = { name: name, email: email }
       update_attrs[:language] = language if language.present?

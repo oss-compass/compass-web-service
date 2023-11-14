@@ -14,7 +14,8 @@ module Mutations
 
     def resolve(project_name:, project_types:, origin:, project_url: nil, project_logo_url: nil)
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
 
       username = LoginBind.current_host_nickname(current_user, origin)
       raise GraphQL::ExecutionError.new I18n.t('users.require_bind', provider: origin) if username.blank?

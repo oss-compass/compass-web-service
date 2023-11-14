@@ -12,7 +12,9 @@ module Mutations
     def resolve(model_id: nil, comment_id: nil, content: nil, images: [])
 
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
+
       raise GraphQL::ExecutionError.new I18n.t('lab_models.content_required') if content.strip.blank?
 
       model = LabModel.find_by(id: model_id)

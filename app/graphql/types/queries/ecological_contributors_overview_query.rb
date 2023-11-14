@@ -17,6 +17,8 @@ module Types
       def resolve(label: nil, level: 'repo', filter_opts: [], begin_date: nil, end_date: nil)
         label = normalize_label(label)
 
+        login_required!(context[:current_user])
+
         validate_by_label!(context[:current_user], label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)

@@ -21,7 +21,9 @@ module Mutations
         )
 
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
+
       raise GraphQL::ExecutionError.new I18n.t('lab_models.content_required') if content.strip.blank?
       raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if images.length > 5
 

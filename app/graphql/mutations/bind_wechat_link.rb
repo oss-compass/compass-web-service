@@ -8,7 +8,8 @@ module Mutations
 
     def resolve
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
 
       raise(GraphQL::ExecutionError.new I18n.t('users.wechat_already_bind')) if current_user.login_binds.exists?(provider: 'wechat')
 

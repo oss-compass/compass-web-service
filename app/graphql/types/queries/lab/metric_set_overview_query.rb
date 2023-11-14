@@ -10,7 +10,8 @@ module Types
 
         def resolve()
           current_user = context[:current_user]
-          raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+          login_required!(current_user)
 
           ::LabMetric.all
         end

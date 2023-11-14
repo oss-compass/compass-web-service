@@ -8,7 +8,8 @@ module Mutations
 
     def resolve(label: nil, level: nil)
       current_user = context[:current_user]
-      raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+      login_required!(current_user)
 
       subscription = current_user.subscriptions.find_by(subject: Subject.find_by(label: label))
       raise GraphQL::ExecutionError.new I18n.t('users.subscription_not_exist') if subscription.blank?

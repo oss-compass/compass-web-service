@@ -120,6 +120,10 @@ module Types
         end
       end
 
+      def login_required!(current_user)
+        raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+      end
+
       def normalize_label(label)
         if label =~ URI::regexp
           uri = Addressable::URI.parse(label)

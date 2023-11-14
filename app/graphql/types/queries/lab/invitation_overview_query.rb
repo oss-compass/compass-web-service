@@ -15,7 +15,8 @@ module Types
 
         def resolve(model_id: nil, page: 1, per: 9)
           current_user = context[:current_user]
-          raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
+
+          login_required!(current_user)
 
           raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if per > 20
 
