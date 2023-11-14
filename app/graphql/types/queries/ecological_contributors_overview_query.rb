@@ -2,11 +2,11 @@
 
 module Types
   module Queries
-    class OrgContributorsOverviewQuery < BaseOverviewQuery
+    class EcologicalContributorsOverviewQuery < BaseOverviewQuery
 
       type [Types::Meta::ContributorTopOverviewType], null: false
 
-      description 'Get organization contributors overview'
+      description 'Get contributors overview by ecological type'
 
       argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
@@ -15,7 +15,6 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', filter_opts: [], begin_date: nil, end_date: nil)
-
         label = normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
@@ -30,14 +29,11 @@ module Types
             .fetch_contributors_list(repo_urls, begin_date, end_date)
             .then { indexer.filter_contributors(_1, filter_opts) }
 
-        grouped_data = contributors_list.group_by { _1['organization'] }
-        transformed_data = grouped_data.transform_values { |v| v.map { |h| h['contribution'] }.reduce(0, :+) }
-        sorted_data = transformed_data.sort_by { |_, v| -v }
-        total_count = transformed_data.map { |_k, v| v }.reduce(0, :+)
+        total_count = contributors_list.sum { _1['contribution'] }
+        grouped_data = contributors_list.group_by { _1['ecological_type'] }
+        grouped_data
+          .map { |group, grouped_contributors| build_distribution_data(group, grouped_data[group], total_count) }
 
-        sorted_data
-          .first(10)
-          .map { |group, _| build_distribution_data(group, grouped_data[group], total_count) }
       end
     end
   end

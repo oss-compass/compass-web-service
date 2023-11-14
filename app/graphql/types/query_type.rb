@@ -70,7 +70,7 @@ module Types
     field :pulls_detail_overview, resolver: Queries::PullsDetailOverviewQuery
 
     ## Metrics Details Graph
-    field :contributors_top_overview, resolver: Queries::ContributorsTopOverviewQuery
     field :org_contributors_overview, resolver: Queries::OrgContributorsOverviewQuery
+    field :eco_contributors_overview, resolver: Queries::EcologicalContributorsOverviewQuery
   end
 end
