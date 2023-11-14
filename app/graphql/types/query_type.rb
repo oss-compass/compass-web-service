@@ -69,6 +69,8 @@ module Types
     field :issues_detail_overview, resolver: Queries::IssuesDetailOverviewQuery
     field :pulls_detail_overview, resolver: Queries::PullsDetailOverviewQuery
 
+    ## Metrics Details Graph
     field :contributors_top_overview, resolver: Queries::ContributorsTopOverviewQuery
+    field :org_contributors_overview, resolver: Queries::OrgContributorsOverviewQuery
   end
 end
