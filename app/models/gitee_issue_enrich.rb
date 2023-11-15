@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class GiteeIssueEnrich < GiteeBase
+
+  include BaseEnrich
+
   def self.index_name
     'gitee-issues_enriched'
   end

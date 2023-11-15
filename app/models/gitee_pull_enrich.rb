@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class GiteePullEnrich < GiteeBase
+
+  include BaseEnrich
+
   def self.index_name
     'gitee-pulls_enriched'
   end

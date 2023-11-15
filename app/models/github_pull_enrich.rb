@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class GithubPullEnrich < GithubBase
+
+  include BaseEnrich
+
   def self.index_name
     'github-pulls_enriched'
   end
