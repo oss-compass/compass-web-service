@@ -70,6 +70,24 @@ module ContributorEnrich
       contributors
     end
 
+    def repo_admin?(contributor, repo_urls)
+      self
+        .must(terms: { 'repo_name.keyword' => repo_urls })
+        .where('contributor.keyword' => contributor)
+        .range(:grimoire_creation_date, gte: Date.today - 1.year, lte: Date.today )
+        .should(
+          [
+            { match: { 'contribution_type_list.contribution_type.keyword' => 'issue_assigned' } },
+            { match: { 'contribution_type_list.contribution_type.keyword' => 'pr_merged' } },
+          ]
+        )
+        .page(1)
+        .per(1)
+        .total_entries > 0
+    rescue
+      false
+    end
+
     def merge_contributor(source, target)
       base = source.merge(target)
       base['contribution'] = source['contribution'].to_i + target['contribution'].to_i

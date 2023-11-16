@@ -124,6 +124,19 @@ module Types
         raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
       end
 
+      def validate_date!(current_user, label, level, begin_date, end_date)
+        login_required!(current_user)
+        diff_seconds = end_date.to_i - begin_date.to_i
+        return if diff_seconds < 2.months
+        origin = extract_repos_source(label, level)
+        username = LoginBind.current_host_nickname(current_user, origin)
+        indexer, repo_urls =
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+        unless indexer.repo_admin?(username, repo_urls)
+          raise GraphQL::ExecutionError.new I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: Date.today - 1.month, max: Date.today)
+        end
+      end
+
       def normalize_label(label)
         if label =~ URI::regexp
           uri = Addressable::URI.parse(label)
