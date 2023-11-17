@@ -16,6 +16,7 @@ module ContributorEnrich
           .must(terms: { 'repo_name.keyword' => repo_urls })
           .page(1)
           .per(MAX_PER_PAGE)
+          .where(is_bot: false)
           .range(:contribution_without_observe, gte: 1)
           .range(:grimoire_creation_date, gte: begin_date, lte: end_date )
           .sort(grimoire_creation_date: :asc)
