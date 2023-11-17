@@ -7,7 +7,6 @@ module Types
       field :highest_contribution_organization, ContributorType
       field :org_all_count, Float
       field :contributor_all_count, Float
-      field :ecological_distribution, [DistributionType]
     end
   end
 end

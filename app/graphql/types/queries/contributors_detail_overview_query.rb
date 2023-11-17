@@ -33,15 +33,11 @@ module Types
             .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
             .where(is_bot: false)
             .must(terms: { 'repo_name.keyword': repo_urls })
-
-        ecological_distribution = distribute_by_field(contributor_base, 'ecological_type.keyword', nil)
-
         {
           highest_contribution_contributor: top_contributing_of('individual'),
           highest_contribution_organization: top_contributing_of('organization', count_field: 'organization' ),
           org_all_count: org_all_count,
-          contributor_all_count: contributor_all_count,
-          ecological_distribution: ecological_distribution
+          contributor_all_count: contributor_all_count
         }
       end
 
