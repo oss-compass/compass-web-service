@@ -125,21 +125,41 @@ module Types
         raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
       end
 
-      def validate_date!(current_user, label, level, begin_date, end_date)
-        login_required!(current_user)
-        return if current_user&.is_admin?
+      def validate_date(current_user, label, level, begin_date, end_date)
+        valid_range = [begin_date, end_date]
+        default_min = Date.today - 1.month
+        default_max = Date.today
+
+        return [true, valid_range] if current_user&.is_admin?
+        return [true, valid_range] if current_user&.has_privilege_to?(label, level)
+
         diff_seconds = end_date.to_i - begin_date.to_i
-        return if diff_seconds < 2.months
+        return [true, valid_range] if diff_seconds < 2.months
+
         origin = extract_repos_source(label, level)
         username = LoginBind.current_host_nickname(current_user, origin)
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
-        unless indexer.repo_admin?(username, repo_urls)
-          raise GraphQL::ExecutionError.new(
-                  I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: Date.today - 1.month, max: Date.today),
-                  extensions: { status_code: 403 }
-                )
+        is_repo_admin = indexer.repo_admin?(username, repo_urls)
+
+        if is_repo_admin
+          default_min = Date.today - 1.year
+          default_max = Date.today
         end
+
+        return [true, valid_range] if diff_seconds < 2.years && is_repo_admin
+
+        [false, [default_min, default_max]]
+      end
+
+      def validate_date!(current_user, label, level, begin_date, end_date)
+        login_required!(current_user)
+        ok, valid_range = validate_date(current_user, label, level, begin_date, end_date)
+        return if ok
+        raise GraphQL::ExecutionError.new(
+                I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: valid_range[0], max: valid_range[1]),
+                extensions: { status_code: 403 }
+              )
       end
 
       def normalize_label(label)

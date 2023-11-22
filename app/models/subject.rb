@@ -24,6 +24,7 @@ class Subject < ApplicationRecord
   UNKNOWN = 'unknown'
 
   has_many :subscriptions, dependent: :destroy
+  has_many :subject_access_levels, dependent: :destroy
 
   validates :label, presence: true, length: { maximum: 255 }
   validates :level, presence: true, length: { maximum: 255 }
@@ -41,5 +42,12 @@ class Subject < ApplicationRecord
     else
       UNKNOWN
     end
+  end
+
+  def add_privileged_access_level!(user)
+    return if user.blank?
+    new_access_level = subject_access_levels.find_or_initialize_by(user: user)
+    new_access_level.access_level = SubjectAccessLevel::PRIVILEGED_LEVEL
+    new_access_level.save!
   end
 end

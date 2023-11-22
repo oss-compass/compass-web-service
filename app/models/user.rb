@@ -41,6 +41,7 @@ class User < ApplicationRecord
   has_many :login_binds, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
   has_many :lab_models, dependent: :destroy
+  has_many :subject_access_levels, dependent: :destroy
   has_many :lab_model_invitations
 
   validate :check_email_change_limit
@@ -177,6 +178,12 @@ class User < ApplicationRecord
       user.login_binds.create!(provider: provider, uid: uid, account: account, nickname: nickname, avatar_url: avatar_url, provider_id: provider_id)
     end
     user
+  end
+
+  def has_privilege_to?(label, level)
+    subject = Subject.find_by(label: label, level: level)
+    return false if subject.blank?
+    subject_access_levels.find_by(subject: subject)&.access_level == SubjectAccessLevel::PRIVILEGED_LEVEL
   end
 
   def lab_models_has_participated_in
