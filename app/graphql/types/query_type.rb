@@ -43,7 +43,6 @@ module Types
 
 
     ## Lab Metrics
-    field :metric_starter_project_health, resolver: Queries::StarterProjectHealthMetricQuery
 
     field :summary_activity, resolver: Queries::ActivitySummaryQuery
     field :summary_community, resolver: Queries::CommunitySummaryQuery
