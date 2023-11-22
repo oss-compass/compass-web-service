@@ -115,6 +115,7 @@ module Types
       end
 
       def validate_by_label!(current_user, label)
+        return if current_user&.is_admin?
         if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)
           raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
         end
@@ -126,6 +127,7 @@ module Types
 
       def validate_date!(current_user, label, level, begin_date, end_date)
         login_required!(current_user)
+        return if current_user&.is_admin?
         diff_seconds = end_date.to_i - begin_date.to_i
         return if diff_seconds < 2.months
         origin = extract_repos_source(label, level)
@@ -133,7 +135,10 @@ module Types
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
         unless indexer.repo_admin?(username, repo_urls)
-          raise GraphQL::ExecutionError.new I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: Date.today - 1.month, max: Date.today)
+          raise GraphQL::ExecutionError.new(
+                  I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: Date.today - 1.month, max: Date.today),
+                  extensions: { status_code: 403 }
+                )
         end
       end
 

@@ -21,6 +21,7 @@
 #  email_verification_sent_at :datetime
 #  name                       :string(255)
 #  language                   :string(255)      default("en")
+#  role_level                 :integer          default(0), not null
 #
 # Indexes
 #
@@ -49,9 +50,14 @@ class User < ApplicationRecord
   after_update :send_email_verification, if: -> { saved_changes.keys.include?('email') }
 
   ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
+  NORMAL_ROLE = 0
 
   def email_verified?
     email_verification_token.nil?
+  end
+
+  def is_admin?
+    role_level.to_i > NORMAL_ROLE
   end
 
   def verify_email(token)

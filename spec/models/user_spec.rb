@@ -21,6 +21,7 @@
 #  email_verification_sent_at :datetime
 #  name                       :string(255)
 #  language                   :string(255)      default("en")
+#  role_level                 :integer          default(0), not null
 #
 # Indexes
 #
