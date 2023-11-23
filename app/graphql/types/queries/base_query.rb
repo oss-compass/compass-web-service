@@ -136,11 +136,14 @@ module Types
         diff_seconds = end_date.to_i - begin_date.to_i
         return [true, valid_range] if diff_seconds < 2.months
 
-        origin = extract_repos_source(label, level)
-        username = LoginBind.current_host_nickname(current_user, origin)
-        indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
-        is_repo_admin = indexer.repo_admin?(username, repo_urls)
+        is_repo_admin =
+          Rails.cache.fetch("is_repo_admin:user-#{current_user.id}:#{level}:#{label}", expires_in: 15.minutes) do
+          indexer, repo_urls =
+                   select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+          origin = extract_repos_source(label, level)
+          username = LoginBind.current_host_nickname(current_user, origin)
+          indexer.repo_admin?(username, repo_urls)
+        end
 
         if is_repo_admin
           default_min = Date.today - 1.year
