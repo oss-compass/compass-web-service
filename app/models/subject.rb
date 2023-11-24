@@ -23,6 +23,14 @@ class Subject < ApplicationRecord
   COMPLETE = 'complete'
   UNKNOWN = 'unknown'
 
+  has_many :subject_refs_as_child, class_name: 'SubjectRef', foreign_key: 'child_id'
+  has_many :subject_refs_as_parent, class_name: 'SubjectRef', foreign_key: 'parent_id'
+  has_many :childs, through: :subject_refs_as_parent
+  has_many :parents, through: :subject_refs_as_child
+
+  has_many :software_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::Software) }, through: :subject_refs_as_parent, source: :child
+  has_many :governance_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::Governance) }, through: :subject_refs_as_parent, source: :child
+
   has_many :subscriptions, dependent: :destroy
   has_many :subject_access_levels, dependent: :destroy
 

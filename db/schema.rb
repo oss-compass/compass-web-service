@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_22_080438) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_24_145827) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -215,6 +215,15 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_22_080438) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "subject_id"], name: "index_subject_access_levels_on_user_id_and_subject_id", unique: true
+  end
+
+  create_table "subject_refs", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "parent_id"
+    t.integer "child_id"
+    t.integer "sub_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id", "child_id", "sub_type"], name: "index_subject_refs_on_parent_id_and_child_id_and_sub_type", unique: true
   end
 
   create_table "subjects", charset: "utf8mb4", force: :cascade do |t|
