@@ -15,11 +15,15 @@ namespace :db do
 
         software_artifact_repositories =
           yaml.dig('resource_types', 'software-artifact-repositories', 'repo_urls') ||
+          yaml.dig('resource_types', 'software-artifact-resources', 'repo_urls') ||
           yaml.dig('resource_types', 'software-artifact-projects', 'repo_urls') || []
 
         governance_repositories =
           yaml.dig('resource_types', 'governance-repositories', 'repo_urls') ||
+          yaml.dig('resource_types', 'governance-resources', 'repo_urls') ||
           yaml.dig('resource_types', 'governance-projects', 'repo_urls') || []
+
+        #puts software_artifact_repositories, governance_repositories
 
         real_count = (software_artifact_repositories + governance_repositories).uniq.length
 
@@ -30,40 +34,9 @@ namespace :db do
         subject.status_updated_at ||= Time.current
         subject.save!
 
-        append_child = -> (parent, label, type) do
-          child = Subject.find_or_initialize_by(label: label)
-          child.level ||= 'repo'
-          child.status ||= Subject::PENDING
-          child.count = 1
-          child.status_updated_at ||= Time.current
-          child.save!
-          SubjectRef.create!(parent: parent, child: child, sub_type: type)
-        end
-
-        remove_child = -> (parent, label, type) do
-          SubjectRef.where(parent: parent, child: label, sub_type: type).destroy_all
-        end
-
         if subject.count != real_count
-          stable_software_artifact_repositories = subject.software_repos.pluck('label')
 
-          (software_artifact_repositories - stable_software_artifact_repositories).each do |label|
-            append_child.(subject, label, SubjectRef::Software)
-          end
-
-          (stable_software_artifact_repositories - software_artifact_repositories).each do |label|
-            remove_child.(subject, label, SubjectRef::Software)
-          end
-
-          stable_governance_repositories = subject.governance_repos.pluck('label')
-
-          (governance_repositories - stable_governance_repositories).each do |label|
-            append_child.(subject, label, SubjectRef::Governance)
-          end
-
-          (stable_governance_repositories - governance_repositories).each do |label|
-            remove_child.(subject, label, SubjectRef::Governance)
-          end
+          Subject.sync_subject_repos_refs(subject, new_software_repos: software_artifact_repositories, new_governance_repos: governance_repositories)
 
           subject.update!(count: real_count)
           puts "refresh #{file} successfully"

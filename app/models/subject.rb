@@ -52,6 +52,55 @@ class Subject < ApplicationRecord
     end
   end
 
+  def self.append_child(parent, label, type)
+    append_child!(parent, label, type)
+  rescue => ex
+    Rails.logger.error "Unable to append child #{label} to #{parent&.label}, error: #{error}"
+  end
+
+  def self.remove_child(parent, label, type)
+    remove_child!(parent, label, type)
+  rescue => ex
+    Rails.logger.error "Unable to remove child #{label} from #{parent&.label}, error: #{error}"
+  end
+
+  def self.append_child!(parent, label, type)
+    child = Subject.find_or_initialize_by(label: label)
+    child.level ||= 'repo'
+    child.status ||= Subject::PENDING
+    child.count = 1
+    child.status_updated_at ||= Time.current
+    child.save!
+    SubjectRef.create!(parent: parent, child: child, sub_type: type)
+  end
+
+  def self.remove_child!(parent, label, type)
+    child = Subject.find_by(label: label)
+    SubjectRef.where(parent: parent, child: child, sub_type: type).destroy_all if child
+  end
+
+  def self.sync_subject_repos_refs(subject, new_software_repos: [], new_governance_repos: [])
+    stable_software_repos = subject.software_repos.pluck('label')
+
+    (new_software_repos - stable_software_repos).each do |label|
+      append_child(subject, label, SubjectRef::Software)
+    end
+
+    (stable_software_repos - new_software_repos).each do |label|
+      remove_child(subject, label, SubjectRef::Software)
+    end
+
+    stable_governance_repos = subject.governance_repos.pluck('label')
+
+    (new_governance_repos - stable_governance_repos).each do |label|
+      append_child(subject, label, SubjectRef::Governance)
+    end
+
+    (stable_governance_repos - new_governance_repos).each do |label|
+      remove_child(subject, label, SubjectRef::Governance)
+    end
+  end
+
   def add_privileged_access_level!(user)
     return if user.blank?
     new_access_level = subject_access_levels.find_or_initialize_by(user: user)
