@@ -29,6 +29,10 @@ class GroupActivityMetric < BaseMetric
       "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}
   end
 
+  def self.dimension
+    'niche_creation'
+  end
+
   def self.ident
     'organizations_activity'
   end

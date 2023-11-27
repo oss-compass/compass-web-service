@@ -2,8 +2,8 @@
 
 module Types
   module Queries
-    class MetricModelsGraphQuery < BaseQuery
-      type Types::MetricModelsGraphType, null: false
+    class MetricModelsOverviewQuery < BaseQuery
+      type [Types::Metric::ModelType], null: false
       description 'Metric models graph'
       argument :label, String, required: true, description: 'repo or community label'
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'

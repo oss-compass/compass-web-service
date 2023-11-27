@@ -3,6 +3,10 @@ class ActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_activity"
   end
 
+  def self.dimension
+    'robustness'
+  end
+
   def self.ident
     'activity'
   end

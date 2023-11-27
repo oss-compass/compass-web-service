@@ -76,6 +76,6 @@ module Types
     field :verify_detail_data_range, resolver: Queries::VerifyDetailDataRangeQuery
 
     ## Metrics Model Graph
-    field :metric_models_graph, resolver: Queries::MetricModelsGraphQuery
+    field :metric_models_overview, resolver: Queries::MetricModelsOverviewQuery
   end
 end

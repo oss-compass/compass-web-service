@@ -39,6 +39,10 @@ class CodequalityMetric < BaseMetric
       "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}
   end
 
+  def self.dimension
+    'productivity'
+  end
+
   def self.ident
     'collab_dev_index'
   end

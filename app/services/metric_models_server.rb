@@ -10,34 +10,9 @@ class MetricModelsServer
   end
 
   def overview
-    {
-      productivity: productivity,
-      robustness: robustness,
-      niche_creation: niche_creation,
-      type: @repo_type,
-      label: @label,
-      level: @level,
-      upladed_at: @opts[:upladed_at] || updated_at || Time.now
-    }
-  end
-
-  def updated_at
-    Time.now
-  end
-
-  def productivity
-    [
-      build_template(CodequalityMetric),
-      build_template(CommunityMetric),
-    ].compact
-  end
-
-  def robustness
-    [build_template(ActivityMetric)]
-  end
-
-  def niche_creation
-    [build_template(GroupActivityMetric)]
+    [ActivityMetric, CodequalityMetric, CommunityMetric, GroupActivityMetric].map do |metric|
+      build_template(metric)
+    end
   end
 
   private
@@ -45,20 +20,26 @@ class MetricModelsServer
     result = metric.query_label_one(@label, @level, type: @repo_type)
     hits = result&.[]('hits')&.[]('hits')
     hit = hits.present? ? hits.first['_source'] : nil
-    if hit.present?
-      main_score = hit[metric.main_score]
-      transformed_score = metric.scaled_value(nil, target_value: main_score)
-
-      grimoire_creation_date = DateTime.parse(hit&.[]('grimoire_creation_date')).strftime rescue hit&.[]('grimoire_creation_date')
+    basic =
       {
+        dimension: metric.dimension,
         ident: metric.ident,
         type: @repo_type,
         label: @label,
         level: @level,
-        main_score: main_score,
-        transformed_score: transformed_score,
-        grimoire_creation_date: grimoire_creation_date
+        main_score: 0.0,
+        transformed_score: 0.0,
+        grimoire_creation_date: nil,
+        updated_at: nil
       }
+    if hit.present?
+      basic[:main_score] = hit[metric.main_score]
+      basic[:transformed_score] = metric.scaled_value(nil, target_value: basic[:main_score])
+      basic[:grimoire_creation_date] =
+        DateTime.parse(hit&.[]('grimoire_creation_date')).strftime rescue hit&.[]('grimoire_creation_date')
+      basic[:updated_at] =
+        DateTime.parse(hit&.[]('metadata__enriched_on')).strftime rescue hit&.[]('metadata__enriched_on')
     end
+    basic
   end
 end
