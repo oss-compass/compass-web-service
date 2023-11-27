@@ -5,8 +5,8 @@ opts = {
   amqp: ENV.fetch('MQ_CONNECTION'),
   log: "log/sneakers.log",
   pid_path: "tmp/pids/sneakers.pid",
-  threads: 32,
-  workers: 4,
+  threads: 64,
+  workers: 8,
   hooks: {
     before_fork: lambda do
       ::ActiveRecord::Base.clear_all_connections!
