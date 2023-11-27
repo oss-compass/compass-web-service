@@ -29,6 +29,10 @@ class CommunityMetric < BaseMetric
       "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}
   end
 
+  def self.ident
+    'community'
+  end
+
   def self.text_ident
     'community_service_and_support'
   end

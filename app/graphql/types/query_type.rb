@@ -74,5 +74,8 @@ module Types
     field :eco_distribution_overview, resolver: Queries::EcologicalDistributionOverviewQuery
 
     field :verify_detail_data_range, resolver: Queries::VerifyDetailDataRangeQuery
+
+    ## Metrics Model Graph
+    field :metric_models_graph, resolver: Queries::MetricModelsGraphQuery
   end
 end

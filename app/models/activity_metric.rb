@@ -3,6 +3,10 @@ class ActivityMetric < BaseMetric
     "#{MetricsIndexPrefix}_activity"
   end
 
+  def self.ident
+    'activity'
+  end
+
   def self.text_ident
     'community_activity'
   end

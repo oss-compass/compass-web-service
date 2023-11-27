@@ -16,14 +16,17 @@ class BaseMetric < BaseIndex
     end
   end
 
-  def self.query_label_one(label, level)
+  def self.query_label_one(label, level, type: nil)
     Rails.cache.fetch(
-      "#{self.name}-#{__method__}-#{label}-#{level}",
+      "#{self.name}:#{__method__}:#{level}:#{type}:#{label}",
       expires_in: CacheTTL
     ) do
-      self
-        .must(match: { 'label.keyword': label })
-        .where(level: level)
+      base =
+        self
+          .must(match: { 'label.keyword': label })
+          .where(level: level)
+      base = base.where(type: type) if type
+      base
         .page(1)
         .per(1)
         .sort(grimoire_creation_date: :desc)
