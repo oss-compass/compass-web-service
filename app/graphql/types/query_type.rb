@@ -13,6 +13,7 @@ module Types
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
     field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
+    field :repo_belongs_to, resolver: Queries::RepoBelongsToQuery
     field :bulk_overview, resolver: Queries::BulkOverviewQuery
     field :bulk_shortened_label, resolver: Queries::BulkShortenedLabelQuery
     field :bulk_label_with_level, resolver: Queries::BulkLabelWithLevelQuery

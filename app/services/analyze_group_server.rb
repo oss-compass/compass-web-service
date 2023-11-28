@@ -88,8 +88,8 @@ class AnalyzeGroupServer
         urls = project_info['repo_urls']
         urls.each do |project_url|
           uri = Addressable::URI.parse(project_url)
-          next unless uri.scheme.present? && uri.host.present? && uri.path.present?
-          repos[suffix] << "#{uri.scheme}://#{uri.host}/#{uri.path}"
+          next unless uri.scheme.present? && uri.normalized_host.present? && uri.path.present?
+          repos[suffix] << "https://#{uri&.normalized_host}#{uri.path}"
         end
       end
     end
