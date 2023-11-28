@@ -47,12 +47,29 @@ module ContributorEnrich
       "contributors:#{repos_hash}:#{begin_date}:#{end_date}"
     end
 
+    def append_filtered_contribution(row, filter_opt)
+      row.merge(
+        {
+          'contribution_filterd' =>
+          filter_opt.values.map do |value|
+            row['contribution_type_list']
+              .find { |c| c['contribution_type'] == value }
+              &.[]('contribution')
+              .to_i
+          end
+            .reduce(:+)
+        }
+      )
+    end
+
     def filter_contributors(contributors, filter_opts)
       if filter_opts.present? && filter_opts.respond_to?(:each)
         filter_opts.each do |filter_opt|
           contributors =
             if filter_opt.type == 'contribution_type'
-              contributors.select { |row| !(filter_opt.values & row['contribution_type_list'].map{|c| c['contribution_type']}).empty? }
+              contributors
+                .select { |row| !(filter_opt.values & row['contribution_type_list'].map{|c| c['contribution_type']}).empty? }
+                .map { |row| append_filtered_contribution(row, filter_opt) }
             else
               contributors.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
             end

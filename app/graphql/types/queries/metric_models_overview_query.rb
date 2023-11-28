@@ -10,6 +10,8 @@ module Types
       argument :repo_type, String, required: false, description: 'repo type, for repo level default: null and community level default: software-artifact'
 
       def resolve(label:, level: 'repo', repo_type: nil)
+        label = normalize_label(label)
+
         MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
       end
     end
