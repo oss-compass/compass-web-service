@@ -26,11 +26,6 @@ module Types
 
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
-
-        if filter_opts.find {|opt| opt.type == 'contribution_type' }
-          sort_opts << OpenStruct.new(type: 'contribution_filterd', direction: 'desc' )
-        end
-
         contributors_list =
           indexer
             .fetch_contributors_list(repo_urls, begin_date, end_date)
