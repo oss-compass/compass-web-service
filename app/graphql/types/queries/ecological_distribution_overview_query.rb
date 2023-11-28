@@ -41,6 +41,7 @@ module Types
             sub_count: sub_total,
             sub_ratio: total_count == 0 ? 0 : (sub_total.to_f / total_count).round(4),
             sub_name: group,
+            sub_belong: group,
             total_count: total_count
           }
         end

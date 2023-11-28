@@ -5,6 +5,7 @@ module Types
       field :sub_count, Integer
       field :sub_ratio, Float
       field :sub_name, String
+      field :sub_belong, String
       field :total_count, Integer
     end
   end

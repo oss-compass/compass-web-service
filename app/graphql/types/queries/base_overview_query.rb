@@ -11,6 +11,7 @@ module Types
             sub_count: contributor['contribution'],
             sub_ratio: total_count == 0 ? 0 : (contributor['contribution'].to_f / total_count).round(4),
             sub_name: contributor['contributor'],
+            sub_belong: contributor['organization'],
             total_count: total_count
           }
         end
@@ -23,6 +24,7 @@ module Types
             sub_count: other_contributors_count,
             sub_ratio: total_count == 0 ? 0 : (other_contributors_count.to_f / total_count).round(4),
             sub_name: 'other',
+            sub_belong: 'other',
             total_count: total_count
           }
         end

@@ -264,6 +264,7 @@ module Types
               sub_count: bucket['doc_count'],
               sub_ratio: total_count == 0 ? 0 : (bucket['doc_count'].to_f / total_count.to_f),
               sub_name: bucket['key'],
+              sub_belong: bucket['key'],
               total_count: total_count
             }
         end
