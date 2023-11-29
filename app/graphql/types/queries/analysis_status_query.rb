@@ -9,7 +9,7 @@ module Types
       argument :label, String, required: true, description: 'repo or project label'
 
       def resolve(label: nil)
-        label = normalize_label(label)
+        label = ShortenedLabel.normalize_label(label)
 
         existed_metrics =
           [ActivityMetric, CommunityMetric, CodequalityMetric, GroupActivityMetric].map do |metric|

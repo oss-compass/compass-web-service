@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   post "/api/graphql", to: "graphql#execute"
   mount with_dev_auth.call(Crono::Engine), at: '/crono'
+  mount Openapi::Base => "/"
 
   root to: 'application#website'
 

@@ -165,15 +165,6 @@ module Types
               )
       end
 
-      def normalize_label(label)
-        if label =~ URI::regexp
-          uri = Addressable::URI.parse(label)
-          "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}"
-        else
-          label
-        end
-      end
-
       def extract_repos_count(label, level)
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)

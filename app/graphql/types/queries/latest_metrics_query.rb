@@ -9,7 +9,7 @@ module Types
       argument :level, String, required: false, description: 'repo or project', default_value: 'repo'
 
       def resolve(label: nil, level: 'repo')
-        label = normalize_label(label)
+        label = ShortenedLabel.normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
 

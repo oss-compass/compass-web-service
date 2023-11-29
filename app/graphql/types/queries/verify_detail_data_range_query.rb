@@ -21,7 +21,7 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        label = normalize_label(label) if label
+        label = ShortenedLabel.normalize_label(label) if label
         level = label =~ URI::regexp ? 'repo' : 'community' if label
         if short_code
           short = ShortenedLabel.revert(short_code)

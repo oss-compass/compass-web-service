@@ -16,7 +16,7 @@ module Types
 
         def resolve(model_id:, version_id:, label: nil, short_code: nil, begin_date: nil, end_date: nil)
           current_user = context[:current_user]
-          label = normalize_label(label) if label
+          label = ShortenedLabel.normalize_label(label) if label
           label = ShortenedLabel.revert(short_code)&.label if short_code
 
           begin_date, end_date, interval = extract_date(begin_date, end_date)

@@ -24,7 +24,7 @@ class Subject < ApplicationRecord
   UNKNOWN = 'unknown'
 
   has_many :subject_refs_as_child, class_name: 'SubjectRef', foreign_key: 'child_id'
-  has_many :subject_refs_as_parent, class_name: 'SubjectRef', foreign_key: 'parent_id'
+  has_many :subject_refs_as_parent, class_name: 'SubjectRef', foreign_key: 'parent_id', dependent: :destroy
   has_many :childs, through: :subject_refs_as_parent
   has_many :parents, through: :subject_refs_as_child
 
@@ -106,5 +106,15 @@ class Subject < ApplicationRecord
     new_access_level = subject_access_levels.find_or_initialize_by(user: user)
     new_access_level.access_level = SubjectAccessLevel::PRIVILEGED_LEVEL
     new_access_level.save!
+  end
+
+  def to_project_row
+    {
+      level: level,
+      label: label,
+      status: status,
+      updated_at: status_updated_at,
+      short_code: ShortenedLabel.convert(label, level)
+    }
   end
 end

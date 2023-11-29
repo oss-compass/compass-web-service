@@ -28,6 +28,10 @@ gem 'redis-rails'
 gem 'bunny'
 gem 'sneakers'
 
+# Use Grape
+gem 'grape'
+gem 'grape-swagger'
+
 # Use Kafka (only for Content Review)
 gem 'connection_pool'
 gem 'waterdrop'

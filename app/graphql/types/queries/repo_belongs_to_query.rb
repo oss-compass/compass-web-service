@@ -9,17 +9,10 @@ module Types
       argument :level, String, required: false, description: 'level (repo/community), default: repo'
 
       def resolve(label: nil, level: 'repo')
+        label = ShortenedLabel.normalize_label(label)
         subject = Subject.find_by(label: label, level: level)
         return [] unless subject.present?
-        subject.parents.map do |item|
-          {
-            level: item.level,
-            label: item.label,
-            status: item.status,
-            updated_at: item.status_updated_at,
-            short_code: ShortenedLabel.convert(item.label, item.level)
-          }
-        end
+        subject.parents.map(&:to_project_row)
       end
     end
   end

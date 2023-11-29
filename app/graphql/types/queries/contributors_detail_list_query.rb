@@ -16,7 +16,7 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', page: 1, per: 9, filter_opts: [], sort_opts: [], begin_date: nil, end_date: nil)
-        label = normalize_label(label)
+        label = ShortenedLabel.normalize_label(label)
 
         validate_by_label!(context[:current_user], label)
 

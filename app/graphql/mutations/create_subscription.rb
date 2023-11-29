@@ -12,7 +12,7 @@ module Mutations
 
       login_required!(current_user)
 
-      label = normalize_label(label)
+      label = ShortenedLabel.normalize_label(label)
 
       subject = Subject.find_by(label: label)
       if subject.present?

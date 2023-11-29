@@ -10,7 +10,7 @@ module Types
       argument :short_code, String, required: false, description: 'repo or project short code'
 
       def resolve(label: nil, short_code: nil)
-        label = normalize_label(label) if label
+        label = ShortenedLabel.normalize_label(label) if label
         label = ShortenedLabel.revert(short_code)&.label if short_code
 
         result = {

@@ -5,7 +5,7 @@ class MetricModelsServer
   def initialize(label: ,level: 'repo', repo_type: nil, opts: {})
     @label = label
     @level = level
-    @repo_type = repo_type
+    @repo_type = repo_type || level == 'community' ? 'software-artifact' : nil
     @opts = opts
   end
 

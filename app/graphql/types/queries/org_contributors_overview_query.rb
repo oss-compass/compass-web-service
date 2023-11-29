@@ -16,7 +16,7 @@ module Types
 
       def resolve(label: nil, level: 'repo', filter_opts: [], begin_date: nil, end_date: nil)
 
-        label = normalize_label(label)
+        label = ShortenedLabel.normalize_label(label)
 
         login_required!(context[:current_user])
 
