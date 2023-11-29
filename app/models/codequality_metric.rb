@@ -43,6 +43,10 @@ class CodequalityMetric < BaseMetric
     'productivity'
   end
 
+  def self.scope
+    'collaboration'
+  end
+
   def self.ident
     'collab_dev_index'
   end

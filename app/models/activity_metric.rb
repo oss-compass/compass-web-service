@@ -7,6 +7,10 @@ class ActivityMetric < BaseMetric
     'robustness'
   end
 
+  def self.scope
+    'collaboration'
+  end
+
   def self.ident
     'activity'
   end

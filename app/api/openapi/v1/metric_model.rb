@@ -1,18 +1,18 @@
 module Openapi
   module V1
-    class MetricModelsOverview < Grape::API
+    class MetricModel < Grape::API
       version 'v1', using: :path
       format :json
       prefix :api
 
-      resource :metric_models_overview do
+      resource :metric_model do
         desc 'Metric models overview'
         params do
           requires :label, type: String, desc: 'repo or community label'
           optional :level, type: String, desc: 'level (repo/community), default: repo'
           optional :repo_type, type: String, desc: 'repo type, for repo level default: null and community level default: software-artifact'
         end
-        get do
+        get :overview do
           label = params[:label]
           level = params[:level] || 'repo'
           repo_type = params[:repo_type]

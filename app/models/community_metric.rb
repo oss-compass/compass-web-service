@@ -33,6 +33,10 @@ class CommunityMetric < BaseMetric
     'productivity'
   end
 
+  def self.scope
+    'collaboration'
+  end
+
   def self.ident
     'community'
   end

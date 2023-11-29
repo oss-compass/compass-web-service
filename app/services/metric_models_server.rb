@@ -24,6 +24,7 @@ class MetricModelsServer
       {
         dimension: metric.dimension,
         ident: metric.ident,
+        scope: metric.scope,
         type: @repo_type,
         label: @label,
         level: @level,

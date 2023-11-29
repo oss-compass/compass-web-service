@@ -3,6 +3,7 @@ module Types
   module Metric
     class ModelType < Types::BaseObject
       field :dimension, String, description: 'dimension of metric model'
+      field :scope, String, description: 'scope of metric model'
       field :ident, String, null: false, description: 'metric model ident'
       field :type, String, description: 'metric scores for repositories type, only for community (software-artifact/governance)'
       field :label, String, description: 'metric model object identification'

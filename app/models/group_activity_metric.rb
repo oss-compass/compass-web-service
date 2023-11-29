@@ -33,6 +33,10 @@ class GroupActivityMetric < BaseMetric
     'niche_creation'
   end
 
+  def self.scope
+    'collaboration'
+  end
+
   def self.ident
     'organizations_activity'
   end

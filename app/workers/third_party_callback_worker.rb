@@ -23,6 +23,7 @@ class ThirdPartyCallbackWorker
     repo_type = level == 'community' ? 'software-artifact' : nil
     if Enable && status == Subject::COMPLETE && LimitOrigins.include?(origin)
       body = MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
+      Sneakers.logger.info "Sending a request payload is: #{body}"
       resp = Faraday.post(CallbackUrl, body.to_json, { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{Token}"})
       Sneakers.logger.info "Receiving a callback response is: #{resp.body}"
     end
