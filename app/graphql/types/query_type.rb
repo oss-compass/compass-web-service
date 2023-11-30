@@ -71,8 +71,9 @@ module Types
 
     ## Metrics Details Graph
     field :org_contributors_overview, resolver: Queries::OrgContributorsOverviewQuery
+    field :org_contributors_distribution, resolver: Queries::OrgContributorsDistributionQuery
+    field :org_contribution_distribution, resolver: Queries::OrgContributionDistributionQuery
     field :eco_contributors_overview, resolver: Queries::EcologicalContributorsOverviewQuery
-    field :eco_distribution_overview, resolver: Queries::EcologicalDistributionOverviewQuery
 
     field :verify_detail_data_range, resolver: Queries::VerifyDetailDataRangeQuery
 

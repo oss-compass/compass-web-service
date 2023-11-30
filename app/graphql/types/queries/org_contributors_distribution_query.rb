@@ -2,11 +2,11 @@
 
 module Types
   module Queries
-    class EcologicalDistributionOverviewQuery < BaseOverviewQuery
+    class OrgContributorsDistributionQuery < BaseOverviewQuery
 
-      type [Types::Meta::DistributionType], null: false
+      type [Types::Meta::ContributorTopOverviewType], null: false
 
-      description 'Get contributors overview by ecological type'
+      description 'Get organization contributors distribution'
 
       argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
@@ -15,6 +15,7 @@ module Types
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
 
       def resolve(label: nil, level: 'repo', filter_opts: [], begin_date: nil, end_date: nil)
+
         label = ShortenedLabel.normalize_label(label)
 
         login_required!(context[:current_user])
@@ -33,17 +34,10 @@ module Types
             .fetch_contributors_list(repo_urls, begin_date, end_date)
             .then { indexer.filter_contributors(_1, filter_opts) }
 
-        total_count = contributors_list.sum { _1['contribution'] }
+        total_count = contributors_list.length
         grouped_data = contributors_list.group_by { _1['ecological_type'] }
         grouped_data.map do |group, grouped_contributors|
-          sub_total = grouped_contributors.map { _1['contribution'] }.reduce(0, :+)
-          {
-            sub_count: sub_total,
-            sub_ratio: total_count == 0 ? 0 : (sub_total.to_f / total_count).round(4),
-            sub_name: group,
-            sub_belong: group,
-            total_count: total_count
-          }
+          build_org_distribution_data(group, grouped_data[group], total_count, scope: 'contributor')
         end
       end
     end
