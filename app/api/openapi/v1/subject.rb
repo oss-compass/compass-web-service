@@ -30,7 +30,8 @@ module Openapi
           level = params[:level] || 'repo'
           label = ShortenedLabel.normalize_label(label)
           subject = ::Subject.find_by(label: label, level: level)
-          present subject
+          return { code: 404, message: 'Not Found' } unless subject.present?
+          { code: 200, data: subject }
         end
       end
     end
