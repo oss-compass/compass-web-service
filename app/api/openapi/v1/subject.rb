@@ -19,6 +19,19 @@ module Openapi
           return [] unless subject.present?
           subject.parents.map(&:to_project_row)
         end
+
+        desc 'Get specifical subject information'
+        params do
+          requires :label, type: String, desc: 'repo/community label (repo url)'
+          optional :level, type: String, desc: 'level (repo/community), default: repo'
+        end
+        get do
+          label = params[:label]
+          level = params[:level] || 'repo'
+          label = ShortenedLabel.normalize_label(label)
+          subject = ::Subject.find_by(label: label, level: level)
+          present subject
+        end
       end
     end
   end
