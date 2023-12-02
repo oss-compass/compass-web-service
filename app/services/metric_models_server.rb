@@ -31,7 +31,8 @@ class MetricModelsServer
         main_score: 0.0,
         transformed_score: 0.0,
         grimoire_creation_date: nil,
-        updated_at: nil
+        updated_at: nil,
+        short_code: ShortenedLabel.convert(@label, @level)
       }
     if hit.present?
       basic[:main_score] = hit[metric.main_score]

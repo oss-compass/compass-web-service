@@ -14,16 +14,27 @@ class ThirdPartyCallbackWorker
   def work(msg)
     message = JSON.parse(msg)
     Sneakers.logger.info "Receiving a deserialization message is: #{message} for callback"
-
     status = message['status']
     label = message['label']
     level = message['level']
     origin = message['origin']
     status_updated_at = message['status_updated_at']
     repo_type = level == 'community' ? 'software-artifact' : nil
-    if Enable && status == Subject::COMPLETE && LimitOrigins.include?(origin)
-      body = MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
-      Sneakers.logger.info "Sending a request payload is: #{body}"
+    if Enable && LimitOrigins.include?(origin)
+      body =
+        case status
+        when Subject::COMPLETE
+          {
+            action: :sync_metrics,
+            data: MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
+          }
+        else
+          {
+            action: :sync_subject,
+            data: Subject.find_by(label: label, level: level) || {}
+          }
+        end
+      Sneakers.logger.info "Sending a request payload is: #{body.to_json}"
       resp = Faraday.post(CallbackUrl, body.to_json, { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{Token}"})
       Sneakers.logger.info "Receiving a callback response is: #{resp.body}"
     end
