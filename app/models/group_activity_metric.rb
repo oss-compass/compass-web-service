@@ -59,7 +59,7 @@ class GroupActivityMetric < BaseMetric
           .must(match: { 'label.keyword': label })
           .where(level: level)
           .where(is_org: true)
-      base = base.where(type: type) if type
+      base = base.where('type.keyword': type) if type
       base
         .page(1)
         .per(1)

@@ -25,7 +25,7 @@ class BaseMetric < BaseIndex
         self
           .must(match: { 'label.keyword': label })
           .where(level: level)
-      base = base.where(type: type) if type
+      base = base.where('type.keyword': type) if type
       base
         .page(1)
         .per(1)
