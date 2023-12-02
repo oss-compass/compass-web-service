@@ -17,6 +17,7 @@ module Openapi
           level = params[:level] || 'repo'
           repo_type = params[:repo_type]
           label = ShortenedLabel.normalize_label(label)
+          level = label =~ URI::regexp ? 'repo' : 'community' if label
           MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
         end
       end
