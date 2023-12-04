@@ -13,6 +13,7 @@ class MetricModelsServer
     [ActivityMetric, CodequalityMetric, CommunityMetric, GroupActivityMetric].map do |metric|
       build_template(metric)
     end
+      .compact
   end
 
   private
@@ -41,7 +42,7 @@ class MetricModelsServer
         DateTime.parse(hit&.[]('grimoire_creation_date')).strftime rescue hit&.[]('grimoire_creation_date')
       basic[:updated_at] =
         DateTime.parse(hit&.[]('metadata__enriched_on')).strftime rescue hit&.[]('metadata__enriched_on')
+      basic
     end
-    basic
   end
 end
