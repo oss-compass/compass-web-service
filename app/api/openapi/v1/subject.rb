@@ -17,7 +17,10 @@ module Openapi
           label = ShortenedLabel.normalize_label(label)
           subject = ::Subject.find_by(label: label, level: level)
           return [] unless subject.present?
-          subject.parents.map(&:to_project_row)
+          subject
+            .parents
+            .select { |parent| MetricModelsServer.new(label: parent.label, level: parent.level).overview.present? }
+            .map(&:to_project_row)
         end
 
         desc 'Get specifical subject information'

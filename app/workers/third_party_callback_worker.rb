@@ -26,7 +26,7 @@ class ThirdPartyCallbackWorker
         when Subject::COMPLETE
           {
             action: :sync_metrics,
-            data: MetricModelsServer.new(label: label, level: level, repo_type: repo_type).overview
+            data: MetricModelsServer.new(label: label, level: level, repo_type: repo_type, opts: { force_refresh: true }).overview
           }
         else
           {

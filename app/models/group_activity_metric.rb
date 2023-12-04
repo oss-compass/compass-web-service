@@ -49,11 +49,9 @@ class GroupActivityMetric < BaseMetric
     'organizations_activity'
   end
 
-  def self.query_label_one(label, level, type: nil)
-    Rails.cache.fetch(
-      "#{self.name}:#{__method__}:#{level}:#{type}:#{label}",
-      expires_in: CacheTTL
-    ) do
+  def self.query_label_one(label, level, type: nil, force: false)
+    Rails.cache.delete("#{self.name}:#{__method__}:#{level}:#{type}:#{label}") if force
+    Rails.cache.fetch("#{self.name}:#{__method__}:#{level}:#{type}:#{label}", expires_in: CacheTTL) do
       base =
         self
           .must(match: { 'label.keyword': label })

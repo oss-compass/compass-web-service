@@ -18,7 +18,7 @@ class MetricModelsServer
 
   private
   def build_template(metric)
-    result = metric.query_label_one(@label, @level, type: @repo_type)
+    result = metric.query_label_one(@label, @level, type: @repo_type, force: @opts[:force_refresh])
     hits = result&.[]('hits')&.[]('hits')
     hit = hits.present? ? hits.first['_source'] : nil
     basic =
