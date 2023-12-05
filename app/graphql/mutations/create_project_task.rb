@@ -30,17 +30,7 @@ module Mutations
         end
       raw_yaml = YAML.dump(yaml_template)
 
-      analyze_group_server = AnalyzeGroupServer.new(
-        {
-          raw_yaml: raw_yaml,
-          raw: true,
-          enrich: true,
-          activity: true,
-          community: true,
-          codequality: true,
-          group_activity: true,
-        }
-      )
+      analyze_group_server = AnalyzeGroupServer.new({ raw_yaml: raw_yaml })
 
       subject = Subject.find_or_create_by(label: project_name) do |subject|
         subject.level = 'community'

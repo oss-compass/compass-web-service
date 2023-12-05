@@ -72,12 +72,6 @@ module Common
     only_validate = extra[:only_validate]
 
     base_config = {
-      raw: true,
-      enrich: true,
-      activity: true,
-      community: true,
-      codequality: true,
-      group_activity: true,
       callback: {
         hook_url: "#{HOST}/api/hook",
         params: { pr_number: pr_number }

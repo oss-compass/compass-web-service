@@ -21,6 +21,7 @@ module Openapi
         end
         post do
           json = JSON.parse(request.body.read)
+          Rails.logger.info("AnalysisTask recving payload is: #{json}")
           label = json['label']
           level = json['level'] || 'repo'
           label = ShortenedLabel.normalize_label(label)
@@ -29,9 +30,9 @@ module Openapi
             unless Common::SUPPORT_DOMAINS.include?(uri&.normalized_host)
               return error!(I18n.t('analysis.validation.not_support', source: label), 400)
             end
-            Subject.find_or_create_by(label: label, level: 'repo') do |subject|
+            ::Subject.find_or_create_by(label: label, level: 'repo') do |subject|
               subject.level = 'repo'
-              subject.status = Subject::PENDING
+              subject.status = ::Subject::PENDING
               subject.count = 1
               subject.status_updated_at = Time.current
             end

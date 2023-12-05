@@ -22,6 +22,9 @@ class AnalyzeServer
     @community = opts[:community] || true
     @codequality = opts[:codequality] || true
     @group_activity = opts[:group_activity] || true
+    @domain_persona = opts[:domain_persona] || true
+    @milestone_persona = opts[:milestone_persona] || true
+    @role_persona = opts[:role_persona] || true
     @callback = opts[:callback]
 
     if @repo_url.present?
@@ -111,6 +114,9 @@ class AnalyzeServer
         metrics_codequality: @codequality,
         metrics_community: @community,
         metrics_group_activity: @group_activity,
+        metrics_domain_persona: @domain_persona,
+        metrics_milestone_persona: @milestone_persona,
+        metrics_role_persona: @role_persona,
         panels: false,
         project_url: @repo_url,
         raw: @raw,
