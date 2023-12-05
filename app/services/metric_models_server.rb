@@ -10,7 +10,15 @@ class MetricModelsServer
   end
 
   def overview
-    [ActivityMetric, CodequalityMetric, CommunityMetric, GroupActivityMetric].map do |metric|
+    [
+      ActivityMetric,
+      CodequalityMetric,
+      CommunityMetric,
+      GroupActivityMetric,
+      DomainPersonaMetric,
+      RolePersonaMetric,
+      MilestonePersonaMetric
+    ].map do |metric|
       build_template(metric)
     end
       .compact

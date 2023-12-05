@@ -61,6 +61,7 @@ class YamlCheckWorker
       end
 
     if result.present? && result.is_a?(Hash)
+      Sneakers.logger.info "submit result: #{result.to_json}"
       rets = result[:result]
       if rets.present?
         system_notifies = rets.select { |ret| ret.is_a?(Hash) && ret[:status].nil? }
@@ -83,6 +84,6 @@ class YamlCheckWorker
     notify_method = gitee_agent?(agent) ? :gitee_notify_on_pr : :github_notify_on_pr
     self.send(notify_method, owner(agent), repo(agent), pr_number, message)
   rescue => ex
-    Rails.logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
+    Sneakers.logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
   end
 end

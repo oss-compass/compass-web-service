@@ -124,6 +124,10 @@ class BaseMetric < BaseIndex
     'score'
   end
 
+  def self.fields_aliases
+    {}
+  end
+
   def self.text_ident
     'text_ident'
   end
