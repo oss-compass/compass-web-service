@@ -20,4 +20,10 @@ class RolePersonaMetric < BaseMetric
   def self.text_ident
     'role_persona'
   end
+
+  def self.fields_aliases
+    {
+      'role_persona_score' => 'score'
+    }
+  end
 end

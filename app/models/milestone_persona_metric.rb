@@ -20,4 +20,10 @@ class MilestonePersonaMetric < BaseMetric
   def self.text_ident
     'milestone_persona'
   end
+
+  def self.fields_aliases
+    {
+      'milestone_persona_score' => 'score'
+    }
+  end
 end

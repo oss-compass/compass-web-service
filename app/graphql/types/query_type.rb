@@ -23,6 +23,10 @@ module Types
     field :metric_codequality, resolver: Queries::CodequalityMetricQuery
     field :metric_group_activity, resolver: Queries::GroupActivityMetricQuery
 
+    field :metric_milestone_persona, resolver: Queries::MilestonePersonaMetricQuery
+    field :metric_domain_persona, resolver: Queries::DomainPersonaMetricQuery
+    field :metric_role_persona, resolver: Queries::RolePersonaMetricQuery
+
     ## Compass Lab Model Management
     field :custom_analysis_status, resolver: Queries::Lab::CustomAnalysisStatusQuery
     field :metric_set_overview, resolver: Queries::Lab::MetricSetOverviewQuery

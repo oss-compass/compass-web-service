@@ -20,4 +20,10 @@ class DomainPersonaMetric < BaseMetric
   def self.text_ident
     'domain_persona'
   end
+
+  def self.fields_aliases
+    {
+      'domain_persona_score' => 'score'
+    }
+  end
 end
