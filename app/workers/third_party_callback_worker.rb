@@ -35,10 +35,10 @@ class ThirdPartyCallbackWorker
               data: Subject.find_by(label: label, level: level) || {}
             }
           end
+        Sneakers.logger.info "Sending a request payload is: #{body.to_json}"
+        resp = Faraday.post(CallbackUrl, body.to_json, { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{Token}"})
+        Sneakers.logger.info "Receiving a callback response is: #{resp.body}"
       end
-      Sneakers.logger.info "Sending a request payload is: #{body.to_json}"
-      resp = Faraday.post(CallbackUrl, body.to_json, { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{Token}"})
-      Sneakers.logger.info "Receiving a callback response is: #{resp.body}"
     end
     ack!
   end
