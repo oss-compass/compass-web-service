@@ -21,19 +21,21 @@ class ThirdPartyCallbackWorker
     status_updated_at = message['status_updated_at']
     repo_type = level == 'community' ? 'software-artifact' : nil
     if Enable && LimitOrigins.include?(origin)
-      body =
-        case status
-        when Subject::COMPLETE
-          {
-            action: :sync_metrics,
-            data: MetricModelsServer.new(label: label, level: level, repo_type: repo_type, opts: { force_refresh: true }).overview
-          }
-        else
-          {
-            action: :sync_subject,
-            data: Subject.find_by(label: label, level: level) || {}
-          }
-        end
+      ActiveRecord::Base.connection_pool.with_connection do
+        body =
+          case status
+          when Subject::COMPLETE
+            {
+              action: :sync_metrics,
+              data: MetricModelsServer.new(label: label, level: level, repo_type: repo_type, opts: { force_refresh: true }).overview
+            }
+          else
+            {
+              action: :sync_subject,
+              data: Subject.find_by(label: label, level: level) || {}
+            }
+          end
+      end
       Sneakers.logger.info "Sending a request payload is: #{body.to_json}"
       resp = Faraday.post(CallbackUrl, body.to_json, { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{Token}"})
       Sneakers.logger.info "Receiving a callback response is: #{resp.body}"

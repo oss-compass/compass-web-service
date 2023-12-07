@@ -86,7 +86,9 @@ module Common
         yaml = YAML.load(RestClient::Request.new(req).execute.body)
         base_config.merge(repo_url: yaml['resource_types']['repo_urls'])
       end
-    analyzer.new(params).execute(only_validate: only_validate).merge(path: path)
+    ActiveRecord::Base.connection_pool.with_connection do
+      analyzer.new(params).execute(only_validate: only_validate).merge(path: path)
+    end
   rescue => ex
     { status: nil, message: ex.message, url: yaml_url }
   end
