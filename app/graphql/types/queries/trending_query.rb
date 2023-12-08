@@ -28,7 +28,7 @@ module Types
           trendings = []
           candidate_set.each do |set|
             if after_filter_labels.include?(set[:label])
-              repos_count = extract_repos_count(set[:label], set[:level])
+              repos_count = Subject.extract_repos_count(set[:label], set[:level])
               origin = extract_repos_source(set[:label], set[:level])
               name, full_path = extract_name_and_full_path(set[:label])
               logo_url = extract_logo_url(set[:label])

@@ -33,6 +33,9 @@ class SubscriptionsUpdateWorker
         elsif status == Subject::COMPLETE
           update_attributes.merge!({ complete_at: status_updated_at })
         end
+        if count && subject.count != count && count > 0
+          update_attributes.merge!({ count: count })
+        end
         subject.update!(update_attributes)
       end
 

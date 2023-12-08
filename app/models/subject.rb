@@ -39,6 +39,15 @@ class Subject < ApplicationRecord
   validates :status, presence: true, length: { maximum: 255 }
   validates :count, presence: true
 
+  def self.extract_repos_count(label, level)
+    if level == 'community'
+      subject = self.find_by(label: label, level: level)
+      subject ? subject.count : 1
+    else
+      1
+    end
+  end
+
   def self.task_status_converter(task_status)
     case task_status.to_s
     when ProjectTask::Success, ProjectTask::Error, ProjectTask::Canceled

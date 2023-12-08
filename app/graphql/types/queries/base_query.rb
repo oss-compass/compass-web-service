@@ -165,15 +165,6 @@ module Types
               )
       end
 
-      def extract_repos_count(label, level)
-        if level == 'community'
-          project = ProjectTask.find_by(project_name: label)
-          project ? director_repo_list(project&.remote_url).length : 1
-        else
-          1
-        end
-      end
-
       def extract_label_reference(label, level)
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)

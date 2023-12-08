@@ -14,7 +14,7 @@ module Types
         validate_by_label!(context[:current_user], label)
 
         origin = extract_repos_source(label, level)
-        repos_count = extract_repos_count(label, level)
+        repos_count = Subject.extract_repos_count(label, level)
         reference_url = extract_label_reference(label, level)
 
         result = {}

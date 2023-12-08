@@ -10,6 +10,8 @@ module Types
       field :level, String, description: 'metric model object level'
       field :main_score, Float, description: 'metric model main score'
       field :transformed_score, Float, description: 'metric model transformed score'
+      field :short_code, String, description: 'metric model object short code'
+      field :repos_count, Float, description: 'repositories count'
       field :grimoire_creation_date, GraphQL::Types::ISO8601DateTime, description: 'metric model create or update time'
       field :updated_at, GraphQL::Types::ISO8601DateTime, description: 'metric model update time'
     end

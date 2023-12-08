@@ -10,6 +10,7 @@ class MetricModelsServer
   end
 
   def overview
+    repos_count = Subject.extract_repos_count(@label, @level)
     [
       ActivityMetric,
       CodequalityMetric,
@@ -19,13 +20,13 @@ class MetricModelsServer
       RolePersonaMetric,
       MilestonePersonaMetric
     ].map do |metric|
-      build_template(metric)
+      build_template(metric, repos_count)
     end
       .compact
   end
 
   private
-  def build_template(metric)
+  def build_template(metric, repos_count)
     result = metric.query_label_one(@label, @level, type: @repo_type, force: @opts[:force_refresh])
     hits = result&.[]('hits')&.[]('hits')
     hit = hits.present? ? hits.first['_source'] : nil
@@ -41,6 +42,7 @@ class MetricModelsServer
         transformed_score: 0.0,
         grimoire_creation_date: nil,
         updated_at: nil,
+        repos_count: repos_count,
         short_code: ShortenedLabel.convert(@label, @level)
       }
     if hit.present?
