@@ -46,6 +46,7 @@ module Types
                  .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
                  .must(match_phrase: {ecological_type: contributor_type})
                  .where(is_bot: false)
+                 .must_not(terms: { 'contributor.keyword' => ['openharmony_ci'] })
                  .must(terms: { 'repo_name.keyword': repo_urls })
                  .aggregate(
                    {

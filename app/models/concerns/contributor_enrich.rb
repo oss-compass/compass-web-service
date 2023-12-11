@@ -26,8 +26,10 @@ module ContributorEnrich
           .map { |hit| hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore)) }
           .reduce({}) do |map, row|
           key = row['contributor']
-          map[key] = map[key] ? merge_contributor(map[key], row) : row
-          contribution_count += row['contribution'].to_i
+          if !['openharmony_ci'].include?(key)
+            map[key] = map[key] ? merge_contributor(map[key], row) : row
+            contribution_count += row['contribution'].to_i
+          end
           map
         end
           .sort_by { |_, row| -row['contribution'].to_i }
