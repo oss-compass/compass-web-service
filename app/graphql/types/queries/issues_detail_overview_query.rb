@@ -2,7 +2,7 @@
 
 module Types
   module Queries
-    class IssuesDetailOverviewQuery < BaseQuery
+    class IssuesDetailOverviewQuery < BaseOverviewQuery
 
       attr_accessor :indexer, :repo_urls, :begin_date, :end_date
 
@@ -34,18 +34,20 @@ module Types
             .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
             .must(terms: { tag: repo_urls })
 
-        count = issue_base.total_entries
+        count = count_of(issue_base, 'uuid')
 
-        closed_issue_count =
+        closed_issue_count = count_of(
           issue_base
-            .range(:closed_at, gte: begin_date, lte: end_date)
-            .total_entries
+            .range(:closed_at, gte: begin_date, lte: end_date),
+          'uuid'
+        )
 
-        issue_unresponsive_count =
+        issue_unresponsive_count = count_of(
           issue_base
             .where(num_of_comments_without_bot: 0)
-            .must(terms: { state: ['open', 'progressing'] })
-            .total_entries
+            .must(terms: { state: ['open', 'progressing'] }),
+          'uuid'
+        )
 
         issue_comments_count =
           issue_base

@@ -95,6 +95,15 @@ module Types
         }
       end
 
+      def count_of(base_indexer, cardinality_field)
+        base_indexer
+          .aggregate({ count: { cardinality: { field: cardinality_field } } })
+          .per(0)
+          .execute
+          .aggregations
+          .dig('count', 'value')
+      end
+
       private
 
       def get_sub_count_by_scope(contributors, scope)

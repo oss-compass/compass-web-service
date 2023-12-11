@@ -2,7 +2,7 @@
 
 module Types
   module Queries
-    class PullsDetailOverviewQuery < BaseQuery
+    class PullsDetailOverviewQuery < BaseOverviewQuery
 
       attr_accessor :pull_indexer, :git_indexer, :repo_urls, :begin_date, :end_date
 
@@ -43,19 +43,21 @@ module Types
             .must(range: { utc_commit: { gte: begin_date, lte: end_date } } )
             .must(terms: { tag: repo_urls.map { |url| "#{url}.git" } })
 
-        count = pull_base.total_entries
-        commit_count = git_base.total_entries
+        count = count_of(pull_base, 'uuid')
+        commit_count = count_of(git_base, 'uuid')
 
-        closed_pull_count =
+        closed_pull_count = count_of(
           pull_base
-            .range(:closed_at, gte: begin_date, lte: end_date)
-            .total_entries
+            .range(:closed_at, gte: begin_date, lte: end_date),
+          'uuid'
+        )
 
-        pull_unresponsive_count =
+        pull_unresponsive_count = count_of(
           pull_base
             .where(num_review_comments_without_bot: 0)
-            .must(terms: { state: ['open'] })
-            .total_entries
+            .must(terms: { state: ['open'] }),
+          'uuid'
+        )
 
         pull_state_distribution = distribute_by_field(pull_base, 'state', count)
         pull_comment_distribution = distribute_by_field(pull_base, 'num_review_comments_without_bot', count)
