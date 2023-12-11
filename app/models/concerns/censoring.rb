@@ -28,7 +28,7 @@ module Censoring
   end
 
   def censoring_result(field)
-    Rails.cache.redis.get(censoring_key(field)) rescue nil
+    Wechat.redis.get(censoring_key(field)) rescue nil
   end
 
   def processing_censoring(field, type: 'text', is_attr: true)

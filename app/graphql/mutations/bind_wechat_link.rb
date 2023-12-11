@@ -16,7 +16,7 @@ module Mutations
       qr_code_response = $wechat_client.create_qr_scene(current_user.id)
       ticket = qr_code_response.result['ticket']
       expire_seconds = qr_code_response.result['expire_seconds']
-      Rails.cache.redis.set("wechat_bind:#{ticket}", current_user.id, ex: expire_seconds.seconds)
+      Wechat.redis.set("wechat_bind:#{ticket}", current_user.id, ex: expire_seconds.seconds)
       {
         ticket: ticket,
         expire_seconds: expire_seconds,
