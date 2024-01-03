@@ -113,6 +113,15 @@ module ContributorEnrich
       base['contribution'] = source['contribution'].to_i + target['contribution'].to_i
       base['contribution_without_observe'] =
         source['contribution_without_observe'].to_i + target['contribution_without_observe'].to_i
+      ecological_type_sorted = [
+        'organization manager',
+        'organization participant',
+        'individual manager',
+        'individual participant'
+      ]
+      base['ecological_type'] = [source['ecological_type'], target['ecological_type']]
+                                  .compact.sort_by { |value| ecological_type_sorted.index(value) }.first
+      base['organization'] = target['organization'] ? target['organization'] : source['organization']
       total_contribution_type_list = source['contribution_type_list'] + target['contribution_type_list']
       base['contribution_type_list'] =
         total_contribution_type_list
