@@ -2,6 +2,7 @@
 module ContributorEnrich
   extend ActiveSupport::Concern
 
+  MAX_DEPTH = 10
   MAX_PER_PAGE = 2000
 
   class_methods do
@@ -11,19 +12,33 @@ module ContributorEnrich
         acc_contribution_count = 0
         mileage_step = 0
         mileage_types = ['core', 'regular', 'guest']
+        depth = 0
+        contributors_list = []
 
-        self
-          .must(terms: { 'repo_name.keyword' => repo_urls })
-          .page(1)
-          .per(MAX_PER_PAGE)
-          .where(is_bot: false)
-          .range(:contribution_without_observe, gte: 1)
-          .range(:grimoire_creation_date, gte: begin_date, lte: end_date )
-          .sort(grimoire_creation_date: :asc)
-          .execute
-          .raw_response
-          .dig('hits', 'hits')
-          .map { |hit| hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore)) }
+        query =
+          self
+            .must(terms: { 'repo_name.keyword' => repo_urls })
+            .where(is_bot: false)
+            .per(MAX_PER_PAGE)
+            .range(:contribution_without_observe, gte: 1)
+            .range(:grimoire_creation_date, gte: begin_date, lte: end_date )
+            .sort(grimoire_creation_date: :asc)
+            .scroll(timeout: '1m')
+
+        loop do
+          query
+            .execute
+            .raw_response
+            .dig('hits', 'hits')
+            .map do |hit|
+            contributors_list << hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore))
+          end
+          query = query.scroll(id: query.scroll_id, timeout: '1m')
+          depth += 1
+          break query.last_page? || depth > MAX_DEPTH
+        end
+
+        contributors_list
           .reduce({}) do |map, row|
           key = row['contributor']
           if !['openharmony_ci'].include?(key)
