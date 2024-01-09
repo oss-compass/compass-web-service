@@ -1,4 +1,5 @@
 module CompassUtils
+  include Director
 
   SEVEN_DAYS = 7 * 24 * 60 * 60
   HALF_YEAR = 180 * 24 * 60 * 60
@@ -53,6 +54,69 @@ module CompassUtils
       interval = '1M'
     end
     [begin_date, end_date, interval]
+  end
+
+  def extract_repos_source(label, level)
+    repo_list = [label]
+    if level == 'community'
+      project = ProjectTask.find_by(project_name: label)
+      repo_list = director_repo_list(project&.remote_url)
+    end
+    github_count, gitee_count = 0,0
+    repo_list.each do |url|
+      gitee_count += 1 if url =~ /gitee\.com/
+      github_count += 1 if url =~ /github\.com/
+    end
+    if github_count > 0 && gitee_count == 0
+      'github'
+    elsif gitee_count > 0 && github_count == 0
+      'gitee'
+    else
+      'combine'
+    end
+  end
+
+  def select_idx_repos_by_lablel_and_level(label, level, gitee_idx, github_idx)
+    if level == 'repo' && label =~ /gitee\.com/
+      [gitee_idx, [label], 'gitee']
+    elsif level == 'repo'&& label =~ /github\.com/
+      [github_idx, [label], 'github']
+    else
+      project = ProjectTask.find_by(project_name: label)
+      repo_list = director_repo_list(project&.remote_url)
+      origin = extract_repos_source(label, level)
+      [origin == 'gitee' ? gitee_idx : github_idx, repo_list, origin]
+    end
+  end
+
+  def validate_date(current_user, label, level, begin_date, end_date)
+    valid_range = [begin_date, end_date]
+    default_min = Date.today - 1.month
+    default_max = Date.today
+
+    return [true, valid_range] if current_user&.is_admin?
+    return [true, valid_range] if current_user&.has_privilege_to?(label, level)
+
+    diff_seconds = end_date.to_i - begin_date.to_i
+    return [true, valid_range] if diff_seconds < 2.months
+
+    is_repo_admin =
+      Rails.cache.fetch("is_repo_admin:user-#{current_user.id}:#{level}:#{label}", expires_in: 15.minutes) do
+      indexer, repo_urls =
+               select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+      origin = extract_repos_source(label, level)
+      username = LoginBind.current_host_nickname(current_user, origin)
+      indexer.repo_admin?(username, repo_urls)
+    end
+
+    if is_repo_admin
+      default_min = Date.today - 1.year
+      default_max = Date.today
+    end
+
+    return [true, valid_range] if diff_seconds < 2.years && is_repo_admin
+
+    [false, [default_min, default_max]]
   end
 
   def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={}, suffixs=[])

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Openapi
   module V1
     class Subject < Grape::API
