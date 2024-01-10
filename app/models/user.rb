@@ -112,6 +112,19 @@ class User < ApplicationRecord
     }
   end
 
+  def contributing_orgs
+    ContributorOrg
+      .where(modify_by: self.id)
+      .must(match_phrase: { modify_type: ContributorOrg::UserIndividual })
+      .execute
+      .raw_response
+      .dig('hits', 'hits')
+      &.flat_map do |hit|
+      hit['_source']['org_change_date_list']
+        .map { |org| org.merge('platform_type' => hit['_source']['platform_type'] )}
+    end || []
+  end
+
   def generate_email_verification_token
     self.email_verification_token = loop do
       random_token = SecureRandom.urlsafe_base64(nil, false)

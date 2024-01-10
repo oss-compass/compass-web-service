@@ -5,6 +5,7 @@ module Types
     field :sign_out, Boolean, description: 'Sign out'
     field :destroy_user, Boolean, description: 'Destroy user'
     field :modify_user, mutation: Mutations::ModifyUser, description: 'Modify user'
+    field :modify_user_orgs, mutation: Mutations::ModifyUserOrgs, description: 'Modify user organizations'
     field :user_unbind, mutation: Mutations::UserUnbind, description: 'User unbind'
     field :send_email_verify, mutation: Mutations::SendEmailVerify, description: 'Send email verify'
     field :bind_wechat_link, mutation: Mutations::BindWechatLink, description: 'Bind wechat link'

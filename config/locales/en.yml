@@ -34,6 +34,194 @@ en:
     saas_working_group: SaaS Working Group
     organization_member: Organization Member
     individual_members: Individual Members
+  academe:
+    academic_research_cooperation: Compass Collaboration
+    academic_research_desc: Through Compass collaboration, we establish a bridge between
+      academia, industry, and research, promote academic achievements and best practices
+      in open source, and enhance collaboration efficiency.
+    submit_your_application_now: Contact Us
+    cooperation_case: Cooperation Case
+    cooperation_process: Cooperation Process
+    submit_application: Submit Application
+    affirm: OSS Compass Confirm
+    conduct_joint_research: Conduct Joint Research
+    experiment_verify: Experiment Verification
+    release_results: Release Results
+    submit_application_desc1: If your research institution or community is interested
+      in academic research or program promotion with OSS Compass, please submit your
+      cooperation intention through the website.
+    submit_application_desc2: 'The areas of cooperation include but are not limited
+      to:'
+    submit_application_desc3: Open source community and software evaluation programs
+    submit_application_desc4: Open source community governance and operation programs
+    submit_application_desc7: To submit your cooperation intention, please provide
+      information about yourself and your team, a brief description of existing research
+      or achievements, and the areas in which you intend to conduct research collaboration
+      with us.
+    affirm_desc: Our team will evaluate and confirm the received cooperation applications.
+      Once the application is accepted, we will communicate and discuss further details
+      with the collaborating organization through email or other suitable communication
+      methods.
+    conduct_joint_research_desc: After determining the cooperation details and objectives,
+      both parties will officially conduct joint research. OSS Compass will provide
+      you with foundational datasets in the relevant research field, jointly develop
+      research plans, and engage in a series of academic seminars and collaborative
+      research.
+    verify_desc: When the joint research between both parties has made progress, we
+      will work together to transform the research progress into data metrics, measurement
+      tools, or analysis models for the open source community. Through the OSS Compass
+      community and platform, we will provide experiential services to validate research
+      results, ensuring the reliability and feasibility of the research, and further
+      promote the development of open source software metrics and ecosystem evaluation.
+    release_desc1: 'Once the joint research is completed and achieves the expected
+      goals, OSS Compass will collaborate with you to organize, summarize, and present
+      the research findings for wider sharing and dissemination. The release can take
+      various forms, including but not limited to:'
+    release_desc2: Providing measurement tools or analysis models through OSS Compass
+    release_desc3: Jointly publishing research reports, papers, technical guides,
+      etc.
+    discuss_the_evolution: OSS Compass community collaborates with academia and industry
+      to discuss and advance open source collaboration.
+    author: 'Author:'
+    nju_title: Predicting Open Source Project Activity Based on OSS Compass Metrics
+    nju_author: 'Authors: Zheng Liu, Xiaolan Zu, Xingyu Luo, Zihan Wang ,Nanjing University
+      undergraduate;Jierui Zhang, PhD candidate at Nanjing University. Department
+      of Computer Science and Technology, Nanjing University - National Key Laboratory
+      of Software New Technology, OSS Compass Community'
+    nju_author2: 'Advisor: Liang Wang, Xianping Tao, Yehui Wang'
+    nju_desc: 'Introduction: Research on the Prediction of Open Source Software Project
+      Health Based on Metrics in the Innovation Training Program for College Students
+      at Nanjing University in 2024. Reference article:'
+    nju_desc2: This method predicts the future activity status of open source projects
+      based on OSS Compass metrics. The method uses a feature-based time series classification
+      prediction method by extracting statistical features from the OSS Compass metric
+      sequence. It trains and applies machine learning intelligent classification
+      models to predict the future active/inactive status of projects and provides
+      approximate probability estimates. Cross-validation results on nearly 600 project
+      datasets show an accuracy rate close to 90% for this method. In terms of generalization
+      ability, this method can still achieve an accuracy rate of 80% on a dataset
+      of over ten thousand repositories, demonstrating its preliminary practicality.
+      The analysis results can partially reflect the future health status of open
+      source projects and demonstrate the effectiveness of the OSS Compass metric
+      system in measuring the health of open source software. This method is expected
+      to provide valuable reference information for users, developers, investors,
+      and managers of open source software.
+    nju2_title: An Information Entropy-Based Approach to Quantify Community Evolution
+      in Open Source Developer Social Networks
+    nju2_author: 'Authors: Jierui Zhang,Ying Li. Department of Computer Science and
+      Technology, Nanjing University - National Key Laboratory of Software New Technology,
+      OSS Compass Community'
+    nju2_author2: 'Advisor: Liang Wang, Xianping Tao'
+    nju2_desc: 'Introduction: In this study, we study the community evolution behavior
+      in developer social networks around open source software projects, in response
+      to the limitation of traditional community evolution analysis techniques being
+      biased towards qualitative rather than quantitative analysis. We propose a set
+      of community split, shrink, merge, and expand indices based on information entropy
+      to measure the evolutionary behavior of open source developer social networks.
+      Empirical studies demonstrate that these indices effectively characterize the
+      evolution of open source communities, by achieving a 94.1% accuracy in drawing
+      conclusions consistent with existing qualitative work through simple rules.
+      Furthermore, additional research indicates a significant correlation between
+      the proposed community evolution indices and the productivity of open source
+      projects, represented by the number of commits. The information entropy-based
+      measurement indices presented in this study provide quantitative support for
+      understanding and analyzing the evolutionary behavior of open source communities.
+      Reference article:'
+    nju3_title: Method for Fork Diversity in Open Source Software
+    nju3_author: 'Authors: Zhiwen Zheng, Xiangchen Wu, Baihui Sang, Jierui Zhang.
+      Department of Computer Science and Technology, Nanjing University - National
+      Key Laboratory of Software New Technology, OSS Compass Community'
+    nju3_author2: 'Advisor: Liang Wang, Xianping Tao'
+    nju3_desc: 'Introduction: This research focuses on project forks on open-source
+      software (OSS) platforms, revolving around measuring and understanding the diversity
+      of forks in open-source software projects. The paper accomplishes this by constructing
+      a novel fork entropy based on Rao''s second entropy and assessing this diversity
+      based on modifications to project files. Empirical studies indicate a significant
+      correlation between fork entropy in open-source projects and various key outcomes,
+      including external productivity of the project (measured by the number of contributions
+      from external contributors), acceptance rate of external contributors'' pull
+      requests, and the reported number of bugs. Additionally, we observe significant
+      interactions between fork entropy and other factors, such as the quantity of
+      forks. These findings suggest that fork entropy, as an effective metric, not
+      only enhances the current available measurements of forks in open-source software
+      projects but also deepens our understanding of the development process based
+      on forked repositories. It holds the potential to support further research and
+      applications. Reference article:'
+    pku1_title: 'Intelligent Recommendation for Beginner Tasks: GFI-Bot'
+    pku1_author: 'Author: Wenxin Xiao, Ph.D. candidate at Peking University'
+    pku1_author2: 'Advisor: Professor Minghui Zhou'
+    pku1_desc1: 'Introduction: On the GitHub platform, many projects use the ''good
+      first issue'' (GFI) labeling mechanism to mark problems suitable for beginners,
+      guiding them to make their first contributions to the project by addressing
+      these introductory tasks. Tan et al.''s research found that the popularity of
+      this mechanism is gradually increasing. However, in most projects, the proportion
+      of issues marked as GFI is relatively low. What is even more concerning is that
+      the resolution rate of GFI issues is not optimistic. Among all GFI issues, only
+      about 60% are successfully solved by beginners, and a large number of GFI issues
+      remain unresolved. On platforms like GitHub, each issue contains not only a
+      title and description but also diverse features such as labels and comments.
+      Therefore, Xiao et al. proposed an automatic labeling method for beginner tasks
+      based on multiple task features. Using an XGBoost classifier, they classify
+      issues solved by beginners from other issues at two time points: when the issue
+      is opened and when it is resolved.'
+    pku1_desc2: 'Project URL:'
+    pku2_title: 'Intelligent Recommendation for Library Migration: MigrationAdvisor'
+    pku2_author: 'Authors: Haiqiao Gu, Hao He and Yiliang Zhao, PhD candidates at
+      Peking University'
+    pku2_author2: 'Advisor: Professor Minghui Zhou, Academician Huaimin Wang'
+    pku2_desc1: 'Introduction: With the rise of open source software (OSS) and the
+      development of software package hosting platform, more and more developers choose
+      to reuse existing third-party libraries for project development, so as to reduce
+      development costs and improve development efficiency. However, in the process
+      of reusing third-party libraries, when developers cannot solve the problems
+      existing in the library through promotion and degradation, such as security
+      vulnerabilities, compatibility, etc., they need to replace it with another third-party
+      library with the same or similar functions, this operation is called library
+      migration. However, due to the limited information available, developers often
+      choose alternative libraries based on subjective opinions. By analyzing the
+      historical development activities and ranking the library migration using multiple
+      indicators, we can recommend the most suitable library migration scheme. Firstly,
+      the migration history is mined from a large number of software warehouses, and
+      the migration knowledge base is constructed. Given a library that needs to be
+      migrated, select the candidate target libraries and then rank them by combining
+      relevant metrics that capture evidence from different dimensions of development
+      history: rule support, cause support, distance support, and API support; Through
+      intelligent analysis of a large number of GitHub repositories, it is possible
+      to recommend the target of outbound migration.'
+    pku2_desc2: 'Project URL:'
+    pku3_title: 'LicenseRec: An Open Source Software License Recommendation Tool'
+    pku3_author: 'Author: Weiwei Xu, Ph.D. candidate at Peking University'
+    pku3_author2: 'Advisor: Professor Minghui Zhou'
+    pku3_desc1: 'Introduction: When developers face a large number of similar licenses
+      and complex legal terms, the problem of how to choose the right open source
+      license for their projects arises. Xu et al. proposed LicenseRec, an open source
+      software license recommendation tool, aiming to help users select licenses that
+      meet their preferences based on compliance with third-party component licenses,
+      open source style, business requirements, and community development. To achieve
+      this goal, a knowledge base was built, which includes common license terms,
+      compatibility information, and license selection guidelines. The workflow involves
+      scanning the licenses of third-party components, checking license compatibility,
+      and characterizing user preferences through user interaction. Then, based on
+      this information, the tool recommends the most suitable license. This tool can
+      scan and check the licenses of third-party components for compatibility and
+      also characterize user preferences to recommend licenses that best meet their
+      needs.'
+    pku3_desc2: 'Tool link:'
+    pku3_desc3: 'Project URL:'
+    openeuler_title: openEuler Document Simulated Reading Companion
+    openeuler_author: 'Author: openEuler Community'
+    openeuler_desc1: 'Introduction: The document simulated reading companion solution
+      is designed and promoted by the openEuler community. It helps the community
+      continuously improve and enhance the quality and user experience of the documentation
+      without interrupting the reading experience of users.'
+    openeuler_desc2: 'Project URL:'
+    experience_immediately: Experience Immediately
+    experience: Experience
+    calculate: Calculate
+    type_address_of: Please enter the repository URL
+    please_enter_a_valid: Please enter a valid URL
+    failed_to_fetch_data: Failed to fetch data!
+    result: 'Calculation Result:'
   analysis:
     task:
       submitted: task already sumbitted.
@@ -59,6 +247,25 @@ en:
       productivity: Productivity
       robustness: Robustness
       niche_creation: Niche Creation
+    all_model:
+      collaboration_development_index: Collaboration Development Index
+      community_service_and_support: Community Service and Support
+      community_activity: Community Activity
+      organization_activity: Organization Activity
+      contributors_domain_persona: Contributors Domain Persona
+      contributors_role_persona: Contributors Role Persona
+      contributors_milestone_persona: Contributors Milestone Persona
+      contributor_route: Contributor Route
+      contributor_reputation: Contributor Reputation
+      user_reputation: User Reputation
+      software_quality: Software Quality
+      software_usage_quality: Software Usage Quality
+      document_quality: Document Quality
+      northbound_adoption: Northbound Adoption
+      south_fit: South Fit
+      security: Security
+      compliance: Compliance
+    distribution_map: Distribution Map
     confirm: OK
     custom: Custom
     display: Charts Display
@@ -131,6 +338,156 @@ en:
       text: Badge
       title: Compass Badge
     function_menu: Function
+    collaboration: Collab
+    contributor: Contributor
+    software: Soft
+    coming_soon: Coming soon
+    metric_detail:
+      details: See Insight Details
+      contributors_persona: Contributors Persona
+      org_count: Org Count
+      top_contributing_org: Top Contributing Org
+      contributor_count: Contributor Count
+      top_contributor: Top Contributor
+      issues: Issue
+      newly_created_issues: Newly Created Issues
+      issue_completion_rate: Issue Resolution Rate
+      unanswered_issue_count: Unanswered Issue Count
+      average_comments_count: Average Comments Count
+      pull_requests: Pull Request
+      newly_created_pr_count: PR Count
+      pr_completion_rate: PR Resolution Rate
+      unanswered_pr_count: Unanswered PR Count
+      commit_count: Commit Count
+      project_deep_dive_insight: Project Deep Dive Insight
+      milestone_persona_filter: Milestone Persona
+      core: Core
+      regular: Regular
+      guest: Guest
+      core_desc: Contributors who contribute 50% (excluding observation contributions
+        like star, fork, watch) of all domain-specific contributions in the current
+        time period, achieved by at least one group of people.
+      regular_desc: After excluding the contributions of core contributors, the next
+        30% (excluding observation contributions) of contributions made by at least
+        one group of people.
+      guest_desc: Individuals who contribute to the remaining contributions in the
+        community after excluding core and regular contributions (including observation
+        contributions).
+      persona_detail: Persona Detail
+      contribution: Contribution Count
+      contribution_distribution: Contribution Count Distribution
+      global_contribution_distribution: Global Contribution Count Distribution
+      organization_contribution_distribution: Organization Contribution Count Distribution
+      organization: Organization
+      milestone_persona: Milestone Persona
+      role_persona: Role Persona
+      domain_persona: Domain Persona
+      contributor: Contributor
+      contributor_distribution: Contributor Distribution
+      organization_participant: Organization Participant
+      organization_manager: Organization Admin
+      individual_manager: Individual Admin
+      individual_participant: Individual Participant
+      individual: Individual
+      participant: Participant
+      manager: Manager
+      contributor_unit: People
+      contribution_unit: Time
+      observe:
+        fork: fork
+        star: star
+      issue:
+        issue_creation: issue creation
+        issue_comments: issue comments
+      issue_admin:
+        issue_labeled: issue labeled
+        issue_unlabeled: issue unlabeled
+        issue_closed: issue closed
+        issue_reopened: issue reopened
+        issue_assigned: issue assigned
+        issue_unassigned: issue unassigned
+        issue_milestoned: issue milestoned
+        issue_demilestoned: issue demilestoned
+        issue_marked_as_duplicate: issue marked as duplicate
+        issue_transferred: issue transferred
+        issue_renamed_title: issue renamed title
+        issue_change_description: issue change description
+        issue_setting_priority: issue setting priority
+        issue_change_priority: issue change priority
+        issue_link_pull_request: issue link pull request
+        issue_unlink_pull_request: issue unlink pull request
+        issue_assign_collaborator: issue assign collaborator
+        issue_unassign_collaborator: issue unassign collaborator
+        issue_change_issue_state: issue change issue state
+        issue_change_issue_type: issue change issue type
+        issue_setting_branch: issue setting branch
+        issue_change_branch: issue change branch
+      code:
+        pr_creation: PR creation
+        pr_comments: PR comments
+        code_commit: code commit
+      code_admin:
+        pr_labeled: PR labeled
+        pr_unlabeled: PR unlabeled
+        pr_closed: PR closed
+        pr_assigned: PR assigned
+        pr_unassigned: PR unassigned
+        pr_reopened: PR reopened
+        pr_milestoned: PR milestoned
+        pr_demilestoned: PR demilestoned
+        pr_marked_as_duplicate: PR marked as duplicate
+        pr_transferred: PR transferred
+        pr_renamed_title: PR renamed title
+        pr_change_description: PR change description
+        pr_setting_priority: PR setting priority
+        pr_change_priority: PR change priority
+        pr_merged: PR merged
+        pr_review: PR review
+        pr_set_tester: PR set tester
+        pr_unset_tester: PR unset tester
+        pr_check_pass: PR check pass
+        pr_test_pass: PR test pass
+        pr_reset_assign_result: PR reset assign result
+        pr_reset_test_result: PR reset test result
+        pr_link_issue: PR link issue
+        pr_unlink_issue: PR unlink issue
+        code_direct_commit: code direct commit
+      issue_detail: Issue Detail
+      pr_detail: PR Detail
+      issue_completion: Issue Resolution
+      issues_comments: Issue Comments
+      pr_completion: PR Resolution
+      pr_comments: PR Comments
+      issue_title: Issue Title
+      state: State
+      created_time: Created Time
+      close_time: Close Time
+      processing_time: Processing Time(days)
+      first_response_time: First Response Time(days)
+      comments_count: Comments Count
+      tags: Lables
+      creator: Creator
+      assignee: Assignee
+      pr_title: PR title
+      reviewer: Reviewer
+      merge_author: Merge Author
+      closed: closed
+      open: open
+      progressing: progressing
+      rejected: rejected
+      merged: merged
+      comments: comments
+      show_organization: Show Organization
+      only_manager_participant: Only Manager and Articipant
+      only_individual_organization: Only Organization and Individual
+    only_the_latest_month: Users who do not have an Admin account for the project
+      in the last year (lssue assignment, PR merge, etc.) can only view the data for
+      the last month
+    for_more_time_frames: 'For more time frames, please '
+    statistics: In statistics
+    total_people: Total {{total}} People
+    total_issues: Total {{total}} Issues
+    total_prs: Total {{total}} PR
   auth:
     email_verification_successful: Email verification successful
     email_verification_expired: Email verification has expired
@@ -161,14 +518,18 @@ en:
     header:
       home: Home
       explore: Explore
+      projects: Projects
+      docs: Docs
       metrics_models: Metrics Models
       community: Community
       blog: Blog
       news: News
       lab: Lab
+      academe: Collaboration
       about: About
       submit_your_project: Submit your project
     range:
+      1M: Last 1 months
       3M: Last 3 months
       6M: Last 6 months
       1Y: Last year
@@ -249,6 +610,9 @@ en:
       copy_successfully: copy successfully
     contact_us: 'Contact us through <s> the community </s>. '
     powered_by_chaoss: Powered by CHAOSS
+  contributor_orgs:
+    range_invalid: last_date must be after first_date
+    range_overlap: Date ranges cannot overlap between orgs
   dispatch:
     project:
       no_exists: 'no such task with project name: %{project_name}.'
@@ -263,8 +627,8 @@ en:
     how_compass_working: How Compass working
     it_points_to_the_thing_you_want_most_in_open_source: It points to the thing <br/>
       you want most in <br/> open source world
-    we_help_open_source_projects_gain_insight_into_its: We help open source projects
-      gain insight into its trends, and getting more value of it.
+    we_help_open_source_projects_gain_insight_into_its: Comprehensive Open Source
+      Ecosystem Evaluation System and User-Friendly SaaS Platform.
     type_the_name_to_insight_into_your_project: Type the name to insight into your
       project
     please_enter_repository_name_or_community: Please enter GitHub/Gitee repository
@@ -307,8 +671,24 @@ en:
     announcement: Announcement
     report: Report
     event: Event
+    blog: Blog
     read_more: Read more
     scan_the_code_to_follow: Scan the code to follow the WeChat Official Accoun
+    open_source_manage: Open Source Governance
+    open_source_manage_desc: Providing excellent evaluation system, reliable data
+      and technical service support for the open governance of open source communities[to
+      community managers, project owners, maintainers, and developers], enhancing
+      community efficiency and promoting the healthy development of communities.
+    data_decision: Data Decision
+    data_decision_desc: Offering in-depth data analysis and insights to organizations,
+      OSPOs and venture investment institutions, helping them make decisions, optimize
+      resource allocation, and detect high potential open source projects.
+    academic_research: Academic Research
+    academic_research_desc: Providing data and analysis on open source community ecosystems[
+      to academic researchers], promoting research on open governance and open source
+      software usage and providing the engineering ability and concrete practice of
+      the transformation of academic achievements.
+    more_about_the_evaluation_system: Learn More
   lab:
     back_my_lab: Back to My Lab
     the_locale_names_are_used_for: Compass Lab is a sandbox that helps people quickly
@@ -746,6 +1126,25 @@ en:
     reaching_daily_limit: The daily analysis limit has been reached
     reach_limit: Parameter exceeds maximum limit
   metrics_models:
+    dimensionality:
+      topic:
+        productivity: Productivity
+        robustness: Robustness
+        niche_creation: Niche Creation
+      type:
+        collaboration: Collab
+        contributor: Contributor
+        software: Soft
+      productivity: The efficiency with which an ecosystem or project converts inputs
+        into output.
+      robustness: The capability of an ecosystem or project to face and survive disruptions.
+      niche_creation: The capacity to create and recognize meaningful diversity and
+        thereby new capabilities.
+      collaboration: The essence ofopen source is a typical example of human's pursuit
+        of win-win collaboration.
+      contributor: The key to collaboration is the ability of KOLs(technicaleaders).
+      software: Open source software products have continuous innovation abilityand
+        use value.
     collaboration_development_index:
       title: Collaboration Development Index
       desc: Open source projects, as a typical manifestation of human group intelligence,
@@ -1126,6 +1525,164 @@ en:
           threshold: '200'
           detail: We look at the development of ecology in terms of the time dimension,
             through how the organization participates and invests as time goes by.
+    contributor_milestone_persona:
+      title: Contributor Milestone Persona
+      desc: Contributors may resonate with open source projects based on upstream
+        or downstream ecological interests, personal development, etc., and engage
+        in community contributions. They may stay in the community for a long time,
+        gradually fade away, or even be reawakened. Based on these scenarios, we define
+        various states of contributors in the community, forming the Milestone Persona
+        Model. This model is inspired by a state machine, where contributors can transition
+        between states, but they can only be in one state at a time. This ensures
+        decoupling of behavior and is more conducive to observing contributors' actions
+        in the community.
+      metrics:
+        activity_casual_contributor_count: Visitor Contributor Count
+        activity_casual_contributor_count_desc: How many active visitor contributors
+          in the last 90 days.
+        activity_casual_contributor_count_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_casual_contribution_per_person: Visitor Contribution Count
+        activity_casual_contribution_per_person_desc: The number of contributions
+          per capita for contributors in the active visitor in the last 90 days.
+        activity_casual_contribution_per_person_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_regular_contributor_count: Regular Contributor Count
+        activity_regular_contributor_count_desc: How many active regular contributors
+          in the last 90 days.
+        activity_regular_contributor_count_more:
+          weight: 12%
+          threshold: '100'
+          detail: ''
+        activity_regular_contribution_per_person: Regular Contribution Coun
+        activity_regular_contribution_per_person_desc: The number of contributions
+          per capita for contributors in the active regular in the last 90 days.
+        activity_regular_contribution_per_person_more:
+          weight: 18%
+          threshold: '25'
+          detail: ''
+        activity_core_contributor_count: Core Contributor Count
+        activity_core_contributor_count_desc: How many active core contributors in
+          the last 90 days.
+        activity_core_contributor_count_more:
+          weight: 20%
+          threshold: '20'
+          detail: ''
+        activity_core_contribution_per_person: Core Contribution Count
+        activity_core_contribution_per_person_desc: The number of contributions per
+          capita for contributors in the active core in the last 90 days.
+        activity_core_contribution_per_person_more:
+          weight: 30%
+          threshold: '200'
+          detail: ''
+    contributor_role_persona:
+      title: Contributor Role Persona
+      desc: Determining whether a contributor is a manager is based on whether they
+        have made contributions in issue management or code management categories.
+        Of course, a contributor may not be a manager when initially participating
+        in community contributions, so we introduce timestamps to mark the change
+        in this role. In the two contribution categories mentioned above, if contributors
+        declare their organizational identities, such as by forcefully submitting
+        code through a public organizational email, we refer to them as organizational
+        managers; otherwise, they are considered individual managers.
+      metrics:
+        activity_organization_contributor_count: Organizational Contributor Count
+        activity_organization_contributor_count_desc: How many active organizational
+          contributors in the last 90 days.
+        activity_organization_contributor_count_more:
+          weight: 20%
+          threshold: '1500'
+          detail: ''
+        activity_organization_contribution_per_person: Organizational Contribution
+          Count
+        activity_organization_contribution_per_person_desc: The number of contributions
+          per capita for contributors in the active organizational in the last 90
+          days.
+        activity_organization_contribution_per_person_more:
+          weight: 30%
+          threshold: '10'
+          detail: ''
+        activity_individual_contributor_count: Individual Contributor Count
+        activity_individual_contributor_count_desc: How many active individual contributors
+          in the last 90 days.
+        activity_individual_contributor_count_more:
+          weight: 20%
+          threshold: '3500'
+          detail: ''
+        activity_individual_contribution_per_person: Individual Contribution Count
+        activity_individual_contribution_per_person_desc: The number of contributions
+          per capita for contributors in the active individual in the last 90 days.
+        activity_individual_contribution_per_person_more:
+          weight: 30%
+          threshold: '5'
+          detail: ''
+    contributor_domain_persona:
+      title: Contributor Domain Persona
+      desc: In the Domain Persona Model, we first categorize the contributions made
+        by contributors to the community by domain or type. We strive to atomize the
+        contribution domains more finely, matching our current engineering capabilities.
+        However, this categorization process is an ongoing evolution, and as our engineering
+        capabilities improve, we will be able to achieve more granular domain divisions.For
+        observation-type contributions, issue-type contributions, and code-type contributions,
+        we can use insights provided by code hosting platforms (such as GitHub, Gitee,
+        etc.). For other types of contributions, due to differences in community usage
+        and extent, currently we can only provide limited data sources as references.
+        However, as our engineering capabilities gradually improve, we may provide
+        more solutions.
+      metrics:
+        activity_observation_contributor_count: Observation Contributor Count
+        activity_observation_contributor_count_desc: How many active observation class
+          contributors in the last 90 days.
+        activity_observation_contributor_count_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_observation_contribution_per_person: Observation Contribution Count
+        activity_observation_contribution_per_person_desc: The number of contributions
+          per capita for contributors in the active observation class in the last
+          90 days.
+        activity_observation_contribution_per_person_more:
+          weight: 12%
+          threshold: '2'
+          detail: ''
+        activity_code_contributor_count: Code Contributor Count
+        activity_code_contributor_count_desc: How many active code class contributors
+          in the last 90 days.
+        activity_code_contributor_count_more:
+          weight: 16%
+          threshold: '500'
+          detail: ''
+        activity_code_contribution_per_person: Code Contribution Count
+        activity_code_contribution_per_person_desc: The number of contributions per
+          capita for contributors in the active code class in the last 90 days.
+        activity_code_contribution_per_person_more:
+          weight: 24%
+          threshold: '15'
+          detail: ''
+        activity_issue_contributor_count: Issue Contributor Count
+        activity_issue_contributor_count_desc: How many active issue class contributors
+          in the last 90 days.
+        activity_issue_contributor_count_more:
+          weight: 16%
+          threshold: '1000'
+          detail: ''
+        activity_issue_contribution_per_person: Issue Contribution Count
+        activity_issue_contribution_per_person_desc: The number of contributions per
+          capita for contributors in the active issue class in the last 90 days.
+        activity_issue_contribution_per_person_more:
+          weight: 24%
+          threshold: '10'
+          detail: ''
+    contributor_route:
+      title: Contributor Route
+    contributor_reputation:
+      title: Contributor Reputation
+    user_reputation:
+      title: User Reputation
     developer_attraction:
       title: Developer Attraction
     organizations_activity:
@@ -1432,6 +1989,7 @@ en:
     send_invite_limit: Invitation emails cannot be sent more than %{count} times in
       24 hours.
     keep_one_login_bind: Keep at least one login binding
+    no_such_login_bind: No binding account information for the platform
     wechat_already_bind: It has been bound to a wechat
     provider_not_supported: Third-party application login currently supports only
       github and gitee

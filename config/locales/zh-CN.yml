@@ -25,6 +25,75 @@ zh-CN:
     saas_working_group: SaaS 工作组
     organization_member: 组织成员
     individual_members: 个人成员
+  academe:
+    academic_research_cooperation: Compass 协作
+    academic_research_desc: 通过Compass协作，我们建立产学研合作桥梁，推广学术成果与开源最佳实践，提升开源协作效率
+    submit_your_application_now: 联系我们
+    cooperation_case: 合作案例
+    cooperation_process: 合作流程
+    submit_application: 提交合作申请
+    affirm: OSS Compass 确认
+    conduct_joint_research: 展开联合研究
+    experiment_verify: 实验验证
+    release_results: 成果发布
+    submit_application_desc1: 如果您所在的科研机构和社区有意与 OSS Compass 开展学术研究或方案推广，欢迎通过网站提交相关合作意向。
+    submit_application_desc2: 合作领域包括但不限于以下几个方面：
+    submit_application_desc3: 开源社区与软件评估方案
+    submit_application_desc4: 开源社区治理与运营方案
+    submit_application_desc7: 提交合作意向请提供您和您的团队信息，已有研究沉淀或成果简述，以及您意向与我们展开研究合作的内容领域。
+    affirm_desc: 我们的团队会对收到的合作申请进行评估和确认。一旦申请被接受，我们将与合作机构通过电子邮件或其他适合的沟通方式进行进一步的沟通和详细讨论。
+    conduct_joint_research_desc: 在确定合作细节和目标之后，双方将正式展开联合研究。 OSS Compass 将为您提供相关领域研究的基础数据集，共同制定研究计划，并展开一系列的学术研讨和共同研究。
+    verify_desc: 当双方的联合研究进行到一定程度并取得进展，我们将会与您共同尝试，将进展成果尝试物化为开源社区参考的数据指标、度量工具或分析模型能力，通过
+      OSS Compass 社区和平台，面向开源社区提供体验服务，用于验证研究成果，以确保研究的可靠性和可行性，并进一步推动开源软件度量和生态评估领域的发展。
+    release_desc1: 一旦联合研究完成并达到预期目标，OSS Compass将与您共同对研究成果进行整理、归纳和总结，以便于更广泛的分享和传播。成果发布可以采用多种形式，包括但不仅限于：
+    release_desc2: 通过 OSS Compass 提供度量工具或分析模型能力
+    release_desc3: 联合发布研究报告、论文发表、技术指南等。
+    discuss_the_evolution: OSS Compass社区与产学研各界共同探讨和推进开源协作
+    author: 作者：
+    nju_title: 基于OSS Compass指标预测开源项目活跃度
+    nju_author: 作者：刘政、祖小岚、罗星宇、王子杭，南京大学本科生；张洁芮，南京大学博士研究生。南京大学计算机科学与技术系--软件新技术全国重点实验室、OSS
+      Compass社区。
+    nju_author2: 导师：汪亮、陶先平、王晔晖
+    nju_desc: 简介：南京大学2024年大学生创新训练计划《基于度量指标的开源软件项目健康度预测技术研究》。参考文章：
+    nju_desc2: 本方法基于OSS Compass指标预测开源项目的未来活跃状态。该方法采用了基于特征的时间序列分类预测方法，通过提取OSS Compass指标序列中的统计特征，训练并运用机器学习智能分类模型对项目未来的活跃/不活跃状态进行预测，同时给出近似概率估计。在近600个项目数据集上的交叉验证结果显示，该方法的准确率接近90%。在泛化能力方面，本方法在超过一万个仓库的数据集上仍能够达到80%的准确率，初步具备现实可用性。分析结果能够部分反映开源项目的未来健康状态，进而展示了OSS
+      Compass指标体系在度量开源软件健康度上的有效性。该方法有望为开源软件的用户、开发者、投资者和管理者提供有价值的参考信息。
+    nju2_title: 基于信息熵的开源社区演化行为度量方法
+    nju2_author: 作者：张洁芮，李颖。南京大学计算机科学与技术系--软件新技术全国重点实验室、OSS Compass社区。
+    nju2_author2: 导师：汪亮、陶先平
+    nju2_desc: 简介：本研究针对开源开发者社交网络中的演化行为认知这一主题，为克服传统社区演化行为分析技术偏重定性而非定量这一局限性，提出了一组基于信息熵的社区分裂、缩减、合并和扩大指数来度量开源开发者社交网络中的社区演化行为。实证研究表明，该组指数能够有效刻画开源社区的演化，通过简单的规则变化能够取得和现有定性工作相一致的结论，准确率达到
+      94.1%。同时，进一步的研究表明，所提出的社区演化指数与开源项目以 commit 数量为代表的生产力之间存在显著的关联关系。本研究所提出的基于信息熵的度量指数为我们定量认知和分析开源社区的演化行为提供了支持。参考文章：
+    nju3_title: 基于熵的开源软件Fork副本多样性度量方法
+    nju3_author: 作者：郑智文、吴向臣、桑百惠、张洁芮。南京大学计算机科学与技术系--软件新技术全国重点实验室、OSS Compass社区。
+    nju3_author2: 导师：汪亮、陶先平
+    nju3_desc: 简介：本研究聚焦于开源软件（OSS）平台上的项目副本，围绕衡量和理解开源软件项目中副本多样性展开。本文通过构造基于 Rao 二次熵的新型副本熵，并基于项目文件的修改来衡量这种多样性。实证研究表明，开源项目的副本熵与不同的主效应之间存在显著相关性，其中包括项目的外部生产力（由外部贡献者的提交数量度量）、外部贡献者
+      pull-request 的接受率以及已报告的 bug 数量。此外，我们还观察到副本熵与其他因素（如副本数量）之间存在显著的交互作用。这些结果表明，副本熵作为一个有效指标，不仅丰富了当前关于开源软件项目副本的可用度量，还进一步加深了基于副本仓库开源软件发展过程的认识，并且有望支持进一步的研究和应用。参考文章：
+    pku1_title: 新手任务的智能推荐：GFI-Bot
+    pku1_author: 作者：肖文鑫，北京大学博士研究生
+    pku1_author2: 导师：周明辉教授
+    pku1_desc1: 简介：在GitHub平台上，众多项目运用了“标签”机制，将适合新手解决的问题标记为'good first issue'（以下简称为GFI），以此引导新手通过处理这些初级任务，完成对项目的首次贡献。Tan等人的研究发现，这种机制的受欢迎程度正在逐步上升。然而，在大部分项目中，被标记为GFI的问题所占比例相对较低。更加令人疑虑的是，GFI问题的解决状况并不乐观。在所有的GFI问题中，仅有大约60%的问题被新手成功解决，而大量的GFI问题仍然未被解决。在GitHub这样的平台上，每个Issue不仅包含标题和描述，还融合了标签、评论等多元化的特征。因此，Xiao等人提出了一种基于任务多元特征的新手任务自动标记方法，分别在Issue的开放时刻和解决时刻两个时间点，通过XGBoost分类器，对新手解决的问题和其他问题进行分类。
+    pku1_desc2: 项目地址：
+    pku2_title: 库迁移的智能推荐：MigrationAdvisor
+    pku2_author: 作者：谷海桥、何昊、赵益良，北京大学博士研究生
+    pku2_author2: 导师：周明辉教授、王怀民院士
+    pku2_desc1: 简介：随着开源软件（OSS）的兴起和软件包托管平台的发展，越来越多的开发者选择重用现有的第三方库进行项目开发，从而降低开发成本，提高开发效率。然而，在重用第三方库的过程中，当开发者无法通过升降级来解决库中存在的问题，如安全漏洞、兼容性等，就需要用另一个功能相同或相似的第三方库来代替，这种操作被称为库迁移。但由于现有信息有限，开发者在进行替换库的选择时，往往基于主观意见并非最佳选择。通过对历史开发活动进行分析，并利用多个指标对库迁移进行排序，可以推荐最适合的库迁移方案。首先从大量的软件仓库中挖掘迁移历史，构建迁移知识库；给定一个需要迁移的库后，筛选出候选的目标库，然后通过结合相关指标来对它们进行排序，这些指标从开发历史的不同维度捕获证据：规则支持、原因支持、距离支持和API支持；通过对大量GitHub仓库的智能分析，能够推荐出库迁移的目标。
+    pku2_desc2: 项目地址：
+    pku3_title: '开源软件许可证推荐工具: LicenseRec'
+    pku3_author: 作者：徐卫伟，北京大学博士研究生
+    pku3_author2: 导师：周明辉教授
+    pku3_desc1: 简介：面对开发者在面对大量相似的许可证和复杂的法律条款时，如何选择适合自身项目的开源许可证的问题，Xu等人提出了开源软件许可证推荐工具LicenseRec，旨在帮助创新之处在于，在遵从项目中第三方组件许可证的基础上，从开源风格、商业需求以及社区发展三个方面推荐满足用户偏好的许可证。为了实现这一目标，构建了一个包含常见许可证条款特征、兼容性信息和许可证选择指南的知识库。工作流程包括：扫描第三方组件的许可证、检查许可证的兼容性、通过用户交互来刻画用户的偏好。然后，根据这些信息，推荐出最适合的许可证。该工具可以进行第三方组件许可证的扫描和兼容性检查，同时也能刻画用户的偏好，从而推荐出最符合用户需求的许可证。
+    pku3_desc2: 工具链接：
+    pku3_desc3: 项目地址：
+    openeuler_title: openEuler 文档模拟伴读
+    openeuler_author: 作者：openEuler社区
+    openeuler_desc1: 简介：文档模拟伴读方案由 openEuler 社区设计并推广，用户在不中断阅读体验的前提下，帮助社区不断改进和完善文档，提升文档质量和用户体验。
+    openeuler_desc2: 项目地址：
+    experience_immediately: 立即体验
+    experience: 效果体验
+    calculate: 计算
+    type_address_of: 请输入仓库地址
+    please_enter_a_valid: 请输入合法 url
+    failed_to_fetch_data: 获取数据失败 !
+    result: 计算结果：
   analysis:
     task:
       submitted: 任务已经提交
@@ -45,6 +114,25 @@ zh-CN:
       productivity: 生产力
       robustness: 稳健性
       niche_creation: 创新力
+    all_model:
+      collaboration_development_index: 协作开发指数
+      community_service_and_support: 社区服务与支撑
+      community_activity: 活跃度
+      organization_activity: 组织活跃度
+      contributors_domain_persona: 贡献领域画像
+      contributors_role_persona: 贡献角色画像
+      contributors_milestone_persona: 贡献里程画像
+      contributor_route: 贡献者旅程
+      contributor_reputation: 贡献口碑
+      user_reputation: 用户口碑
+      software_quality: 软件质量
+      software_usage_quality: 软件使用质量
+      document_quality: 文档质量
+      northbound_adoption: 北向采用
+      south_fit: 南向适配
+      security: 安全
+      compliance: 合规
+    distribution_map: 分布图
     confirm: 确定
     custom: 自定义
     display: 图表显示
@@ -116,6 +204,148 @@ zh-CN:
       text: 徽章
       title: Compass 徽章
     function_menu: 功能
+    collaboration: 协作
+    contributor: 贡献者
+    software: 软件
+    coming_soon: 即将上线
+    metric_detail:
+      details: 查看洞察详情
+      contributors_persona: 贡献者画像
+      org_count: 贡献组织数量
+      top_contributing_org: Top贡献组织
+      contributor_count: 贡献者数量
+      top_contributor: Top贡献者
+      issues: Issue
+      newly_created_issues: 新建issue数量
+      issue_completion_rate: Issue解决百分比
+      unanswered_issue_count: 未响应Issues数量
+      average_comments_count: 平均评论数量
+      pull_requests: Pull Request
+      newly_created_pr_count: 新建PR数量
+      pr_completion_rate: PR解决百分比
+      unanswered_pr_count: 未响应PR数量
+      commit_count: 代码提交数量
+      project_deep_dive_insight: 项目深度洞察
+      milestone_persona_filter: 里程画像
+      core: 核心贡献者
+      regular: 常客贡献者
+      guest: 访客贡献者
+      core_desc: 本时间段所有贡献（不包含star、fork的贡献）的5成，由最少的一组人完成，这组人被称为核心贡献者
+      regular_desc: 抛去头部5成贡献，接下来的3成贡献，包含在github上issue、pr贡献，在twitter、slack、discourse留言。不包含star、fork的贡献
+      guest_desc: 常客、核心以外的贡献者(包括观察贡献者)
+      persona_detail: 画像详情
+      contribution: 贡献次数
+      contribution_distribution: 贡献次数分布
+      global_contribution_distribution: 全局贡献次数分布
+      organization_contribution_distribution: 组织贡献次数分布
+      organization: 组织
+      milestone_persona: 里程画像
+      role_persona: 角色画像
+      domain_persona: 领域画像
+      contributor: 贡献者
+      contributor_distribution: 贡献者分布
+      organization_participant: 组织参与者
+      organization_manager: 组织管理者
+      individual_manager: 个人管理者
+      individual_participant: 个人参与者
+      individual: 个人
+      participant: 参与者
+      manager: 管理者
+      contributor_unit: 人
+      contribution_unit: 次
+      observe:
+        fork: fork贡献
+        star: star贡献
+      issue:
+        issue_creation: issue创建
+        issue_comments: issue评论
+      issue_admin:
+        issue_labeled: issue添加标签
+        issue_unlabeled: issue移除标签
+        issue_closed: issue关闭
+        issue_reopened: issue重新打开
+        issue_assigned: issue分配责任人
+        issue_unassigned: issue取消责任人
+        issue_milestoned: issue设置里程碑
+        issue_demilestoned: issue取消里程碑
+        issue_marked_as_duplicate: issue标记重复
+        issue_transferred: issue迁移
+        issue_renamed_title: issue重命名标题
+        issue_change_description: issue更改描述
+        issue_setting_priority: issue设置优先级
+        issue_change_priority: issue修改优先级
+        issue_link_pull_request: issue链接pr
+        issue_unlink_pull_request: issue取消链接pr
+        issue_assign_collaborator: " issue添加协作者"
+        issue_unassign_collaborator: issue取消协作者
+        issue_change_issue_state: issue修改状态
+        issue_change_issue_type: issue修改类型
+        issue_setting_branch: issue设置分支
+        issue_change_branch: issue取消分支
+      code:
+        pr_creation: PR创建
+        pr_comments: PR评论
+        code_commit: 代码提交
+      code_admin:
+        pr_labeled: PR添加标签
+        pr_unlabeled: PR取消标签
+        pr_closed: PR关闭
+        pr_assigned: PR分配责任人
+        pr_unassigned: PR取消责任人
+        pr_reopened: PR重新打开
+        pr_milestoned: PR设置里程碑
+        pr_demilestoned: PR取消里程碑
+        pr_marked_as_duplicate: PR标记重复
+        pr_transferred: PR迁移
+        pr_renamed_title: PR重命名标题
+        pr_change_description: PR更改描述
+        pr_setting_priority: PR设置优先级
+        pr_change_priority: PR修改优先级
+        pr_merged: PR合并
+        pr_review: PR审查
+        pr_set_tester: PR设置测试人
+        pr_unset_tester: PR取消测试人
+        pr_check_pass: PR审查通过
+        pr_test_pass: PR测试通过
+        pr_reset_assign_result: PR取消审查结果
+        pr_reset_test_result: PR取消测试结果
+        pr_link_issue: PR链接issue
+        pr_unlink_issue: PR取消链接issue
+        code_direct_commit: code直接提交
+      issue_detail: Issue详情
+      pr_detail: PR详情
+      issue_completion: Issue解决百分比
+      issues_comments: Issues评论
+      pr_completion: PR解决百分比
+      pr_comments: PR评论
+      issue_title: Issue标题
+      state: 状态
+      created_time: 创建时间
+      close_time: 关闭时间
+      processing_time: 处理时长(天)
+      first_response_time: 首次响应时长(天)
+      comments_count: 评论数量
+      tags: 标签
+      creator: 创建者
+      assignee: 责任人
+      pr_title: PR标题
+      reviewer: 审查者
+      merge_author: 合并者
+      closed: 关闭
+      open: 打开
+      progressing: 进行中
+      rejected: 已关闭
+      merged: 已合并
+      comments: 条评论
+      show_organization: 展示组织
+      only_manager_participant: 只看管理者参与者
+      only_individual_organization: 只看组织个人
+    only_the_latest_month: 最近一年没有对该项目有Admin操作的账号用户(lssue分配、PR合并等)仅可查看最近一个月的数据
+    for_more_time_frames: 如需查看更多时间范围，请
+    statistics: 统计中
+    total_people: 总共 {{total}} 人
+    total_issues: 总共 {{total}} Issues
+    total_prs: 总共 {{total}} PR
   auth:
     email_verification_successful: 邮件验证成功
     email_verification_expired: 邮箱验证已过期
@@ -144,14 +374,18 @@ zh-CN:
     header:
       home: 首页
       explore: 探索
+      projects: 项目
+      docs: 文档
       metrics_models: 评估模型
       community: 社区
       blog: 博客
       news: 动态
       lab: 实验室
+      academe: 协作
       about: 关于
       submit_your_project: 提交项目
     range:
+      1M: 最近1个月
       3M: 最近3个月
       6M: 最近6个月
       1Y: 最近1年
@@ -230,6 +464,9 @@ zh-CN:
       copy_successfully: 复制成功
     contact_us: 通过<s>社区</s>联系我们。
     powered_by_chaoss: Powered by CHAOSS
+  contributor_orgs:
+    range_invalid: last_date 必须在 first_date 之后
+    range_overlap: 组织之间的日期范围不能重叠
   dispatch:
     project:
       no_exists: 该项目 %{project_name} 不存在对应的任务
@@ -243,7 +480,7 @@ zh-CN:
     activity: 活跃度
     how_compass_working: How Compass working
     it_points_to_the_thing_you_want_most_in_open_source: 估量有尺 开源有道
-    we_help_open_source_projects_gain_insight_into_its: 我们帮助开源项目洞察其趋势，并挖掘更多的价值。
+    we_help_open_source_projects_gain_insight_into_its: 全面的开源生态评估体系和易用的SaaS平台。
     type_the_name_to_insight_into_your_project: 请输入 GitHub/Gitee 仓库名称或社区名称
     please_enter_repository_name_or_community: ''
     a_special_thank_you: 致谢…
@@ -254,7 +491,7 @@ zh-CN:
     compass_report: 查看报告
     nothing_about_yet: 未找到与 <s> {{expr}} </s> 匹配的结果.
     cant_find_the_right_option: 未找到想要的结果？
-    oss_eco_evaluation_system: 开源<br/>生态评估<br/>体系
+    oss_eco_evaluation_system: 开源生态评估体系
     facts: Facts
     recently: 最近更新
     trends: 活跃度趋势
@@ -283,8 +520,16 @@ zh-CN:
     announcement: 公告
     report: 新闻
     event: 事件
+    blog: 博客
     read_more: 阅读更多
     scan_the_code_to_follow: 扫码关注微信公众号
+    open_source_manage: 开源治理
+    open_source_manage_desc: 为开源社区[管理人员、项目所有者、维护者、开发者]进行开放治理提供完善的评估体系、可靠的数据和技术服务支持，提高社区效能，推动社区的健康发展。
+    data_decision: 数据决策
+    data_decision_desc: 为组织、OSPOs 和创投机构提供深入的数据分析和项目洞察，帮助制定决策、优化资源分配以及挖掘高潜力开源项目。
+    academic_research: 学术研究
+    academic_research_desc: 为学术研究人员提供开源社区生态体系数据和分析，促进有关开源治理、开源软件使用的研究，同时提供学术成果转化的工程能力与具体实践。
+    more_about_the_evaluation_system: 详细了解评估体系
   lab:
     back_my_lab: 返回我的模型
     the_locale_names_are_used_for: Compass Lab is a sandbox that helps people quickly
@@ -631,6 +876,21 @@ zh-CN:
     members:
       expired: 邀请已过期
   metrics_models:
+    dimensionality:
+      topic:
+        productivity: 生产力
+        robustness: 稳健性
+        niche_creation: 创新力
+      type:
+        collaboration: 协作
+        contributor: 贡献者
+        software: 软件
+      productivity: 一个开源生态将投入转化为产出的能力。
+      robustness: 生态系统面对内部或者外部冲突自我恢复的能力。
+      niche_creation: 社区生态具有持续创造多样性创新的能力，并成为社区生态向前演进的动力。
+      collaboration: 开源的本质是人类追求协作共赢的典范。
+      contributor: 协作的关键是KOL(技术领袖)的能力。
+      software: 开源软件制品具备的持续创新能力和使用价值。
     collaboration_development_index:
       title: 协作开发指数
       desc: 开源项目作为人类群体智能的典型表现，是否能够建立协作式的开发管理，是促成项目成功的关键要素。而代码，作为一个软件项目的最终输出件，是整个社区的核心内容。所以我们围绕一系列与代码贡献相关的间接指标，来评估开发流程管理，社区协作式开发做得如何。
@@ -824,6 +1084,122 @@ zh-CN:
           weight: 16.13%
           threshold: '200'
           detail: 我们通过时间维度来了解，随着时间迁移，组织参与和投入的情况，来考察生态的发展情况。
+    contributor_milestone_persona:
+      title: 贡献者里程画像
+      desc: 贡献者可能基于上下游生态利益或个人发展等原因与开源项目产生共鸣，并进入社区参与贡献。他们可能长期留在社区，逐渐淡出，甚至再次被唤醒。基于这些情况，我们定义了贡献者在社区中的多种状态，构成了里程画像。这个模型受到状态机的启发，每个状态之间可以相互迁移，而贡献者同时只能处于一种状态。这样做可以确保行为的解耦，更有利于观察贡献者在社区中的行为。
+      metrics:
+        activity_casual_contributor_count: 访客贡献者数量
+        activity_casual_contributor_count_desc: 在过去90天内有多少活跃的访客贡献者数量
+        activity_casual_contributor_count_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_casual_contribution_per_person: 访客贡献次数
+        activity_casual_contribution_per_person_desc: 在过去90天内活跃访客贡献者的人均贡献次数。
+        activity_casual_contribution_per_person_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_regular_contributor_count: 常客贡献者数量
+        activity_regular_contributor_count_desc: 在过去90天内有多少活跃的常客贡献者数量。
+        activity_regular_contributor_count_more:
+          weight: 12%
+          threshold: '100'
+          detail: ''
+        activity_regular_contribution_per_person: 常客贡献次数
+        activity_regular_contribution_per_person_desc: 在过去90天内活跃常客贡献者的人均贡献次数。
+        activity_regular_contribution_per_person_more:
+          weight: 18%
+          threshold: '25'
+          detail: ''
+        activity_core_contributor_count: 核心贡献者数量
+        activity_core_contributor_count_desc: 在过去90天内有多少活跃的核心贡献者数量。
+        activity_core_contributor_count_more:
+          weight: 20%
+          threshold: '20'
+          detail: ''
+        activity_core_contribution_per_person: 核心贡献次数
+        activity_core_contribution_per_person_desc: 在过去90天内活跃核心贡献者的人均贡献次数。
+        activity_core_contribution_per_person_more:
+          weight: 30%
+          threshold: '200'
+          detail: ''
+    contributor_role_persona:
+      title: 贡献者角色画像
+      desc: 开源项目的发起通常是由一个团队或者个人，以个人身份或者组织身份发起创立，在演进过程中不断吸纳新的个人或者组织参与贡献。 不论是初创者，还是后来加入者，通过与社区建立双赢的合作，以及突出、持续的贡献，获得了社区管理者的角色，这个角色通常可以通过行使一些在代码托管平台的管理行为，得以展现。我们也是通过这类事件行为来确认贡献者是否拥有管理者角色。
+        而没有被觉察到管理行为的贡献者，我们称之为参与者。 我们使用管理者这一术语来描述社区中拥有管理权限的贡献者。通常情况下，他们也是项目的技术领导者。然而，技术领导者并不能完全等同于管理行为，所以我们采用管理者这个更加具体的称谓。
+        判断贡献者是否为管理者的标准是其是否做出了Issue管理类贡献或Code管理类贡献。当然，一个贡献者可能在最初参与社区贡献时并不是管理者，因此我们引入了时间戳来标记这一身份的变化。在上述两类贡献中，如果贡献者声明了自己的组织身份，例如通过公开的组织邮箱直接强制提交代码，我们称其为组织管理者；反之称其为个人管理者。
+      metrics:
+        activity_organization_contributor_count: 组织贡献者数量
+        activity_organization_contributor_count_desc: 在过去90天内有多少活跃的组织贡献者数量。
+        activity_organization_contributor_count_more:
+          weight: 20%
+          threshold: '1500'
+          detail: ''
+        activity_organization_contribution_per_person: 组织贡献次数
+        activity_organization_contribution_per_person_desc: 在过去90天内活跃组织贡献者的人均贡献次数。
+        activity_organization_contribution_per_person_more:
+          weight: 30%
+          threshold: '10'
+          detail: ''
+        activity_individual_contributor_count: 个人贡献者数量
+        activity_individual_contributor_count_desc: 在过去90天内有多少活跃的个人贡献者数量。
+        activity_individual_contributor_count_more:
+          weight: 20%
+          threshold: '3500'
+          detail: ''
+        activity_individual_contribution_per_person: 个人贡献次数
+        activity_individual_contribution_per_person_desc: 在过去90天内活跃个人贡献者的人均贡献次数。
+        activity_individual_contribution_per_person_more:
+          weight: 30%
+          threshold: '5'
+          detail: ''
+    contributor_domain_persona:
+      title: 贡献者领域画像
+      desc: 在领域画像模型中，我们首先将贡献者为社区做出的贡献按领域或类型进行划分。我们力争将贡献领域划分得更加原子化，以与我们当前的工程能力相匹配。然而，这个划分过程是一个持续演进的过程，随着我们工程能力的提升，我们将能够实现更细粒度的领域划分。对于观察类贡献、Issue类贡献和Code类贡献，我们可以利用代码托管平台（如GitHub、Gitee等）提供的数据来获得洞察。对于其他几类贡献，由于社区使用方式和程度的差异，我们目前只能提供有限的数据源作为参考。然而，随着我们工程能力逐步提升，我们可能会提供更多解决方案。
+      metrics:
+        activity_observation_contributor_count: 观察者数量
+        activity_observation_contributor_count_desc: 在过去90天内有多少活跃的star，fork观察者。
+        activity_observation_contributor_count_more:
+          weight: 8%
+          threshold: '2000'
+          detail: ''
+        activity_observation_contribution_per_person: 观察者贡献次数
+        activity_observation_contribution_per_person_desc: 在过去90天内活跃star，fork观察者的人均贡献次数。
+        activity_observation_contribution_per_person_more:
+          weight: 12%
+          threshold: '2'
+          detail: ''
+        activity_code_contributor_count: 代码贡献者数量
+        activity_code_contributor_count_desc: 在过去90天内有多少活跃的代码类贡献者。
+        activity_code_contributor_count_more:
+          weight: 16%
+          threshold: '500'
+          detail: ''
+        activity_code_contribution_per_person: 代码贡献次数
+        activity_code_contribution_per_person_desc: 在过去90天内活跃代码类贡献者的人均贡献次数。
+        activity_code_contribution_per_person_more:
+          weight: 24%
+          threshold: '15'
+          detail: ''
+        activity_issue_contributor_count: Issue贡献者数量
+        activity_issue_contributor_count_desc: 在过去90天内有多少活跃的Issue类贡献者。
+        activity_issue_contributor_count_more:
+          weight: 16%
+          threshold: '1000'
+          detail: ''
+        activity_issue_contribution_per_person: Issue贡献次数
+        activity_issue_contribution_per_person_desc: 在过去90天内活跃Issue类贡献者的人均贡献次数。
+        activity_issue_contribution_per_person_more:
+          weight: 24%
+          threshold: '10'
+          detail: ''
+    contributor_route:
+      title: 贡献者旅程
+    contributor_reputation:
+      title: 贡献者口碑
+    user_reputation:
+      title: 用户口碑
     developer_attraction:
       title: 开发者吸引
     organizations_activity:
@@ -1097,6 +1473,7 @@ zh-CN:
     send_email_limit: 邮箱验证24小时内发送不可以超过 %{count} 次
     send_invite_limit: 邀请邮件24小时内发送不可以超过 %{count} 次
     keep_one_login_bind: 至少保留一个登录绑定
+    no_such_login_bind: 未绑定相关平台帐号
     wechat_already_bind: 已经绑定了一个微信
     provider_not_supported: 第三方应用登录目前仅支持 github，gitee
     subscription_already_exist: 已经订阅了

@@ -20,6 +20,27 @@ module CompassUtils
     uri.to_s
   end
 
+  def get_uuid(*args)
+    def check_value(v)
+      if !v.is_a?(String)
+        raise ValueError, "%s value is not a string instance" % v.to_s
+      elsif v.empty?
+        raise ValueError, "value cannot be None or empty"
+      else
+        return v
+      end
+    end
+
+    def uuid(*args)
+      s = args.map{ |arg| check_value(arg) }.join(':')
+      sha1 = Digest::SHA1.hexdigest(s)
+      return sha1
+    end
+
+    args_list = args.select { |arg| !arg.nil? && !arg.empty? }
+    return uuid(*args_list)
+  end
+
   def auto_break_line(text, max_length: 30)
     broken_lines = []
     current_line = ''
