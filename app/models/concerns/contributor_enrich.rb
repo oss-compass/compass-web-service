@@ -147,4 +147,17 @@ module ContributorEnrich
       base
     end
   end
+
+  def base_info_keys
+    ['contributor', 'ecological_type', 'organization', 'contribution', 'mileage_type', 'contribution_type_list']
+  end
+
+  def transform_csv(contributor)
+    contributor = contributor.slice(*base_info_keys)
+    contributor['contribution_type_list'] =
+      contributor['contribution_type_list']
+        .map{ |c| c['contribution_type'] }
+        .join('|')
+    contributor
+  end
 end

@@ -4,6 +4,7 @@ module Openapi
   module V1::Helpers
     include Common
     include CompassUtils
+    include ContributorEnrich
 
     def current_user
       @current_user ||=

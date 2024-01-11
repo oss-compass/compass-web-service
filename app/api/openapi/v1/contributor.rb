@@ -3,6 +3,7 @@
 module Openapi
   module V1
     class Contributor < Grape::API
+
       version 'v1', using: :path
       prefix :api
 
@@ -47,9 +48,9 @@ module Openapi
               .then { indexer.sort_contributors(_1, sort_opts) }
           csv_data =
             CSV.generate(headers: true) do |csv|
-            csv << contributors_list.first.keys
+            csv << base_info_keys
             contributors_list.each do |row|
-              csv << row
+              csv << transform_csv(row)
             end
           end
           content_type 'text/csv'
