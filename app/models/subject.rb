@@ -34,6 +34,8 @@ class Subject < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
   has_many :subject_access_levels, dependent: :destroy
 
+  has_many_attached :exports
+
   validates :label, presence: true, length: { maximum: 255 }
   validates :level, presence: true, length: { maximum: 255 }
   validates :status, presence: true, length: { maximum: 255 }
@@ -125,5 +127,13 @@ class Subject < ApplicationRecord
       updated_at: status_updated_at,
       short_code: ShortenedLabel.convert(label, level)
     }
+  end
+
+  def short_name
+    if level == 'community'
+      "#{label}-#{level}"
+    else
+      label.split('/').last(2).<<(level).join('-')
+    end
   end
 end

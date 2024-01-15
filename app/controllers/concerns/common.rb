@@ -2,6 +2,8 @@ module Common
   ORG_DIR = 'communities'
   SINGLE_DIR = 'single-repositories'
   COLLECTION_DIR = 'collections'
+  EXPORT_CACHE_TTL = 3.day
+  EXPORT_TASK_QUEUE = 'export_task_v1'
   SUBSCRIPTION_QUEUE = 'subscriptions_update_v1'
   HOOK_PASS = ENV.fetch('HOOK_PASS') { 'password' }
   PROXY = ENV.fetch('PROXY') { 'http://localhost:10807' }

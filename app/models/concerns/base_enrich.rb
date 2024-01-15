@@ -3,10 +3,11 @@
 module BaseEnrich
   extend ActiveSupport::Concern
   class_methods do
-    def terms_by_repo_urls(
+
+    def base_terms_by_repo_urls(
           repo_urls, begin_date, end_date,
           target: 'tag', filter: :created_at, sort: :created_at, direction: :asc,
-          per: 1, page: 1, filter_opts: [], sort_opts: []
+          filter_opts: [], sort_opts: []
         )
       base =
         self
@@ -28,6 +29,18 @@ module BaseEnrich
       end
 
       base
+    end
+
+    def terms_by_repo_urls(
+          repo_urls, begin_date, end_date,
+          target: 'tag', filter: :created_at, sort: :created_at, direction: :asc,
+          per: 1, page: 1, filter_opts: [], sort_opts: []
+        )
+      base_terms_by_repo_urls(
+        repo_urls, begin_date, end_date,
+        target: target, filter: filter, sort: sort, direction: direction,
+        filter_opts: filter_opts, sort_opts: sort_opts
+      )
         .page(page)
         .per(per)
         .execute
