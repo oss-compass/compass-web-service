@@ -6,6 +6,7 @@ module Openapi
   class Base < Grape::API
     helpers Openapi::V1::Helpers
 
+    mount Openapi::V1::Pull
     mount Openapi::V1::Issue
     mount Openapi::V1::Subject
     mount Openapi::V1::Contributor

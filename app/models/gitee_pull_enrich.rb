@@ -3,6 +3,7 @@
 class GiteePullEnrich < GiteeBase
 
   include BaseEnrich
+  include PullEnrich
 
   def self.index_name
     'gitee-pulls_enriched'

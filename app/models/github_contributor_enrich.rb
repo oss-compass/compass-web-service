@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class GithubContributorEnrich < GithubBase
+  include BaseEnrich
   include ContributorEnrich
 
   def self.index_name

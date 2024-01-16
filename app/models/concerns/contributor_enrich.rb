@@ -146,18 +146,15 @@ module ContributorEnrich
       end
       base
     end
-  end
 
-  def base_info_keys
-    ['contributor', 'ecological_type', 'organization', 'contribution', 'mileage_type', 'contribution_type_list']
-  end
+    def export_headers
+      ['contributor', 'ecological_type', 'organization', 'contribution', 'mileage_type', 'contribution_type_list']
+    end
 
-  def transform_csv(contributor)
-    contributor = contributor.slice(*base_info_keys)
-    contributor['contribution_type_list'] =
-      contributor['contribution_type_list']
-        .map{ |c| c['contribution_type'] }
-        .join('|')
-    contributor
+    def on_each(args)
+      source = args[:source]
+      source['contribution_type_list'] = source['contribution_type_list'].map{ |c| c['contribution_type'] }.join('|')
+      source
+    end
   end
 end

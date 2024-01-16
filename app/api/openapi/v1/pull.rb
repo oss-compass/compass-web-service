@@ -2,7 +2,7 @@
 
 module Openapi
   module V1
-    class Issue < Grape::API
+    class Pull < Grape::API
 
       version 'v1', using: :path
       prefix :api
@@ -12,8 +12,8 @@ module Openapi
         error!(I18n.t('users.require_login'), 400) unless current_user.present?
       end
 
-      resource :issue do
-        desc 'Issues'
+      resource :pull do
+        desc 'Pulls'
 
         params do
           requires :label, type: String, desc: 'repo or community label'
@@ -43,9 +43,7 @@ module Openapi
           validate_date!(label, level, begin_date, end_date)
 
           indexer, repo_urls =
-                   select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)
-
-          filter_opts << OpenStruct.new(type: 'pull_request', values: ['false']) if indexer == GithubIssueEnrich
+                   select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
 
           query = indexer
                     .base_terms_by_repo_urls(

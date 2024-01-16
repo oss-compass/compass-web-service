@@ -3,6 +3,7 @@
 class GithubPullEnrich < GithubBase
 
   include BaseEnrich
+  include PullEnrich
 
   def self.index_name
     'github-pulls_enriched'

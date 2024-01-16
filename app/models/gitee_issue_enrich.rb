@@ -3,6 +3,7 @@
 class GiteeIssueEnrich < GiteeBase
 
   include BaseEnrich
+  include IssueEnrich
 
   def self.index_name
     'gitee-issues_enriched'

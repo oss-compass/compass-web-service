@@ -6,6 +6,7 @@ module Openapi
 
       version 'v1', using: :path
       prefix :api
+      format :json
 
       before do
         error!(I18n.t('users.require_login'), 400) unless current_user.present?
@@ -41,22 +42,49 @@ module Openapi
           validate_date!(label, level, begin_date, end_date)
           indexer, repo_urls =
                    select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+
+          uuid = get_uuid(indexer.to_s, label, level, filter_opts.to_json, sort_opts.to_json, begin_date.to_s, end_date.to_s)
+
+          state = Rails.cache.read("export-#{uuid}")
+          if state && (state[:status] == ::Subject::COMPLETE || state[:status] == ::Subject::PROGRESS)
+            return { code: 200, uuid: uuid }.merge(state)
+          end
+
+          state = { status: ::Subject::PENDING }
+
+          Rails.cache.write("export-#{uuid}", state, expires_in: Common::EXPORT_CACHE_TTL)
+
           contributors_list =
             indexer
               .fetch_contributors_list(repo_urls, begin_date, end_date)
               .then { indexer.filter_contributors(_1, filter_opts) }
               .then { indexer.sort_contributors(_1, sort_opts) }
-          csv_data =
-            CSV.generate(headers: true) do |csv|
-            csv << base_info_keys
-            contributors_list.each do |row|
-              csv << transform_csv(row)
-            end
-          end
-          content_type 'text/csv'
-          header['Content-Disposition'] = "attachment; filename=contributors-list-#{Date.today.to_s}.csv"
-          env['api.format'] = :csv
-          body csv_data
+
+          RabbitMQ.publish(
+            Common::EXPORT_TASK_QUEUE,
+            {
+              uuid: uuid,
+              label: label,
+              level: level,
+              query: nil,
+              raw_data: contributors_list,
+              select: indexer.export_headers,
+              indexer: indexer.to_s
+            }
+          )
+          { code: 200, uuid: uuid }.merge(state)
+        end
+
+
+        desc "Return a export state."
+        params do
+          requires :uuid, type: String, desc: "task id.", allow_blank: false
+        end
+
+        get 'export_state/:uuid' do
+          state = Rails.cache.read("export-#{params[:uuid]}")
+          return error!('Not Found', 404) unless state.present?
+          { code: 200, uuid: params[:uuid] }.merge(state)
         end
       end
     end

@@ -3,6 +3,7 @@
 class GithubIssueEnrich < GithubBase
 
   include BaseEnrich
+  include IssueEnrich
 
   def self.index_name
     'github-issues_enriched'
