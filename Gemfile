@@ -163,6 +163,8 @@ group :development do
   gem 'bullet'
 
   gem "rack-reverse-proxy", require: "rack/reverse_proxy"
+
+  gem 'grape_on_rails_routes'
 end
 
 group :test do

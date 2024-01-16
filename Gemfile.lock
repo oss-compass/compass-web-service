@@ -246,6 +246,8 @@ GEM
     grape-swagger (2.0.0)
       grape (>= 1.7, < 3.0)
       rack-test (~> 2)
+    grape_on_rails_routes (0.3.2)
+      rails (>= 3.1.1)
     graphiql-rails (1.8.0)
       railties
       sprockets-rails
@@ -903,6 +905,7 @@ DEPENDENCIES
   git_diff_parser
   grape
   grape-swagger
+  grape_on_rails_routes
   graphiql-rails
   graphql (~> 2.0)
   graphql-batch

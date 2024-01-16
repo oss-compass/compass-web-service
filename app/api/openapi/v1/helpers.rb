@@ -13,6 +13,10 @@ module Openapi
         end
     end
 
+    def require_login!
+      error!(I18n.t('users.require_login'), 400) unless current_user.present?
+    end
+
     def validate_by_label!(label)
       return if current_user&.is_admin?
       if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)
