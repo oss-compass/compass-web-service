@@ -89,4 +89,11 @@ Rails.application.configure do
 
   # [Blocked host] clear the entire whitelist, which lets through requests for all hostnames.
   config.hosts.clear
+
+  # enable lograge
+
+  config.lograge.enabled = true
+  config.lograge.custom_options = lambda do |event|
+    { :remote_ip => event.payload[:request].remote_ip }
+  end
 end
