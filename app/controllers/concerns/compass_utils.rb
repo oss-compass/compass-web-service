@@ -110,6 +110,15 @@ module CompassUtils
     end
   end
 
+  def is_repo_admin?(current_user, label, level)
+    Rails.cache.fetch("is_repo_admin:user-#{current_user.id}:#{level}:#{label}", expires_in: 15.minutes) do
+      indexer, repo_urls, origin =
+                          select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+      username = LoginBind.current_host_nickname(current_user, origin)
+      indexer.repo_admin?(username, repo_urls)
+    end
+  end
+
   def validate_date(current_user, label, level, begin_date, end_date)
     valid_range = [begin_date, end_date]
     default_min = Date.today - 1.month
@@ -121,14 +130,7 @@ module CompassUtils
     diff_seconds = end_date.to_i - begin_date.to_i
     return [true, valid_range] if diff_seconds < 2.months
 
-    is_repo_admin =
-      Rails.cache.fetch("is_repo_admin:user-#{current_user.id}:#{level}:#{label}", expires_in: 15.minutes) do
-      indexer, repo_urls =
-               select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
-      origin = extract_repos_source(label, level)
-      username = LoginBind.current_host_nickname(current_user, origin)
-      indexer.repo_admin?(username, repo_urls)
-    end
+    is_repo_admin = is_repo_admin?(current_user, label, level)
 
     if is_repo_admin
       default_min = Date.today - 1.year

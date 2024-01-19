@@ -3,6 +3,7 @@ module GithubApplication
   include Common
 
   GITHUB_TOKEN = ENV.fetch('GITHUB_API_TOKEN')
+  RAW_GITHUB_ENDPOINT = 'https://raw.githubusercontent.com'
   GITHUB_API_ENDPOINT = 'https://api.github.com'
 
   def github_notify_on_pr(owner, repo, pr_number, message)
@@ -82,13 +83,26 @@ module GithubApplication
     { status: false, message: I18n.t('oauth.branch.failed', reason: ex.message) }
   end
 
-  def github_put_file(path, message, content_base64, branch_name)
+  def github_get_file(path, branch)
+    resp =
+      RestClient::Request.new(
+        method: :get,
+        url: "#{RAW_GITHUB_ENDPOINT}/#{github_owner}/#{github_repo}/#{branch}/#{path}",
+        headers: { 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
+        proxy: PROXY
+      ).execute
+    { status: true, body: resp.body }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.user.failed', reason: ex.message) }
+  end
+
+  def github_put_file(path, message, content_base64, branch_name, sha: nil)
     signed_off_message = message + "\n\nSigned-off-by: #{BOT_NAME} <#{BOT_EMAIL}>"
     resp =
       RestClient::Request.new(
         method: :put,
         url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner}/#{github_repo}/contents/#{path}",
-        payload: { message: signed_off_message, content: content_base64, branch: branch_name }.to_json,
+        payload: { message: signed_off_message, content: content_base64, branch: branch_name, sha: sha }.to_json,
         headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
         proxy: PROXY
       ).execute

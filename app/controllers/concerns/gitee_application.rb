@@ -3,6 +3,7 @@ module GiteeApplication
   include Common
 
   GITEE_TOKEN = ENV.fetch('GITEE_API_TOKEN')
+  GITEE_ENDPOINT = 'https://gitee.com'
   GITEE_API_ENDPOINT = 'https://gitee.com/api/v5'
 
   def gitee_notify_on_pr(owner, repo, pr_number, message)
@@ -58,12 +59,44 @@ module GiteeApplication
     { status: false, message: I18n.t('oauth.branch.failed', reason: ex.message) }
   end
 
+  def gitee_get_file(path, branch)
+    resp =
+      Faraday.get("#{GITEE_ENDPOINT}/#{gitee_owner}/#{gitee_repo}/raw/#{branch}/#{path}")
+    if resp.success?
+      { status: true, body: resp.body }
+    else
+      { status: false, message: resp.body }
+    end
+  rescue => ex
+    { status: false, message: I18n.t('oauth.user.failed', reason: ex.message) }
+  end
+
   def gitee_post_file(path, message, content_base64, branch_name)
     signed_off_message = message + "\n\nSigned-off-by: #{BOT_NAME} <#{BOT_EMAIL}>"
     resp =
       Faraday.post(
         "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner}/#{gitee_repo}/contents/#{path}",
         { message: signed_off_message, content: content_base64, branch: branch_name, access_token: GITEE_TOKEN }.to_json,
+        { 'Content-Type' => 'application/json'}
+      )
+    case JSON.parse(resp.body).symbolize_keys
+        in {commit: commit, content: content}
+        { status: true, message: content['name']}
+        in {message: message}
+        { status: false, message: message }
+    else
+      { status: false, message: resp.body }
+    end
+  rescue => ex
+    { status: false, message: I18n.t('oauth.file.failed', reason: ex.message) }
+  end
+
+  def gitee_put_file(path, message, content_base64, branch_name, sha)
+    signed_off_message = message + "\n\nSigned-off-by: #{BOT_NAME} <#{BOT_EMAIL}>"
+    resp =
+      Faraday.put(
+        "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner}/#{gitee_repo}/contents/#{path}",
+        { message: signed_off_message, content: content_base64, branch: branch_name, access_token: GITEE_TOKEN, sha: sha }.to_json,
         { 'Content-Type' => 'application/json'}
       )
     case JSON.parse(resp.body).symbolize_keys

@@ -1465,6 +1465,7 @@ zh-CN:
   users:
     login_failed: 登录失败，原因：%{reason}
     forbidden: 访问受限
+    no_permission: 没有权限
     require_login: 需要登录后操作
     require_bind: 当前用户没有绑定 %{provider} 账号
     already_banned: "%{provider}: %{nickname} 已经绑定其他账号"
@@ -1477,7 +1478,7 @@ zh-CN:
     wechat_already_bind: 已经绑定了一个微信
     provider_not_supported: 第三方应用登录目前仅支持 github，gitee
     subscription_already_exist: 已经订阅了
-    subject_not_exist: 订阅对象不存在
+    subject_not_exist: 操作对象不存在
     subscription_not_exist: 订阅不存在
   yaml:
     path:

@@ -1978,6 +1978,7 @@ en:
   users:
     login_failed: 'login failed, reason: %{reason}'
     forbidden: access forbidden
+    no_permission: no permission
     require_login: Operation after login is required
     require_bind: The %{provider} account is not bound to the current user
     already_banned: "%{provider}: %{nickname} Already bound to another account"
@@ -1994,7 +1995,7 @@ en:
     provider_not_supported: Third-party application login currently supports only
       github and gitee
     subscription_already_exist: Already subscribed.
-    subject_not_exist: Subscription object does not exist
+    subject_not_exist: Operating object does not exist
     subscription_not_exist: Subscription does not exist
   yaml:
     path:

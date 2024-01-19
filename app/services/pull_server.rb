@@ -15,6 +15,11 @@ class PullServer
       @project_url = @project_urls.first
     end
 
+    if @label.present? && @level.present?
+      @subject = Subject.find_by(label: @label, level: @level)
+      @project_url = @label if @level == 'repo'
+    end
+
     if @project_url.present?
       uri = Addressable::URI.parse(@project_url)
       uri.path = uri.path.sub(/\.git$/, '')
@@ -27,6 +32,67 @@ class PullServer
     if @extra.is_a?(Hash) && SUPPORT_DOMAIN_NAMES.include?(@extra[:origin])
       @domain_name = @extra[:origin]
     end
+  end
+
+  def update_developers
+    result = subject_validate
+    return result unless result[:status]
+
+    pr_desc = "submitted by @#{@extra[:username]}"
+    case @level
+    when 'repo'
+      path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
+      message = "Updated #{path} developers"
+      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
+      result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
+      repo, sha = {}, nil
+      sha = cacualte_sha(result[:body]) if result[:status]
+      repo = YAML.load(result[:body]) rescue {} if result[:status]
+      repo['resource_types'] = { 'repo_urls' => @project_url } if repo.blank?
+      repo['developers'] ||= {}
+      repo['developers'][@extra[:contributor]] = []
+      @extra[:organizations]&.each do |o|
+        repo['developers'][@extra[:contributor]] << "#{o.org_name} from #{o.first_date} until #{o.last_date}"
+      end
+      content_base64 = Base64.strict_encode64(YAML.dump(repo))
+
+      if @domain_name == 'gitee'
+        result = gitee_is_fork_repo(@project_url)
+        return result unless result[:status]
+
+        create_gitee_pull(branch, path, content_base64, message, pr_desc, sha: sha)
+      else
+        result = github_is_fork_repo(@project_url)
+        return result unless result[:status]
+
+        create_github_pull(branch, path, content_base64, message, pr_desc, sha: sha)
+      end
+    when 'project', 'community'
+      path = "#{ORG_DIR}/#{@label}.yml"
+      message = "Updated #{path}"
+      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
+      result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
+      return result unless result[:status]
+      project = YAML.load(result[:body])
+      sha = cacualte_sha(result[:body])
+      project['developers'] ||= {}
+      project['developers'][@extra[:contributor]] = []
+      @extra[:organizations]&.each do |o|
+        project['developers'][@extra[:contributor]] << "#{o.org_name} from #{o.first_date} until #{o.last_date}"
+      end
+      content_base64 = Base64.strict_encode64(YAML.dump(project))
+
+      if @domain_name == 'gitee'
+        create_gitee_pull(branch, path, content_base64, message, pr_desc, sha: sha)
+      else
+        create_github_pull(branch, path, content_base64, message, pr_desc, sha: sha)
+      end
+
+    else
+      { status: false, message: I18n.t('pull.invalid_level') }
+    end
+  rescue => ex
+    { status: false, message: ex.message }
   end
 
   def update_workflow
@@ -142,15 +208,24 @@ class PullServer
     { status: true }
   end
 
+  def subject_validate
+    return { status: false, message: I18n.t('users.subject_not_exist') } if @subject.blank?
+    { status: true }
+  end
+
   private
 
-  def create_gitee_pull(branch, path, content_base64, message, pr_desc)
+  def create_gitee_pull(branch, path, content_base64, message, pr_desc, sha: nil)
     result = gitee_create_branch(branch)
     return result unless result[:status]
 
-    result = gitee_post_file(path, message, content_base64, branch)
-    return result unless result[:status]
-
+    if sha
+      result = gitee_put_file(path, message, content_base64, branch, sha)
+      return result unless result[:status]
+    else
+      result = gitee_post_file(path, message, content_base64, branch)
+      return result unless result[:status]
+    end
     result = gitee_create_pull(message, pr_desc, branch)
     return result unless result[:status]
     { status: true, pr_url: result[:pr_url] }
@@ -170,14 +245,14 @@ class PullServer
     { status: true, pr_url: result[:pr_url] }
   end
 
-  def create_github_pull(branch, path, content_base64, message, pr_desc)
+  def create_github_pull(branch, path, content_base64, message, pr_desc, sha: nil)
     result = github_get_head_sha()
     return result unless result[:status]
 
     result = github_create_ref(branch, result[:sha])
     return result unless result[:status]
 
-    result = github_put_file(path, message, content_base64, branch)
+    result = github_put_file(path, message, content_base64, branch, sha: sha)
     return result unless result[:status]
 
     result = github_create_pull(message, pr_desc, branch)
@@ -200,5 +275,11 @@ class PullServer
     result = github_create_pull(message, pr_desc, branch)
     return result unless result[:status]
     { status: true, pr_url: result[:pr_url] }
+  end
+
+  def cacualte_sha(content)
+    header = "blob #{content.bytesize}\0"
+    combined = header + content
+    Digest::SHA1.hexdigest(combined)
   end
 end

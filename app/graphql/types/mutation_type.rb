@@ -12,6 +12,8 @@ module Types
     field :create_subscription, mutation: Mutations::CreateSubscription, description: 'Create subscription'
     field :cancel_subscription, mutation: Mutations::CancelSubscription, description: 'Cancel subscription'
 
+    field :manage_user_orgs, mutation: Mutations::ManageUserOrgs, description: 'Manage user organizations'
+
     # Lab Model Management
     field :create_lab_model, mutation: Mutations::CreateLabModel, description: 'Create a Lab model'
     field :delete_lab_model, mutation: Mutations::DeleteLabModel, description: 'Delete a Lab model'

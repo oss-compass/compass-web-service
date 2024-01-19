@@ -94,6 +94,10 @@ Rails.application.configure do
 
   config.lograge.enabled = true
   config.lograge.custom_options = lambda do |event|
-    { :remote_ip => event.payload[:request].remote_ip }
+    {
+      :host => event.payload[:request].host,
+      :remote_ip => event.payload[:request].remote_ip,
+      :x_forwarded_for => event.payload[:request].env['HTTP_X_FORWARDED_FOR']
+    }
   end
 end
