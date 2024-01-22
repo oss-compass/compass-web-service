@@ -86,7 +86,7 @@ module Common
         req = { method: :get, url: yaml_url }
         req.merge!(proxy: PROXY) unless extract_domain(yaml_url).start_with?('gitee')
         yaml = YAML.load(RestClient::Request.new(req).execute.body)
-        base_config.merge(repo_url: yaml['resource_types']['repo_urls'])
+        base_config.merge(repo_url: yaml['resource_types']['repo_urls'], developers: yaml['developers'] || {})
       end
     ActiveRecord::Base.connection_pool.with_connection do
       analyzer.new(params).execute(only_validate: only_validate).merge(path: path)

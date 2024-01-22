@@ -5,6 +5,7 @@ class AnalyzeGroupServer
   WORKFLOW = 'ETL_V1_GROUP'
 
   include Common
+  include CompassUtils
 
   class TaskExists < StandardError; end
 
@@ -62,6 +63,9 @@ class AnalyzeGroupServer
     if only_validate
       { status: true, message: I18n.t('analysis.validation.pass') }
     else
+      result = update_developers
+      return result unless result[:status]
+
       result = submit_task_status
       { status: result[:status], message: result[:message] }
     end
@@ -76,7 +80,7 @@ class AnalyzeGroupServer
   def extract_repos
     Rails.logger.info("Extracting repos from #{@yaml_url}")
 
-    repos = { 'software-artifact' => [], 'governance' => [] }
+    repos = { 'software-artifact' => [], 'governance' => [], 'origin' => nil }
     @raw_yaml['resource_types'].each do |project_type, project_info|
       suffix = nil
       if %w[software-artifact-repositories software-artifact-resources software-artifact-projects].include?(project_type)
@@ -92,14 +96,15 @@ class AnalyzeGroupServer
         urls.each do |project_url|
           uri = Addressable::URI.parse(project_url)
           next unless uri.scheme.present? && uri.normalized_host.present? && uri.path.present?
+          repos['origin'] ||= (uri&.normalized_host.starts_with?('gitee.com') ? 'gitee' : 'github')
           repos[suffix] << "https://#{uri&.normalized_host}#{uri.path}"
         end
       end
     end
-    [repos['software-artifact'] || [], repos['governance'] || []]
+    [repos['software-artifact'] || [], repos['governance'] || [], repos['origin']]
   rescue => ex
     Rails.logger.error("Failed to extract repos, error: #{ex.message}")
-    [[], []]
+    [[], [], nil]
   end
 
   def repos_count
@@ -129,7 +134,9 @@ class AnalyzeGroupServer
     @project_name = @raw_yaml['community_name']
     raise ValidateFailed.new('Invalid community name') unless @project_name.present?
 
-    @software_repos, @governance_repos = extract_repos
+    @software_repos, @governance_repos, @origin = extract_repos
+
+    @developers = @raw_yaml['developers'] || {}
 
   rescue => ex
     raise ValidateError.new(ex.message)
@@ -224,5 +231,42 @@ class AnalyzeGroupServer
     end
   rescue => ex
     Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
+  end
+
+  def update_developers
+    return { status: true, message: 'skipped' } unless @developers.present? && @callback&.dig(:params, :pr_number).present?
+    pr_number = @callback&.dig(:params, :pr_number)
+    @developers.each do |contributor, org_lines|
+      organizations = org_lines.map do |org_line|
+        pattern = /(?<org_name>[a-zA-Z0-9_-]+) from (?<first_date>\d{4}-\d{2}-\d{2}) until (?<last_date>\d{4}-\d{2}-\d{2})/
+        match_data = org_line.match(pattern)
+        OpenStruct.new(
+          org_name: match_data[:org_name],
+          first_date: Date.parse(match_data[:first_date]),
+          last_date: Date.parse(match_data[:last_date])
+        )
+      end
+      Input::ContributorOrgInput.validate_no_overlap(organizations)
+      uuid = get_uuid(contributor, ContributorOrg::URL, @project_name, 'community', @origin)
+      record = OpenStruct.new(
+        {
+          id: uuid,
+          uuid: uuid,
+          org_change_date_list: organizations.map(&:to_h),
+          modify_by: pr_number,
+          modify_type: ContributorOrg::URL,
+          platform_type: @origin,
+          is_bot: false,
+          label: @project_name,
+          level: 'community',
+          update_at_date: Time.current
+        }
+      )
+      ContributorOrg.import(record)
+    end
+    { status: true, message: '' }
+  rescue => ex
+    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.message}")
+    { status: false, message: ex.message }
   end
 end

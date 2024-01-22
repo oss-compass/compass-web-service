@@ -5,6 +5,7 @@ class AnalyzeServer
   WORKFLOW = 'ETL_V1'
 
   include Common
+  include CompassUtils
 
   class TaskExists < StandardError; end
 
@@ -26,11 +27,13 @@ class AnalyzeServer
     @milestone_persona = opts[:milestone_persona] || true
     @role_persona = opts[:role_persona] || true
     @callback = opts[:callback]
+    @developers = opts[:developers] || {}
 
     if @repo_url.present?
       uri = Addressable::URI.parse(@repo_url)
       @repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
       @domain = uri&.normalized_host
+      @domain_name = @domain.starts_with?('gitee.com') ? 'gitee' : 'github'
       @project_name = @repo_url
     end
   end
@@ -60,6 +63,10 @@ class AnalyzeServer
     if only_validate
       { status: true, message: I18n.t('analysis.validation.pass') }
     else
+
+      result = update_developers
+      return result unless result[:status]
+
       result = submit_task_status
 
       { status: result[:status], message: result[:message] }
@@ -166,5 +173,42 @@ class AnalyzeServer
     end
   rescue => ex
     Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
+  end
+
+  def update_developers
+    return { status: true, message: 'skipped' } unless @developers.present? && @callback&.dig(:params, :pr_number).present?
+    pr_number = @callback&.dig(:params, :pr_number)
+    @developers.each do |contributor, org_lines|
+      organizations = org_lines.map do |org_line|
+        pattern = /(?<org_name>[a-zA-Z0-9_-]+) from (?<first_date>\d{4}-\d{2}-\d{2}) until (?<last_date>\d{4}-\d{2}-\d{2})/
+        match_data = org_line.match(pattern)
+        OpenStruct.new(
+          org_name: match_data[:org_name],
+          first_date: Date.parse(match_data[:first_date]),
+          last_date: Date.parse(match_data[:last_date])
+        )
+      end
+      Input::ContributorOrgInput.validate_no_overlap(organizations)
+      uuid = get_uuid(contributor, ContributorOrg::URL, @repo_url, 'repo', @domain_name)
+      record = OpenStruct.new(
+        {
+          id: uuid,
+          uuid: uuid,
+          org_change_date_list: organizations.map(&:to_h),
+          modify_by: pr_number,
+          modify_type: ContributorOrg::URL,
+          platform_type: @domain_name,
+          is_bot: false,
+          label: @repo_url,
+          level: 'repo',
+          update_at_date: Time.current
+        }
+      )
+      ContributorOrg.import(record)
+    end
+    { status: true, message: '' }
+  rescue => ex
+    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.message}")
+    { status: false, message: ex.message }
   end
 end
