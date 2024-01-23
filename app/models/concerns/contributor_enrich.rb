@@ -60,7 +60,8 @@ module ContributorEnrich
           row
         end
 
-        load_organizations(contributors_list, begin_date, end_date, label, level)
+        # load_organizations(contributors_list, begin_date, end_date, label, level)
+        contributors_list
       end
     end
 
