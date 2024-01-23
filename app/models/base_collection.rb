@@ -80,23 +80,6 @@ class BaseCollection < BaseIndex
       &.sort
   end
 
-  def self.fuzzy_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
-    base =
-      self
-        .search(keyword, default_field: field)
-        .per(limit)
-    filters.map do |k, value|
-      if value.present?
-        base = base.where(k => value)
-      end
-    end
-
-    base
-      .source(fields)
-      .execute
-      .raw_response
-  end
-
   def self.collections_of(label, limit: 10, field: 'collection', level: 'repo')
     return [] unless level == 'repo'
     Rails.cache.fetch("#{self.name}:#{__method__}:#{label}:#{limit}:#{field}:#{level}", expires_in: MiddleCacheTTL) do
@@ -114,23 +97,6 @@ class BaseCollection < BaseIndex
   rescue => ex
     Rails.logger.error("Failed to get collections of #{label}, #{ex.message}")
     []
-  end
-
-  def self.prefix_search(keyword, field, collapse, fields: [], filters: {}, limit: 5)
-    base =
-      self
-        .must(prefix: { field => keyword })
-        .per(limit)
-    filters.map do |k, value|
-      if value.present?
-        base = base.where(k => value)
-      end
-    end
-
-    base
-      .source(fields)
-      .execute
-      .raw_response
   end
 
   def self.hottest(collection, level, limit: 5)

@@ -11,6 +11,7 @@ module Types
     field :analysis_status_verify, resolver: Queries::AnalysisStatusVerifyQuery
 
     field :fuzzy_search, resolver: Queries::ProjectFuzzyQuery
+    field :org_fuzzy_search, resolver: Queries::OrgFuzzyQuery
     field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
     field :repo_belongs_to, resolver: Queries::RepoBelongsToQuery
