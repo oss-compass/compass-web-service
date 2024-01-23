@@ -8,6 +8,10 @@ class GithubContributorEnrich < GithubBase
     'github-contributors_org_repo_enriched'
   end
 
+  def self.platform_type
+    'github'
+  end
+
   def self.mapping
     {"properties"=>
      {"contribution"=>{"type"=>"long"},

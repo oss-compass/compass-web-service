@@ -247,14 +247,15 @@ class AnalyzeGroupServer
         )
       end
       Input::ContributorOrgInput.validate_no_overlap(organizations)
-      uuid = get_uuid(contributor, ContributorOrg::URL, @project_name, 'community', @origin)
+      uuid = get_uuid(contributor, ContributorOrg::RepoAdmin, @project_name, 'community', @origin)
       record = OpenStruct.new(
         {
           id: uuid,
           uuid: uuid,
+          contributor: contributor,
           org_change_date_list: organizations.map(&:to_h),
           modify_by: pr_number,
-          modify_type: ContributorOrg::URL,
+          modify_type: ContributorOrg::RepoAdmin,
           platform_type: @origin,
           is_bot: false,
           label: @project_name,

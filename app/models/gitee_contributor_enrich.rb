@@ -8,6 +8,10 @@ class GiteeContributorEnrich < GiteeBase
     'gitee-contributors_org_repo_enriched'
   end
 
+  def self.platform_type
+    'gitee'
+  end
+
   def self.mapping
     {"properties"=>
      {"contribution"=>{"type"=>"long"},

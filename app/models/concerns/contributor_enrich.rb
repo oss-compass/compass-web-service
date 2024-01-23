@@ -6,8 +6,8 @@ module ContributorEnrich
   MAX_PER_PAGE = 2000
 
   class_methods do
-    def fetch_contributors_list(repo_urls, begin_date, end_date)
-      Rails.cache.fetch(contributors_key(repo_urls, begin_date, end_date), expires_in: 1.day) do
+    def fetch_contributors_list(repo_urls, begin_date, end_date, label: nil, level: nil)
+      Rails.cache.fetch(contributors_key(repo_urls, begin_date, end_date), expires_in: 15.minutes) do
         contribution_count = 0
         acc_contribution_count = 0
         mileage_step = 0
@@ -35,11 +35,12 @@ module ContributorEnrich
           end
           query = query.scroll(id: query.scroll_id, timeout: '1m')
           depth += 1
-          break query.last_page? || depth > MAX_DEPTH
+          break if (query.last_page? || depth > MAX_DEPTH)
         end
 
-        contributors_list
-          .reduce({}) do |map, row|
+        contributors_list =
+          contributors_list
+            .reduce({}) do |map, row|
           key = row['contributor']
           if !['openharmony_ci'].include?(key)
             map[key] = map[key] ? merge_contributor(map[key], row) : row
@@ -47,14 +48,19 @@ module ContributorEnrich
           end
           map
         end
-          .sort_by { |_, row| -row['contribution'].to_i }
-          .map do |_, row|
+
+        contributors_list =
+          contributors_list
+            .sort_by { |_, row| -row['contribution'].to_i }
+            .map do |_, row|
           row['mileage_type'] = mileage_types[mileage_step]
           acc_contribution_count += row['contribution'].to_i
           mileage_step += 1 if mileage_step == 0 && acc_contribution_count >= contribution_count * 0.5
           mileage_step += 1 if mileage_step == 1 && acc_contribution_count >= contribution_count * 0.8
           row
         end
+
+        load_organizations(contributors_list, begin_date, end_date, label, level)
       end
     end
 
@@ -101,6 +107,79 @@ module ContributorEnrich
           contributors = contributors.sort_by { |row| row[sort_opt.type] }
           contributors = contributors.reverse unless sort_opt.direction == 'asc'
         end
+      end
+      contributors
+    end
+
+    def load_organizations(contributors, begin_date, end_date, label, level)
+      contributor_index = 0
+      total_contributors = contributors.length
+      contributors_chunks = contributors.in_groups_of(MAX_PER_PAGE)
+      last_updated_contributor_indexes = []
+      contributors_chunks.each do |chunks|
+        chunk_contributors = chunks.compact.map { |o| o['contributor'] }
+        [
+          ContributorOrg::URL,
+          ContributorOrg::RepoAdmin,
+          ContributorOrg::SystemAdmin,
+          ContributorOrg::UserIndividual
+        ].each do |modify_type|
+          last_updated_contributor_index = contributor_index
+          base =
+            ContributorOrg
+              .must(terms: { 'contributor.keyword' => chunk_contributors })
+              .must(match_phrase: { modify_type: modify_type })
+              .where(platform_type: self.platform_type)
+
+          if label.present? && level.present? && !ContributorOrg::GobalScopes.include?(modify_type)
+            base = base.must(match: { 'label.keyword': label }).where('level.keyword': level)
+          end
+
+          base
+            .page(1)
+            .per(MAX_PER_PAGE)
+            .sort(
+              _script: {
+                type: 'number',
+                script: {
+                  inline: "params.sortOrder.indexOf(doc['contributor.keyword'].value)",
+                  params: {
+                    'sortOrder' => chunk_contributors
+                  }
+                },
+                order: 'asc'
+              })
+            .execute
+            .raw_response
+            .dig('hits', 'hits')
+            .map do |hit|
+            source = hit['_source']
+            org_change_date_list = source['org_change_date_list'] || []
+            current_contributor = source['contributor']
+            current_org = nil
+            org_change_date_list.each do |o|
+              first_date = (Date.parse(o['first_date']) rescue begin_date)
+              last_date = (Date.parse(o['last_date']) rescue Date.today)
+              if begin_date >= first_date && end_date <= last_date
+                current_org = o['org_name']
+              end
+            end
+
+            if current_org
+              loop do
+                if contributors[last_updated_contributor_index]['contributor'] == current_contributor
+                  contributors[last_updated_contributor_index]['organization'] = current_org
+                  break
+                end
+                last_updated_contributor_index += 1
+                break unless last_updated_contributor_index < total_contributors
+              end
+            end
+          end
+          last_updated_contributor_indexes << last_updated_contributor_index
+        end
+        contributor_index = last_updated_contributor_indexes.min
+        last_updated_contributor_indexes = []
       end
       contributors
     end

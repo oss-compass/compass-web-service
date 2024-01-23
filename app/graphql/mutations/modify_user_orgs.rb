@@ -24,6 +24,7 @@ module Mutations
         {
           id: uuid,
           uuid: uuid,
+          contributor: contributor,
           org_change_date_list: organizations,
           modify_by: current_user.id,
           modify_type: ContributorOrg::UserIndividual,

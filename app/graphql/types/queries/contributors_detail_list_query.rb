@@ -28,7 +28,7 @@ module Types
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
         contributors_list =
           indexer
-            .fetch_contributors_list(repo_urls, begin_date, end_date)
+            .fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
             .then { indexer.filter_contributors(_1, filter_opts) }
             .then { indexer.sort_contributors(_1, sort_opts) }
 

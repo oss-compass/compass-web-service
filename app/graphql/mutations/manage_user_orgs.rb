@@ -24,14 +24,15 @@ module Mutations
       label = ShortenedLabel.normalize_label(label)
 
       if current_user.is_admin?
-        uuid = get_uuid(contributor, ContributorOrg::RepoAdmin, label, level, platform)
+        uuid = get_uuid(contributor, ContributorOrg::SystemAdmin, label, level, platform)
         record = OpenStruct.new(
           {
             id: uuid,
             uuid: uuid,
+            contributor: contributor,
             org_change_date_list: organizations,
             modify_by: current_user.id,
-            modify_type: ContributorOrg::RepoAdmin,
+            modify_type: ContributorOrg::SystemAdmin,
             platform_type: platform,
             is_bot: false,
             label: label,

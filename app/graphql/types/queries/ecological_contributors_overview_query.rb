@@ -30,7 +30,7 @@ module Types
 
         contributors_list =
           indexer
-            .fetch_contributors_list(repo_urls, begin_date, end_date)
+            .fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
             .then { indexer.filter_contributors(_1, filter_opts) }
 
         total_count = contributors_list.sum { _1['contribution'] }
