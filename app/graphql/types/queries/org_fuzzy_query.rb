@@ -38,7 +38,7 @@ module Types
           list.flat_map do |item|
             item = item['_source']
             if item.present?
-              candidates << item
+              candidates << item.slice('org_name')
             end
           end
         end

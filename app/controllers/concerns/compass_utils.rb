@@ -124,22 +124,22 @@ module CompassUtils
     default_min = Date.today - 1.month
     default_max = Date.today
 
-    return [true, valid_range] if current_user&.is_admin?
-    return [true, valid_range] if current_user&.has_privilege_to?(label, level)
+    is_repo_admin = is_repo_admin?(current_user, label, level)
+
+    return [true, valid_range, is_repo_admin] if current_user&.is_admin?
+    return [true, valid_range, is_repo_admin] if current_user&.has_privilege_to?(label, level)
 
     diff_seconds = end_date.to_i - begin_date.to_i
-    return [true, valid_range] if diff_seconds < 2.months
-
-    is_repo_admin = is_repo_admin?(current_user, label, level)
+    return [true, valid_range, is_repo_admin] if diff_seconds < 2.months
 
     if is_repo_admin
       default_min = Date.today - 1.year
       default_max = Date.today
     end
 
-    return [true, valid_range] if diff_seconds < 2.years && is_repo_admin
+    return [true, valid_range, is_repo_admin] if diff_seconds < 2.years && is_repo_admin
 
-    [false, [default_min, default_max]]
+    [false, [default_min, default_max], is_repo_admin]
   end
 
   def generate_interval_aggs(base_type, date_field, interval_str='1M', avg_type='Float', aliases={}, suffixs=[])

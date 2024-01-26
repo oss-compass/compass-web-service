@@ -8,5 +8,6 @@ module Types
     field :status, Boolean, description: 'whether it is a valid data range'
     field :min, GraphQL::Types::ISO8601DateTime, description: 'min valid date'
     field :max, GraphQL::Types::ISO8601DateTime, description: 'max valid date'
+    field :label_admin, Boolean, description: 'whether current is a repo admin for this label'
   end
 end

@@ -160,7 +160,7 @@ module ContributorEnrich
             org_change_date_list.each do |o|
               first_date = (Date.parse(o['first_date']) rescue begin_date)
               last_date = (Date.parse(o['last_date']) rescue Date.today)
-              if begin_date >= first_date && end_date <= last_date
+              if begin_date >= first_date && (end_date <= last_date || (end_date - last_date) < 3.months)
                 current_org = o['org_name']
               end
             end
@@ -178,7 +178,7 @@ module ContributorEnrich
           end
           last_updated_contributor_indexes << last_updated_contributor_index
         end
-        contributor_index = last_updated_contributor_indexes.min
+        contributor_index = last_updated_contributor_indexes.max
         last_updated_contributor_indexes = []
       end
       contributors

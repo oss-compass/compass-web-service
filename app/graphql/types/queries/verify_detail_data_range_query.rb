@@ -29,9 +29,9 @@ module Types
           level = short&.level
         end
 
-        ok, valid_range = validate_date(current_user, label, level, begin_date, end_date)
+        ok, valid_range, label_admin = validate_date(current_user, label, level, begin_date, end_date)
 
-        { status: ok, min: valid_range[0], max: valid_range[1], level: level, label: label, short_code: short_code }
+        { status: ok, min: valid_range[0], max: valid_range[1], level: level, label: label, short_code: short_code, label_admin: label_admin }
       end
     end
   end
