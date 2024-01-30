@@ -20,7 +20,7 @@ module ContributorEnrich
             .must(terms: { 'repo_name.keyword' => repo_urls })
             .where(is_bot: false)
             .per(MAX_PER_PAGE)
-            .range(:contribution_without_observe, gte: 1)
+            .range(:contribution, gt: 0)
             .range(:grimoire_creation_date, gte: begin_date, lte: end_date )
             .sort(grimoire_creation_date: :asc)
             .scroll(timeout: '1m')
@@ -160,7 +160,7 @@ module ContributorEnrich
             org_change_date_list.each do |o|
               first_date = (Date.parse(o['first_date']) rescue begin_date)
               last_date = (Date.parse(o['last_date']) rescue Date.today)
-              if begin_date >= first_date && (end_date <= last_date || (end_date - last_date) < 3.months)
+              if end_date <= last_date || (end_date - last_date) < 3.months
                 current_org = o['org_name']
               end
             end
