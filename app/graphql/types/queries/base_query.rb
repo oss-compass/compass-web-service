@@ -127,7 +127,7 @@ module Types
 
       def validate_date!(current_user, label, level, begin_date, end_date)
         login_required!(current_user)
-        ok, valid_range = validate_date(current_user, label, level, begin_date, end_date)
+        ok, valid_range, _admin = validate_date(current_user, label, level, begin_date, end_date)
         return if ok
         raise GraphQL::ExecutionError.new(
                 I18n.t('basic.invalid_range', param: '`begin_date` or `end_date`', min: valid_range[0], max: valid_range[1]),
