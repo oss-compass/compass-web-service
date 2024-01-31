@@ -53,12 +53,14 @@ module ContributorEnrich
           contributors_list
             .sort_by { |_, row| -row['contribution_without_observe'].to_i }
             .map do |_, row|
-          row['mileage_type'] = mileage_types[mileage_step]
+          row['mileage_type'] = (mileage_step < 2 && row['contribution_without_observe'] > 0) ?
+                                  mileage_types[mileage_step] : mileage_types[2]
           acc_contribution_count += row['contribution'].to_i
           mileage_step += 1 if mileage_step == 0 && acc_contribution_count >= contribution_count * 0.5
           mileage_step += 1 if mileage_step == 1 && acc_contribution_count >= contribution_count * 0.8
           row
         end
+            .sort_by { |row| mileage_types.index(row['mileage_type']) }
 
         load_organizations(contributors_list, begin_date, end_date, label, level)
       end
@@ -169,6 +171,8 @@ module ContributorEnrich
               loop do
                 if contributors[last_updated_contributor_index]['contributor'] == current_contributor
                   contributors[last_updated_contributor_index]['organization'] = current_org
+                  contributors[last_updated_contributor_index]['ecological_type'] =
+                    contributors[last_updated_contributor_index]['ecological_type'].gsub('individual', 'organization')
                   break
                 end
                 last_updated_contributor_index += 1
