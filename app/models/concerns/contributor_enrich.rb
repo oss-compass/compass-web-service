@@ -51,7 +51,7 @@ module ContributorEnrich
 
         contributors_list =
           contributors_list
-            .sort_by { |_, row| -row['contribution'].to_i }
+            .sort_by { |_, row| -row['contribution_without_observe'].to_i }
             .map do |_, row|
           row['mileage_type'] = mileage_types[mileage_step]
           acc_contribution_count += row['contribution'].to_i
@@ -160,7 +160,7 @@ module ContributorEnrich
             org_change_date_list.each do |o|
               first_date = (Date.parse(o['first_date']) rescue begin_date)
               last_date = (Date.parse(o['last_date']) rescue Date.today)
-              if end_date <= last_date || (end_date - last_date) < 3.months
+              if end_date <= last_date
                 current_org = o['org_name']
               end
             end
