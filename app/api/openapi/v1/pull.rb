@@ -48,7 +48,7 @@ module Openapi
         get 'export_state/:uuid' do
           state = Rails.cache.read("export-#{params[:uuid]}")
           return error!('Not Found', 404) unless state.present?
-          { code: 200, uuid: params[:uuid] }.merge(state)
+          { code: 200, uuid: params[:uuid] }.merge(refresh_download_path(state))
         end
       end
     end

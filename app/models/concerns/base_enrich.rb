@@ -77,6 +77,7 @@ module BaseEnrich
           "export-#{args[:uuid]}",
           {
             status: ::Subject::COMPLETE,
+            blob_id: args[:blob_id],
             downdload_path: Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)
           }
         )
