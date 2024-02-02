@@ -37,6 +37,7 @@ module Openapi
       def refresh_download_path(state)
         blob = state[:blob_id] ? ActiveStorage::Attachment.find_by(blob_id: state[:blob_id], name: 'exports') : nil
         state.merge!(download_path: Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)) if blob
+        state.merge!(downdload_path: Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)) if blob
         state
       end
 
@@ -44,12 +45,12 @@ module Openapi
         uuid = opts[:uuid]
         state = Rails.cache.read("export-#{uuid}")
         if state && (state[:status] == ::Subject::COMPLETE || state[:status] == ::Subject::PROGRESS)
-          return { code: 200, uuid: uuid }.merge(state)
+          return { code: 200, uuid: uuid }.merge(refresh_download_path(state))
         end
         state = { status: ::Subject::PENDING }
         Rails.cache.write("export-#{uuid}", state, expires_in: Common::EXPORT_CACHE_TTL)
         RabbitMQ.publish(Common::EXPORT_TASK_QUEUE, opts)
-        { code: 200, uuid: uuid }.merge(state)
+        { code: 200, uuid: uuid }.merge(refresh_download_path(state))
       end
     end
   end
