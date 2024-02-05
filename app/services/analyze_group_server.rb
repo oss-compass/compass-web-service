@@ -238,7 +238,7 @@ class AnalyzeGroupServer
     pr_number = @callback&.dig(:params, :pr_number)
     @developers.each do |contributor, org_lines|
       organizations = org_lines.map do |org_line|
-        pattern = /(?<org_name>[a-zA-Z0-9_-]+) from (?<first_date>\d{4}-\d{2}-\d{2}) until (?<last_date>\d{4}-\d{2}-\d{2})/
+        pattern = /(?<org_name>[\sa-zA-Z0-9_-]+) from (?<first_date>\d{4}-\d{2}-\d{2}) until (?<last_date>\d{4}-\d{2}-\d{2})/
         match_data = org_line.match(pattern)
         OpenStruct.new(
           org_name: match_data[:org_name],

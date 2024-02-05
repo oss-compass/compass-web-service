@@ -162,7 +162,7 @@ module ContributorEnrich
             org_change_date_list.each do |o|
               first_date = (Date.parse(o['first_date']) rescue begin_date)
               last_date = (Date.parse(o['last_date']) rescue Date.today)
-              if end_date <= last_date
+              if end_date <= (last_date + 1.day)
                 current_org = o['org_name']
               end
             end
