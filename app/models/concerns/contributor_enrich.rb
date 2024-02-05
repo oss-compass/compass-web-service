@@ -236,6 +236,7 @@ module ContributorEnrich
 
     def on_each(args)
       source = args[:source]
+      source['contribution'] = source['contribution_filterd'] if source['contribution_filterd']
       source['contribution_type_list'] = source['contribution_type_list'].map{ |c| c['contribution_type'] }.join('|')
       source
     end
