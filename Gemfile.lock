@@ -611,6 +611,8 @@ GEM
     parser (3.1.2.0)
       ast (~> 2.4.1)
     promise.rb (0.7.4)
+    prorate (0.7.3)
+      redis (>= 2)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -685,7 +687,7 @@ GEM
       activesupport (>= 6.1.5)
       i18n
     rbtree (0.4.5)
-    redis (4.6.0)
+    redis (4.8.1)
     redis-actionpack (5.3.0)
       actionpack (>= 5, < 8)
       redis-rack (>= 2.1.0, < 3)
@@ -937,6 +939,7 @@ DEPENDENCIES
   opentelemetry-sdk
   overcommit
   pagy
+  prorate
   pry
   puma
   pundit (~> 2.3)

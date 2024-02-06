@@ -24,6 +24,9 @@ gem 'redis'
 
 gem 'redis-rails'
 
+# Provides a low-level time-based throttle.
+gem 'prorate'
+
 # Use RabbitMQ
 gem 'bunny'
 gem 'sneakers'
