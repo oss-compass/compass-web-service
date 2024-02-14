@@ -34,7 +34,7 @@ class GraphqlController < ApplicationController
 
     t << real_ip
 
-    t.throttle! if !current_user || real_ip
+    t.throttle! if !current_user || (real_ip && !safelist_ip(real_ip))
 
     result = CompassWebServiceSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
@@ -51,6 +51,12 @@ class GraphqlController < ApplicationController
 
   def throttle_redis
     @throttle_redis ||= Redis.new(url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' })
+  end
+
+  def safelist_ip(target_ip)
+    Common::SAFELIST_IPS.any? do |safe_ip|
+      IPAddr.new(safe_ip).include?(IPAddr.new(target_ip))
+    end
   end
 
   # Handle variables in form data, JSON body, or a blank value
