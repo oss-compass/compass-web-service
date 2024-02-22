@@ -3,7 +3,7 @@ module ContributorEnrich
   extend ActiveSupport::Concern
 
   MAX_DEPTH = 10
-  MAX_PER_PAGE = 2000
+  MAX_PER_PAGE = 10000
 
   class_methods do
     def fetch_contributors_list(repo_urls, begin_date, end_date, label: nil, level: nil)

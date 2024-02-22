@@ -24,7 +24,7 @@ module Types
 
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
-        indexer, repo_urls =
+        indexer, repo_urls, origin =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
         contributors_list =
           indexer
@@ -39,7 +39,7 @@ module Types
 
         count = contributors_list.length
 
-        { count: count, total_page: (count.to_f/per).ceil, page: page, items: current_page }
+        { count: count, total_page: (count.to_f/per).ceil, page: page, items: current_page, origin:  origin }
       end
     end
   end
