@@ -59,7 +59,7 @@ module Common
 
   def each_patch_with_action(diff_url, &action)
     req = { method: :get, url: diff_url }
-    req.merge!(proxy: PROXY) unless extract_domain(diff_url).start_with?('gitee')
+    req[:proxy] = PROXY unless extract_domain(diff_url).start_with?('gitee')
     diff = RestClient::Request.new(req).execute.body
     patches = GitDiffParser.parse(diff)
     patches.each do |patch|
@@ -85,7 +85,7 @@ module Common
         base_config.merge(yaml_url: yaml_url)
       else
         req = { method: :get, url: yaml_url }
-        req.merge!(proxy: PROXY) unless extract_domain(yaml_url).start_with?('gitee')
+        req[:proxy] = PROXY unless extract_domain(yaml_url).start_with?('gitee')
         yaml = YAML.load(RestClient::Request.new(req).execute.body)
         base_config.merge(repo_url: yaml['resource_types']['repo_urls'], developers: yaml['developers'] || {})
       end

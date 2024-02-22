@@ -2,8 +2,8 @@
 module ContributorEnrich
   extend ActiveSupport::Concern
 
-  MAX_DEPTH = 10
-  MAX_PER_PAGE = 10000
+  MAX_DEPTH = 100
+  MAX_PER_PAGE = 8000
 
   class_methods do
     def fetch_contributors_list(repo_urls, begin_date, end_date, label: nil, level: nil)
@@ -13,7 +13,7 @@ module ContributorEnrich
         mileage_step = 0
         mileage_types = ['core', 'regular', 'guest']
         depth = 0
-        contributors_list = []
+        contributors_map = {}
 
         query =
           self
@@ -31,7 +31,10 @@ module ContributorEnrich
             .raw_response
             .dig('hits', 'hits')
             .map do |hit|
-            contributors_list << hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore))
+            row = hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore))
+            key = row['contributor']
+            contributors_map[key] = contributors_map[key] ? merge_contributor(contributors_map[key], row) : row
+            contribution_count += row['contribution'].to_i
           end
           query = query.scroll(id: query.scroll_id, timeout: '1m')
           depth += 1
@@ -39,18 +42,7 @@ module ContributorEnrich
         end
 
         contributors_list =
-          contributors_list
-            .reduce({}) do |map, row|
-          key = row['contributor']
-          if !['openharmony_ci'].include?(key)
-            map[key] = map[key] ? merge_contributor(map[key], row) : row
-            contribution_count += row['contribution'].to_i
-          end
-          map
-        end
-
-        contributors_list =
-          contributors_list
+          contributors_map
             .sort_by { |_, row| -row['contribution_without_observe'].to_i }
             .map do |_, row|
           row['mileage_type'] = (mileage_step < 2 && row['contribution_without_observe'] > 0) ?
