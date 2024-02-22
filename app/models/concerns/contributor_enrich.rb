@@ -87,6 +87,8 @@ module ContributorEnrich
               contributors
                 .select { |row| !(filter_opt.values & row['contribution_type_list'].map{|c| c['contribution_type']}).empty? }
                 .map { |row| append_filtered_contribution(row, filter_opt) }
+            elsif filter_opt.type == 'contributor' || filter_opt.type == 'organization'
+              contributors.select { |row| filter_opt.values.any? { |value| row[filter_opt.type].starts_with?(value) } }
             else
               contributors.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
             end
