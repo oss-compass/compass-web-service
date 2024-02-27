@@ -5,7 +5,7 @@ git_source(:gitee) { |repo| "https://gitee.com/#{repo}.git" }
 ruby File.read('.ruby-version')
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem 'rails', '~> 7.1.1'
+gem 'rails', '~> 7.1.3'
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem 'sprockets-rails'
