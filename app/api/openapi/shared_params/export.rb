@@ -37,7 +37,6 @@ module Openapi
       def refresh_download_path(state)
         blob = state[:blob_id] ? ActiveStorage::Attachment.find_by(blob_id: state[:blob_id], name: 'exports') : nil
         state[:download_path] = Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true) if blob
-        state[:downdload_path] = Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true) if blob
         state
       end
 

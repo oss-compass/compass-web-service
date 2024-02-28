@@ -73,14 +73,7 @@ module BaseEnrich
     def on_finish(args)
       blob = ActiveStorage::Attachment.find_by(blob_id: args[:blob_id], name: 'exports')
       if blob
-        Rails.cache.write(
-          "export-#{args[:uuid]}",
-          {
-            status: ::Subject::COMPLETE,
-            blob_id: args[:blob_id],
-            downdload_path: Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)
-          }
-        )
+        Rails.cache.write("export-#{args[:uuid]}", { status: ::Subject::COMPLETE, blob_id: args[:blob_id] })
       else
         Rails.cache.write("export-#{args[:uuid]}", { status: ::Subject::UNKNOWN })
       end
