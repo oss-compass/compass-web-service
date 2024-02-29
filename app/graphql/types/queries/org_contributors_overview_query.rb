@@ -4,6 +4,8 @@ module Types
   module Queries
     class OrgContributorsOverviewQuery < BaseOverviewQuery
 
+      TOP_COUNT = 10
+
       type [Types::Meta::ContributorTopOverviewType], null: false
 
       description 'Get organization contributors overview'
@@ -34,14 +36,22 @@ module Types
             .fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
             .then { indexer.filter_contributors(_1, filter_opts) }
 
-        grouped_data = contributors_list.group_by { _1['organization'] }
+        grouped_data = contributors_list.group_by { _1['organization'] }.except(nil)
         transformed_data = grouped_data.transform_values { |v| v.map { |h| h['contribution'] }.reduce(0, :+) }
         sorted_data = transformed_data.sort_by { |_, v| -v }
         total_count = transformed_data.map { |_k, v| v }.reduce(0, :+)
 
-        sorted_data
-          .first(10)
-          .map { |group, _| build_distribution_data(group, grouped_data[group], total_count) }
+        top_grouped_data =
+          sorted_data.first(TOP_COUNT)
+            .map { |group, _| build_distribution_data(group, grouped_data[group], total_count) }
+
+        if sorted_data.size > TOP_COUNT
+          other_grouped_data = sorted_data.drop(TOP_COUNT).map { |group, _| grouped_data[group] }.reduce(&:+)
+        end
+
+        top_grouped_data << build_distribution_data('other', other_grouped_data, total_count) if other_grouped_data
+
+        top_grouped_data
       end
     end
   end
