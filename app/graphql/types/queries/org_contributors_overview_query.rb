@@ -34,7 +34,7 @@ module Types
             .fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
             .then { indexer.filter_contributors(_1, filter_opts) }
 
-        grouped_data = contributors_list.group_by { _1['organization'] }
+        grouped_data = contributors_list.group_by { _1['organization'] }.except(nil)
         transformed_data = grouped_data.transform_values { |v| v.map { |h| h['contribution'] }.reduce(0, :+) }
         sorted_data = transformed_data.sort_by { |_, v| -v }
         total_count = transformed_data.map { |_k, v| v }.reduce(0, :+)
