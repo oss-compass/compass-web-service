@@ -121,7 +121,7 @@ module CompassUtils
 
   def validate_date(current_user, label, level, begin_date, end_date)
     valid_range = [begin_date, end_date]
-    default_min = Date.today - 1.month
+    default_min = Date.today - 6.month
     default_max = Date.today
 
     is_repo_admin = current_user&.is_admin? || is_repo_admin?(current_user, label, level)
@@ -129,7 +129,7 @@ module CompassUtils
     return [true, valid_range, is_repo_admin] if is_repo_admin
 
     diff_seconds = end_date.to_i - begin_date.to_i
-    return [true, valid_range, is_repo_admin] if diff_seconds < 2.months
+    return [true, valid_range, is_repo_admin] if diff_seconds < 7.months
 
     return [true, valid_range, is_repo_admin] if current_user&.has_privilege_to?(label, level)
 
