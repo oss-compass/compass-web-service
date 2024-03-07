@@ -17,9 +17,10 @@ module Mutations
       Input::ContributorOrgInput.validate_no_overlap(organizations)
 
       login_bind = current_user.login_binds.find_by(provider: platform)
+      login_bind = current_user.login_binds.first if login_bind.blank?
       raise GraphQL::ExecutionError.new I18n.t('users.no_such_login_bind') if login_bind.blank?
       contributor = login_bind.nickname
-      uuid = get_uuid(contributor, ContributorOrg::UserIndividual, nil, nil, platform)
+      uuid = get_uuid(contributor, ContributorOrg::UserIndividual, nil, nil, login_bind.provider)
       record = OpenStruct.new(
         {
           id: uuid,
@@ -28,7 +29,7 @@ module Mutations
           org_change_date_list: organizations,
           modify_by: current_user.id,
           modify_type: ContributorOrg::UserIndividual,
-          platform_type: platform,
+          platform_type: login_bind.provider,
           is_bot: false,
           label: nil,
           level: nil,
