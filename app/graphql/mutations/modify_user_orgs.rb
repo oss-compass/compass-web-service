@@ -10,6 +10,9 @@ module Mutations
     argument :organizations, [Input::ContributorOrgInput], required: true, description: 'contributor organizations'
 
     def resolve(platform: nil, organizations: [])
+
+      support_platforms = ['github', 'gitee']
+
       current_user = context[:current_user]
 
       login_required!(current_user)
@@ -17,7 +20,11 @@ module Mutations
       Input::ContributorOrgInput.validate_no_overlap(organizations)
 
       login_bind = current_user.login_binds.find_by(provider: platform)
-      login_bind = current_user.login_binds.first if login_bind.blank?
+
+      support_platforms.each do |platform|
+        login_bind = current_user.login_binds.find_by(provider: platform) if login_bind.blank?
+      end
+
       raise GraphQL::ExecutionError.new I18n.t('users.no_such_login_bind') if login_bind.blank?
       contributor = login_bind.nickname
       uuid = get_uuid(contributor, ContributorOrg::UserIndividual, nil, nil, login_bind.provider)
