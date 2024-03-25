@@ -691,7 +691,7 @@ GEM
       activesupport (>= 6.1.5)
       i18n
     rbtree (0.4.5)
-    rdoc (6.6.2)
+    rdoc (6.6.3.1)
       psych (>= 4.0.0)
     redis (4.8.1)
     redis-actionpack (5.3.0)
