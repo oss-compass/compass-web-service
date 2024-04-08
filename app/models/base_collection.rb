@@ -23,7 +23,7 @@ class BaseCollection < BaseIndex
       self
         .must(match: { 'collection.keyword' => collection })
     base = base.must(match: { 'level.keyword' => level }) if level
-    base..total_entries
+    base.total_entries
   end
 
   def self.list(collection, level, page, per)
