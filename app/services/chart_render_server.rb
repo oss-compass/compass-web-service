@@ -235,8 +235,10 @@ class ChartRenderServer
       data: data,
       axisLabel: {
         align: 'center',
-        rotate: 5,
-        margin: 20,
+        interval: 'auto',
+        rotate: 30,
+        overflow: 'truncate',
+        margin: 35,
       },
       axisTick: {
         alignWithLabel: true,
