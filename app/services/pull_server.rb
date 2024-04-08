@@ -47,7 +47,7 @@ class PullServer
       result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
       repo, sha = {}, nil
       sha = cacualte_sha(result[:body]) if result[:status]
-      repo = YAML.load(result[:body]) rescue {} if result[:status]
+      repo = YAML.safe_load(result[:body]) rescue {} if result[:status]
       repo['resource_types'] = { 'repo_urls' => @project_url } if repo.blank?
       repo['developers'] ||= {}
       repo['developers'][@extra[:contributor]] = []
@@ -73,7 +73,7 @@ class PullServer
       branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
       result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
       return result unless result[:status]
-      project = YAML.load(result[:body])
+      project = YAML.safe_load(result[:body])
       sha = cacualte_sha(result[:body])
       project['developers'] ||= {}
       project['developers'][@extra[:contributor]] = []

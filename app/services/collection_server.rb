@@ -15,7 +15,7 @@ class CollectionServer
     collections =
       "#{Rails.root + META_REPO + directory}.yml"
         .then { File.read _1 }
-        .then { YAML.load _1 }
+        .then { YAML.safe_load _1 }
         .reduce({}) do |acc, col|
       items = col['items']
       ident = col['ident']
@@ -32,7 +32,7 @@ class CollectionServer
         yaml =
           file
             .then { File.read _1 }
-            .then { YAML.load _1 }
+            .then { YAML.safe_load _1 }
         collection, items = yaml&.[]('ident'), yaml&.[]('items')
         if collection.is_a?(String) && items.is_a?(Array) && items.present?
           items.each do |label|

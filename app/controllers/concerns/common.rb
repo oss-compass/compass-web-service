@@ -86,7 +86,7 @@ module Common
       else
         req = { method: :get, url: yaml_url }
         req[:proxy] = PROXY unless extract_domain(yaml_url).start_with?('gitee')
-        yaml = YAML.load(RestClient::Request.new(req).execute.body)
+        yaml = YAML.safe_load(RestClient::Request.new(req).execute.body)
         base_config.merge(repo_url: yaml['resource_types']['repo_urls'], developers: yaml['developers'] || {})
       end
     ActiveRecord::Base.connection_pool.with_connection do

@@ -22,7 +22,7 @@ module GiteeApplication
         "#{GITEE_API_ENDPOINT}/repos/#{namespace}/#{repository}?access_token=#{GITEE_TOKEN}",
         { 'Content-Type' => 'application/json' },
       )
-    case JSON.load(resp.body).symbolize_keys
+    case JSON.parse(resp.body).symbolize_keys
         in { fork: false }
         { status: true }
     else
@@ -125,7 +125,7 @@ module GiteeApplication
         }.to_json,
         { 'Content-Type' => 'application/json'}
       )
-    pull = JSON.load(resp.body)
+    pull = JSON.parse(resp.body)
     { status: true, pr_id: pull['id'], pr_url: pull['html_url'] }
   rescue => ex
     { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }

@@ -52,7 +52,7 @@ class LabModelInvitation < ApplicationRecord
   end
 
   def permission
-    JSON.load(extra)['permission'] rescue LabModelMember::Read
+    JSON.parse(extra)['permission'] rescue LabModelMember::Read
   end
 
   def can_read

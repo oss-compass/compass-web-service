@@ -48,7 +48,7 @@ class LabDataset < ApplicationRecord
   end
 
   def items
-    JSON.load(content)
+    JSON.parse(content)
       .map { |row| row.is_a?(String) ? { 'label' => row, 'level' => 'repo' } : row }
       .map { |item| item.merge({ 'short_code' => ShortenedLabel.convert(item['label'], item['level']) }) }
   rescue

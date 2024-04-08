@@ -26,6 +26,6 @@ class LabMetric < ApplicationRecord
   validates :category, presence: true
 
   def extra_fields
-    JSON.load(extra)['extra_fields'] rescue []
+    JSON.parse(extra)['extra_fields'] rescue []
   end
 end

@@ -10,7 +10,7 @@ namespace :db do
         yaml =
           file
             .then { File.read _1 }
-            .then { YAML.load _1 }
+            .then { YAML.safe_load _1 }
         community_name = yaml['community_name']
 
         software_artifact_repositories =

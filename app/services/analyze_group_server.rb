@@ -124,11 +124,11 @@ class AnalyzeGroupServer
     raise ValidateFailed.new('No tasks enabled') unless tasks.any?
 
     if @raw_yaml.present?
-      @raw_yaml = YAML.load(@raw_yaml)
+      @raw_yaml = YAML.safe_load(@raw_yaml)
     else
       req = { method: :get, url: @yaml_url }
       req.merge!(proxy: PROXY) unless @domain.start_with?('gitee')
-      @raw_yaml = YAML.load(RestClient::Request.new(req).execute.body)
+      @raw_yaml = YAML.safe_load(RestClient::Request.new(req).execute.body)
     end
 
     @project_name = @raw_yaml['community_name']

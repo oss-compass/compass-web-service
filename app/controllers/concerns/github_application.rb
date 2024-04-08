@@ -26,7 +26,7 @@ module GithubApplication
         headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
         proxy: PROXY
       ).execute
-    case JSON.load(resp.body).symbolize_keys
+    case JSON.parse(resp.body).symbolize_keys
         in { fork: false }
         { status: true }
     else
@@ -44,7 +44,7 @@ module GithubApplication
         headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{token}" },
         proxy: PROXY
       ).execute
-    case JSON.load(resp.body).symbolize_keys
+    case JSON.parse(resp.body).symbolize_keys
         in { login: username }
         { status: true, username: username }
     else
@@ -64,7 +64,7 @@ module GithubApplication
       ).execute
     {
       status: true,
-      sha: JSON.load(resp.body).select{|branch| branch['ref'] == "refs/heads/#{ref_name}"}.first['object']['sha']
+      sha: JSON.parse(resp.body).select{|branch| branch['ref'] == "refs/heads/#{ref_name}"}.first['object']['sha']
     }
   rescue => ex
     { status: false, message: I18n.t('oauth.latest_sha.failed', reason: ex.message) }
@@ -123,7 +123,7 @@ module GithubApplication
         headers: { 'Content-Type' => 'application/json' , 'Authorization' => "Bearer #{GITHUB_TOKEN}" },
         proxy: PROXY
       ).execute
-    pull = JSON.load(resp.body)
+    pull = JSON.parse(resp.body)
     { status: true, pr_id: pull['id'], pr_url: pull['html_url'] }
   rescue => ex
     { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }
