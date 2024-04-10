@@ -10,10 +10,12 @@ module Types
       argument :level, String, required: false, description: 'filter by level, default: all'
       argument :page, Integer, required: false, description: 'page number, default: 1'
       argument :per, Integer, required: false, description: 'per page number, default: 20'
+      argument :keyword, String, required: false, description: 'search repositories with keywords'
+      argument :sort_opts, [Input::SortOptionInput], required: false, description: 'sort options'
 
-      def resolve(ident:, level: nil, page: 1, per: 20)
-        resp = BaseCollection.list(ident, level, page, per)
-        count = BaseCollection.count_by(ident, level)
+      def resolve(ident:, level: nil, page: 1, per: 20, keyword: nil, sort_opts: [])
+        resp = BaseCollection.list(ident, level, page, per, keyword, sort_opts)
+        count = BaseCollection.count_by(ident, level, keyword)
         labels = resp&.[]('hits')&.[]('hits')&.map{ |item| item['_source']['label'] }
         candidates = []
         if labels.present?

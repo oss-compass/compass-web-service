@@ -18,21 +18,56 @@ class BaseCollection < BaseIndex
       "updated_at"=>{"type"=>"date"}}}
   end
 
-  def self.count_by(collection, level)
+  def self.count_by(collection, level, keyword)
     base =
       self
         .must(match: { 'collection.keyword' => collection })
+
     base = base.must(match: { 'level.keyword' => level }) if level
+    base = regexp_search(base, keyword) if keyword
+
     base.total_entries
   end
 
-  def self.list(collection, level, page, per)
+  def self.regexp_search(base, keyword)
+    keyword = keyword.gsub(/^https:\/\//, '')
+    keyword = keyword.gsub(/^http:\/\//, '')
+    keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
+    keyword = keyword.split('/').join('.*')
+    base.must(
+      regexp: {
+        label: {
+          value: ".*#{keyword}.*",
+          flags: "ALL",
+          case_insensitive: true,
+          max_determinized_states: 10000
+        }
+      }
+    )
+  end
+
+  def self.list(collection, level, page, per, keyword, sort_opts)
     base =
       self
         .must(match: { 'collection.keyword' => collection })
         .page(page)
         .per(per)
+
     base = base.must(match: { 'level.keyword' => level }) if level
+    base = regexp_search(base, keyword) if keyword
+
+    support_sort_types = ['label', 'updated_at', 'activity_score']
+    support_sort_directions = ['desc', 'asc']
+
+    if sort_opts.present?
+      sort_opts.each do |sort_opt|
+        if support_sort_types.include?(sort_opt.type) && support_sort_directions.include?(sort_opt.direction)
+          sort_field = sort_opt.type == 'label' ? 'label.keyword' : sort_opt.type
+          base = base.sort(sort_field => sort_opt.direction)
+        end
+      end
+    end
+
     base
       .execute
       .raw_response
