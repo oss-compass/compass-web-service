@@ -37,7 +37,7 @@ class BaseCollection < BaseIndex
   def self.regexp_search(base, keyword)
     keyword = keyword.gsub(/^https:\/\//, '')
     keyword = keyword.gsub(/^http:\/\//, '')
-    keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
+    keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. \/]/i, '')
     keyword = keyword.split('/').join('.*')
     base.must(
       regexp: {
