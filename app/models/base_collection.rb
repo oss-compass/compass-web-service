@@ -26,7 +26,12 @@ class BaseCollection < BaseIndex
     base = base.must(match: { 'level.keyword' => level }) if level
     base = regexp_search(base, keyword) if keyword
 
-    base.total_entries
+    base
+      .aggregate({ count: { cardinality: { field: 'label.keyword' } } })
+      .per(0)
+      .execute
+      .aggregations
+      .dig('count', 'value')
   end
 
   def self.regexp_search(base, keyword)
