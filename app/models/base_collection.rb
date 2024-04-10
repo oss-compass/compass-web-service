@@ -41,7 +41,7 @@ class BaseCollection < BaseIndex
     keyword = keyword.split('/').join('.*')
     base.must(
       regexp: {
-        label: {
+        'label.keyword' => {
           value: ".*#{keyword}.*",
           flags: "ALL",
           case_insensitive: true,
