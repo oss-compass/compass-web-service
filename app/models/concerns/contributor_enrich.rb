@@ -89,6 +89,8 @@ module ContributorEnrich
                 .map { |row| append_filtered_contribution(row, filter_opt) }
             elsif filter_opt.type == 'contributor' || filter_opt.type == 'organization'
               contributors.select { |row| filter_opt.values.any? { |value| row[filter_opt.type].starts_with?(value) } }
+            elsif filter_opt.type == 'is_bot'
+              contributors.select { |row| filter_opt.values.any? { |value| row[filter_opt.type] == (value.to_s.downcase == "true") } }
             else
               contributors.select { |row| filter_opt.values.include?(row[filter_opt.type]) }
             end

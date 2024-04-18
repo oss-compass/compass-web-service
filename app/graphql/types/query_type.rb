@@ -14,6 +14,8 @@ module Types
     field :org_fuzzy_search, resolver: Queries::OrgFuzzyQuery
     field :trending, resolver: Queries::TrendingQuery
     field :community_overview, resolver: Queries::CommunityOverviewQuery
+    field :community_repos, resolver: Queries::CommunityReposQuery
+
     field :repo_belongs_to, resolver: Queries::RepoBelongsToQuery
     field :bulk_overview, resolver: Queries::BulkOverviewQuery
     field :bulk_shortened_label, resolver: Queries::BulkShortenedLabelQuery

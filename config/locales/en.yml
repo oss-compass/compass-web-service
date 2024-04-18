@@ -1101,6 +1101,8 @@ en:
       recent_releases_count_desc: Determine the number of releases in the last year.
       recent_releases_count_value:
         threshold: Between 0 and 12
+  subjects:
+    not_found: No corresponding resources found
   lab_models:
     datasets_required: The dataset cannot be empty
     metrics_required: The metrics cannot be empty

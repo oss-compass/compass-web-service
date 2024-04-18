@@ -850,6 +850,8 @@ zh-CN:
       recent_releases_count_desc: 过去12个月版本发布的数量。
       recent_releases_count_value:
         threshold: 介于0-12之间
+  subjects:
+    not_found: 未找到对应资源
   lab_models:
     datasets_required: 数据集不能为空
     metrics_required: 指标不能为空
