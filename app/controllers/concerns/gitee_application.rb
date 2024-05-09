@@ -16,7 +16,7 @@ module GiteeApplication
 
   def gitee_is_fork_repo(url)
     url = url.chomp('.git')
-    namespace, repository = url.match(/gitee.com\/(.*)\/(.*)$/).captures
+    namespace, repository = url.match(/gitee.com\/([^\/]+)\/([^\/]+)$/).captures
     resp =
       Faraday.get(
         "#{GITEE_API_ENDPOINT}/repos/#{namespace}/#{repository}?access_token=#{GITEE_TOKEN}",

@@ -18,7 +18,7 @@ module GithubApplication
 
   def github_is_fork_repo(url)
     url = url.chomp('.git')
-    namespace, repository = url.match(/github.com\/(.*)\/(.*)$/).captures
+    namespace, repository = url.match(/github.com\/([^\/]+)\/([^\/]+)$/).captures
     resp =
       RestClient::Request.new(
         method: :get,
