@@ -8,6 +8,7 @@ module Types
     field :email_verified, Boolean, null: false
     field :subscriptions, Types::Subscription::SubscriptionPageType, null: false, resolver: Queries::SubscriptionsQuery
     field :language, String, null: false
+    field :role_level, Integer, null: false
     field :contributing_orgs, [Types::ContributorOrgType]
 
     def email_verified
