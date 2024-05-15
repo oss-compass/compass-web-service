@@ -18,7 +18,6 @@ module ContributorEnrich
         query =
           self
             .must(terms: { 'repo_name.keyword' => repo_urls })
-            .where(is_bot: false)
             .per(MAX_PER_PAGE)
             .range(:contribution, gt: 0)
             .range(:grimoire_creation_date, gte: begin_date, lte: end_date )
