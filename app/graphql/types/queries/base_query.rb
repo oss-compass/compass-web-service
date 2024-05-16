@@ -135,6 +135,12 @@ module Types
               )
       end
 
+      def validate_admin!(current_user)
+        login_required!(current_user)
+        return if current_user&.is_admin?
+        raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+      end
+
       def extract_label_reference(label, level)
         if level == 'community'
           project = ProjectTask.find_by(project_name: label)

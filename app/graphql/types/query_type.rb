@@ -86,5 +86,12 @@ module Types
 
     ## Metrics Model Graph
     field :metric_models_overview, resolver: Queries::MetricModelsOverviewQuery
+
+    ## Commit
+    field :commits_detail_page, resolver: Queries::CommitsDetailPageQuery
+    field :commits_contributor_list, resolver: Queries::CommitsContributorListQuery
+    field :commits_organization_page, resolver: Queries::CommitsOrganizationPageQuery
+    field :commits_repo_page, resolver: Queries::CommitsRepoPageQuery
+
   end
 end

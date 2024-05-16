@@ -12,5 +12,19 @@ module PullEnrich
       source['labels'] = source['labels'].join('|') if source['labels'].is_a?(Array)
       source
     end
+
+    def map_by_commit_hash_list(commit_hash_list)
+      resp = self.must(terms: { commits_data: commit_hash_list})
+                 .per(commit_hash_list.length)
+                 .execute
+                 .raw_response
+      hits = resp&.[]('hits')&.[]('hits') || []
+      hits.each_with_object({}) do |hash, map|
+        hash['_source']['commits_data'].each do |key|
+          map[key] = hash['_source']
+        end
+      end
+    end
+
   end
 end
