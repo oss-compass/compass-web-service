@@ -34,7 +34,7 @@ module Types
             .where(is_bot: false)
             .must(terms: { 'repo_name.keyword': repo_urls })
         {
-          highest_contribution_contributor: top_contributing_of('individual'),
+          highest_contribution_contributor: top_contributing_of(nil),
           highest_contribution_organization: top_contributing_of('organization', count_field: 'organization' ),
           org_all_count: org_all_count,
           contributor_all_count: contributor_all_count
@@ -42,12 +42,15 @@ module Types
       end
 
       def top_contributing_of(contributor_type, count_field: 'contributor')
-        resp = indexer
-                 .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                 .must(match_phrase: {ecological_type: contributor_type})
+        base = indexer
                  .where(is_bot: false)
-                 .must_not(terms: { 'contributor.keyword' => ['openharmony_ci', 'fengwujin'] })
                  .must(terms: { 'repo_name.keyword': repo_urls })
+                 .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+
+        base = base.must(match_phrase: { ecological_type: contributor_type }) if contributor_type != nil
+
+        resp = base
+                 .must_not(terms: { 'contributor.keyword' => ['openharmony_ci', 'fengwujin'] })
                  .aggregate(
                    {
                      count_of_uuid: {
