@@ -32,6 +32,8 @@ module Types
     field :update_lab_model_comment, mutation: Mutations::UpdateLabModelComment, description: 'Update a comment for a lab model'
     field :delete_lab_model_comment, mutation: Mutations::DeleteLabModelComment, description: 'Delete a comment for a lab model'
 
+    field :add_repo_extension, mutation: Mutations::AddRepoExtension, description: 'add repo extension info'
+
     # User Cancellation
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?

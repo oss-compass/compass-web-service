@@ -8,7 +8,6 @@ module Types
       field :lines_removed, Integer
       field :lines_changed, Integer
       field :lines_changed_ratio, Float
-      field :total_lines_changed, Integer
     end
   end
 end

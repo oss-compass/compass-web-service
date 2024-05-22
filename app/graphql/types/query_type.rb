@@ -92,6 +92,10 @@ module Types
     field :commits_contributor_list, resolver: Queries::CommitsContributorListQuery
     field :commits_organization_page, resolver: Queries::CommitsOrganizationPageQuery
     field :commits_repo_page, resolver: Queries::CommitsRepoPageQuery
+    field :codes_repo_page, resolver: Queries::CodesRepoPageQuery
+    field :codes_detail_page, resolver: Queries::CodesDetailPageQuery
+    field :codes_trend, resolver: Queries::CodesTrendQuery
+    field :commits_tech_type_page, resolver: Queries::CommitsTechTypePageQuery
 
   end
 end

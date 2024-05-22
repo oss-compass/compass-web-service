@@ -25,7 +25,9 @@ module Types
 
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
-        resp = indexer.fetch_commit_contributor_list_by_repo_urls(repo_urls, begin_date, end_date, branch, 20)
+
+        resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'author_email',
+                                                          per: 20, filter_opts: [], sort_opts: [])
         buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
 
         domain_list = buckets.map { |data| data['author_domain']['hits']['hits'][0]['_source']['author_domain'] }.to_set.to_a
