@@ -30,18 +30,25 @@ module Types
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
 
-        resp = indexer.fetch_commit_repo_list(repo_urls, begin_date, end_date, branch)
+        resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'tag',
+                                                          per: 10000, filter_opts: filter_opts, sort_opts: sort_opts)
+
+        repo_extension_resp = RepoExtension.list_by_repo_urls(repo_urls, filter_opts: filter_opts)
+        repo_extension_hits = repo_extension_resp&.[]('hits')&.[]('hits') || []
+        repo_extension_map = repo_extension_hits.each_with_object({}) { |hash, map|
+          map[hash['_source']['repo_name']] = hash['_source'] }
 
         buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
         items =
           buckets.map do |data|
             skeleton = Hash[Types::Meta::CommitRepoType.fields.keys.map(&:underscore).zip([])].symbolize_keys
-            skeleton[:repo_name] = data['key'].gsub(".git", "")
-            skeleton[:type] = nil
+            repo_name = data['key'].gsub(".git", "")
+            skeleton[:repo_name] = repo_name
+            skeleton[:repo_attribute_type] = repo_extension_map.dig(repo_name, 'repo_attribute_type')
             skeleton[:lines_added] = data['lines_added']['value']
             skeleton[:lines_removed] = data['lines_removed']['value']
             skeleton[:lines_changed] = data['lines_changed']['value']
-            skeleton[:sig] = nil
+            skeleton[:repo_technology_type] = repo_extension_map.dig(repo_name, 'repo_technology_type')
             skeleton
           end
 

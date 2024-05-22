@@ -44,7 +44,13 @@ module Types
         domain_map = Organization.map_by_domain_list(domain_list)
 
         commit_hash_list = hits.map { |data| data.dig('_source', 'hash') }.to_set.to_a
-        commit_hash_map = pull_indexer.map_by_commit_hash_list(commit_hash_list)
+        pull_indexer_resp = pull_indexer.list_by_repo_urls(repo_urls, Time.parse("1970-01-01"), end_date,
+                                                           commit_hash_list: commit_hash_list)
+        commit_hash_map = (pull_indexer_resp&.[]('hits')&.[]('hits') || []).each_with_object({}) do |hash, map|
+          hash['_source']['commits_data'].each do |key|
+            map[key] = hash['_source']
+          end
+        end
 
         items =
           hits.map do |data|

@@ -31,9 +31,11 @@ module Types
                  select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
         org_name_map = {}
 
-        resp = indexer.fetch_commit_organization_list_by_repo_urls(repo_urls, begin_date, end_date, branch)
+        resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'author_domain',
+                                                          per: 10000, filter_opts: filter_opts, sort_opts: sort_opts)
 
-        resp_count = indexer.lines_changed_count_by_repo_urls(repo_urls, begin_date, end_date, branch)
+        resp_count = indexer.lines_changed_count_by_repo_urls(repo_urls, begin_date, end_date, branch,
+                                                              filter_opts: filter_opts, sort_opts: sort_opts)
         total_lines_changed = resp_count&.[]('aggregations')&.[]('total_lines_changed')&.[]('value') || 0
 
         buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
