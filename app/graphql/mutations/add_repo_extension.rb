@@ -23,7 +23,7 @@ module Mutations
             repo_attribute_type: data[:repo_attribute_type],
             manager: data[:manager],
             manager_email: data[:manager_email],
-            platform_type: Addressable::URI.parse(data[:repo_name]).normalized_host.split('.')[-2],
+            platform_type: extract_repos_source(data[:repo_name], 'repo'),
             operator: context[:current_user].id,
             update_at_date: Time.current
           }
