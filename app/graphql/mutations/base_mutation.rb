@@ -13,5 +13,11 @@ module Mutations
     def login_required!(current_user)
       raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
     end
+
+    def validate_admin!(current_user)
+      login_required!(current_user)
+      return if current_user&.is_admin?
+      raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+    end
   end
 end

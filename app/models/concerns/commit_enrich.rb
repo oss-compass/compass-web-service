@@ -156,5 +156,22 @@ module CommitEnrich
            .execute
            .raw_response
     end
+
+    def fetch_commit_list_by_hash(repo_urls, hash_list, target='tag')
+      resp = self.must(terms: { target => repo_urls.map { |element| element + ".git" } })
+                 .must(terms: { hash: hash_list })
+                 .per(hash_list.length)
+                 .execute
+                 .raw_response
+      (resp&.[]('hits')&.[]('hits') || []).map do |data|
+        data["_source"]
+      end
+    end
+
+    def fetch_commit_one_by_hash(repo_urls, hash_value, target='tag')
+      fetch_list = fetch_commit_list_by_hash(repo_urls, [hash_value], target)
+      fetch_list.first
+    end
+
   end
 end
