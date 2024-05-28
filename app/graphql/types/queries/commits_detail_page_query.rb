@@ -22,10 +22,6 @@ module Types
 
         login_required!(context[:current_user])
 
-        validate_by_label!(context[:current_user], label)
-
-        validate_admin!(context[:current_user])
-
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
@@ -52,6 +48,13 @@ module Types
           end
         end
 
+        commit_feedback_list = CommitFeedback.fetch_commit_feedback_list(repo_urls, commit_hash_list,
+                                                                         value_field: "commit_hash.keyword", state: "approved")
+        commit_feedback_map = commit_feedback_list.each_with_object({}) do |hash, map|
+          map[hash['commit_hash']] = hash
+        end
+
+
         items =
           hits.map do |data|
           skeleton = Hash[Types::Meta::CommitDetailType.fields.keys.map(&:underscore).zip([])]
@@ -61,6 +64,11 @@ module Types
           skeleton[:org_name] = domain_map.dig(data['_source']['author_domain'], "org_name")
           skeleton[:pr_url] = commit_hash_map.dig(data['_source']['hash'], "url")
           skeleton[:merged_at] = commit_hash_map.dig(data['_source']['hash'], "merged_at")
+          if commit_feedback_map.include?(skeleton[:commit_hash])
+            skeleton[:lines_added] = commit_feedback_map.dig(skeleton[:commit_hash], 'new_lines_added')
+            skeleton[:lines_removed] = commit_feedback_map.dig(skeleton[:commit_hash], 'new_lines_removed')
+            skeleton[:lines_changed] = commit_feedback_map.dig(skeleton[:commit_hash], 'new_lines_changed')
+          end
           skeleton
         end
 

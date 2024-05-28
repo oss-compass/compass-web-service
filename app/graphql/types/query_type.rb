@@ -96,6 +96,11 @@ module Types
     field :codes_detail_page, resolver: Queries::CodesDetailPageQuery
     field :codes_trend, resolver: Queries::CodesTrendQuery
     field :commits_tech_type_page, resolver: Queries::CommitsTechTypePageQuery
+    field :codes_check_detail_page, resolver: Queries::CodesCheckDetailPageQuery
+    field :codes_check_page, resolver: Queries::CodesCheckPageQuery
+    field :commit_feedback_page, resolver: Queries::CommitFeedbackPageQuery
+
+    field :organization_page, resolver: Queries::OrganizationPageQuery
 
   end
 end

@@ -1,8 +1,10 @@
 module CompassUtils
   include Director
 
-  SEVEN_DAYS = 7 * 24 * 60 * 60
-  HALF_YEAR = 180 * 24 * 60 * 60
+  HOURS = 60 * 60
+  DAYS = 24 * HOURS
+  SEVEN_DAYS = 7 * DAYS
+  HALF_YEAR = 180 * DAYS
   ONE_YEAR = 2 * HALF_YEAR
   TWO_YEARS = 2 * ONE_YEAR
   FIVE_YEARS = 5 * ONE_YEAR
@@ -157,4 +159,13 @@ module CompassUtils
       }
     }
   end
+
+  def time_diff_hours(start_time_str, end_time_str)
+    start_datetime = DateTime.parse(start_time_str)
+    end_datetime = DateTime.parse(end_time_str)
+    time_diff_seconds = (end_datetime - start_datetime) * HOURS
+    days_diff = time_diff_seconds / HOURS
+    format('%.2f', days_diff)
+  end
+
 end

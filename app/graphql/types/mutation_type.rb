@@ -33,6 +33,10 @@ module Types
     field :delete_lab_model_comment, mutation: Mutations::DeleteLabModelComment, description: 'Delete a comment for a lab model'
 
     field :add_repo_extension, mutation: Mutations::AddRepoExtension, description: 'add repo extension info'
+    field :create_commit_feedback, mutation: Mutations::CreateCommitFeedback, description: 'Create a feedback on commit data'
+    field :review_commit_feedback, mutation: Mutations::ReviewCommitFeedback, description: 'Review a feedback on commit data'
+    field :modify_organization, mutation: Mutations::ModifyOrganization, description: 'Add or modify an organization'
+    field :delete_organization, mutation: Mutations::DeleteOrganization, description: 'Delete an organization'
 
     # User Cancellation
     def sign_out
