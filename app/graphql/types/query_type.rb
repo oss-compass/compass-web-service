@@ -101,6 +101,7 @@ module Types
     field :commit_feedback_page, resolver: Queries::CommitFeedbackPageQuery
 
     field :organization_page, resolver: Queries::OrganizationPageQuery
+    field :subject_access_level_page, resolver: Queries::SubjectAccessLevelPageQuery
 
   end
 end
