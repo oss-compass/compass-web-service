@@ -38,6 +38,12 @@ module Types
     field :modify_organization, mutation: Mutations::ModifyOrganization, description: 'Add or modify an organization'
     field :delete_organization, mutation: Mutations::DeleteOrganization, description: 'Delete an organization'
 
+    field :create_subject_access_level, mutation: Mutations::CreateSubjectAccessLevel, description: 'Create a Subject access level'
+    field :delete_subject_access_level, mutation: Mutations::DeleteSubjectAccessLevel, description: 'Delete a Subject access level'
+    field :update_subject_access_level, mutation: Mutations::UpdateSubjectAccessLevel, description: 'Update a Subject access level'
+
+
+
     # User Cancellation
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?

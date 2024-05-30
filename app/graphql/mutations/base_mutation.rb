@@ -19,5 +19,13 @@ module Mutations
       return if current_user&.is_admin?
       raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
     end
+
+    def validate_repo_admin!(current_user, label, level)
+      login_required!(current_user)
+      return if current_user&.is_admin?
+      return if current_user&.has_privilege_to?(label, level)
+      raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+    end
+
   end
 end

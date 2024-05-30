@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Github2PullEnrich < GiteeBase
+class Github2PullEnrich < GithubBase
 
   include BaseEnrich
   include Pull2Enrich
