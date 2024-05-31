@@ -28,8 +28,10 @@ class Subject < ApplicationRecord
   has_many :childs, through: :subject_refs_as_parent
   has_many :parents, through: :subject_refs_as_child
 
-  has_many :software_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::Software) }, through: :subject_refs_as_parent, source: :child
-  has_many :governance_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::Governance) }, through: :subject_refs_as_parent, source: :child
+  has_many :software_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::ToRepoSoftware) }, through: :subject_refs_as_parent, source: :child
+  has_many :governance_repos, -> { where("subject_refs.sub_type = ?", SubjectRef::ToRepoGovernance) }, through: :subject_refs_as_parent, source: :child
+  has_many :repos, -> { where("subject_refs.sub_type IN (?)", [SubjectRef::ToRepoSoftware, SubjectRef::ToRepoGovernance]) }, through: :subject_refs_as_parent, source: :child
+  has_many :community_sigs, -> { where("subject_refs.sub_type = ?", SubjectRef::ToSig) }, through: :subject_refs_as_parent, source: :child
 
   has_many :subscriptions, dependent: :destroy
   has_many :subject_access_levels, dependent: :destroy
@@ -94,21 +96,21 @@ class Subject < ApplicationRecord
     stable_software_repos = subject.software_repos.pluck('label')
 
     (new_software_repos - stable_software_repos).each do |label|
-      append_child(subject, label, SubjectRef::Software)
+      append_child(subject, label, SubjectRef::ToRepoSoftware)
     end
 
     (stable_software_repos - new_software_repos).each do |label|
-      remove_child(subject, label, SubjectRef::Software)
+      remove_child(subject, label, SubjectRef::ToRepoSoftware)
     end
 
     stable_governance_repos = subject.governance_repos.pluck('label')
 
     (new_governance_repos - stable_governance_repos).each do |label|
-      append_child(subject, label, SubjectRef::Governance)
+      append_child(subject, label, SubjectRef::ToRepoGovernance)
     end
 
     (stable_governance_repos - new_governance_repos).each do |label|
-      remove_child(subject, label, SubjectRef::Governance)
+      remove_child(subject, label, SubjectRef::ToRepoGovernance)
     end
   end
 

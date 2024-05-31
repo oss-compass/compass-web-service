@@ -17,6 +17,11 @@ class SubjectRef < ApplicationRecord
   belongs_to :child, class_name: 'Subject'
   belongs_to :parent, class_name: 'Subject'
 
-  Software = 0
-  Governance = 1
+  has_one :subject_sig, dependent: :destroy
+
+  ToRepoSoftware = 0
+  ToRepoGovernance = 1
+  ToSig = 2
+
 end
+

@@ -22,7 +22,7 @@ module Types
           when Director::GOVERNANCE_TYPE
             subject.governance_repos
           else
-            subject.childs
+            subject.repos
           end
         pagyer, records = pagy(repos, { page: page, items: per })
         { count: pagyer.count, total_page: pagyer.pages, page: pagyer.page, items: records}
