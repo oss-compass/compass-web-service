@@ -102,6 +102,7 @@ module Types
 
     field :organization_page, resolver: Queries::OrganizationPageQuery
     field :subject_access_level_page, resolver: Queries::SubjectAccessLevelPageQuery
+    field :subject_sig_page, resolver: Queries::SubjectSigPageQuery
 
   end
 end

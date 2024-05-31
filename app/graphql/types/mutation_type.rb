@@ -42,6 +42,10 @@ module Types
     field :delete_subject_access_level, mutation: Mutations::DeleteSubjectAccessLevel, description: 'Delete a Subject access level'
     field :update_subject_access_level, mutation: Mutations::UpdateSubjectAccessLevel, description: 'Update a Subject access level'
 
+    field :create_subject_sig, mutation: Mutations::CreateSubjectSig, description: 'Create a Subject sig'
+    field :delete_subject_sig, mutation: Mutations::DeleteSubjectSig, description: 'Delete a Subject sig'
+    field :update_subject_sig, mutation: Mutations::UpdateSubjectSig, description: 'Update a Subject sig'
+
 
 
     # User Cancellation
