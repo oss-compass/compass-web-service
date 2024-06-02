@@ -196,7 +196,11 @@ class User < ApplicationRecord
   def has_privilege_to?(label, level)
     subject = Subject.find_by(label: label, level: level)
     return false if subject.blank?
-    subject_access_levels.find_by(subject: subject)&.access_level == SubjectAccessLevel::PRIVILEGED_LEVEL
+
+    subject_ids = SubjectRef.where("parent_id = ? OR child_id = ?", subject.id, subject.id).pluck(:parent_id).uniq
+    subject_access_level = SubjectAccessLevel.where(subject_id: subject_ids)
+                                             .where(access_level: SubjectAccessLevel::PRIVILEGED_LEVEL)
+    return subject_access_level.exists?
   end
 
   def lab_models_has_participated_in
