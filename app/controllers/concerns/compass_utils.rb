@@ -133,7 +133,8 @@ module CompassUtils
     diff_seconds = end_date.to_i - begin_date.to_i
     return [true, valid_range, is_repo_admin] if diff_seconds < 7.months
 
-    return [true, valid_range, is_repo_admin] if current_user&.has_privilege_to?(label, level)
+    is_repo_admin = current_user&.has_privilege_to?(label, level)
+    return [true, valid_range, is_repo_admin] if is_repo_admin
 
     [false, [default_min, default_max], is_repo_admin]
   end
