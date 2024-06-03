@@ -7,7 +7,7 @@ module CommitEnrich
     def base_commit_list_by_repo_urls(
       repo_urls, begin_date, end_date, branch,
       target: 'tag', filter: :grimoire_creation_date, sort: :grimoire_creation_date, direction: :desc,
-      filter_opts: [], sort_opts: []
+      filter_opts: [], sort_opts: [], label: nil, level: nil
     )
       base =
         self
@@ -37,10 +37,14 @@ module CommitEnrich
               domain_list = Organization.domain_list_by_org_name_list(filter_opt.values)
               base = base.where(author_domain: domain_list)
             end
-          elsif ["repo_attribute_type", "repo_technology_type", "manager"].include?(filter_opt.type)
+          elsif ["repo_attribute_type", "manager"].include?(filter_opt.type)
             repo_extension_resp = RepoExtension.list_by_repo_urls(repo_urls, filter_opts: filter_opts)
             repo_extension_hits = repo_extension_resp&.[]('hits')&.[]('hits') || []
             filter_repo_urls = repo_extension_hits.map { |hit| hit['_source']['repo_name'] + '.git' }
+            base = base.where(tag: filter_repo_urls)
+          elsif ["sig_name"].include?(filter_opt.type) and label.present? and level.present?
+            repo_sig_resp = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, repo_urls, filter_opts: filter_opts)
+            filter_repo_urls = repo_sig_resp.map { |data| data[:label] + '.git' }
             base = base.where(tag: filter_repo_urls)
           else
             base = base.where(filter_opt.type => filter_opt.values)
@@ -67,12 +71,12 @@ module CommitEnrich
     def fetch_commit_page_by_repo_urls(
       repo_urls, begin_date, end_date, branch,
       target: 'tag', filter: :grimoire_creation_date, sort: :grimoire_creation_date, direction: :desc,
-      per: 1, page: 1, filter_opts: [], sort_opts: []
+      per: 1, page: 1, filter_opts: [], sort_opts: [], label: nil, level: nil
     )
       base_commit_list_by_repo_urls(
         repo_urls, begin_date, end_date, branch,
         target: target, filter: filter, sort: sort, direction: direction,
-        filter_opts: filter_opts, sort_opts: sort_opts
+        filter_opts: filter_opts, sort_opts: sort_opts, label: label, level: level
       )
         .page(page)
         .per(per)
@@ -81,16 +85,17 @@ module CommitEnrich
     end
 
     def commit_count_by_repo_urls(repo_urls, begin_date, end_date, branch, target: 'tag',
-                                  filter: :grimoire_creation_date, filter_opts: [])
+                                  filter: :grimoire_creation_date, filter_opts: [], label: nil, level: nil)
       base_commit_list_by_repo_urls(
         repo_urls, begin_date, end_date, branch,
-        target: target, filter: filter, filter_opts: filter_opts
+        target: target, filter: filter, filter_opts: filter_opts, label: label, level: level
       )
         .total_entries
     end
 
     def fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'tag',
-                                                    per: 9, target: 'tag', filter_opts: [], sort_opts: [], commit_hash_list: [])
+                                           per: 9, target: 'tag', filter_opts: [], sort_opts: [],
+                                           commit_hash_list: [], label: nil, level: nil)
       sort_bucket_map = { bucket_sort: { sort: [{ lines_changed: { order: "desc" } }] } }
       if sort_opts.present?
         sort_bucket_map = sort_opts.find { |sort_opt| sort_opt.type == "lines_total" }&.then do |sort_opt|
@@ -98,7 +103,8 @@ module CommitEnrich
         end
       end
       base = base_commit_list_by_repo_urls(repo_urls, begin_date, end_date, branch, target: target,
-                                    filter_opts: filter_opts, sort_opts: sort_opts)
+                                           filter_opts: filter_opts, sort_opts: sort_opts,
+                                           label: label, level: level)
       unless commit_hash_list.empty?
         base = base.must(terms: { hash: commit_hash_list })
       end
@@ -130,9 +136,9 @@ module CommitEnrich
     end
 
     def lines_changed_count_by_repo_urls(repo_urls, begin_date, end_date, branch, target: 'tag',
-                                         filter_opts: [], sort_opts: [])
+                                         filter_opts: [], sort_opts: [], label: nil, level: nil)
       base_commit_list_by_repo_urls(repo_urls, begin_date, end_date, branch, target: target,
-                                    filter_opts: filter_opts, sort_opts: sort_opts)
+                                    filter_opts: filter_opts, sort_opts: sort_opts, label: label, level: level)
         .aggregate(total_lines_changed: { sum: { field: "lines_changed" } })
         .per(0)
         .execute

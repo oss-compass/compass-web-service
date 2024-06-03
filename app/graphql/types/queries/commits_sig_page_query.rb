@@ -2,9 +2,9 @@
 
 module Types
   module Queries
-    class CommitsTechTypePageQuery < BaseQuery
+    class CommitsSigPageQuery < BaseQuery
 
-      type Types::Meta::CommitTechTypePageType, null: false
+      type Types::Meta::CommitSigPageType, null: false
       description 'Get commits tech type list of a repo or community'
       argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
@@ -26,13 +26,12 @@ module Types
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
 
-        repo_extension_resp = RepoExtension.list_by_repo_urls(repo_urls, filter_opts: filter_opts)
-        repo_extension_hits = repo_extension_resp&.[]('hits')&.[]('hits') || []
-        map_technology_type = repo_extension_hits.group_by { |item| item.dig('_source', 'repo_technology_type') }
-                                  .transform_values { |items| items.map { |item| item.dig('_source', 'repo_name') } }
+        repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, repo_urls, filter_opts: filter_opts)
+        map_repo_sig = repo_sig_list.group_by { |item| item[:sig_name] }
+                                  .transform_values { |items| items.map { |item| item[:label] } }
 
-        current_technology_type_list = (map_technology_type.keys.in_groups_of(per)&.[]([page.to_i - 1, 0].max) || []).compact
-        current_repo_urls = current_technology_type_list.map { |key| map_technology_type[key] }.flatten
+        current_sig_list = (map_repo_sig.keys.in_groups_of(per)&.[]([page.to_i - 1, 0].max) || []).compact
+        current_repo_urls = current_sig_list.map { |key| map_repo_sig[key] }.flatten
 
         commit_resp = indexer.fetch_commit_agg_list_by_repo_urls(
           current_repo_urls, begin_date, end_date, branch, per: current_repo_urls.length,
@@ -47,17 +46,17 @@ module Types
           }
         end
 
-        current_page = current_technology_type_list.map do |key|
-          values = map_technology_type[key]
+        current_page = current_sig_list.map do |key|
+          values = map_repo_sig[key]
           {
-            repo_technology_type: key,
+            sig_name: key,
             lines_added: values.sum { |value| repo_commit_map.dig(value, 'lines_added') || 0 },
             lines_removed: values.sum { |value| repo_commit_map.dig(value, 'lines_removed') || 0 },
             lines_changed: values.sum { |value| repo_commit_map.dig(value, 'lines_changed') || 0 }
           }
         end
 
-        count = map_technology_type.length
+        count = map_repo_sig.length
 
         { count: count, total_page: (count.to_f/per).ceil, page: page, items: current_page }
       end

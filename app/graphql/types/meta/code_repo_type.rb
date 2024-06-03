@@ -5,7 +5,7 @@ module Types
     class CodeRepoType < Types::BaseObject
       field :repo_attribute_type, String
       field :repo_name, String
-      field :repo_technology_type, String
+      field :sig_name, String
       field :manager, String
       field :lines_total, Integer
       field :lines, Integer

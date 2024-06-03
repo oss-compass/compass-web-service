@@ -15,7 +15,6 @@ class RepoExtension < BaseIndex
           "platform_type" => { "type" => "text", "fields" => { "keyword" => { "type" => "keyword", "ignore_above" => 256 } } },
           "repo_attribute_type" => { "type" => "text", "fields" => { "keyword" => { "type" => "keyword", "ignore_above" => 256 } } },
           "repo_name" => { "type" => "text", "fields" => { "keyword" => { "type" => "keyword", "ignore_above" => 256 } } },
-          "repo_technology_type" => { "type" => "text", "fields" => { "keyword" => { "type" => "keyword", "ignore_above" => 256 } } },
           "update_at_date" => { "type" => "date" },
           "uuid" => { "type" => "text", "fields" => { "keyword" => { "type" => "keyword", "ignore_above" => 256 } } }
       }
@@ -27,7 +26,7 @@ class RepoExtension < BaseIndex
 
     if filter_opts.present?
       filter_opts.each do |filter_opt|
-        if ["repo_attribute_type", "repo_technology_type", "manager"].include?(filter_opt.type)
+        if ["repo_attribute_type", "manager"].include?(filter_opt.type)
           base = base.where(filter_opt.type + '.keyword' => filter_opt.values)
         end
       end

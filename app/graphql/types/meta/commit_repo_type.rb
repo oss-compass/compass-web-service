@@ -8,7 +8,7 @@ module Types
       field :lines_added, Integer
       field :lines_removed, Integer
       field :lines_changed, Integer
-      field :repo_technology_type, String
+      field :sig_name, String
     end
   end
 end
