@@ -27,7 +27,12 @@ module Types
                  select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
 
         resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'tag',
-                                                          per: 10000, filter_opts: filter_opts, sort_opts: sort_opts)
+                                                          per: 10000, filter_opts: filter_opts, sort_opts: sort_opts,
+                                                          label: label, level:level)
+
+        repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, repo_urls, filter_opts: filter_opts)
+        repo_sig_map = repo_sig_list.each_with_object({}) { |hash, map| map[hash[:label]] = hash }
+
 
         repo_extension_resp = RepoExtension.list_by_repo_urls(repo_urls, filter_opts: filter_opts)
         repo_extension_hits = repo_extension_resp&.[]('hits')&.[]('hits') || []
@@ -44,7 +49,7 @@ module Types
             skeleton[:lines_added] = data['lines_added']['value']
             skeleton[:lines_removed] = data['lines_removed']['value']
             skeleton[:lines_changed] = data['lines_changed']['value']
-            skeleton[:repo_technology_type] = repo_extension_map.dig(repo_name, 'repo_technology_type')
+            skeleton[:sig_name] = repo_sig_map.dig(repo_name, :sig_name)
             skeleton
           end
 

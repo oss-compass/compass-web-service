@@ -31,7 +31,7 @@ module Types
         start_time = Time.parse("1970-01-01")
         code_repo_map = {}
         resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, start_time, end_date, branch, agg_field: 'tag', per: 10000,
-                                              filter_opts: filter_opts, sort_opts: sort_opts)
+                                              filter_opts: filter_opts, sort_opts: sort_opts, label: label, level: level)
 
         buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
         current_buckets =
@@ -52,13 +52,18 @@ module Types
         end
 
         resp = indexer.fetch_commit_agg_list_by_repo_urls(current_page_repo_urls, start_time, end_date, branch,
-                                                          commit_hash_list: commit_hash_map.keys, agg_field: 'tag', per: 10000)
+                                                          commit_hash_list: commit_hash_map.keys, agg_field: 'tag',
+                                                          per: 10000, label: label, level: level)
         buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
         commit_map = buckets.each_with_object({}) do |data, hash|
           hash[data['key'].gsub(".git", "")] = {
             'lines_total' => data['lines_total']['value']
           }
         end
+
+        repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, current_page_repo_urls, filter_opts: filter_opts)
+        repo_sig_map = repo_sig_list.each_with_object({}) { |hash, map| map[hash[:label]] = hash }
+
 
         repo_extension_resp = RepoExtension.list_by_repo_urls(current_page_repo_urls, filter_opts: filter_opts)
         repo_extension_map = (repo_extension_resp&.[]('hits')&.[]('hits') || []).each_with_object({}) { |hash, map|
@@ -69,7 +74,7 @@ module Types
             skeleton = Hash[Types::Meta::CodeRepoType.fields.keys.map(&:underscore).zip([])].symbolize_keys
             skeleton[:repo_attribute_type] = repo_extension_map.dig(data, 'repo_attribute_type')
             skeleton[:repo_name] = data
-            skeleton[:repo_technology_type] = repo_extension_map.dig(data, 'repo_technology_type')
+            skeleton[:sig_name] = repo_sig_map.dig(data, :sig_name)
             skeleton[:manager] = repo_extension_map.dig(data, 'manager')
             skeleton[:lines_total] = code_repo_map.dig(data, 'lines_total') || 0
             skeleton[:lines] = code_repo_map.dig(data, 'lines_total') || 0

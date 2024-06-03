@@ -19,7 +19,6 @@ module Mutations
             id: uuid,
             uuid: uuid,
             repo_name: data[:repo_name],
-            repo_technology_type: data[:repo_technology_type],
             repo_attribute_type: data[:repo_attribute_type],
             manager: data[:manager],
             manager_email: data[:manager_email],

@@ -31,7 +31,8 @@ module Types
                   select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
 
         resp = indexer.fetch_commit_page_by_repo_urls(repo_urls, begin_date, end_date, branch, per: per, page: page,
-                                                      filter_opts: filter_opts, sort_opts: sort_opts)
+                                                      filter_opts: filter_opts, sort_opts: sort_opts,
+                                                      label: label, level: level)
 
         count = indexer.commit_count_by_repo_urls(repo_urls, begin_date, end_date, branch, filter_opts: filter_opts)
         hits = resp&.[]('hits')&.[]('hits') || []
