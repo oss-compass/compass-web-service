@@ -17,19 +17,29 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        indexer, repo_urls =
-          select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+        subjects = Subject.get_subject_sig_by_label(label, level)
 
-        repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, repo_urls)
-        map_repo_sig = repo_sig_list.group_by { |item| item[:sig_name] }
-                                  .transform_values { |items| items.map { |item| item[:label] } }
         filter_range_times = (0..14).map { |i|
           times_interval = (end_date - begin_date) / 15
           { from: Time.parse("1970-01-01"), to: begin_date + (i + 1) * times_interval }
         }
+        aggs = {
+          date_ranges: {
+            range: { field: "grimoire_creation_date", ranges: filter_range_times },
+            aggs: {
+              lines_changed: { sum: { field: "lines_changed" } },
+              lines_added: { sum: { field: "lines_added" } },
+              lines_removed: { sum: { field: "lines_removed" } },
+              lines_total: { bucket_script: { buckets_path: { linesAdded: "lines_added", linesRemoved: "lines_removed" },
+                                              script: "params.linesAdded - params.linesRemoved" } }
+            }
+          }
+        }
+
         result_list = []
-        map_repo_sig.each do |key, value|
-          resp = indexer.code_line_trend_by_repo_urls(value, begin_date, end_date, branch, filter_range_times)
+        subjects.map do |subject|
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(subject.label, subject.level, GiteeGitEnrich, GithubGitEnrich)
+          resp = indexer.aggs_repo_by_by_repo_urls(repo_urls, begin_date, end_date, branch: branch, aggs: aggs)
           buckets = resp&.[]('aggregations')&.[]('date_ranges')&.[]('buckets') || []
           detail_list = buckets.map do |data|
             skeleton = Hash[Types::CodeTrendDetailType.fields.keys.map(&:underscore).zip([])].symbolize_keys
@@ -37,7 +47,7 @@ module Types
             skeleton[:count] = [data.dig('lines_total', 'value'), 0].compact.max
             skeleton
           end
-          result_list.push({sig_name: key, detail_list: detail_list})
+          result_list.push({sig_name: subject.sig_name, detail_list: detail_list})
         end
         result_list
       end

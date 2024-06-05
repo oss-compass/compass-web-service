@@ -138,4 +138,16 @@ class Subject < ApplicationRecord
       label.split('/').last(2).<<(level).join('-')
     end
   end
+
+  def self.get_subject_sig_by_label(label, level)
+    Subject.joins(subject_refs_as_child: [:subject_sig, :parent])
+           .select("subjects.*,
+                    subject_sigs.name as sig_name,
+                    parents_subject_refs.label as community_label,
+                    parents_subject_refs.level as community_level")
+           .where("parents_subject_refs.label = ? AND parents_subject_refs.level = ? AND subject_refs.sub_type = ?",
+                             label, level, SubjectRef::ToSig)
+  end
+
+
 end

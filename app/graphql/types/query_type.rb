@@ -103,6 +103,14 @@ module Types
     field :organization_page, resolver: Queries::OrganizationPageQuery
     field :subject_access_level_page, resolver: Queries::SubjectAccessLevelPageQuery
     field :subject_sig_page, resolver: Queries::SubjectSigPageQuery
+    field :subject_sig_activity_metric, resolver: Queries::SubjectSigActivityMetricQuery
+    field :subject_sig_community_metric, resolver: Queries::SubjectSigCommunityMetricQuery
+    field :subject_sig_commit_metric, resolver: Queries::SubjectSigCommitMetricQuery
+
+    field :community_detail_overview, resolver: Queries::CommunityDetailOverviewQuery
+    field :contribution_detail_overview, resolver: Queries::ContributionDetailOverviewQuery
+
+    field :user_search, resolver: Queries::UserSearchQuery
 
   end
 end

@@ -11,20 +11,20 @@ module Types
         argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
         argument :page, Integer, required: false, description: 'page number'
         argument :per, Integer, required: false, description: 'per page number'
+        argument :access_level, Integer, required: false, description: 'NORMAL/COMMITTER: 0, PRIVILEGED/LEADER: 1, default: nil'
 
-        def resolve(label: nil, level: 'repo', page: 1, per: 9)
+        def resolve(label: nil, level: 'repo', page: 1, per: 9, access_level: nil)
           current_user = context[:current_user]
           login_required!(current_user)
 
           subject = Subject.find_by(label: label, level: level)
           raise GraphQL::ExecutionError.new I18n.t('subject_access_level.invalid_label') unless subject
 
-          items = subject.subject_access_levels
-
-          items.map do |data|
-            puts data.to_s
+          if access_level.nil?
+            items = subject.subject_access_levels
+          else
+            items = subject.subject_access_levels.where(access_level: access_level)
           end
-
           pagyer, records = pagy(items, { page: page, items: per })
           { count: pagyer.count, total_page: pagyer.pages, page: pagyer.page, items: records }
 
