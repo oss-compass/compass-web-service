@@ -16,7 +16,8 @@ module Types
           current_user = context[:current_user]
           login_required!(current_user)
 
-          items = SubjectSig.joins(subject_ref: :parent)
+          items = SubjectSig.select("subject_sigs.*, subjects.label, subjects.`level`")
+                            .joins(subject_ref: :parent)
                             .where("subjects.label = ? And subjects.`level` = ? And subject_refs.sub_type = ?",
                                    label, level, SubjectRef::ToSig)
 

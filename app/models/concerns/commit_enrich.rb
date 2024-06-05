@@ -145,19 +145,9 @@ module CommitEnrich
         .raw_response
     end
 
-    def code_line_trend_by_repo_urls(repo_urls, begin_date, end_date, branch, filter_range_times, target: 'tag')
+    def aggs_repo_by_by_repo_urls(repo_urls, begin_date, end_date, branch: 'master', aggs: nil, target: 'tag')
       base_commit_list_by_repo_urls(repo_urls, begin_date, end_date, branch, target: target)
-           .aggregate(
-             date_ranges: {
-               range: { field: "grimoire_creation_date", ranges: filter_range_times },
-               aggs: {
-                 lines_changed: { sum: { field: "lines_changed" } },
-                 lines_added: { sum: { field: "lines_added" } },
-                 lines_removed: { sum: { field: "lines_removed" } },
-                 lines_total: { bucket_script: { buckets_path: { linesAdded: "lines_added", linesRemoved: "lines_removed" },
-                                                 script: "params.linesAdded - params.linesRemoved" } }
-               }
-             })
+           .aggregate(aggs)
            .per(0)
            .execute
            .raw_response
