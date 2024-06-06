@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_30_070221) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_05_083312) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -215,6 +215,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_30_070221) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "subject_id"], name: "index_subject_access_levels_on_user_id_and_subject_id", unique: true
+  end
+
+  create_table "subject_customizations", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name"
+    t.integer "subject_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 
   create_table "subject_refs", charset: "utf8mb4", force: :cascade do |t|

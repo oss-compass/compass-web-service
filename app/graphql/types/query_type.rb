@@ -111,6 +111,7 @@ module Types
     field :contribution_detail_overview, resolver: Queries::ContributionDetailOverviewQuery
 
     field :user_search, resolver: Queries::UserSearchQuery
+    field :subject_customization_list, resolver: Queries::SubjectCustomizationListQuery
 
   end
 end
