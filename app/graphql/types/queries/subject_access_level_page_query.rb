@@ -16,6 +16,7 @@ module Types
         def resolve(label: nil, level: 'repo', page: 1, per: 9, access_level: nil)
           current_user = context[:current_user]
           login_required!(current_user)
+          validate_by_label!(current_user, label)
 
           subject = Subject.find_by(label: label, level: level)
           raise GraphQL::ExecutionError.new I18n.t('subject_access_level.invalid_label') unless subject

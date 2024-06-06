@@ -6,12 +6,15 @@ module Mutations
 
     field :status, String, null: false
 
+    argument :label, String, required: true, description: 'repo or project label'
+    argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
     argument :old_org_name, String, required: false, description: 'Name of organization before modification'
     argument :org_name, String, required: true, description: 'Organization name'
     argument :domain, [String], required: true, description: 'Email suffix'
 
-    def resolve(old_org_name: nil, org_name: nil, domain: [])
-      validate_admin!(context[:current_user])
+    def resolve(label: nil, level: 'repo', old_org_name: nil, org_name: nil, domain: [])
+      label = ShortenedLabel.normalize_label(label)
+      validate_repo_admin!(context[:current_user], label, level)
 
       if old_org_name && !old_org_name.empty?
         Organization.delete_by_org_name(old_org_name)
