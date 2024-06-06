@@ -22,10 +22,10 @@ module PullEnrich
       base = base_terms_by_repo_urls(repo_urls, begin_date, end_date, target: target,
                               filter: filter, sort: sort, direction: direction, filter_opts: filter_opts, sort_opts: sort_opts)
       if commit_hash_list.present?
-        base = base.where( commits_data: commit_hash_list)
+        base = base.where(commits_data: commit_hash_list)
       end
       if pr_url_list.present?
-        base = base.where( url: pr_url_list)
+        base = base.where(url: pr_url_list)
       end
       base.where( state: 'merged')
           .per(MAX_PER_PAGE)
@@ -46,8 +46,7 @@ module PullEnrich
     end
 
     def fetch_pull_one_by_hash(repo_urls, hash_value, target='tag')
-      fetch_list = fetch_pull_list_by_hash(repo_urls, [hash_value], target)
-      fetch_list.first
+      fetch_pull_list_by_hash(repo_urls, [hash_value], target).first
     end
 
   end

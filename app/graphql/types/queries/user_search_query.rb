@@ -15,7 +15,7 @@ module Types
                     OR users.name LIKE :search
                     OR login_binds.account LIKE :search
                     OR login_binds.nickname LIKE :search", search: "%#{keyword}%")
-end
+      end
     end
   end
 end

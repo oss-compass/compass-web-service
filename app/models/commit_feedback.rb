@@ -40,8 +40,8 @@ class CommitFeedback < BaseIndex
   def self.fetch_commit_feedback_list(repo_urls, values, target: 'repo_name.keyword', value_field: 'id.keyword', state: nil)
     base = self.must(terms: { target => repo_urls })
                .must(terms: { value_field => values })
-    if state.nil?
-      base = base.where( 'state.keyword': state)
+    unless state.nil?
+      base = base.where('state.keyword': state)
     end
     resp = base.per(values.length)
                .execute
@@ -52,8 +52,7 @@ class CommitFeedback < BaseIndex
   end
 
   def self.fetch_commit_feedback_one(repo_urls, values, target: 'repo_name.keyword', value_field: 'id.keyword', state: nil)
-    fetch_list = fetch_commit_feedback_list(repo_urls, values, target: target, value_field: value_field, state: state)
-    fetch_list.first
+    fetch_commit_feedback_list(repo_urls, values, target: target, value_field: value_field, state: state).first
   end
 
 

@@ -18,7 +18,7 @@ module Mutations
 
       indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, CommitFeedback, CommitFeedback)
       commit_feedback_data = indexer.fetch_commit_feedback_one(repo_urls, id)
-      raise GraphQL::ExecutionError.new I18n.t('commit_feedback.invalid_commit_id') if commit_feedback_data.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if commit_feedback_data.nil?
 
       commit_feedback_data["reviewer_id"] = context[:current_user].id
       commit_feedback_data["reviewer_email"] = context[:current_user].email

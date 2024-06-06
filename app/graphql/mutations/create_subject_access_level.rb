@@ -16,7 +16,7 @@ module Mutations
       validate_repo_admin!(context[:current_user], label, level)
 
       subject = Subject.find_by(label: label, level: level)
-      raise GraphQL::ExecutionError.new I18n.t('subject_access_level.invalid_label') if subject.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
 
       SubjectAccessLevel.create!(
         {

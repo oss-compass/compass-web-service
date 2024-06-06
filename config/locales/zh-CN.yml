@@ -357,6 +357,7 @@ zh-CN:
   basic:
     too_long: 请求参数过长，限制为：%{long}
     invalid_range: 请求参数 %{param} 范围无效, 有效范围为 %{min} ~ %{max}
+    subject_not_exist: 操作对象不存在
   censoring:
     illegal: "[违规内容，不予展示]"
     illegal_img: "/images/illegal.svg"
@@ -1482,6 +1483,8 @@ zh-CN:
     subscription_already_exist: 已经订阅了
     subject_not_exist: 操作对象不存在
     subscription_not_exist: 订阅不存在
+  subject_sig:
+    invalid_name: 无效名称
   yaml:
     path:
       invalid: '无效的YAML文件路径: %{path}'

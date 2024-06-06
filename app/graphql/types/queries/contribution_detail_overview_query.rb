@@ -17,9 +17,9 @@ module Types
         login_required!(context[:current_user])
         validate_by_label!(context[:current_user], label)
 
-        @begin_date, @end_date, interval = extract_date(begin_date, end_date)
+        begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        indexers, @repo_urls =
+        indexers, repo_urls =
           select_idx_repos_by_lablel_and_level(
             label,
             level,
@@ -27,8 +27,8 @@ module Types
             [GithubGitEnrich, GithubPullEnrich, GithubIssueEnrich, GithubContributorEnrich, GithubStargazerEnrich, GithubForkEnrich, nil]
           )
         base_type = Types::Meta::ContributionDetailOverviewType
-        current_period_data = get_contribution_count(base_type, indexers, @begin_date, @end_date)
-        previous_period_data = get_contribution_count(base_type, indexers, @begin_date - (@end_date - @begin_date), @begin_date)
+        current_period_data = get_contribution_count(base_type, indexers, begin_date, end_date)
+        previous_period_data = get_contribution_count(base_type, indexers, begin_date - (end_date - begin_date), begin_date)
         ratio = get_ratio(base_type, current_period_data, previous_period_data)
 
         {
@@ -39,38 +39,38 @@ module Types
       end
 
       def get_contribution_count(base_type, indexers, begin_date, end_date)
-        @git_indexer, @pull_indexer, @issue_indexer, @contributor_indexer, @stargazer_indexer, @fork_indexer, @watch_indexer = indexers
+        git_indexer, pull_indexer, issue_indexer, contributor_indexer, stargazer_indexer, fork_indexer, watch_indexer = indexers
 
         commit_aggs = { count_hash: { cardinality: { field: "hash" } } }
-        commit_resp = @git_indexer.aggs_repo_by_by_repo_urls(@repo_urls, @begin_date, @end_date, aggs: commit_aggs)
+        commit_resp = git_indexer.aggs_repo_by_by_repo_urls(repo_urls, begin_date, end_date, aggs: commit_aggs)
         commit_count = commit_resp.dig('aggregations', 'count_hash', 'value') || 0
 
-        pull_query = @pull_indexer.where(pull_request: true)
+        pull_query = pull_indexer.where(pull_request: true)
                                   .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                  .must(terms: { tag: @repo_urls })
+                                  .must(terms: { tag: repo_urls })
         pull_count = count_of(pull_query, 'uuid')
 
-        issue_query = @issue_indexer.where(pull_request: false)
+        issue_query = issue_indexer.where(pull_request: false)
                                     .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                    .must(terms: { tag: @repo_urls })
+                                    .must(terms: { tag: repo_urls })
         issue_count = count_of(issue_query, 'uuid')
 
-        contributor_and_org_query = @contributor_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                                        .must(terms: { 'repo_name.keyword': @repo_urls })
+        contributor_and_org_query = contributor_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                                                        .must(terms: { 'repo_name.keyword': repo_urls })
         contributor_count = count_of(contributor_and_org_query, 'contributor.keyword')
         org_count = count_of(contributor_and_org_query, 'organization.keyword')
 
-        stargazer_query = @stargazer_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                            .must(terms: { tag: @repo_urls })
+        stargazer_query = stargazer_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                                            .must(terms: { tag: repo_urls })
         star_count = count_of(stargazer_query, 'user_login')
 
-        fork_query = @fork_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                  .must(terms: { tag: @repo_urls })
+        fork_query = fork_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                                  .must(terms: { tag: repo_urls })
         fork_count = count_of(fork_query, 'user_login')
 
-        if @watch_indexer.present?
-          watch_query = @watch_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
-                                      .must(terms: { tag: @repo_urls })
+        if watch_indexer.present?
+          watch_query = watch_indexer.range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                                      .must(terms: { tag: repo_urls })
           watch_count = count_of(watch_query, 'user_login')
         else
           watch_count = 0
