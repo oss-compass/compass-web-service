@@ -165,8 +165,7 @@ module CommitEnrich
     end
 
     def fetch_commit_one_by_hash(repo_urls, hash_value, target='tag')
-      fetch_list = fetch_commit_list_by_hash(repo_urls, [hash_value], target)
-      fetch_list.first
+      fetch_commit_list_by_hash(repo_urls, [hash_value], target).first
     end
 
   end

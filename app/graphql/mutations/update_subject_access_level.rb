@@ -16,7 +16,7 @@ module Mutations
       validate_repo_admin!(context[:current_user], label, level)
 
       subject_access_level = SubjectAccessLevel.find_by(id: id)
-      raise GraphQL::ExecutionError.new I18n.t('subject_access_level.not_found') if subject_access_level.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_access_level.nil?
 
       subject_access_level.update!(access_level: access_level)
 

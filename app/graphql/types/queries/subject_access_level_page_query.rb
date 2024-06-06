@@ -19,7 +19,7 @@ module Types
           validate_by_label!(current_user, label)
 
           subject = Subject.find_by(label: label, level: level)
-          raise GraphQL::ExecutionError.new I18n.t('subject_access_level.invalid_label') unless subject
+          raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless subject
 
           if access_level.nil?
             items = subject.subject_access_levels

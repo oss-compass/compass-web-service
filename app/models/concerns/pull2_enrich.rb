@@ -27,7 +27,7 @@ module Pull2Enrich
       base = base_terms_by_repo_urls(repo_urls, begin_date, end_date, target: target,
                               filter: filter, sort: sort, direction: direction, filter_opts: filter_opts, sort_opts: sort_opts)
       if user_login_list.present?
-        base = base.where( user_login: user_login_list)
+        base = base.where(user_login: user_login_list)
       end
       base.aggregate(
         group_by_name: {

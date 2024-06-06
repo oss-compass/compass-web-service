@@ -27,9 +27,9 @@ module Mutations
       name = name.strip
       raise GraphQL::ExecutionError.new I18n.t('subject_sig.invalid_name') if name.blank?
       subject = Subject.find_by(label: label, level: level)
-      raise GraphQL::ExecutionError.new I18n.t('subject_sig.invalid_label') if subject.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
       sig_subject = Subject.find_by(label: link_sig_label, level: "community")
-      raise GraphQL::ExecutionError.new I18n.t('subject_sig.invalid_link_sig_label') if sig_subject.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if sig_subject.nil?
 
       ActiveRecord::Base.transaction do
         subject_ref = SubjectRef.create!(

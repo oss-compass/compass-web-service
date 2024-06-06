@@ -27,11 +27,11 @@ module Mutations
       validate_repo_admin!(context[:current_user], label, level)
 
       subject_sig = SubjectSig.find_by(id: id)
-      raise GraphQL::ExecutionError.new I18n.t('subject_access_level.not_found') if subject_sig.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_sig.nil?
       subject_ref = SubjectRef.find_by(id: subject_sig.subject_ref_id)
-      raise GraphQL::ExecutionError.new I18n.t('subject_access_level.not_found') if subject_ref.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_ref.nil?
       target_sig_subject = Subject.find_by(label: link_sig_label, level: "community")
-      raise GraphQL::ExecutionError.new I18n.t('subject_sig.invalid_link_sig_label') if target_sig_subject.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_sig_subject.nil?
 
 
       ActiveRecord::Base.transaction do
