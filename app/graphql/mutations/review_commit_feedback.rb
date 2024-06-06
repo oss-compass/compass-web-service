@@ -14,7 +14,7 @@ module Mutations
 
     def resolve(label: nil, level: 'repo', id: nil, review_msg: nil, state: 'approved')
       label = ShortenedLabel.normalize_label(label)
-      validate_admin!(context[:current_user])
+      validate_repo_admin!(context[:current_user], label, level)
 
       indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, CommitFeedback, CommitFeedback)
       commit_feedback_data = indexer.fetch_commit_feedback_one(repo_urls, id)

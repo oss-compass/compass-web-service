@@ -16,6 +16,7 @@ module Types
       def resolve(label: nil, level: 'repo', begin_date: nil, end_date: nil)
         label = ShortenedLabel.normalize_label(label)
 
+        login_required!(context[:current_user])
         validate_by_label!(context[:current_user], label)
 
         repo_type = level == 'repo' ? nil : (repo_type || 'software-artifact')

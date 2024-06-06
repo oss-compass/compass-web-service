@@ -12,7 +12,7 @@ module Types
       argument :sort_opts, [Input::SortOptionInput], required: false, description: 'sort options'
 
       def resolve(page: 1, per: 9, filter_opts: [], sort_opts: [])
-        validate_admin!(context[:current_user])
+        login_required!(context[:current_user])
 
         fetch_map = Organization.fetch_organization_agg_map(filter_opts: filter_opts, sort_opts: sort_opts)
         items = fetch_map.map do |key, value|

@@ -13,8 +13,8 @@ module Types
         argument :per, Integer, required: false, description: 'per page number'
 
         def resolve(label: nil, level: 'repo', page: 1, per: 9)
-          current_user = context[:current_user]
-          login_required!(current_user)
+          login_required!(context[:current_user])
+          validate_by_label!(context[:current_user], label)
 
           items = SubjectSig.select("subject_sigs.*, subjects.label, subjects.`level`")
                             .joins(subject_ref: :parent)

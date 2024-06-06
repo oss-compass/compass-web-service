@@ -19,7 +19,8 @@ module Types
                   filter_opts: [], sort_opts: [])
         label = ShortenedLabel.normalize_label(label)
 
-        validate_admin!(context[:current_user])
+        login_required!(context[:current_user])
+        validate_by_label!(context[:current_user], label)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 

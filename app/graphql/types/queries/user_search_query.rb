@@ -8,8 +8,7 @@ module Types
       argument :keyword, String, required: true, description: 'search keyword'
 
       def resolve(keyword: nil)
-        current_user = context[:current_user]
-        login_required!(current_user)
+        login_required!(context[:current_user])
 
         User.joins(:login_binds)
             .where("users.email LIKE :search
