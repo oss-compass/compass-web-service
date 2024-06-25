@@ -1828,6 +1828,8 @@ en:
       failed: 'failed to get latest sha, reason: %{reason}.'
     org_repo:
       failed: 'failed to create a org repo, reason: %{reason}.'
+    issue:
+      failed: 'failed to create a issue, reason: %{reason}.'
   pull:
     too_many_repositories: too many repositories, please create a pull request manually.
     invalid_level: invalid resource type.
