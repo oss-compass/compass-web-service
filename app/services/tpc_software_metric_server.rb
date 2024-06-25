@@ -111,15 +111,17 @@ class TpcSoftwareMetricServer
         report_metric_data["status"] = TpcSoftwareReportMetric::Status_Success
       end
     end
-    tpc_software_report_metric.update!(report_metric_data)
+    ActiveRecord::Base.transaction do
+      tpc_software_report_metric.update!(report_metric_data)
 
-    tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: task_metadata["report_id"])
-    tpc_software_selection_report.update!(
-      {
-        code_count: code_count,
-        license: license
-      }
-    )
+      tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: task_metadata["report_id"])
+      tpc_software_selection_report.update!(
+        {
+          code_count: code_count,
+          license: license
+        }
+      )
+    end
   end
 
 
@@ -254,7 +256,9 @@ class TpcSoftwareMetricServer
     commit_count = base.execute.aggregations.dig('count', 'value')
     commit_signed_off_count = base.must(wildcard: { author_email: { value: "*Signed-off-by*" } })
                                   .execute.aggregations.dig('count', 'value')
-    if commit_signed_off_count == 0
+    if commit_count == 0
+      0
+    elsif commit_signed_off_count == 0
       6
     elsif commit_count == commit_signed_off_count
       10
@@ -264,8 +268,8 @@ class TpcSoftwareMetricServer
   end
 
   def get_ecology_code_maintenance
-    begin_date = Time.current
-    end_date = 1.year.ago
+    begin_date = 1.year.ago
+    end_date = Time.current
     avg_score = ActivityMetric.aggregate({ avg_score: { avg: { field: ActivityMetric::main_score } }})
                               .must(match_phrase: { 'label.keyword': @project_url })
                               .must(match_phrase: { 'level.keyword': "repo" })
@@ -280,8 +284,8 @@ class TpcSoftwareMetricServer
   end
 
   def get_ecology_community_support
-    begin_date = Time.current
-    end_date = 1.year.ago
+    begin_date = 1.year.ago
+    end_date = Time.current
     avg_score = CommunityMetric.aggregate({ avg_score: { avg: { field: CommunityMetric::main_score } }})
                               .must(match_phrase: { 'label.keyword': @project_url })
                               .must(match_phrase: { 'level.keyword': "repo" })
@@ -310,7 +314,7 @@ class TpcSoftwareMetricServer
     releases = hits[0].dig("_source", "releases") || []
     vulnerability_count = 0
     package_name = @project_url.split("/").last
-    past_time = 3.years.ago
+    past_time = 3.year.ago
     releases.each do |release|
       created_at = DateTime.parse(release.dig("created_at"))
       if past_time <= created_at
@@ -356,9 +360,9 @@ class TpcSoftwareMetricServer
                   .per(0)
                   .execute
                   .raw_response
-    lines_added = resp.dig("aggregate", "lines_added", "value") || 0
-    lines_removed = resp.dig("aggregate", "lines_removed", "value") || 0
-    code_count = lines_added - lines_removed
+    lines_added = resp.dig("aggregations", "lines_added", "value") || 0
+    lines_removed = resp.dig("aggregations", "lines_removed", "value") || 0
+    code_count = lines_added + lines_removed
     if code_count < 0
       code_count = 0
     end

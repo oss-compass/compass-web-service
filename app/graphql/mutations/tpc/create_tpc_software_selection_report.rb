@@ -98,7 +98,7 @@ module Mutations
 
       def get_lifecycle_version_lifecycle(release, release_time)
         if release.present? && release_time.present?
-          if 2.years.ago <= release_time
+          if 2.year.ago <= release_time
             return 10
           else
             return 6
