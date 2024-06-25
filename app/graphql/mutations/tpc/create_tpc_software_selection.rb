@@ -74,6 +74,8 @@ module Mutations
                       报告链接：https://oss-compass.org/oh#reportDetailPage?projectId=#{short_code_list.join("..")}"
         result = IssueServer.new({repo_url: OH_TPC_REPO})
                             .create_gitee_issue(OH_TPC_REPO_TOKEN, issue_title, issue_body)
+        raise GraphQL::ExecutionError.new result[:message] unless result[:status]
+
         issue_url = result[:issue_url]
 
         TpcSoftwareSelection.create!(

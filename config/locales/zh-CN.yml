@@ -1337,6 +1337,8 @@ zh-CN:
       failed: 获取最新提交信息失败，原因：%{reason}
     org_repo:
       failed: 创建组织仓库失败，原因：%{reason}
+    issue:
+      failed: 创建issue失败，原因：%{reason}
   pull:
     too_many_repositories: 提交的仓库数量过多，请手动创建PR
     welcome_collection: 欢迎提交 Collection 变更，在PR审查合并后，新的 Collection 信息会在下一个周期自动更新展示

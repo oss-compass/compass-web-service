@@ -160,7 +160,7 @@ module GithubApplication
     issue = JSON.parse(resp.body)
     { status: true, issue_url: issue["html_url"] }
   rescue => ex
-    { status: false, message: I18n.t('oauth.org_repo.failed', reason: ex.message) }
+    { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
   end
 
   private
