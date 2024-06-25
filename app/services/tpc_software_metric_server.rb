@@ -198,7 +198,7 @@ class TpcSoftwareMetricServer
     license_detections.each do |license_detection|
       is_license_access_list = false
       subject_licenses.each do |subject_license|
-        if subject_license.license.include?(license_detection.dig("license_expression_spdx"))
+        if subject_license.license.include?(license_detection.dig("license_expression_spdx") || license_detection.dig("license_expression") || "")
           is_license_access_list = true
           break
         end
@@ -221,13 +221,13 @@ class TpcSoftwareMetricServer
     check_license_list = []
     license_detections = scancode_result.dig("license_detections") || []
     license_detections.each do |item|
-      check_license_list << item.dig("license_expression_spdx")
+      check_license_list << item.dig("license_expression_spdx") || item.dig("license_expression") || ""
     end
     files = scancode_result.dig("files") || []
     files.each do |file|
       license_detections = file.dig("license_detections") || []
       license_detections.each do |item|
-        check_license_list << item.dig("license_expression_spdx")
+        check_license_list << item.dig("license_expression_spdx") || item.dig("license_expression") || ""
       end
     end
     check_license_list = check_license_list.uniq
@@ -383,7 +383,7 @@ class TpcSoftwareMetricServer
         end
       end
     end
-    nil
+    license_detections.first.dig("license_expression_spdx") || license_detections.first.dig("license_expression") || nil
   end
 
   def tpc_service_token

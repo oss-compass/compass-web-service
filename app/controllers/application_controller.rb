@@ -66,8 +66,9 @@ class ApplicationController < ActionController::Base
     task_metadata = payload['task_metadata'].to_h
 
     TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")}).tpc_software_callback(command_list, scan_results, task_metadata)
-
     render json: { status: true, message: 'ok' }
+  rescue => ex
+    render json: { status: false, message: ex }
   end
 
 

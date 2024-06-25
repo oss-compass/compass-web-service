@@ -8,6 +8,7 @@ class CreateTpcSoftwareSelections < ActiveRecord::Migration[7.1]
       t.datetime :incubation_time, null: false
       t.integer :adaptation_method, null: false
       t.string :reason, null: false
+      t.string :issue_url, null: true
       t.integer :subject_id, null: false
       t.integer :user_id, null: false
       t.timestamps

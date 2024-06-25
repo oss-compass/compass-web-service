@@ -61,20 +61,6 @@ module Mutations
 
       issue_url = nil
       ActiveRecord::Base.transaction do
-        TpcSoftwareSelection.create!(
-          {
-            selection_type: selection_type,
-            tpc_software_selection_report_ids: tpc_software_selection_report_ids.any? ? tpc_software_selection_report_ids.to_json : nil,
-            repo_url: repo_url,
-            committers: committers.any? ? committers.to_json : nil,
-            incubation_time: incubation_time,
-            reason: reason,
-            adaptation_method: adaptation_method,
-            subject_id: subject.id,
-            user_id: current_user.id
-          }
-        )
-
         if selection_type == 0
           selection_type_name = "沙箱选型"
         elsif selection_type == 1
@@ -89,6 +75,22 @@ module Mutations
         result = IssueServer.new({repo_url: OH_TPC_REPO})
                             .create_gitee_issue(OH_TPC_REPO_TOKEN, issue_title, issue_body)
         issue_url = result[:issue_url]
+
+        TpcSoftwareSelection.create!(
+          {
+            selection_type: selection_type,
+            tpc_software_selection_report_ids: tpc_software_selection_report_ids.any? ? tpc_software_selection_report_ids.to_json : nil,
+            repo_url: repo_url,
+            committers: committers.any? ? committers.to_json : nil,
+            incubation_time: incubation_time,
+            reason: reason,
+            adaptation_method: adaptation_method,
+            issue_url: issue_url,
+            subject_id: subject.id,
+            user_id: current_user.id
+          }
+        )
+
       end
 
       { status: true, issue_url: issue_url, message: '' }

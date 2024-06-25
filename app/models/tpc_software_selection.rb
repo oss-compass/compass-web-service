@@ -10,6 +10,7 @@
 #  incubation_time                   :datetime         not null
 #  adaptation_method                 :integer          not null
 #  reason                            :string(255)      not null
+#  issue_url                         :string(255)
 #  subject_id                        :integer          not null
 #  user_id                           :integer          not null
 #  created_at                        :datetime         not null

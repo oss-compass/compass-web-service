@@ -337,6 +337,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_13_072129) do
     t.datetime "incubation_time", null: false
     t.integer "adaptation_method", null: false
     t.string "reason", null: false
+    t.string "issue_url"
     t.integer "subject_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false

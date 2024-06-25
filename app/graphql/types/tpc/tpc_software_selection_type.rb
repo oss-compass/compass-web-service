@@ -10,6 +10,7 @@ module Types
       field :committers, [String]
       field :incubation_time, GraphQL::Types::ISO8601DateTime
       field :reason, String
+      field :issue_url, String
       field :adaptation_method, Integer, description: 'adaptation: 0, rewrite: 1'
       field :created_at, GraphQL::Types::ISO8601DateTime
 
