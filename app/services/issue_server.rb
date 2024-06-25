@@ -9,6 +9,7 @@ class IssueServer
 
   def create_gitee_issue(gitee_token, title, body)
     result = gitee_create_issue(@repo_url, gitee_token, title, body)
+    Rails.logger.info "create_gitee_issue: #{result}"
     return result unless result[:status]
     { status: true, issue_url: result[:issue_url] }
   end
