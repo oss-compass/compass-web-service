@@ -12,7 +12,14 @@ module Types
       field :reason, String
       field :issue_url, String
       field :adaptation_method, Integer, description: 'adaptation: 0, rewrite: 1'
+      field :user_id, Integer, null: false
+      field :user, Types::UserType
       field :created_at, GraphQL::Types::ISO8601DateTime
+
+      def user
+        User.find_by(id: object.user_id)
+      end
+
 
       def tpc_software_selection_report_ids
         object.tpc_software_selection_report_ids.present? ? JSON.parse(object.tpc_software_selection_report_ids) : []
