@@ -159,6 +159,7 @@ module GiteeApplication
       { 'Content-Type' => 'application/json' }
     )
     issue = JSON.parse(resp.body)
+    Rails.logger.info "gitee_create_issue: #{issue}"
     { status: true, issue_url: issue["html_url"] }
   rescue => ex
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
