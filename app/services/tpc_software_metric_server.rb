@@ -10,7 +10,7 @@ class TpcSoftwareMetricServer
   TPC_SERVICE_API_ENDPOINT = ENV.fetch('TPC_SERVICE_API_ENDPOINT')
   TPC_SERVICE_API_USERNAME = ENV.fetch('TPC_SERVICE_API_USERNAME')
   TPC_SERVICE_API_PASSWORD = ENV.fetch('TPC_SERVICE_API_PASSWORD')
-  TPC_SERVICE_CALLBACK_URL = "#{DEFAULT_HOST}:7001/api/tpc_software_callback"
+  TPC_SERVICE_CALLBACK_URL = "#{DEFAULT_HOST}/api/tpc_software_callback"
 
   @@license_conflict_data = nil
 
