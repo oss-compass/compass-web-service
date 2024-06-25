@@ -1826,6 +1826,8 @@ en:
       failed: 'failed to create a pull request, reason: %{reason}.'
     latest_sha:
       failed: 'failed to get latest sha, reason: %{reason}.'
+    org_repo:
+      failed: 'failed to create a org repo, reason: %{reason}.'
   pull:
     too_many_repositories: too many repositories, please create a pull request manually.
     invalid_level: invalid resource type.
@@ -2002,6 +2004,13 @@ en:
     subscription_not_exist: Subscription does not exist
   subject_sig:
     invalid_name: invalid name
+  tpc:
+    software_report_already_exist: Report already exist
+    software_report_progress: Operation failed, report is being processed
+    software_selection_audit_reject: Operation failed, hatch selection evaluation has been rejected
+    software_selection_repo_audit_reject: Operation failed, the repo access control review has been rejected
+    software_report_trigger_failed: Report trigger failed，reason：%{reason}
+    software_code_url_invalid: Code url invalid
   yaml:
     path:
       invalid: 'invaild configure yaml path: %{path}.'

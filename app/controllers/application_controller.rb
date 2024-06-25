@@ -57,6 +57,20 @@ class ApplicationController < ActionController::Base
     { status: true, message: 'ok' }
   end
 
+  def tpc_software_callback
+    payload = request.request_parameters
+
+    command_list = payload['command_list']
+    project_url = payload['project_url']
+    scan_results = payload['scan_results'].to_h
+    task_metadata = payload['task_metadata'].to_h
+
+    TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")}).tpc_software_callback(command_list, scan_results, task_metadata)
+
+    render json: { status: true, message: 'ok' }
+  end
+
+
   def website
     render template: 'layouts/website'
   end

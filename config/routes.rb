@@ -44,6 +44,7 @@ Rails.application.routes.draw do
   end
   post '/api/workflow', to: 'application#workflow', as: :workflow
   post '/api/hook', to: 'application#hook', as: :hook
+  post '/api/tpc_software_callback', to: 'application#tpc_software_callback', as: :tpc_software_callback
 
   get '/api/hook/we_chat/receive', to: 'we_chat#show'
   post '/api/hook/we_chat/receive', to: 'we_chat#create'

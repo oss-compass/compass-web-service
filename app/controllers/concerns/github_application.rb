@@ -129,14 +129,48 @@ module GithubApplication
     { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }
   end
 
-  private
-
-  def github_owner
-    @github_owner ||= GITHUB_REPO.split('/')[-2]
+  def github_create_org_repo(repo_url, github_token, description)
+    RestClient::Request.new(
+      method: :post,
+      url: "#{GITHUB_API_ENDPOINT}/orgs/#{github_owner(repo_url)}/repos",
+      payload: {
+        name: github_repo(repo_url),
+        description: description,
+        private: false
+      }.to_json,
+      headers: { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{github_token}" },
+      proxy: PROXY
+    ).execute
+    { status: true, repo_url: repo_url }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.org_repo.failed', reason: ex.message) }
   end
 
-  def github_repo
-    @github_repo ||= GITHUB_REPO.split('/')[-1]
+  def github_create_issue(repo_url, github_token, title, body)
+    resp = RestClient::Request.new(
+      method: :post,
+      url: "#{GITHUB_API_ENDPOINT}/repos/#{github_owner(repo_url)}/#{github_repo(repo_url)}/issues",
+      payload: {
+        title: title,
+        body: body
+      }.to_json,
+      headers: { 'Content-Type' => 'application/json', 'Authorization' => "Bearer #{github_token}" },
+      proxy: PROXY
+    ).execute
+    issue = JSON.parse(resp.body)
+    { status: true, issue_url: issue["html_url"] }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.org_repo.failed', reason: ex.message) }
+  end
+
+  private
+
+  def github_owner(github_repo = GITHUB_REPO)
+    @github_owner ||= github_repo.split('/')[-2]
+  end
+
+  def github_repo(github_repo = GITHUB_REPO)
+    @github_repo ||= github_repo.split('/')[-1]
   end
 
   def github_webhook_verify

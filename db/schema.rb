@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_05_083312) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_13_072129) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -225,6 +225,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_05_083312) do
     t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 
+  create_table "subject_licenses", charset: "utf8mb4", force: :cascade do |t|
+    t.string "license"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "subject_refs", charset: "utf8mb4", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
@@ -265,6 +271,85 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_05_083312) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
+  end
+
+  create_table "tpc_software_report_metrics", charset: "utf8mb4", force: :cascade do |t|
+    t.string "code_url", null: false
+    t.string "status", null: false
+    t.integer "status_compass_callback", null: false
+    t.integer "status_tpc_service_callback", null: false
+    t.integer "version", null: false
+    t.integer "tpc_software_report_id", null: false
+    t.string "tpc_software_report_type", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.integer "base_repo_name"
+    t.integer "base_website_url"
+    t.integer "base_code_url"
+    t.integer "compliance_license"
+    t.integer "compliance_dco"
+    t.integer "compliance_package_sig"
+    t.integer "compliance_license_compatibility"
+    t.integer "ecology_dependency_acquisition"
+    t.integer "ecology_code_maintenance"
+    t.integer "ecology_community_support"
+    t.integer "ecology_adoption_analysis"
+    t.integer "ecology_software_quality"
+    t.integer "ecology_patent_risk"
+    t.integer "lifecycle_version_normalization"
+    t.integer "lifecycle_version_number"
+    t.integer "lifecycle_version_lifecycle"
+    t.integer "security_binary_artifact"
+    t.integer "security_vulnerability"
+    t.integer "security_vulnerability_response"
+    t.integer "security_vulnerability_disclosure"
+    t.integer "security_history_vulnerability"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_selection_reports", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "report_type", null: false
+    t.string "name", null: false
+    t.integer "tpc_software_sig_id", null: false
+    t.string "release", null: false
+    t.datetime "release_time", null: false
+    t.string "manufacturer", null: false
+    t.string "website_url", null: false
+    t.string "code_url", null: false
+    t.string "programming_language", null: false
+    t.integer "code_count"
+    t.string "license"
+    t.string "vulnerability_disclosure"
+    t.string "vulnerability_response"
+    t.string "short_code", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_selections", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "selection_type", null: false
+    t.string "tpc_software_selection_report_ids", null: false
+    t.string "repo_url"
+    t.string "committers", null: false
+    t.datetime "incubation_time", null: false
+    t.integer "adaptation_method", null: false
+    t.string "reason", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "value", null: false
+    t.string "description", null: false
+    t.integer "subject_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", charset: "utf8mb4", force: :cascade do |t|

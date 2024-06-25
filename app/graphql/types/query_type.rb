@@ -113,5 +113,14 @@ module Types
     field :user_search, resolver: Queries::UserSearchQuery
     field :subject_customization_list, resolver: Queries::SubjectCustomizationListQuery
 
+    ## TPC
+    field :tpc_software_sig_list, resolver: Queries::Tpc::TpcSoftwareSigListQuery
+    field :tpc_software_selection_report_page, resolver: Queries::Tpc::TpcSoftwareSelectionReportPageQuery
+    field :tpc_software_selection_report, resolver: Queries::Tpc::TpcSoftwareSelectionReportQuery
+    field :tpc_software_selection_page, resolver: Queries::Tpc::TpcSoftwareSelectionPageQuery
+
+    field :tpc_software_output_report_page, resolver: Queries::Tpc::TpcSoftwareOutputReportPageQuery
+    field :tpc_software_output_page, resolver: Queries::Tpc::TpcSoftwareOutputPageQuery
+
   end
 end
