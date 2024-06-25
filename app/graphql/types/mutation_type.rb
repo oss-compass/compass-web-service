@@ -46,7 +46,11 @@ module Types
     field :delete_subject_sig, mutation: Mutations::DeleteSubjectSig, description: 'Delete a Subject sig'
     field :update_subject_sig, mutation: Mutations::UpdateSubjectSig, description: 'Update a Subject sig'
 
+    field :create_tpc_software_selection_report, mutation: Mutations::Tpc::CreateTpcSoftwareSelectionReport, description: 'Create a tpc software selection report'
+    field :create_tpc_software_selection, mutation: Mutations::Tpc::CreateTpcSoftwareSelection, description: 'Create a tpc software selection'
 
+    field :create_tpc_software_output_report, mutation: Mutations::Tpc::CreateTpcSoftwareOutputReport, description: 'Create a tpc software output report'
+    field :create_tpc_software_output, mutation: Mutations::Tpc::CreateTpcSoftwareOutput, description: 'Create a tpc software output'
 
     # User Cancellation
     def sign_out

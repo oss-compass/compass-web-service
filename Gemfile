@@ -189,3 +189,5 @@ gem 'graphql-batch'
 gem "graphiql-rails", group: :development
 
 gem "pundit", "~> 2.3"
+
+gem 'roo'

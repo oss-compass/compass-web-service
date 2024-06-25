@@ -1335,6 +1335,8 @@ zh-CN:
       failed: 创建PR失败，原因：%{reason}
     latest_sha:
       failed: 获取最新提交信息失败，原因：%{reason}
+    org_repo:
+      failed: 创建组织仓库失败，原因：%{reason}
   pull:
     too_many_repositories: 提交的仓库数量过多，请手动创建PR
     welcome_collection: 欢迎提交 Collection 变更，在PR审查合并后，新的 Collection 信息会在下一个周期自动更新展示
@@ -1485,6 +1487,13 @@ zh-CN:
     subscription_not_exist: 订阅不存在
   subject_sig:
     invalid_name: 无效名称
+  tpc:
+    software_report_already_exist: 软件报告已存在
+    software_report_progress: 操作失败, 报告正在处理中
+    software_selection_audit_reject: 操作失败, 孵化选型评审已驳回
+    software_selection_repo_audit_reject: 操作失败, 建仓门禁评审已驳回
+    software_report_trigger_failed: 报告触发失败，原因：%{reason}
+    software_code_url_invalid: 软件源码地址不可用
   yaml:
     path:
       invalid: '无效的YAML文件路径: %{path}'

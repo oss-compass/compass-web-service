@@ -131,13 +131,46 @@ module GiteeApplication
     { status: false, message: I18n.t('oauth.pull.failed', reason: ex.message) }
   end
 
-  private
-  def gitee_owner
-    @gitee_owner ||= GITEE_REPO.split('/')[-2]
+  def gitee_create_org_repo(repo_url, gitee_token, description)
+    Faraday.post(
+      "#{GITEE_API_ENDPOINT}/orgs/#{gitee_owner(repo_url)}/repos",
+      {
+        name: gitee_repo(repo_url),
+        description: description,
+        public: 1,
+        access_token: gitee_token
+      }.to_json,
+      { 'Content-Type' => 'application/json' }
+    )
+    { status: true, repo_url: repo_url }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.org_repo.failed', reason: ex.message) }
   end
 
-  def gitee_repo
-    @gitee_repo ||= GITEE_REPO.split('/')[-1]
+  def gitee_create_issue(repo_url, gitee_token, title, body)
+    resp = Faraday.post(
+      "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner(repo_url)}/issues",
+      {
+        repo: gitee_repo(repo_url),
+        title: title,
+        body: body,
+        access_token: gitee_token
+      }.to_json,
+      { 'Content-Type' => 'application/json' }
+    )
+    issue = JSON.parse(resp.body)
+    { status: true, issue_url: issue["html_url"] }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.org_repo.failed', reason: ex.message) }
+  end
+
+  private
+  def gitee_owner(gitee_repo = GITEE_REPO)
+    @gitee_owner ||= gitee_repo.split('/')[-2]
+  end
+
+  def gitee_repo(gitee_repo = GITEE_REPO)
+    @gitee_repo ||= gitee_repo.split('/')[-1]
   end
 
 

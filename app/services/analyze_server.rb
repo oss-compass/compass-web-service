@@ -14,18 +14,18 @@ class AnalyzeServer
   class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
-    @raw = opts[:raw] || true
-    @enrich = opts[:enrich] || true
-    @identities_load = opts[:identities_load] || true
-    @identities_merge = opts[:identities_merge] || true
+    @raw = opts.fetch(:raw, true)
+    @enrich = opts.fetch(:enrich, true)
+    @identities_load = opts.fetch(:identities_load, true)
+    @identities_merge = opts.fetch(:identities_merge, true)
     @repo_url = opts[:repo_url]
-    @activity = opts[:activity] || true
-    @community = opts[:community] || true
-    @codequality = opts[:codequality] || true
-    @group_activity = opts[:group_activity] || true
-    @domain_persona = opts[:domain_persona] || true
-    @milestone_persona = opts[:milestone_persona] || true
-    @role_persona = opts[:role_persona] || true
+    @activity = opts.fetch(:activity, true)
+    @community = opts.fetch(:community, true)
+    @codequality = opts.fetch(:codequality, true)
+    @group_activity = opts.fetch(:group_activity, true)
+    @domain_persona = opts.fetch(:domain_persona, true)
+    @milestone_persona = opts.fetch(:milestone_persona, true)
+    @role_persona = opts.fetch(:role_persona, true)
     @callback = opts[:callback]
     @developers = opts[:developers] || {}
 
