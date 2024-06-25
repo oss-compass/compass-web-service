@@ -20,7 +20,12 @@ module Types
       field :license, String
       field :vulnerability_disclosure, String
       field :vulnerability_response, String
+      field :user_id, Integer, null: false
+      field :user, Types::UserType
 
+      def user
+        User.find_by(id: object.user_id)
+      end
 
       def tpc_software_sig
         TpcSoftwareSig.find_by(id: object.tpc_software_sig_id)
