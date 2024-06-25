@@ -75,6 +75,8 @@ module Mutations
         result = IssueServer.new({repo_url: OH_TPC_REPO})
                             .create_gitee_issue(OH_TPC_REPO_TOKEN, issue_title, issue_body)
         Rails.logger.info "CreateTpcSoftwareSelection: #{result}"
+        Rails.logger.info "OH_TPC_REPO:#{OH_TPC_REPO}"
+        Rails.logger.info "OH_TPC_REPO_TOKEN:#{OH_TPC_REPO_TOKEN}"
         raise GraphQL::ExecutionError.new result[:message] unless result[:status]
 
         issue_url = result[:issue_url]
