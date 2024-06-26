@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_13_072129) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -312,8 +312,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_13_072129) do
     t.integer "report_type", null: false
     t.string "name", null: false
     t.integer "tpc_software_sig_id", null: false
-    t.string "release", null: false
-    t.datetime "release_time", null: false
+    t.string "release"
+    t.datetime "release_time"
     t.string "manufacturer", null: false
     t.string "website_url", null: false
     t.string "code_url", null: false
@@ -334,14 +334,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_13_072129) do
     t.string "tpc_software_selection_report_ids", null: false
     t.string "repo_url"
     t.string "committers", null: false
-    t.datetime "incubation_time", null: false
-    t.integer "adaptation_method", null: false
     t.string "reason", null: false
-    t.string "issue_url"
     t.integer "subject_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "incubation_time", null: false
+    t.string "adaptation_method", null: false
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|

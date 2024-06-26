@@ -6,8 +6,8 @@
 #  report_type              :integer          not null
 #  name                     :string(255)      not null
 #  tpc_software_sig_id      :integer          not null
-#  release                  :string(255)      not null
-#  release_time             :datetime         not null
+#  release                  :string(255)
+#  release_time             :datetime
 #  manufacturer             :string(255)      not null
 #  website_url              :string(255)      not null
 #  code_url                 :string(255)      not null

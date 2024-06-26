@@ -64,8 +64,8 @@ module Mutations
               ecology_patent_risk: nil, #don't do
 
               lifecycle_version_normalization: 10,
-              lifecycle_version_number: software_report.release.present? ? 10 : 0,
-              lifecycle_version_lifecycle: get_lifecycle_version_lifecycle(software_report.release, software_report.release_time),
+              lifecycle_version_number: 10,
+              lifecycle_version_lifecycle: nil,
 
               security_binary_artifact: nil,
               security_vulnerability: nil,
@@ -95,17 +95,6 @@ module Mutations
         { status: false, message: ex.message }
       end
 
-
-      def get_lifecycle_version_lifecycle(release, release_time)
-        if release.present? && release_time.present?
-          if 2.year.ago <= release_time
-            return 10
-          else
-            return 6
-          end
-        end
-        0
-      end
     end
   end
 end

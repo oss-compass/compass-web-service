@@ -8,10 +8,10 @@ module Types
       field :tpc_software_selection_report_ids, [String]
       field :tpc_software_selection_reports, [Types::Tpc::TpcSoftwareSelectionReportType]
       field :committers, [String]
-      field :incubation_time, GraphQL::Types::ISO8601DateTime
+      field :incubation_time, String
       field :reason, String
       field :issue_url, String
-      field :adaptation_method, Integer, description: 'adaptation: 0, rewrite: 1'
+      field :adaptation_method, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :created_at, GraphQL::Types::ISO8601DateTime
