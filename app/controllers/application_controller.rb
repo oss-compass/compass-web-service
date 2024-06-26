@@ -59,6 +59,7 @@ class ApplicationController < ActionController::Base
 
   def tpc_software_callback
     payload = request.request_parameters
+    Rails.logger.info("tpc_software_callback info: #{payload}")
 
     command_list = payload['command_list']
     project_url = payload['project_url']

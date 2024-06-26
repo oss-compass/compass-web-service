@@ -79,6 +79,21 @@ class AnalyzeServer
     { status: nil, message: ex.message }
   end
 
+  def simple_execute
+    validate!
+
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload.to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: ex.message) }
+  end
+
   private
 
   def validate!

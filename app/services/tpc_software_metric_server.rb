@@ -36,7 +36,7 @@ class TpcSoftwareMetricServer
   end
 
   def analyze_metric_by_compass(report_id, report_metric_id)
-    AnalyzeServer.new(
+    result = AnalyzeServer.new(
       {
         repo_url: @project_url,
         callback: {
@@ -50,8 +50,9 @@ class TpcSoftwareMetricServer
           }
         }
       }
-    ).execute(only_validate: false)
-
+    ).simple_execute
+    Rails.logger.info("analyze metric by compass info: #{result}")
+    raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
   def analyze_metric_by_tpc_service(report_id, report_metric_id)
@@ -67,6 +68,7 @@ class TpcSoftwareMetricServer
       }
     }
     result = base_post_request("opencheck", payload, token: token)
+    Rails.logger.info("analyze metric by tpc service info: #{result}")
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
