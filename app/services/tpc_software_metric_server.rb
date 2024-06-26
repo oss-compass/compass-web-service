@@ -94,6 +94,7 @@ class TpcSoftwareMetricServer
         metric_hash["ecology_code_maintenance"] = get_ecology_code_maintenance
         metric_hash["ecology_community_support"] = get_ecology_community_support
         metric_hash["security_history_vulnerability"] = get_security_history_vulnerability
+        metric_hash["lifecycle_version_lifecycle"] = get_lifecycle_version_lifecycle
         code_count = get_code_count
       end
     end
@@ -115,12 +116,12 @@ class TpcSoftwareMetricServer
       tpc_software_report_metric.update!(report_metric_data)
 
       tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: task_metadata["report_id"])
-      tpc_software_selection_report.update!(
-        {
-          code_count: code_count,
-          license: license
-        }
-      )
+      update_data = {}
+      update_data[:code_count] = code_count unless code_count.nil?
+      update_data[:license] = license unless license.nil?
+      if update_data.present?
+        tpc_software_selection_report.update!(update_data)
+      end
     end
   end
 
@@ -331,6 +332,36 @@ class TpcSoftwareMetricServer
     else
       return 6
     end
+  end
+
+  def get_lifecycle_version_lifecycle
+    indexer, repo_urls =
+      select_idx_repos_by_lablel_and_level(@project_url, "repo", GiteeRepoEnrich, GithubRepoEnrich)
+    resp = indexer.must(terms: { tag: repo_urls })
+                  .per(1)
+                  .sort(grimoire_creation_date: "desc")
+                  .execute
+                  .raw_response
+    hits = resp.dig("hits", "hits") || []
+    if hits.length == 0
+      return 0
+    end
+
+    archived = hits[0].dig("_source", "archived") || false
+    if archived
+      return 0
+    end
+    releases = hits[0].dig("_source", "releases") || []
+    if releases.length == 0
+      return 4
+    end
+
+    sort_releases = releases.sort_by { |hash| hash["created_at"] }.reverse
+    release = sort_releases.first
+    if 2.year.ago <= DateTime.parse(release.dig("created_at"))
+      return 10
+    end
+     6
   end
 
   def osv_query(package_name, version)

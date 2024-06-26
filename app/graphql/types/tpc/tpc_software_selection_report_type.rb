@@ -10,8 +10,6 @@ module Types
       field :tpc_software_sig_id, Integer
       field :tpc_software_sig, Types::Tpc::TpcSoftwareSigType
       field :tpc_software_report_metric, Types::Tpc::TpcSoftwareReportMetricType
-      field :release, String
-      field :release_time, GraphQL::Types::ISO8601DateTime
       field :manufacturer, String
       field :website_url, String
       field :code_url, String

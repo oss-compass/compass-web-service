@@ -35,6 +35,24 @@ module Types
 
       field :created_at, GraphQL::Types::ISO8601DateTime
       field :updated_at, GraphQL::Types::ISO8601DateTime
+
+      def ecology_dependency_acquisition
+        10
+      end
+      def ecology_adoption_analysis
+        10
+      end
+      def ecology_software_quality
+        10
+      end
+
+      def ecology_patent_risk
+        10
+      end
+      def security_vulnerability_response
+        10
+      end
+
     end
   end
 end
