@@ -60,7 +60,7 @@ module Mutations
               ecology_code_maintenance: nil,
               ecology_community_support: nil,
               ecology_adoption_analysis: nil,  #don't do
-              ecology_software_quality: nil, #don't do
+              ecology_software_quality: nil,
               ecology_patent_risk: nil, #don't do
 
               lifecycle_version_normalization: 10,
@@ -69,7 +69,7 @@ module Mutations
 
               security_binary_artifact: nil,
               security_vulnerability: nil,
-              security_vulnerability_response: nil, #don't do
+              security_vulnerability_response: TpcSoftwareMetricServer.check_url(software_report.vulnerability_response) ? 10 : 6,
               security_vulnerability_disclosure: TpcSoftwareMetricServer.check_url(software_report.vulnerability_disclosure) ? 10 : 6,
               security_history_vulnerability: nil
             }

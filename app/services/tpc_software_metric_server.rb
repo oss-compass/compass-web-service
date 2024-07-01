@@ -57,7 +57,7 @@ class TpcSoftwareMetricServer
 
   def analyze_metric_by_tpc_service(report_id, report_metric_id)
     token = tpc_service_token
-    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker"]
+    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner"]
     payload = {
       commands: commands,
       project_url: "#{@project_url}.git",
@@ -77,26 +77,28 @@ class TpcSoftwareMetricServer
     code_count = nil
     license = nil
 
-    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "compass"]
+    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
       case command
       when "osv-scanner"
-        metric_hash["security_vulnerability"] = get_security_vulnerability(scan_results.dig(command))
+        metric_hash.merge!(get_security_vulnerability(scan_results.dig(command)))
       when "scancode"
-        metric_hash["compliance_license"] = get_compliance_license(scan_results.dig(command))
-        metric_hash["compliance_license_compatibility"] = get_compliance_license_compatibility(scan_results.dig(command))
+        metric_hash.merge!(get_compliance_license(scan_results.dig(command)))
+        metric_hash.merge!(get_compliance_license_compatibility(scan_results.dig(command)))
         license = get_license(scan_results.dig(command))
       when "binary-checker"
-        metric_hash["security_binary_artifact"] = get_security_binary_artifact(scan_results.dig(command))
+        metric_hash.merge!(get_security_binary_artifact(scan_results.dig(command)))
       when "signature-checker"
-        metric_hash["compliance_package_sig"] = get_compliance_package_sig(scan_results.dig(command))
+        metric_hash.merge!(get_compliance_package_sig(scan_results.dig(command)))
+      when "sonar-scanner"
+        metric_hash.merge!(get_ecology_software_quality(scan_results.dig(command)))
       when "compass"
-        metric_hash["compliance_dco"] = get_compliance_dco
-        metric_hash["ecology_code_maintenance"] = get_ecology_code_maintenance
-        metric_hash["ecology_community_support"] = get_ecology_community_support
-        metric_hash["security_history_vulnerability"] = get_security_history_vulnerability
-        metric_hash["lifecycle_version_lifecycle"] = get_lifecycle_version_lifecycle
+        metric_hash.merge!(get_compliance_dco)
+        metric_hash.merge!(get_ecology_code_maintenance)
+        metric_hash.merge!(get_ecology_community_support)
+        metric_hash.merge!(get_security_history_vulnerability)
+        metric_hash.merge!(get_lifecycle_version_lifecycle)
         code_count = get_code_count
       end
     end
@@ -144,11 +146,11 @@ class TpcSoftwareMetricServer
         row[1..-1].each_with_index do |cell, cell_index|
           cell_value = cell.to_s.strip
           if !cell_value.empty? && cell_value.include?("冲突")
-            row_list.push(row_header_license[cell_index + 1])
+            row_list.push(row_header_license[cell_index + 1].downcase)
           end
         end
 
-        data_hash[header] = row_list
+        data_hash[header.downcase] = row_list
       end
     end
     data_hash
@@ -167,22 +169,39 @@ class TpcSoftwareMetricServer
   def get_security_vulnerability(osv_scanner_result)
     # Check for publicly disclosed unfixed vulnerabilities in imported software and dependency source code:
     # 10 points if met, 0 points if not met.
+    details = []
     (osv_scanner_result.dig("results") || []).each do |item|
       packages = item.dig("packages") || []
       packages.each do |package|
-        vulnerabilities = package.dig("vulnerabilities") || []
-        if vulnerabilities&.any?
-          return 0
+        vulnerabilities = (package.dig("vulnerabilities") || []).flat_map do |vulnerability|
+          (vulnerability.dig("aliases") || [])
+        end
+
+        if vulnerabilities.any?
+          details << {
+            package_name: package.dig("package", "name"),
+            package_version: package.dig("package", "version"),
+            vulnerabilities: vulnerabilities.uniq.take(5)
+          }
         end
       end
     end
-    10
+    score = 0
+    if details.length == 0
+      score = 10
+    end
+    { security_vulnerability: score, security_vulnerability_detail: details.take(3).to_json }
   end
 
 
   def get_security_binary_artifact(binary_checker_result)
-    binary_file_list = binary_checker_result.dig("binary_file_list") || []
-    binary_file_list.length == 0 ? 10 : 0
+    binary_archive_list = binary_checker_result.dig("binary_archive_list") || []
+
+    score = 0
+    if binary_archive_list.length == 0
+      score = 10
+    end
+    { security_binary_artifact: score, security_binary_artifact_detail: binary_archive_list.take(5).to_json }
   end
 
   def get_compliance_license(scancode_result)
@@ -191,62 +210,131 @@ class TpcSoftwareMetricServer
     # License not on the admission list: 6 points;
     # No license: 0 points.
 
-    license_detections = scancode_result.dig("license_detections") || []
-    unless license_detections&.any?
-      return 0
+    is_standard_license_location = false
+    license_access_list = []
+    license_non_access_list = []
+
+    subject_licenses = SubjectLicense.all
+
+
+    (scancode_result.dig("license_detections") || []).each do |license_detection|
+      (license_detection.dig("license_expression") || "").split(" AND ").each do |license_expression|
+        subject_licenses.each do |subject_license|
+          if subject_license.license.downcase.include?(license_expression.downcase)
+            license_access_list << license_expression
+            break
+          end
+        end
+        unless license_access_list.include?(license_expression)
+          license_non_access_list << license_expression
+        end
+      end
     end
 
-    standard_license_location = "#{@project_url.split("/")[-1]}/License.txt"
-    subject_licenses = SubjectLicense.all
-    license_detections.each do |license_detection|
-      is_license_access_list = false
-      subject_licenses.each do |subject_license|
-        if subject_license.license.include?(license_detection.dig("license_expression_spdx") || license_detection.dig("license_expression") || "")
-          is_license_access_list = true
-          break
-        end
-      end
-      return 6 unless is_license_access_list
-    end
-    license_detections.each do |license_detection|
-      (license_detection.dig("reference_matches") || []).each do |reference_match|
-        if reference_match.dig("from_file") == standard_license_location
-          return 10
-        end
+    standard_license_location_list = %W[#{@project_url.split('/')[-1]}/license #{@project_url.split('/')[-1]}/license.txt]
+    (scancode_result.dig("files") || []).each do |file|
+      if standard_license_location_list.include?(file.dig("path")) && (file.dig("license_detections") || []).any?
+        is_standard_license_location = true
+        break
       end
     end
-    8
+
+    score = 0
+    if (license_access_list + license_non_access_list).any?
+      if license_non_access_list.length == 0
+        if is_standard_license_location
+          score = 10
+        else
+          score = 8
+        end
+      else
+        score = 6
+      end
+    end
+    detail = {
+      license_access_list: license_access_list.uniq.take(5),
+      license_non_access_list: license_non_access_list.uniq.take(5)
+    }
+    { compliance_license: score, compliance_license_detail: detail.to_json }
   end
 
   def get_compliance_license_compatibility(scancode_result)
     license_conflict_data = self.class.license_conflict_data
 
     check_license_list = []
-    license_detections = scancode_result.dig("license_detections") || []
-    license_detections.each do |item|
-      check_license_list << item.dig("license_expression_spdx") || item.dig("license_expression") || ""
-    end
-    files = scancode_result.dig("files") || []
-    files.each do |file|
-      license_detections = file.dig("license_detections") || []
-      license_detections.each do |item|
-        check_license_list << item.dig("license_expression_spdx") || item.dig("license_expression") || ""
+    (scancode_result.dig("license_detections") || []).each do |license_detection|
+      (license_detection.dig("license_expression") || "").split("AND").each do |license_expression|
+          check_license_list << license_expression.downcase
       end
     end
-    check_license_list = check_license_list.uniq
+
+    conflict_list = []
     check_license_list.each_with_index do |check_license, index|
       if license_conflict_data.key?(check_license)
-        if license_conflict_data[check_license] & check_license_list[index..-1] != []
-          return 0
+        license_conflict_list = license_conflict_data[check_license] & check_license_list[index..-1]
+        if license_conflict_list.any?
+          conflict_list << {
+            license: check_license,
+            license_conflict_list: license_conflict_list.take(5)
+          }
         end
       end
     end
-    10
+
+    score = 0
+    if conflict_list.length == 0
+      score = 10
+    end
+    { compliance_license_compatibility: score, compliance_license_compatibility_detail: conflict_list.take(3).to_json }
   end
 
   def get_compliance_package_sig(signature_checker_result)
     signature_file_list = signature_checker_result.dig("signature_file_list") || []
-    signature_file_list.length == 0 ? 10 : 6
+
+    score = 6
+    if signature_file_list.length > 0
+      score = 10
+    end
+    { compliance_package_sig: score, compliance_package_sig_detail: signature_file_list.take(5).to_json }
+  end
+
+  def get_ecology_software_quality(sonar_scanner_result)
+    measures = sonar_scanner_result.dig("component", "measures")
+    duplication_score = 0
+    duplication_ratio = nil
+    coverage_score = 0
+    coverage_ratio = nil
+    measures.each do |measure|
+      if measure.dig("metric") == "duplicated_lines_density"
+        score_ranges = {
+          (0..2) => 10,
+          (3..4) => 8,
+          (5..9) => 6,
+          (10..19) => 4,
+          (20..100) => 2
+        }
+        duplication_ratio = measure.dig("value").to_i
+        duplication_score = score_ranges.find { |range, _| range.include?(duplication_ratio) }&.last
+      elsif measure.dig("metric") == "coverage"
+        score_ranges = {
+          (0..29) => 2,
+          (30..49) => 4,
+          (50..69) => 6,
+          (70..79) => 8,
+          (80..100) => 10
+        }
+        coverage_ratio = measure.dig("value").to_i
+        coverage_score = score_ranges.find { |range, _| range.include?(coverage_ratio) }&.last
+      end
+    end
+    score = (duplication_score + coverage_score) / 2.0
+    detail = {
+      duplication_score: duplication_score,
+      duplication_ratio: duplication_ratio,
+      coverage_score: coverage_score,
+      coverage_ratio: coverage_ratio
+    }
+    { ecology_software_quality: score, ecology_software_quality_detail: detail.to_json }
   end
 
   def get_compliance_dco
@@ -257,83 +345,89 @@ class TpcSoftwareMetricServer
                   .per(0)
 
     commit_count = base.execute.aggregations.dig('count', 'value')
-    commit_signed_off_count = base.must(wildcard: { author_email: { value: "*Signed-off-by*" } })
+    commit_dco_count = base.must(wildcard: { author_email: { value: "*Signed-off-by*" } })
                                   .execute.aggregations.dig('count', 'value')
     if commit_count == 0
-      0
-    elsif commit_signed_off_count == 0
-      6
-    elsif commit_count == commit_signed_off_count
-      10
+      score = 0
+    elsif commit_dco_count == 0
+      score = 6
+    elsif commit_count == commit_dco_count
+      score = 10
     else
-      8
+      score = 8
     end
+    detail = {
+      commit_count: commit_count,
+      commit_dco_count: commit_dco_count,
+    }
+    { compliance_dco: score, compliance_dco_detail: detail.to_json }
   end
 
   def get_ecology_code_maintenance
     begin_date = 1.year.ago
     end_date = Time.current
-    avg_score = ActivityMetric.aggregate({ avg_score: { avg: { field: ActivityMetric::main_score } }})
+    score = ActivityMetric.aggregate({ avg_score: { avg: { field: ActivityMetric::main_score } }})
                               .must(match_phrase: { 'label.keyword': @project_url })
                               .must(match_phrase: { 'level.keyword': "repo" })
                               .per(0)
                               .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
                               .execute
                               .aggregations.dig('avg_score', 'value') || 0
-    if avg_score > 0
-      avg_score = (avg_score * 10).ceil
+
+    if score > 0
+      score = (ActivityMetric.scaled_value(nil, target_value: score) / 10).ceil
     end
-    avg_score
+    { ecology_code_maintenance: score, ecology_code_maintenance_detail: nil }
   end
 
   def get_ecology_community_support
     begin_date = 1.year.ago
     end_date = Time.current
-    avg_score = CommunityMetric.aggregate({ avg_score: { avg: { field: CommunityMetric::main_score } }})
+    score = CommunityMetric.aggregate({ avg_score: { avg: { field: CommunityMetric::main_score } }})
                               .must(match_phrase: { 'label.keyword': @project_url })
                               .must(match_phrase: { 'level.keyword': "repo" })
                               .per(0)
                               .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
                               .execute
                               .aggregations.dig('avg_score', 'value') || 0
-    if avg_score > 0
-      avg_score = (avg_score * 10).ceil
+    if score > 0
+      score = (CommunityMetric.scaled_value(nil, target_value: score) / 10).ceil
     end
-    avg_score
+    { ecology_community_support: score, ecology_community_support_detail: nil }
   end
 
   def get_security_history_vulnerability
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(@project_url, "repo", GiteeRepoEnrich, GithubRepoEnrich)
-    resp = indexer.must(terms: { tag: repo_urls })
+      select_idx_repos_by_lablel_and_level(@project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+    resp = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
                   .per(1)
                   .sort(grimoire_creation_date: "desc")
                   .execute
                   .raw_response
     hits = resp.dig("hits", "hits") || []
     if hits.length == 0
-      return 0
-    end
-    releases = hits[0].dig("_source", "releases") || []
-    vulnerability_count = 0
-    package_name = @project_url.split("/").last
-    past_time = 3.year.ago
-    releases.each do |release|
-      created_at = DateTime.parse(release.dig("created_at"))
-      if past_time <= created_at
-        osv_query_data = osv_query(package_name, release.dig("tag_name"))
-        vulns = osv_query_data.dig("vulns") || []
-        vulnerability_count = vulnerability_count + vulns.length
-      end
-    end
-
-    if vulnerability_count == 0
-      return 10
-    elsif 1 <= vulnerability_count && vulnerability_count <=5
-      return 8
+      score = 0
+      detail = {}
     else
-      return 6
+      commit_hash = hits[0].dig("_source", "hash") || ""
+      osv_query_data = osv_query(commit_hash)
+      vulns = osv_query_data.dig("vulns") || []
+      vulnerabilities = vulns.map do |vuln|
+        {
+          vulnerability: vuln["id"],
+          summary: vuln["summary"]
+        }
+      end
+      if vulnerabilities.length == 0
+        score = 10
+      elsif 1 <= vulnerabilities.length && vulnerabilities.length <=5
+        score = 8
+      else
+        score = 6
+      end
+      detail = vulnerabilities.take(10)
     end
+    { security_history_vulnerability: score, security_history_vulnerability_detail: detail.to_json }
   end
 
   def get_lifecycle_version_lifecycle
@@ -346,35 +440,36 @@ class TpcSoftwareMetricServer
                   .raw_response
     hits = resp.dig("hits", "hits") || []
     if hits.length == 0
-      return 0
-    end
+      score = 0
+      detail = {}
+    else
+      archived = hits[0].dig("_source", "archived") || false
+      releases = (hits[0].dig("_source", "releases") || []).sort_by { |hash| hash["created_at"] }.reverse
 
-    archived = hits[0].dig("_source", "archived") || false
-    if archived
-      return 0
+      if archived
+        score = 0
+      elsif releases.length == 0
+        score = 4
+      elsif 2.year.ago <= DateTime.parse(release.dig("created_at"))
+        score = 10
+      else
+        score = 6
+      end
+      detail = {
+        archived: archived,
+        latest_version_name: releases.length > 0 ? releases.first.dig("tag_name") : nil,
+        latest_version_created_at: releases.length > 0 ? releases.first.dig("created_at") : nil,
+      }
     end
-    releases = hits[0].dig("_source", "releases") || []
-    if releases.length == 0
-      return 4
-    end
-
-    sort_releases = releases.sort_by { |hash| hash["created_at"] }.reverse
-    release = sort_releases.first
-    if 2.year.ago <= DateTime.parse(release.dig("created_at"))
-      return 10
-    end
-     6
+    { lifecycle_version_lifecycle: score, lifecycle_version_lifecycle_detail: detail.to_json }
   end
 
-  def osv_query(package_name, version)
+  def osv_query(commit_hash)
     resp = RestClient::Request.new(
       method: :post,
       url: "https://api.osv.dev/v1/query",
       payload: {
-        package: {
-          name: package_name
-        },
-        version: version
+        commit: commit_hash
       }.to_json,
       headers: { 'Content-Type' => 'application/json' },
       ).execute
