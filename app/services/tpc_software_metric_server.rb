@@ -38,7 +38,7 @@ class TpcSoftwareMetricServer
 
   def analyze_metric_by_tpc_service(report_id, report_metric_id)
     token = tpc_service_token
-    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner"]
+    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
     payload = {
       commands: commands,
       project_url: "#{@project_url}.git",
@@ -57,7 +57,7 @@ class TpcSoftwareMetricServer
     code_count = nil
     license = nil
 
-    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "compass"]
+    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
       case command
@@ -74,6 +74,8 @@ class TpcSoftwareMetricServer
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_software_quality(scan_results.dig(command) || {}))
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
+      when "dependency-checker"
+        metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_dependency_acquisition(scan_results.dig(command) || {}))
       when "compass"
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))

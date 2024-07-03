@@ -59,7 +59,8 @@
 #
 class TpcSoftwareReportMetric < ApplicationRecord
 
-  include CompassUtils
+  include Common
+  extend CompassUtils
 
   belongs_to :tpc_software_report, polymorphic: true
   belongs_to :subject
@@ -198,15 +199,15 @@ class TpcSoftwareReportMetric < ApplicationRecord
     data_hash
   end
 
-  def self.license_conflict_data
+  def self.get_license_conflict_data
     if @@license_conflict_data.nil?
-      @@license_conflict_data = self.read_license_conflict_data
+      @@license_conflict_data = read_license_conflict_data
     end
     @@license_conflict_data
   end
 
   def self.get_compliance_license_compatibility(scancode_result)
-    license_conflict_data = self.class.license_conflict_data
+    license_conflict_data = get_license_conflict_data
 
     check_license_list = []
     (scancode_result.dig("license_detections") || []).each do |license_detection|
@@ -257,7 +258,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def self.get_ecology_software_quality(sonar_scanner_result)
-    measures = sonar_scanner_result.dig("component", "measures")
+    measures = sonar_scanner_result.dig("component", "measures") || []
     duplication_score = 0
     duplication_ratio = nil
     coverage_score = 0
@@ -372,7 +373,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
       releases.each do |release|
         created_at = DateTime.parse(release.dig("created_at"))
         if past_time <= created_at
-          osv_query_data = self.class.osv_query(package_name, release.dig("tag_name"))
+          osv_query_data = self.osv_query(package_name, release.dig("tag_name"))
           (osv_query_data.dig("vulns") || []).each do |vuln|
             vulnerabilities << {
               vulnerability: vuln["id"],
@@ -444,7 +445,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def self.get_code_count(sonar_scanner_result)
-    measures = sonar_scanner_result.dig("component", "measures")
+    measures = sonar_scanner_result.dig("component", "measures") || []
     code_count = 0
     measures.each do |measure|
       if measure.dig("metric") == "lines"
@@ -469,6 +470,13 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
     license_detections.first.dig("license_expression_spdx") || license_detections.first.dig("license_expression") || nil
+  end
+
+  def self.get_ecology_dependency_acquisition(dependency_checker_result)
+    packages_without_license_list = dependency_checker_result.dig("packages_without_license_detect") || []
+    score = packages_without_license_list.length == 0 ? 10 : 0
+    detail = packages_without_license_list.take(5)
+    { ecology_dependency_acquisition: score, ecology_dependency_acquisition_detail: detail.to_json }
   end
 
 

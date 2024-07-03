@@ -56,7 +56,7 @@ module Mutations
               compliance_package_sig: nil,
               compliance_license_compatibility: nil,
 
-              ecology_dependency_acquisition: nil, #don't do
+              ecology_dependency_acquisition: nil,
               ecology_code_maintenance: nil,
               ecology_community_support: nil,
               ecology_adoption_analysis: nil,  #don't do

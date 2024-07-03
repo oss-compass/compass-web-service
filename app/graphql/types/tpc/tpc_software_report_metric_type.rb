@@ -24,7 +24,7 @@ module Types
       field :compliance_license_compatibility_detail, [Types::Tpc::TpcSoftwareReportMetricComplianceLicenseCompatibilityType]
 
       field :ecology_dependency_acquisition, Integer
-      field :ecology_dependency_acquisition_detail, String
+      field :ecology_dependency_acquisition_detail, [String]
       field :ecology_code_maintenance, Integer
       field :ecology_code_maintenance_detail, String
       field :ecology_community_support, Integer

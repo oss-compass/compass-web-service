@@ -14,6 +14,7 @@
 #  updated_at                        :datetime         not null
 #  incubation_time                   :string(255)      not null
 #  adaptation_method                 :string(255)      not null
+#  demand_source                     :string(255)
 #
 class TpcSoftwareSelection < ApplicationRecord
 

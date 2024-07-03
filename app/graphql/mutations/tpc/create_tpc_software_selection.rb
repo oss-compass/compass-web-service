@@ -14,6 +14,7 @@ module Mutations
     argument :repo_url, String, required: false
     argument :committers, [String], required: true
     argument :incubation_time, String, required: true
+    argument :demand_source, String, required: false
     argument :reason, String, required: true
     argument :adaptation_method, String, required: true
 
@@ -24,6 +25,7 @@ module Mutations
                 repo_url: nil,
                 committers: [],
                 incubation_time: nil,
+                demand_source: nil,
                 reason: nil,
                 adaptation_method: nil
                 )
@@ -50,6 +52,7 @@ module Mutations
           repo_url: repo_url,
           committers: committers.any? ? committers.to_json : nil,
           incubation_time: incubation_time,
+          demand_source: demand_source,
           reason: reason,
           adaptation_method: adaptation_method,
           subject_id: subject.id,
