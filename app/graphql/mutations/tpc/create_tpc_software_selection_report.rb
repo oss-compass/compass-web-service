@@ -27,7 +27,7 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
         tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(subject_id: subject.id, code_url: software_report.code_url)
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_already_exist') if tpc_software_selection_report.present?
-        raise GraphQL::ExecutionError.new I18n.t('tpc.software_code_url_invalid') unless TpcSoftwareMetricServer.check_url(software_report.code_url)
+        raise GraphQL::ExecutionError.new I18n.t('tpc.software_code_url_invalid') unless TpcSoftwareReportMetric.check_url(software_report.code_url)
 
         ActiveRecord::Base.transaction do
           software_report_data = software_report.as_json
@@ -69,8 +69,8 @@ module Mutations
 
               security_binary_artifact: nil,
               security_vulnerability: nil,
-              security_vulnerability_response: TpcSoftwareMetricServer.check_url(software_report.vulnerability_response) ? 10 : 6,
-              security_vulnerability_disclosure: TpcSoftwareMetricServer.check_url(software_report.vulnerability_disclosure) ? 10 : 6,
+              security_vulnerability_response: TpcSoftwareReportMetric.check_url(software_report.vulnerability_response) ? 10 : 6,
+              security_vulnerability_disclosure: TpcSoftwareReportMetric.check_url(software_report.vulnerability_disclosure) ? 10 : 6,
               security_history_vulnerability: nil
             }
           )
