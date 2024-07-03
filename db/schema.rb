@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_28_065638) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_03_021844) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -222,6 +222,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_28_065638) do
     t.integer "subject_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tpc_software_tag_mail", limit: 500
     t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 

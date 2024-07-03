@@ -22,6 +22,19 @@ class UserMailer < ApplicationMailer
     mail(to: @email, subject: I18n.t('user_mailer.email_invitation.subject'))
   end
 
+  def email_tpc_software_application
+    @title = params[:title]
+    @title_type = params[:title_type]
+    @user_name = params[:user_name]
+    @user_html_url = params[:user_html_url]
+    @issue_title = params[:issue_title]
+    @issue_html_url = params[:issue_html_url]
+    @email = params[:email]
+    @locale = 'zh-CN'.to_sym
+    I18n.locale = @locale
+    mail(to: @email, subject: I18n.t('user_mailer.email_tpc_software_application.subject'))
+  end
+
   def subscription_update
     submission_params
     mail(to: @user.email, subject: "#{I18n.t('notification.email.project_subscription_update', locale: @user.language)} - #{@subject_name}")
