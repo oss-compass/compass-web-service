@@ -8,13 +8,13 @@
 #  repo_url                          :string(255)
 #  committers                        :string(255)      not null
 #  reason                            :string(255)      not null
-#  issue_url                         :string(255)
 #  subject_id                        :integer          not null
 #  user_id                           :integer          not null
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  incubation_time                   :string(255)      not null
 #  adaptation_method                 :string(255)      not null
+#  demand_source                     :string(255)
 #
 class TpcSoftwareSelection < ApplicationRecord
 

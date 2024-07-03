@@ -18,6 +18,8 @@ module Types
       field :license, String
       field :vulnerability_disclosure, String
       field :vulnerability_response, String
+      field :is_same_type_check, Integer
+      field :same_type_software_name, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
 

@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
   before_action :set_locale
   before_action :gitee_webhook_verify, only: [:hook]
-  before_action :auth_validate, only: [:workflow]
+  before_action :auth_validate, only: [:workflow, :tpc_software_workflow]
 
   after_action { pagy_headers_merge(@pagy) if @pagy }
 
@@ -57,18 +57,56 @@ class ApplicationController < ActionController::Base
     { status: true, message: 'ok' }
   end
 
+  def tpc_software_workflow
+    payload = request.request_parameters
+    action = payload['action']
+    hook_name = payload['hook_name']
+    if action == 'open' && hook_name == 'issue_hooks'
+      issue_title = payload.dig('issue', 'title')
+      issue_html_url = payload.dig('issue', 'html_url')
+      user_html_url = payload.dig('issue', 'user', 'html_url')
+      user_name = payload.dig('issue', 'user', 'name')
+
+      matches = issue_title.scan(/【(.*?)】/).flatten
+      subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+      mail_list = subject_customization.present? && subject_customization.tpc_software_tag_mail.present? ?
+                                JSON.parse(subject_customization.tpc_software_tag_mail) : []
+
+      if matches.length > 1 && mail_list.length > 0
+        title = matches[0] + matches[1]
+        UserMailer.with(
+          title: title,
+          title_type: matches[1].gsub("申请", ""),
+          user_name: user_name,
+          user_html_url: user_html_url,
+          issue_title: issue_title,
+          issue_html_url: issue_html_url,
+          email: mail_list
+        ).email_tpc_software_application.deliver_later
+      end
+    end
+
+    render json: { status: true, message: 'ok' }
+  rescue => ex
+    Rails.logger.info(ex)
+    render json: { status: false, message: ex }
+  end
+
   def tpc_software_callback
     payload = request.request_parameters
-    Rails.logger.info("tpc_software_callback info: #{payload}")
+
 
     command_list = payload['command_list']
     project_url = payload['project_url']
     scan_results = payload['scan_results'].to_h
     task_metadata = payload['task_metadata'].to_h
 
+    Rails.logger.info("tpc_software_callback info: command_list: #{command_list} project_url: #{project_url} task_metadata: #{task_metadata}")
+
     TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")}).tpc_software_callback(command_list, scan_results, task_metadata)
     render json: { status: true, message: 'ok' }
   rescue => ex
+    Rails.logger.info(ex)
     render json: { status: false, message: ex }
   end
 

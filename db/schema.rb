@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_03_064913) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -222,6 +222,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
     t.integer "subject_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tpc_software_tag_mail", limit: 500
     t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 
@@ -306,6 +307,27 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
     t.integer "security_history_vulnerability"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "base_repo_name_detail", limit: 500
+    t.string "base_website_url_detail", limit: 500
+    t.string "base_code_url_detail", limit: 500
+    t.string "compliance_license_detail", limit: 500
+    t.string "compliance_dco_detail", limit: 500
+    t.string "compliance_package_sig_detail", limit: 500
+    t.string "compliance_license_compatibility_detail", limit: 500
+    t.string "ecology_dependency_acquisition_detail", limit: 500
+    t.string "ecology_code_maintenance_detail", limit: 500
+    t.string "ecology_community_support_detail", limit: 500
+    t.string "ecology_adoption_analysis_detail", limit: 500
+    t.string "ecology_software_quality_detail", limit: 500
+    t.string "ecology_patent_risk_detail", limit: 500
+    t.string "lifecycle_version_normalization_detail", limit: 500
+    t.string "lifecycle_version_number_detail", limit: 500
+    t.string "lifecycle_version_lifecycle_detail", limit: 500
+    t.string "security_binary_artifact_detail", limit: 500
+    t.string "security_vulnerability_detail", limit: 500
+    t.string "security_vulnerability_response_detail", limit: 500
+    t.string "security_vulnerability_disclosure_detail", limit: 500
+    t.string "security_history_vulnerability_detail", limit: 5000
   end
 
   create_table "tpc_software_selection_reports", charset: "utf8mb4", force: :cascade do |t|
@@ -327,6 +349,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "is_same_type_check"
+    t.string "same_type_software_name"
   end
 
   create_table "tpc_software_selections", charset: "utf8mb4", force: :cascade do |t|
@@ -341,6 +365,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_26_071608) do
     t.datetime "updated_at", null: false
     t.string "incubation_time", null: false
     t.string "adaptation_method", null: false
+    t.string "demand_source"
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|

@@ -1982,6 +1982,8 @@ en:
         contact the sender to resend the invitation.
       account_setting: account settings
       expire_text_end: request a new link.
+    email_tpc_software_application:
+      subject: OpenHarmony TPC subject application
   users:
     login_failed: 'login failed, reason: %{reason}'
     forbidden: access forbidden
@@ -2013,6 +2015,7 @@ en:
     software_selection_repo_audit_reject: Operation failed, the repo access control review has been rejected
     software_report_trigger_failed: Report trigger failed，reason：%{reason}
     software_code_url_invalid: Code url invalid
+    callback_command_not_exist: callback command not exist： %{command}
   yaml:
     path:
       invalid: 'invaild configure yaml path: %{path}.'

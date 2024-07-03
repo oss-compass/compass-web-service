@@ -9,6 +9,7 @@ module Types
       field :tpc_software_selection_reports, [Types::Tpc::TpcSoftwareSelectionReportType]
       field :committers, [String]
       field :incubation_time, String
+      field :demand_source, String
       field :reason, String
       field :issue_url, String
       field :adaptation_method, String

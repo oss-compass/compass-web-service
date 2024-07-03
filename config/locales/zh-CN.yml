@@ -1469,6 +1469,8 @@ zh-CN:
       expire_text_2: 此链接仅在3天内有效。如果它已经过期, 请联系发送者重新发送邀请。
       account_setting: 账户设置
       expire_text_end: 请求一个新的链接。
+    email_tpc_software_application:
+      subject: OpenHarmony TPC项目申请
   users:
     login_failed: 登录失败，原因：%{reason}
     forbidden: 访问受限
@@ -1496,6 +1498,7 @@ zh-CN:
     software_selection_repo_audit_reject: 操作失败, 建仓门禁评审已驳回
     software_report_trigger_failed: 报告触发失败，原因：%{reason}
     software_code_url_invalid: 软件源码地址不可用
+    callback_command_not_exist: 回调命令不存在： %{command}
   yaml:
     path:
       invalid: '无效的YAML文件路径: %{path}'
