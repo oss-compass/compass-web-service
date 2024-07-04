@@ -304,7 +304,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
                   .per(0)
 
     commit_count = base.execute.aggregations.dig('count', 'value')
-    commit_dco_count = base.must(wildcard: { author_email: { value: "*Signed-off-by*" } })
+    commit_dco_count = base.must(wildcard: { message: { value: "*Signed-off-by*" } })
                            .execute.aggregations.dig('count', 'value')
     if commit_count == 0 || commit_dco_count == 0
       score = 0
