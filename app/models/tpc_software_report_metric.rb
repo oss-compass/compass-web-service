@@ -270,13 +270,15 @@ class TpcSoftwareReportMetric < ApplicationRecord
           (3..4) => 8,
           (5..9) => 6,
           (10..19) => 4,
-          (20..100) => 2
+          (20..99) => 2,
+          (100..100) => 0
         }
         duplication_ratio = measure.dig("value").to_i
         duplication_score = score_ranges.find { |range, _| range.include?(duplication_ratio) }&.last
       elsif measure.dig("metric") == "coverage"
         score_ranges = {
-          (0..29) => 2,
+          (0..0) => 0,
+          (1..29) => 2,
           (30..49) => 4,
           (50..69) => 6,
           (70..79) => 8,
