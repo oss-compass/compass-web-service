@@ -68,21 +68,23 @@ class ApplicationController < ActionController::Base
       user_name = payload.dig('issue', 'user', 'name')
 
       matches = issue_title.scan(/【(.*?)】/).flatten
-      subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
-      mail_list = subject_customization.present? && subject_customization.tpc_software_tag_mail.present? ?
-                                JSON.parse(subject_customization.tpc_software_tag_mail) : []
 
-      if matches.length > 1 && mail_list.length > 0
-        title = matches[0] + matches[1]
-        UserMailer.with(
-          title: title,
-          title_type: matches[1].gsub("申请", ""),
-          user_name: user_name,
-          user_html_url: user_html_url,
-          issue_title: issue_title,
-          issue_html_url: issue_html_url,
-          email: mail_list
-        ).email_tpc_software_application.deliver_later
+      if matches.length > 1 && matches[0] == "TPC"
+        subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+        mail_list = subject_customization.present? && subject_customization.tpc_software_tag_mail.present? ?
+                      JSON.parse(subject_customization.tpc_software_tag_mail) : []
+        if mail_list.length > 0
+          title = matches[0] + matches[1]
+          UserMailer.with(
+            title: title,
+            title_type: matches[1].gsub("申请", ""),
+            user_name: user_name,
+            user_html_url: user_html_url,
+            issue_title: issue_title,
+            issue_html_url: issue_html_url,
+            email: mail_list
+          ).email_tpc_software_application.deliver_later
+        end
       end
     end
 
