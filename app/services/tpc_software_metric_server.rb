@@ -53,6 +53,57 @@ class TpcSoftwareMetricServer
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
+  def self.tpc_software_workflow(payload)
+    issue_title = payload.dig('issue', 'title')
+    issue_body = payload.dig('issue', 'body')
+    issue_html_url = payload.dig('issue', 'html_url')
+    user_html_url = payload.dig('issue', 'user', 'html_url')
+    user_name = payload.dig('issue', 'user', 'name')
+
+    matches = issue_title.scan(/【(.*?)】/).flatten
+
+    if matches.length > 1 && matches[0] == "TPC"
+      subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+      if subject_customization.present?
+        mail_list = []
+        mail_list.concat(subject_customization.tpc_software_tag_mail.present? ? JSON.parse(subject_customization.tpc_software_tag_mail) : [])
+
+        issue_body.gsub!(/[\r\n>]/, "")
+        issue_body_matched = issue_body.match(/2. 【上游地址】(.*?)3. 【报告链接】/)
+        if issue_body_matched
+          repo_url = issue_body_matched[1]
+          repo_url_list = repo_url.split("、").map(&:strip)
+          if repo_url_list.any?
+            tpc_software_sigs = TpcSoftwareSig.joins(:tpc_software_selection_report)
+                                              .where("tpc_software_selection_reports.code_url IN (?)", repo_url_list)
+                                              .where("tpc_software_selection_reports.subject_id = ?", subject_customization.subject_id)
+                                              .where("tpc_software_sigs.subject_id = ?", subject_customization.subject_id)
+                                              .distinct
+            tpc_software_sigs.each do |tpc_software_sig|
+              mail_list.concat(tpc_software_sig.committer_emails.present? ? JSON.parse(tpc_software_sig.committer_emails) : [])
+            end
+          end
+
+        end
+
+        mail_list = mail_list.uniq
+        if mail_list.length > 0
+          title = matches[0] + matches[1]
+          UserMailer.with(
+            title: title,
+            title_type: matches[1].gsub("申请", ""),
+            user_name: user_name,
+            user_html_url: user_html_url,
+            issue_title: issue_title,
+            issue_html_url: issue_html_url,
+            email: mail_list
+          ).email_tpc_software_application.deliver_later
+        end
+
+      end
+    end
+  end
+
   def tpc_software_callback(command_list, scan_results, task_metadata)
     code_count = nil
     license = nil
