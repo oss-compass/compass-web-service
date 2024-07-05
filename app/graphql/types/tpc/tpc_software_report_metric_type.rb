@@ -5,6 +5,7 @@ module Types
     class TpcSoftwareReportMetricType < Types::BaseObject
       field :id, Integer, null: false
       field :status, String, description: 'progress/success'
+      field :code_url, String
       field :tpc_software_report_id, Integer
 
       field :base_repo_name, Integer
@@ -66,8 +67,6 @@ module Types
         :compliance_package_sig_detail,
         :compliance_license_compatibility_detail,
         :ecology_dependency_acquisition_detail,
-        :ecology_code_maintenance_detail,
-        :ecology_community_support_detail,
         :ecology_adoption_analysis_detail,
         :ecology_software_quality_detail,
         :ecology_patent_risk_detail,
@@ -87,6 +86,22 @@ module Types
         end
       end
 
+      def ecology_code_maintenance_detail
+        object.code_url
+      end
+
+      def ecology_community_support_detail
+        object.code_url
+      end
+
+      def ecology_software_quality
+        quality_detail = object.ecology_software_quality_detail.present? ? JSON.parse(object.ecology_software_quality_detail) : {}
+        if quality_detail.dig("duplication_ratio").nil?
+          -1
+        else
+          object.ecology_software_quality
+        end
+      end
     end
   end
 end
