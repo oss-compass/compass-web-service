@@ -110,23 +110,31 @@ class TpcSoftwareMetricServer
 
     # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker", "compass"]
     metric_hash = Hash.new
+    metric_raw_hash = Hash.new
     command_list.each do |command|
       case command
       when "osv-scanner"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_security_vulnerability(scan_results.dig(command)) || {})
+        metric_hash.merge!(TpcSoftwareReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
+        metric_raw_hash[:security_vulnerability_raw] = (scan_results.dig(command) || {}).to_json
       when "scancode"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(@project_url, scan_results.dig(command)))
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command)) || {})
+        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(@project_url, scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+        metric_raw_hash[:compliance_license_raw] = TpcSoftwareReportMetric.get_compliance_license_raw(scan_results.dig(command) || {})
+        metric_raw_hash[:compliance_license_compatibility_raw] = TpcSoftwareReportMetric.get_compliance_license_raw(scan_results.dig(command) || {})
         license = TpcSoftwareReportMetric.get_license(@project_url, scan_results.dig(command) || {})
       when "binary-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
+        metric_raw_hash[:security_binary_artifact_raw] = (scan_results.dig(command) || {}).to_json
       when "signature-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_package_sig(scan_results.dig(command) || {}))
+        metric_raw_hash[:compliance_package_sig_raw] = (scan_results.dig(command) || {}).to_json
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_software_quality(scan_results.dig(command) || {}))
+        metric_raw_hash[:ecology_software_quality_raw] = (scan_results.dig(command) || {}).to_json
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
       when "dependency-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_dependency_acquisition(scan_results.dig(command) || {}))
+        metric_raw_hash[:ecology_dependency_acquisition_raw] = (scan_results.dig(command) || {}).to_json
       when "compass"
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
@@ -162,6 +170,14 @@ class TpcSoftwareMetricServer
       update_data[:license] = license unless license.nil?
       if update_data.present?
         tpc_software_selection_report.update!(update_data)
+      end
+
+      if metric_raw_hash.length > 0
+        metric_raw = TpcSoftwareReportMetricRaw.find_or_initialize_by(tpc_software_report_metric_id: tpc_software_report_metric.id)
+        metric_raw_hash[:tpc_software_report_metric_id] = tpc_software_report_metric.id
+        metric_raw_hash[:code_url] = tpc_software_report_metric.code_url
+        metric_raw_hash[:subject_id] = tpc_software_report_metric.subject_id
+        metric_raw.update!(metric_raw_hash)
       end
     end
   end

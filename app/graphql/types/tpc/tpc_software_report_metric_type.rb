@@ -96,7 +96,7 @@ module Types
 
       def ecology_software_quality
         quality_detail = object.ecology_software_quality_detail.present? ? JSON.parse(object.ecology_software_quality_detail) : {}
-        if quality_detail.dig("duplication_ratio").nil?
+        if quality_detail.dig("duplication_ratio").nil? || quality_detail.dig("coverage_ratio").nil?
           -1
         else
           object.ecology_software_quality
