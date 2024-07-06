@@ -65,6 +65,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   belongs_to :tpc_software_report, polymorphic: true
   belongs_to :subject
   belongs_to :user
+  has_one :tpc_software_report_metric_raw
 
   Status_Progress = 'progress'
   Status_Success = 'success'
@@ -130,17 +131,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
     license_non_access_list = []
 
     subject_licenses = SubjectLicense.all
-
+    licenses = subject_licenses.map do |subject_license|
+      subject_license.license.strip.downcase
+    end
 
     (scancode_result.dig("license_detections") || []).each do |license_detection|
       (license_detection.dig("license_expression") || "").split(" AND ").each do |license_expression|
-        subject_licenses.each do |subject_license|
-          if subject_license.license.downcase.include?(license_expression.downcase)
-            license_access_list << license_expression
-            break
-          end
-        end
-        unless license_access_list.include?(license_expression)
+        license_expression = license_expression.strip.downcase
+        if licenses.include?(license_expression)
+          license_access_list << license_expression
+        else
           license_non_access_list << license_expression
         end
       end
@@ -171,6 +171,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
       license_non_access_list: license_non_access_list.uniq.take(5)
     }
     { compliance_license: score, compliance_license_detail: detail.to_json }
+  end
+
+  def self.get_compliance_license_raw(scancode_result)
+    license_detections = scancode_result.dig("license_detections") || []
+    license_detections.to_json
   end
 
   def self.read_license_conflict_data
@@ -467,11 +472,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
     license_detections.each do |license_detection|
       (license_detection.dig("reference_matches") || []).each do |reference_match|
         if reference_match.dig("from_file") == standard_license_location
-          return reference_match.dig("license_expression_spdx")
+          return reference_match.dig("license_expression")
         end
       end
     end
-    license_detections.first.dig("license_expression_spdx") || license_detections.first.dig("license_expression") || nil
+    license_detections.first.dig("license_expression")
   end
 
   def self.get_ecology_dependency_acquisition(dependency_checker_result)

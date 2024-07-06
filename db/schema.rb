@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_04_064419) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_05_074605) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -272,6 +272,33 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_064419) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
+  end
+
+  create_table "tpc_software_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "tpc_software_report_metric_id", null: false
+    t.string "code_url", null: false
+    t.integer "subject_id", null: false
+    t.text "compliance_license_raw"
+    t.text "compliance_dco_raw"
+    t.text "compliance_package_sig_raw"
+    t.text "compliance_license_compatibility_raw"
+    t.text "ecology_dependency_acquisition_raw"
+    t.text "ecology_code_maintenance_raw"
+    t.text "ecology_community_support_raw"
+    t.text "ecology_adoption_analysis_raw"
+    t.text "ecology_software_quality_raw"
+    t.text "ecology_patent_risk_raw"
+    t.text "lifecycle_version_normalization_raw"
+    t.text "lifecycle_version_number_raw"
+    t.text "lifecycle_version_lifecycle_raw"
+    t.text "security_binary_artifact_raw"
+    t.text "security_vulnerability_raw"
+    t.text "security_vulnerability_response_raw"
+    t.text "security_vulnerability_disclosure_raw"
+    t.text "security_history_vulnerability_raw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tpc_software_report_metric_id"], name: "idx_on_tpc_software_report_metric_id_9ede761b2c", unique: true
   end
 
   create_table "tpc_software_report_metrics", charset: "utf8mb4", force: :cascade do |t|
