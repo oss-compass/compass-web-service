@@ -117,7 +117,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
     if details.length == 0
       score = 10
     end
-    { security_vulnerability: score, security_vulnerability_detail: details.take(3).to_json }
+    {
+      security_vulnerability: score,
+      security_vulnerability_detail: details.take(3).to_json,
+      security_vulnerability_raw: details.take(100).to_json
+    }
   end
 
   def self.get_compliance_license(project_url, scancode_result)
@@ -170,12 +174,19 @@ class TpcSoftwareReportMetric < ApplicationRecord
       license_access_list: license_access_list.uniq.take(5),
       license_non_access_list: license_non_access_list.uniq.take(5)
     }
-    { compliance_license: score, compliance_license_detail: detail.to_json }
-  end
 
-  def self.get_compliance_license_raw(scancode_result)
-    license_detections = scancode_result.dig("license_detections") || []
-    license_detections.to_json
+    raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
+      (license_detection.dig("reference_matches") || []).map do |reference_match|
+        keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
+        reference_match.select { |key, _| keys_to_select.include?(key) }
+      end
+    end
+
+    {
+      compliance_license: score,
+      compliance_license_detail: detail.to_json,
+      compliance_license_raw: raw_data.take(100).to_json
+    }
   end
 
   def self.read_license_conflict_data
@@ -239,7 +250,19 @@ class TpcSoftwareReportMetric < ApplicationRecord
     if conflict_list.length == 0
       score = 10
     end
-    { compliance_license_compatibility: score, compliance_license_compatibility_detail: conflict_list.take(3).to_json }
+
+    raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
+      (license_detection.dig("reference_matches") || []).map do |reference_match|
+        keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
+        reference_match.select { |key, _| keys_to_select.include?(key) }
+      end
+    end
+
+    {
+      compliance_license_compatibility: score,
+      compliance_license_compatibility_detail: conflict_list.take(3).to_json,
+      compliance_license_compatibility_raw: raw_data.take(100).to_json
+    }
   end
 
   def self.get_security_binary_artifact(binary_checker_result)
@@ -249,7 +272,17 @@ class TpcSoftwareReportMetric < ApplicationRecord
     if binary_archive_list.length == 0
       score = 10
     end
-    { security_binary_artifact: score, security_binary_artifact_detail: binary_archive_list.take(5).to_json }
+
+    raw_data = {
+      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(100),
+      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(100),
+    }
+
+    {
+      security_binary_artifact: score,
+      security_binary_artifact_detail: binary_archive_list.take(5).to_json,
+      security_binary_artifact_raw: raw_data.to_json
+    }
   end
 
   def self.get_compliance_package_sig(signature_checker_result)
@@ -259,7 +292,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
     if signature_file_list.length > 0
       score = 10
     end
-    { compliance_package_sig: score, compliance_package_sig_detail: signature_file_list.take(5).to_json }
+    {
+      compliance_package_sig: score,
+      compliance_package_sig_detail: signature_file_list.take(5).to_json,
+      compliance_package_sig_raw: signature_file_list.take(100).to_json
+    }
   end
 
   def self.get_ecology_software_quality(sonar_scanner_result)
@@ -300,7 +337,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
       coverage_score: coverage_score,
       coverage_ratio: coverage_ratio
     }
-    { ecology_software_quality: score, ecology_software_quality_detail: detail.to_json }
+    {
+      ecology_software_quality: score,
+      ecology_software_quality_detail: detail.to_json,
+      ecology_software_quality_raw: sonar_scanner_result.to_json
+    }
   end
 
   def self.get_compliance_dco(project_url)
@@ -369,22 +410,30 @@ class TpcSoftwareReportMetric < ApplicationRecord
                   .execute
                   .raw_response
     hits = resp.dig("hits", "hits") || []
-    if hits.length == 0
-      score = 0
-      detail = []
-    else
+    score = 0
+    detail = []
+    raw_data = []
+    if hits.length > 0
       releases = hits[0].dig("_source", "releases") || []
       package_name = project_url.split("/").last
       past_time = 3.year.ago
       vulnerabilities = []
+      raw_data = []
       releases.each do |release|
         created_at = DateTime.parse(release.dig("created_at"))
         if past_time <= created_at
           osv_query_data = self.osv_query(package_name, release.dig("tag_name"))
           (osv_query_data.dig("vulns") || []).each do |vuln|
             vulnerabilities << {
-              vulnerability: vuln["id"],
-              summary: vuln["summary"]
+              vulnerability: vuln.dig("id"),
+              summary: vuln.dig("summary")
+            }
+            raw_data << {
+              vulnerability: vuln.dig("id"),
+              summary: vuln.dig("summary"),
+              details: vuln.dig("details"),
+              modified: vuln.dig("modified"),
+              published: vuln.dig("published")
             }
           end
         end
@@ -398,7 +447,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
       detail = vulnerabilities.take(8)
     end
-    { security_history_vulnerability: score, security_history_vulnerability_detail: detail.to_json }
+    {
+      security_history_vulnerability: score,
+      security_history_vulnerability_detail: detail.to_json,
+      security_history_vulnerability_raw: raw_data.take(50).to_json
+    }
   end
 
   def self.get_lifecycle_version_lifecycle(project_url)
@@ -483,7 +536,17 @@ class TpcSoftwareReportMetric < ApplicationRecord
     packages_without_license_list = dependency_checker_result.dig("packages_without_license_detect") || []
     score = packages_without_license_list.length == 0 ? 10 : 0
     detail = packages_without_license_list.take(5)
-    { ecology_dependency_acquisition: score, ecology_dependency_acquisition_detail: detail.to_json }
+
+    raw_data = {
+      "packages_with_license_detect": (dependency_checker_result.dig("packages_with_license_detect") || []).take(100),
+      "packages_without_license_detect": (dependency_checker_result.dig("packages_without_license_detect") || []).take(100)
+    }
+
+    {
+      ecology_dependency_acquisition: score,
+      ecology_dependency_acquisition_detail: detail.to_json,
+      ecology_dependency_acquisition_raw: raw_data.to_json
+    }
   end
 
 
