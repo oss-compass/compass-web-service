@@ -13,6 +13,7 @@ module Types
       field :reason, String
       field :issue_url, String
       field :adaptation_method, String
+      field :functional_description, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :created_at, GraphQL::Types::ISO8601DateTime

@@ -24,6 +24,10 @@
 #  is_same_type_check       :integer
 #  same_type_software_name  :string(255)
 #
+# Indexes
+#
+#  index_tpc_software_selection_reports_on_short_code  (short_code) UNIQUE
+#
 class TpcSoftwareSelectionReport < ApplicationRecord
 
   belongs_to :tpc_software_sig

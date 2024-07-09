@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_05_074605) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_08_123716) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -274,6 +274,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_074605) do
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
   end
 
+  create_table "tpc_software_report_metric_clarifications", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "tpc_software_report_metric_id", null: false
+    t.integer "user_id", null: false
+    t.integer "subject_id", null: false
+    t.string "metric_name", null: false
+    t.string "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tpc_software_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|
     t.integer "tpc_software_report_metric_id", null: false
     t.string "code_url", null: false
@@ -378,6 +388,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_074605) do
     t.datetime "updated_at", null: false
     t.integer "is_same_type_check"
     t.string "same_type_software_name"
+    t.index ["short_code"], name: "index_tpc_software_selection_reports_on_short_code", unique: true
   end
 
   create_table "tpc_software_selections", charset: "utf8mb4", force: :cascade do |t|
@@ -393,6 +404,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_05_074605) do
     t.string "incubation_time", null: false
     t.string "adaptation_method", null: false
     t.string "demand_source"
+    t.string "functional_description"
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|
