@@ -18,6 +18,7 @@ module Mutations
     argument :reason, String, required: true
     argument :adaptation_method, String, required: true
     argument :functional_description, String, required: true
+    argument :target_software, String, required: true
 
     def resolve(label: nil,
                 level: 'repo',
@@ -29,7 +30,8 @@ module Mutations
                 demand_source: nil,
                 reason: nil,
                 adaptation_method: nil,
-                functional_description: nil
+                functional_description: nil,
+                target_software: nil
                 )
       label = ShortenedLabel.normalize_label(label)
       current_user = context[:current_user]
@@ -58,6 +60,7 @@ module Mutations
           reason: reason,
           adaptation_method: adaptation_method,
           functional_description: functional_description,
+          target_software: target_software,
           subject_id: subject.id,
           user_id: current_user.id
         }
