@@ -51,7 +51,7 @@ class User < ApplicationRecord
   after_update :send_email_verification, if: -> { saved_changes.keys.include?('email') }
 
   ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
-  NORMAL_ROLE = 0
+  NORMAL_ROLE = 3
 
   def email_verified?
     email_verification_token.nil?
