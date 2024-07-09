@@ -12,8 +12,6 @@ module Mutations
       argument :report_type, Integer, required: true, description: 'selection: 0, create_repo: 1, incubation: 2'
       argument :software_report, Input::TpcSoftwareSelectionReportInput, required: true
 
-      CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
-
       def resolve(label: nil,
                   level: 'repo',
                   report_type: 0,
@@ -34,7 +32,7 @@ module Mutations
           software_report_data["user_id"] = current_user.id
           software_report_data["subject_id"] = subject.id
           software_report_data["report_type"] = report_type
-          software_report_data["short_code"] = "s#{Nanoid.generate(size: 7, alphabet: CharacterSet)}"
+          software_report_data["short_code"] = TpcSoftwareSelectionReport.generate_short_code
           tpc_software_selection_report = TpcSoftwareSelectionReport.create!(software_report_data)
 
           report_metric = tpc_software_selection_report.tpc_software_report_metrics.create!(
