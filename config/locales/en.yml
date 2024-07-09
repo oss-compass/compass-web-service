@@ -501,6 +501,7 @@ en:
     too_long: Your request params is too long, limit is %{long}
     invalid_range: Your request param %{param} range is invalid, min is %{min}, max is %{max}
     subject_not_exist: Operating object does not exist
+    forbidden: No permission
   censoring:
     illegal: "[Illegal content, will not be displayed]"
     illegal_img: "/images/illegal.svg"

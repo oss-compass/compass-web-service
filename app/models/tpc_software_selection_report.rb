@@ -34,4 +34,13 @@ class TpcSoftwareSelectionReport < ApplicationRecord
   belongs_to :subject
   has_many :tpc_software_report_metrics, as: :tpc_software_report, dependent: :destroy
 
+  CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
+
+  def self.generate_short_code
+    loop do
+      short_code = "s#{Nanoid.generate(size: 7, alphabet: CharacterSet)}"
+      break short_code unless TpcSoftwareSelectionReport.exists?(short_code: short_code)
+    end
+  end
+
 end

@@ -7,6 +7,7 @@ module Types
       field :selection_type, Integer, description: 'selection: 0, create_repo: 1, incubation: 2'
       field :tpc_software_selection_report_ids, [String]
       field :tpc_software_selection_reports, [Types::Tpc::TpcSoftwareSelectionReportType]
+      field :repo_url, [String]
       field :committers, [String]
       field :incubation_time, String
       field :demand_source, String
@@ -25,6 +26,10 @@ module Types
 
       def tpc_software_selection_report_ids
         object.tpc_software_selection_report_ids.present? ? JSON.parse(object.tpc_software_selection_report_ids) : []
+      end
+
+      def repo_url
+        object.repo_url.present? ? object.repo_url.split(",") : []
       end
       def committers
         object.committers.present? ? JSON.parse(object.committers) : []
