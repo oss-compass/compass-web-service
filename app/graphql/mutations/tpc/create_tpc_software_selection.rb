@@ -11,7 +11,7 @@ module Mutations
     argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
     argument :selection_type, Integer, required: true, description: 'selection: 0, create_repo: 1, incubation: 2'
     argument :tpc_software_selection_report_ids, [Integer], required: true
-    argument :repo_url, String, required: false
+    argument :repo_url, [String], required: false
     argument :committers, [String], required: true
     argument :incubation_time, String, required: true
     argument :demand_source, String, required: false
@@ -23,7 +23,7 @@ module Mutations
                 level: 'repo',
                 selection_type: 0,
                 tpc_software_selection_report_ids: [],
-                repo_url: nil,
+                repo_url: [],
                 committers: [],
                 incubation_time: nil,
                 demand_source: nil,
@@ -51,7 +51,7 @@ module Mutations
         {
           selection_type: selection_type,
           tpc_software_selection_report_ids: tpc_software_selection_report_ids.any? ? tpc_software_selection_report_ids.to_json : nil,
-          repo_url: repo_url,
+          repo_url: repo_url.join(","),
           committers: committers.any? ? committers.to_json : nil,
           incubation_time: incubation_time,
           demand_source: demand_source,
