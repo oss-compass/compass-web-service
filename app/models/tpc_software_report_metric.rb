@@ -66,6 +66,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   belongs_to :subject
   belongs_to :user
   has_one :tpc_software_report_metric_raw
+  has_one :tpc_software_report_metric_clarification
 
   Status_Progress = 'progress'
   Status_Success = 'success'
