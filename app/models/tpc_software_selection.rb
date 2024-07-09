@@ -16,6 +16,7 @@
 #  adaptation_method                 :string(255)      not null
 #  demand_source                     :string(255)
 #  functional_description            :string(255)
+#  target_software                   :string(255)
 #
 class TpcSoftwareSelection < ApplicationRecord
 
