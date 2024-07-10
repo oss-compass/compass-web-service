@@ -11,6 +11,8 @@ module Types
       field :tpc_software_sig, Types::Tpc::TpcSoftwareSigType
       field :tpc_software_report_metric, Types::Tpc::TpcSoftwareReportMetricType
       field :tpc_software_report_metric_raw, Types::Tpc::TpcSoftwareReportMetricRawType
+      field :metric_clarification_count, Types::Tpc::TpcSoftwareReportMetricClarificationCountType
+      field :metric_clarification_state, Types::Tpc::TpcSoftwareReportMetricClarificationStateType
       field :manufacturer, String
       field :website_url, String
       field :code_url, String
@@ -40,13 +42,34 @@ module Types
       end
 
       def tpc_software_report_metric_raw
-        report_metric = TpcSoftwareReportMetric.find_by(
-          tpc_software_report_id: object.id,
-          tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection,
-          version: TpcSoftwareReportMetric::Version_Default)
+        report_metric = tpc_software_report_metric
         if report_metric.present?
           TpcSoftwareReportMetricRaw.find_by(tpc_software_report_metric_id: report_metric.id)
         end
+      end
+
+      def metric_clarification_count
+        report_metric = tpc_software_report_metric
+        clarification_count_hash = {}
+        if report_metric.present?
+          clarifications = TpcSoftwareReportMetricClarification.where(tpc_software_report_metric_id: report_metric.id)
+          clarification_count_hash = clarifications.group_by { |item| item[:metric_name].underscore }.transform_values(&:size)
+          clarification_count_hash = clarification_count_hash.transform_keys(&:to_sym)
+        end
+        clarification_count_hash
+      end
+
+
+      def metric_clarification_state
+        report_metric = tpc_software_report_metric
+        clarification_state_hash = {}
+        if report_metric.present?
+          clarifications = TpcSoftwareReportMetricClarificationState.where(
+            tpc_software_report_metric_id: report_metric.id, state: TpcSoftwareReportMetricClarificationState::State_Accept)
+          clarification_state_hash = clarifications.group_by { |item| item[:metric_name].underscore }.transform_values(&:size)
+          clarification_state_hash = clarification_state_hash.transform_keys(&:to_sym)
+        end
+        clarification_state_hash
       end
 
     end
