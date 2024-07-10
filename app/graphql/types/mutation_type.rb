@@ -52,6 +52,7 @@ module Types
     field :create_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::CreateTpcSoftwareReportMetricClarification, description: 'Create a tpc software report metric clarification'
     field :update_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::UpdateTpcSoftwareReportMetricClarification, description: 'Update a tpc software report metric clarification'
     field :delete_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::DeleteTpcSoftwareReportMetricClarification, description: 'Delete a tpc software report metric clarification'
+    field :accept_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::AcceptTpcSoftwareReportMetricClarification, description: 'Delete a tpc software report metric clarification'
 
     field :create_tpc_software_output_report, mutation: Mutations::Tpc::CreateTpcSoftwareOutputReport, description: 'Create a tpc software output report'
     field :create_tpc_software_output, mutation: Mutations::Tpc::CreateTpcSoftwareOutput, description: 'Create a tpc software output'
