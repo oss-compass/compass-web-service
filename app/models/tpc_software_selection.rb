@@ -17,6 +17,8 @@
 #  demand_source                     :string(255)
 #  functional_description            :string(255)
 #  target_software                   :string(255)
+#  is_same_type_check                :integer          default(0)
+#  same_type_software_name           :string(255)
 #
 class TpcSoftwareSelection < ApplicationRecord
 

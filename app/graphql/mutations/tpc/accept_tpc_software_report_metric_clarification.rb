@@ -24,8 +24,8 @@ module Mutations
           tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection,
           version: TpcSoftwareReportMetric::Version_Default)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
-
-
+        clarification_permission = TpcSoftwareReportMetricClarificationState.check_permission?(report.tpc_software_sig_id, current_user)
+        raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless clarification_permission
 
         clarification_state = TpcSoftwareReportMetricClarificationState.find_or_initialize_by(
           tpc_software_report_metric_id: report_metric.id, metric_name: metric_name)

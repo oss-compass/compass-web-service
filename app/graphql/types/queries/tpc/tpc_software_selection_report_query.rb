@@ -12,9 +12,17 @@ module Types
 
 
         def resolve(short_code: nil)
+          current_user = context[:current_user]
+          login_required!(current_user)
 
-          TpcSoftwareSelectionReport.find_by(short_code: short_code)
-
+          report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
+          if report
+            clarification_permission = TpcSoftwareReportMetricClarificationState.check_permission?(report.tpc_software_sig_id, current_user)
+            report_hash = report.attributes
+            report_hash['clarification_permission'] = clarification_permission ? 1 : 0
+            report = OpenStruct.new(report_hash)
+          end
+          report
         end
       end
     end

@@ -21,8 +21,6 @@
 #  user_id                  :integer          not null
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
-#  is_same_type_check       :integer
-#  same_type_software_name  :string(255)
 #
 # Indexes
 #
