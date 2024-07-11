@@ -68,14 +68,13 @@ class TpcSoftwareMetricServer
         mail_list = []
         mail_list.concat(subject_customization.tpc_software_tag_mail.present? ? JSON.parse(subject_customization.tpc_software_tag_mail) : [])
 
-        issue_body.gsub!(/[\r\n>]/, "")
-        issue_body_matched = issue_body.match(/2. 【上游地址】(.*?)3. 【报告链接】/)
+        issue_body_matched = issue_body.match(/projectId=([^&]+)/)
         if issue_body_matched
-          repo_url = issue_body_matched[1]
-          repo_url_list = repo_url.split("、").map(&:strip)
-          if repo_url_list.any?
+          short_code = issue_body_matched[1]
+          short_code_list = short_code.split("..").map(&:strip)
+          if short_code_list.any?
             tpc_software_sigs = TpcSoftwareSig.joins(:tpc_software_selection_report)
-                                              .where("tpc_software_selection_reports.code_url IN (?)", repo_url_list)
+                                              .where("tpc_software_selection_reports.short_code IN (?)", short_code_list)
                                               .where("tpc_software_selection_reports.subject_id = ?", subject_customization.subject_id)
                                               .where("tpc_software_sigs.subject_id = ?", subject_customization.subject_id)
                                               .distinct
@@ -91,7 +90,7 @@ class TpcSoftwareMetricServer
           title = matches[0] + matches[1]
           UserMailer.with(
             title: title,
-            title_type: matches[1].gsub("申请", ""),
+            title_type: matches[1].gsub("选型申请", ""),
             user_name: user_name,
             user_html_url: user_html_url,
             issue_title: issue_title,
