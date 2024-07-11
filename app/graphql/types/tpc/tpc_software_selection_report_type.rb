@@ -25,6 +25,7 @@ module Types
       field :same_type_software_name, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
+      field :clarification_permission, Integer, description: '1: permissioned, 0: unpermissioned'
 
       def user
         User.find_by(id: object.user_id)
