@@ -140,8 +140,18 @@ class TpcSoftwareReportMetric < ApplicationRecord
       subject_license.license.strip.downcase
     end
 
-    (scancode_result.dig("license_detections") || []).each do |license_detection|
-      (license_detection.dig("license_expression") || "").split(" AND ").each do |license_expression|
+    raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
+      (license_detection.dig("reference_matches") || []).map do |reference_match|
+        keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
+        reference_match.select { |key, _| keys_to_select.include?(key) }
+      end
+    end
+
+    repo_name = project_url.split('/')[-1].downcase
+    standard_license_location_list = %W[#{repo_name}/license #{repo_name}/license.txt #{repo_name}/license.md]
+
+    raw_data.each do |raw|
+      (raw.dig("license_expression") || "").split(" AND ").each do |license_expression|
         license_expression = license_expression.strip.downcase
         if licenses.include?(license_expression)
           license_access_list << license_expression
@@ -149,13 +159,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
           license_non_access_list << license_expression
         end
       end
-    end
-
-    standard_license_location_list = %W[#{project_url.split('/')[-1]}/license #{project_url.split('/')[-1]}/license.txt]
-    (scancode_result.dig("files") || []).each do |file|
-      if standard_license_location_list.include?(file.dig("path")) && (file.dig("license_detections") || []).any?
+      if !is_standard_license_location && standard_license_location_list.include?((raw.dig("from_file") || "").downcase)
         is_standard_license_location = true
-        break
       end
     end
 
@@ -175,13 +180,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
       license_access_list: license_access_list.uniq.take(5),
       license_non_access_list: license_non_access_list.uniq.take(5)
     }
-
-    raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
-      (license_detection.dig("reference_matches") || []).map do |reference_match|
-        keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
-        reference_match.select { |key, _| keys_to_select.include?(key) }
-      end
-    end
 
     {
       compliance_license: score,
@@ -258,7 +256,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
         reference_match.select { |key, _| keys_to_select.include?(key) }
       end
     end
-
     {
       compliance_license_compatibility: score,
       compliance_license_compatibility_detail: conflict_list.take(3).to_json,
