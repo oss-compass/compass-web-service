@@ -3,28 +3,17 @@
 module Types
   module Tpc
     class TpcSoftwareReportMetricClarificationStateType < Types::BaseObject
-      
-      field :compliance_license, Integer
-      field :compliance_dco, Integer
-      field :compliance_package_sig, Integer
-      field :compliance_license_compatibility, Integer
+      field :id, Integer, null: false
+      field :metric_name, String
+      field :state, Integer, description: '1: accept, 0: reject'
+      field :user_id, Integer, null: false
+      field :user, Types::UserType
+      field :created_at, GraphQL::Types::ISO8601DateTime, null: false
+      field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
-      field :ecology_dependency_acquisition, Integer
-      field :ecology_code_maintenance, Integer
-      field :ecology_community_support, Integer
-      field :ecology_adoption_analysis, Integer
-      field :ecology_software_quality, Integer
-      field :ecology_patent_risk, Integer
-
-      field :lifecycle_version_normalization, Integer
-      field :lifecycle_version_number, Integer
-      field :lifecycle_version_lifecycle, Integer
-
-      field :security_binary_artifact, Integer
-      field :security_vulnerability, Integer
-      field :security_vulnerability_response, Integer
-      field :security_vulnerability_disclosure, Integer
-      field :security_history_vulnerability, Integer
+      def user
+        User.find_by(id: object.user_id)
+      end
 
     end
   end
