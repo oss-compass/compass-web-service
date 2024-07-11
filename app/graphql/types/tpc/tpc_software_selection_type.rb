@@ -16,6 +16,8 @@ module Types
       field :adaptation_method, String
       field :functional_description, String
       field :target_software, String
+      field :is_same_type_check, Integer
+      field :same_type_software_name, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false

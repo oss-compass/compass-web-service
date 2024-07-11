@@ -10,7 +10,5 @@ module Input
     argument :programming_language, String, required: true
     argument :vulnerability_disclosure, String, required: false
     argument :vulnerability_response, String, required: true
-    argument :is_same_type_check, Integer, required: true
-    argument :same_type_software_name, String, required: false
   end
 end
