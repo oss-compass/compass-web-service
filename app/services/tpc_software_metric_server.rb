@@ -60,6 +60,8 @@ class TpcSoftwareMetricServer
     user_html_url = payload.dig('issue', 'user', 'html_url')
     user_name = payload.dig('issue', 'user', 'name')
 
+    Rails.logger.info("tpc_software_workflow info: issue_html_url: #{issue_html_url}")
+
     matches = issue_title.scan(/【(.*?)】/).flatten
 
     if matches.length > 1 && matches[0] == "TPC"
@@ -88,15 +90,18 @@ class TpcSoftwareMetricServer
         mail_list = mail_list.uniq
         if mail_list.length > 0
           title = matches[0] + matches[1]
-          UserMailer.with(
-            title: title,
-            title_type: matches[1].gsub("选型申请", ""),
-            user_name: user_name,
-            user_html_url: user_html_url,
-            issue_title: issue_title,
-            issue_html_url: issue_html_url,
-            email: mail_list
-          ).email_tpc_software_application.deliver_later
+          title_type = matches[1].gsub("选型申请", ""),
+          mail_list.each do |mail|
+            UserMailer.with(
+              title: title,
+              title_type: title_type,
+              user_name: user_name,
+              user_html_url: user_html_url,
+              issue_title: issue_title,
+              issue_html_url: issue_html_url,
+              email: mail
+            ).email_tpc_software_application.deliver_later
+          end
         end
 
       end
