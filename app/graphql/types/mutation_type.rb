@@ -47,7 +47,10 @@ module Types
     field :update_subject_sig, mutation: Mutations::UpdateSubjectSig, description: 'Update a Subject sig'
 
     field :create_tpc_software_selection_report, mutation: Mutations::Tpc::CreateTpcSoftwareSelectionReport, description: 'Create a tpc software selection report'
+    field :update_tpc_software_selection_report, mutation: Mutations::Tpc::UpdateTpcSoftwareSelectionReport, description: 'Update a tpc software selection report'
+
     field :create_tpc_software_selection, mutation: Mutations::Tpc::CreateTpcSoftwareSelection, description: 'Create a tpc software selection'
+    field :update_tpc_software_selection, mutation: Mutations::Tpc::UpdateTpcSoftwareSelection, description: 'Update a tpc software selection'
 
     field :create_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::CreateTpcSoftwareReportMetricClarification, description: 'Create a tpc software report metric clarification'
     field :update_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::UpdateTpcSoftwareReportMetricClarification, description: 'Update a tpc software report metric clarification'
