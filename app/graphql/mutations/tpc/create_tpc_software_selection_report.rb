@@ -68,7 +68,7 @@ module Mutations
               security_binary_artifact: nil,
               security_vulnerability: nil,
               security_vulnerability_response: TpcSoftwareReportMetric.check_url(software_report.vulnerability_response) ? 10 : 6,
-              security_vulnerability_disclosure: TpcSoftwareReportMetric.check_url(software_report.vulnerability_disclosure) ? 10 : 6,
+              security_vulnerability_disclosure: 6,
               security_history_vulnerability: nil
             }
           )
