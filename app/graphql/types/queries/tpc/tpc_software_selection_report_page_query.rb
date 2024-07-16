@@ -10,7 +10,7 @@ module Types
         description 'Get tpc software selection report apply page'
         argument :label, String, required: false, description: 'repo or project label'
         argument :level, String, required: false, description: 'repo or project level(repo/community)'
-        argument :report_type_list, [Integer], required: true, description: 'selection: 0, create_repo: 1, incubation: 2'
+        argument :report_type_list, [Integer], required: true, description: 'incubation: 0, sandbox: 1, graduation: 2'
         argument :status, String, required: false, description: 'progress/success'
         argument :page, Integer, required: false, description: 'page number'
         argument :per, Integer, required: false, description: 'per page number'

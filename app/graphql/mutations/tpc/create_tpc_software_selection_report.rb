@@ -9,7 +9,7 @@ module Mutations
 
       argument :label, String, required: true, description: 'repo or project label'
       argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
-      argument :report_type, Integer, required: true, description: 'selection: 0, create_repo: 1, incubation: 2'
+      argument :report_type, Integer, required: true, description: 'incubation: 0, sandbox: 1, graduation: 2'
       argument :software_report, Input::TpcSoftwareSelectionReportInput, required: true
 
       def resolve(label: nil,

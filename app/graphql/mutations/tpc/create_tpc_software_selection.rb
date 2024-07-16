@@ -6,10 +6,11 @@ module Mutations
       include CompassUtils
 
     field :status, String, null: false
+    field :id, Integer, null: false
 
     argument :label, String, required: true, description: 'repo or project label'
     argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
-    argument :selection_type, Integer, required: true, description: 'selection: 0, create_repo: 1, incubation: 2'
+    argument :selection_type, Integer, required: true, description: 'incubation: 0, sandbox: 1, graduation: 2'
     argument :tpc_software_selection_report_ids, [Integer], required: true
     argument :repo_url, [String], required: false
     argument :committers, [String], required: true
@@ -53,7 +54,7 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_progress') if tpc_software_report_metric.status == TpcSoftwareReportMetric::Status_Progress
       end
 
-      TpcSoftwareSelection.create!(
+      selection = TpcSoftwareSelection.create!(
         {
           selection_type: selection_type,
           tpc_software_selection_report_ids: tpc_software_selection_report_ids.any? ? tpc_software_selection_report_ids.to_json : nil,
@@ -72,9 +73,9 @@ module Mutations
         }
       )
 
-      { status: true, message: '' }
+      { status: true, id: selection.id, message: '' }
     rescue => ex
-      { status: false, message: ex.message }
+      { status: false, id: '', message: ex.message }
     end
   end
   end
