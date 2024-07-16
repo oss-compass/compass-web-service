@@ -1792,8 +1792,7 @@ en:
       project_subscription: OSS Compass project subscription
       project_unsubscription: OSS Compass project unsubscription
       please_click_here: please click here
-      project_update: 'There has been a recent update to the project report you subscribed
-        to on OSS Compass, as follows:'
+      project_update: 'The project report you subscribed to on OSS Compass has data updates recently, as follows:'
       project_update_description: 'Click the link above to view the updated report.
         If you need to manage your OSS Compass project subscription, '
       more_info: 'For more insight into open source software project analysis, visit:'

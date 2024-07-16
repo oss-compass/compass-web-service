@@ -4,7 +4,7 @@ module Types
   module Tpc
     class TpcSoftwareSelectionType < Types::BaseObject
       field :id, Integer, null: false
-      field :selection_type, Integer, description: 'selection: 0, create_repo: 1, incubation: 2'
+      field :selection_type, Integer, description: 'incubation: 0, sandbox: 1, graduation: 2'
       field :tpc_software_selection_report_ids, [String]
       field :tpc_software_selection_reports, [Types::Tpc::TpcSoftwareSelectionReportType]
       field :repo_url, [String]
