@@ -21,6 +21,7 @@ module Types
       field :license, String
       field :vulnerability_disclosure, String
       field :vulnerability_response, String
+      field :adaptation_method, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :clarification_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'

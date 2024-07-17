@@ -13,7 +13,7 @@
 #  created_at                        :datetime         not null
 #  updated_at                        :datetime         not null
 #  incubation_time                   :string(255)      not null
-#  adaptation_method                 :string(255)      not null
+#  adaptation_method                 :string(255)
 #  demand_source                     :string(255)
 #  functional_description            :string(255)
 #  target_software                   :string(255)

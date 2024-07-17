@@ -17,6 +17,7 @@ module Types
       field :ecology_adoption_analysis_raw, String
       field :ecology_software_quality_raw, String
       field :ecology_patent_risk_raw, String
+      field :ecology_adaptation_method_raw, String
 
       field :lifecycle_version_normalization_raw, String
       field :lifecycle_version_number_raw, String

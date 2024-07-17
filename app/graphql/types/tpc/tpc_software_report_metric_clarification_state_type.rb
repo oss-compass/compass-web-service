@@ -15,6 +15,7 @@ module Types
       field :ecology_adoption_analysis, [Types::Tpc::TpcSoftwareCommentStateType]
       field :ecology_software_quality, [Types::Tpc::TpcSoftwareCommentStateType]
       field :ecology_patent_risk, [Types::Tpc::TpcSoftwareCommentStateType]
+      field :ecology_adaptation_method, [Types::Tpc::TpcSoftwareCommentStateType]
 
       field :lifecycle_version_normalization, [Types::Tpc::TpcSoftwareCommentStateType]
       field :lifecycle_version_number, [Types::Tpc::TpcSoftwareCommentStateType]

@@ -551,4 +551,23 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
 
+  def self.get_ecology_adaptation_method(adaptation_method)
+    score = -1
+    if adaptation_method.present?
+      case adaptation_method
+      when "JS/TS适配"
+        score = 10
+      when "C/C++库移植"
+        score = 10
+      when "参考"
+        score = 8
+      when "Java库重写"
+        score = 6
+      else
+        score = -1
+      end
+    end
+    score
+  end
+
 end
