@@ -2,7 +2,7 @@
 
 module Types
   module Tpc
-    class TpcSoftwareReportMetricClarificationType < Types::BaseObject
+    class TpcSoftwareCommentType < Types::BaseObject
       field :id, Integer, null: false
       field :user_id, String
       field :user, Types::UserType

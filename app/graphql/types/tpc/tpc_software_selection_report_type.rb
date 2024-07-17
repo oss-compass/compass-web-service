@@ -54,7 +54,10 @@ module Types
         report_metric = tpc_software_report_metric
         clarification_count_hash = {}
         if report_metric.present?
-          clarifications = TpcSoftwareReportMetricClarification.where(tpc_software_report_metric_id: report_metric.id)
+          clarifications = TpcSoftwareComment.where(
+            tpc_software_id: report_metric.id,
+            tpc_software_type: TpcSoftwareComment::Type_Report_Metric
+            )
           clarification_count_hash = clarifications.group_by { |item| item[:metric_name].underscore }.transform_values(&:size)
           clarification_count_hash = clarification_count_hash.transform_keys(&:to_sym)
         end
@@ -66,7 +69,10 @@ module Types
         report_metric = tpc_software_report_metric
         clarification_state_hash = {}
         if report_metric.present?
-          clarifications = TpcSoftwareReportMetricClarificationState.where(tpc_software_report_metric_id: report_metric.id)
+          clarifications = TpcSoftwareCommentState.where(
+            tpc_software_id: report_metric.id,
+            tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric
+            )
           clarification_state_hash = clarifications.group_by { |item| item[:metric_name].underscore }
         end
         clarification_state_hash

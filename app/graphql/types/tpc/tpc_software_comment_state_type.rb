@@ -2,7 +2,7 @@
 
 module Types
   module Tpc
-    class TpcSoftwareReportMetricClarificationStateDetailType < Types::BaseObject
+    class TpcSoftwareCommentStateType < Types::BaseObject
       field :id, Integer, null: false
       field :metric_name, String
       field :state, Integer, description: 'reject: -1, accept: 1'

@@ -66,7 +66,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
   belongs_to :subject
   belongs_to :user
   has_one :tpc_software_report_metric_raw
-  has_one :tpc_software_report_metric_clarification
+  has_many :tpc_software_comments, as: :tpc_software, dependent: :destroy
+  has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
+
+  Report_Type_Selection = 'TpcSoftwareSelectionReport'
+  Report_Type_Output = 'TpcSoftwareOutputReport'
 
   Status_Progress = 'progress'
   Status_Success = 'success'
@@ -74,8 +78,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   Version_History = 0
   Version_Default = 1
 
-  Report_Type_Selection = 'TpcSoftwareSelectionReport'
-  Report_Type_Output = 'TpcSoftwareOutputReport'
+
 
   @@license_conflict_data = nil
 
