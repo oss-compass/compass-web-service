@@ -2017,6 +2017,7 @@ en:
     software_report_trigger_failed: Report trigger failed，reason：%{reason}
     software_code_url_invalid: Code url invalid
     callback_command_not_exist: callback command not exist： %{command}
+    software_report_metric_not_clarified: software report metric are not clarified
   yaml:
     path:
       invalid: 'invaild configure yaml path: %{path}.'

@@ -1501,6 +1501,7 @@ zh-CN:
     software_report_trigger_failed: 报告触发失败，原因：%{reason}
     software_code_url_invalid: 软件源码地址不可用
     callback_command_not_exist: 回调命令不存在： %{command}
+    software_report_metric_not_clarified: 报告指标未澄清
   yaml:
     path:
       invalid: '无效的YAML文件路径: %{path}'
