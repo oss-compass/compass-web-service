@@ -1471,7 +1471,8 @@ zh-CN:
       account_setting: 账户设置
       expire_text_end: 请求一个新的链接。
     email_tpc_software_application:
-      subject: OpenHarmony TPC项目申请
+      subject_application: OpenHarmony TPC项目申请
+      subject_review: OpenHarmony TPC项目评审
   users:
     login_failed: 登录失败，原因：%{reason}
     forbidden: 访问受限

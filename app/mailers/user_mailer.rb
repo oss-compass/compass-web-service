@@ -24,7 +24,7 @@ class UserMailer < ApplicationMailer
 
   def email_tpc_software_application
     @title = params[:title]
-    @title_type = params[:title_type]
+    @body = params[:body]
     @user_name = params[:user_name]
     @user_html_url = params[:user_html_url]
     @issue_title = params[:issue_title]
@@ -32,7 +32,12 @@ class UserMailer < ApplicationMailer
     @email = params[:email]
     @locale = 'zh-CN'.to_sym
     I18n.locale = @locale
-    mail(to: @email, subject: I18n.t('user_mailer.email_tpc_software_application.subject'))
+    if params[:type] == 0
+      mail(to: @email, subject: I18n.t('user_mailer.email_tpc_software_application.subject_application'))
+    elsif params[:type] == 1
+      mail(to: @email, subject: I18n.t('user_mailer.email_tpc_software_application.subject_review'))
+    end
+
   end
 
   def subscription_update

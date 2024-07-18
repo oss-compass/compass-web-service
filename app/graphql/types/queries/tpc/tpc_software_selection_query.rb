@@ -17,7 +17,8 @@ module Types
           selection = TpcSoftwareSelection.find_by(id: selection_id)
           if selection
             selection_hash = selection.attributes
-            committer_permission = TpcSoftwareCommentState.check_committer_permission_by_selection?(selection.tpc_software_selection_report_ids, current_user)
+            committer_permission = TpcSoftwareCommentState.check_committer_permission_by_selection?(
+              JSON.parse(selection.tpc_software_selection_report_ids), current_user)
             sig_lead_permission = TpcSoftwareCommentState.check_sig_lead_permission?(current_user)
             selection_hash['comment_committer_permission'] = committer_permission ? 1 : 0
             selection_hash['comment_sig_lead_permission'] = sig_lead_permission ? 1 : 0

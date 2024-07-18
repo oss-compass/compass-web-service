@@ -19,6 +19,7 @@
 #  target_software                   :string(255)
 #  is_same_type_check                :integer          default(0)
 #  same_type_software_name           :string(255)
+#  issue_url                         :string(255)
 #
 class TpcSoftwareSelection < ApplicationRecord
 

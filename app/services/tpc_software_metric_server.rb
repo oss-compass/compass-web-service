@@ -53,48 +53,82 @@ class TpcSoftwareMetricServer
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
-  def self.tpc_software_workflow(payload)
+  def self.create_issue_workflow(payload)
     issue_title = payload.dig('issue', 'title')
     issue_body = payload.dig('issue', 'body')
     issue_html_url = payload.dig('issue', 'html_url')
     user_html_url = payload.dig('issue', 'user', 'html_url')
     user_name = payload.dig('issue', 'user', 'name')
 
-    Rails.logger.info("tpc_software_workflow info: issue_html_url: #{issue_html_url}")
+    Rails.logger.info("create_issue_workflow info: issue_html_url: #{issue_html_url}")
 
     matches = issue_title.scan(/【(.*?)】/).flatten
 
     if matches.length > 1 && matches[0] == "TPC"
-      subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
-      if subject_customization.present?
-        mail_list = []
-        mail_list.concat(subject_customization.tpc_software_tag_mail.present? ? JSON.parse(subject_customization.tpc_software_tag_mail) : [])
-
-        issue_body_matched = issue_body.match(/projectId=([^&]+)/)
-        if issue_body_matched
-          short_code = issue_body_matched[1]
-          short_code_list = short_code.split("..").map(&:strip)
-          if short_code_list.any?
-            tpc_software_sigs = TpcSoftwareSig.joins(:tpc_software_selection_report)
-                                              .where("tpc_software_selection_reports.short_code IN (?)", short_code_list)
-                                              .where("tpc_software_selection_reports.subject_id = ?", subject_customization.subject_id)
-                                              .where("tpc_software_sigs.subject_id = ?", subject_customization.subject_id)
-                                              .distinct
-            tpc_software_sigs.each do |tpc_software_sig|
-              mail_list.concat(tpc_software_sig.committer_emails.present? ? JSON.parse(tpc_software_sig.committer_emails) : [])
-            end
-          end
-
+      # save issue url
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        task_id = issue_body_taskId_matched[1].to_i
+        selection = TpcSoftwareSelection.find_by(id: task_id)
+        if selection.present?
+          selection.update!(issue_url: issue_html_url)
         end
+      end
 
-        mail_list = mail_list.uniq
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
         if mail_list.length > 0
           title = matches[0] + matches[1]
-          title_type = matches[1].gsub("选型申请", ""),
+          body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
           mail_list.each do |mail|
             UserMailer.with(
+              type: 0,
               title: title,
-              title_type: title_type,
+              body: body,
+              user_name: user_name,
+              user_html_url: user_html_url,
+              issue_title: issue_title,
+              issue_html_url: issue_html_url,
+              email: mail
+            ).email_tpc_software_application.deliver_later
+          end
+        end
+
+      end
+    end
+  end
+
+  def self.create_issue_comment_workflow(payload)
+    issue_title = payload.dig('issue', 'title')
+    issue_body = payload.dig('issue', 'body')
+    issue_html_url = payload.dig('issue', 'html_url')
+    user_html_url = payload.dig('issue', 'user', 'html_url')
+    user_name = payload.dig('issue', 'user', 'name')
+    comment = payload.dig('note')
+
+    Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
+
+    matches = issue_title.scan(/【(.*?)】/).flatten
+
+    if matches.length > 1 && matches[0] == "TPC" && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
+        if mail_list.length > 0
+          title = matches[0] + matches[1].sub("申请", "评审")
+          body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
+          mail_list.each do |mail|
+            UserMailer.with(
+              type: 1,
+              title: title,
+              body: body,
               user_name: user_name,
               user_html_url: user_html_url,
               issue_title: issue_title,

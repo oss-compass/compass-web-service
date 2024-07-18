@@ -1983,7 +1983,8 @@ en:
       account_setting: account settings
       expire_text_end: request a new link.
     email_tpc_software_application:
-      subject: OpenHarmony TPC subject application
+      subject_application: OpenHarmony TPC subject application
+      subject_review: OpenHarmony TPC subject subject_review
   users:
     login_failed: 'login failed, reason: %{reason}'
     forbidden: access forbidden

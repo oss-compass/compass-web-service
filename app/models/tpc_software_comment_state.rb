@@ -65,4 +65,14 @@ class TpcSoftwareCommentState < ApplicationRecord
   end
 
 
+  def self.get_state(tpc_software_id, tpc_software_type, member_type)
+    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: tpc_software_id)
+                                       .where(tpc_software_type: tpc_software_type)
+                                       .where(member_type: member_type)
+    return State_Cancel if comment_state_list.length == 0
+    return State_Reject if comment_state_list.any? { |item| item[:state] == -1 }
+    return State_Accept if comment_state_list.all? { |item| item[:state] == 1 }
+  end
+
+
 end

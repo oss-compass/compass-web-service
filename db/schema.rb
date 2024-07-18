@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_17_084650) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_17_105836) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -223,6 +223,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_084650) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tpc_software_tag_mail", limit: 500
+    t.string "gitee_token"
+    t.string "github_token"
     t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 
@@ -420,6 +422,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_084650) do
     t.string "target_software"
     t.integer "is_same_type_check", default: 0
     t.string "same_type_software_name"
+    t.string "issue_url"
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|
