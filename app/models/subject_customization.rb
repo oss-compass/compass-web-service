@@ -8,6 +8,8 @@
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  tpc_software_tag_mail :string(500)
+#  gitee_token           :string(255)
+#  github_token          :string(255)
 #
 # Indexes
 #

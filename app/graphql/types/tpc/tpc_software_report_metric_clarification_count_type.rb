@@ -15,6 +15,7 @@ module Types
       field :ecology_adoption_analysis, Integer
       field :ecology_software_quality, Integer
       field :ecology_patent_risk, Integer
+      field :ecology_adaptation_method, Integer
 
       field :lifecycle_version_normalization, Integer
       field :lifecycle_version_number, Integer

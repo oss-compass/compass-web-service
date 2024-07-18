@@ -165,6 +165,22 @@ module GiteeApplication
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
   end
 
+  def gitee_create_issue_comment(repo_url, gitee_token, number, body)
+    resp = Faraday.post(
+      "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner(repo_url)}/#{gitee_repo(repo_url)}/issues/#{number}/comments",
+      {
+        body: body,
+        access_token: gitee_token
+      }.to_json,
+      { 'Content-Type' => 'application/json' }
+    )
+    issue = JSON.parse(resp.body)
+    Rails.logger.info "gitee_create_issue_comment: #{issue}"
+    { status: true, message: '' }
+  rescue => ex
+    { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
+  end
+
   private
   def gitee_owner(gitee_repo = GITEE_REPO)
     @gitee_owner ||= gitee_repo.split('/')[-2]

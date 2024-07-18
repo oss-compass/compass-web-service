@@ -61,9 +61,13 @@ class ApplicationController < ActionController::Base
     payload = request.request_parameters
     action = payload['action']
     hook_name = payload['hook_name']
+    noteable_type = payload.dig('noteable_type') || ''
     if action == 'open' && hook_name == 'issue_hooks'
-      TpcSoftwareMetricServer.tpc_software_workflow(payload)
+      TpcSoftwareMetricServer.create_issue_workflow(payload)
+    elsif action == 'comment' && hook_name == 'note_hooks' && noteable_type == 'Issue'
+      TpcSoftwareMetricServer.create_issue_comment_workflow(payload)
     end
+
 
     render json: { status: true, message: 'ok' }
   rescue => ex

@@ -6,7 +6,7 @@ module Types
       class TpcSoftwareReportMetricClarificationPageQuery < BaseQuery
         include Pagy::Backend
 
-        type Types::Tpc::TpcSoftwareReportMetricClarificationPageType, null: true
+        type Types::Tpc::TpcSoftwareCommentPageType, null: true
         description 'Get tpc software report metric clarification page'
 
         argument :short_code, String, required: true
@@ -23,9 +23,10 @@ module Types
             version: TpcSoftwareReportMetric::Version_Default)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
 
-          items = TpcSoftwareReportMetricClarification.joins(:tpc_software_report_metric)
-                                                      .where("tpc_software_report_metric_clarifications.metric_name = ?", metric_name)
-                                                      .where("tpc_software_report_metric_clarifications.tpc_software_report_metric_id = ?", report_metric.id)
+          items = TpcSoftwareComment.where("metric_name = ?", metric_name)
+                                    .where("tpc_software_type = ?", TpcSoftwareComment::Type_Report_Metric)
+                                    .where("tpc_software_id = ?", report_metric.id)
+
           pagyer, records = pagy(items, { page: page, items: per })
           { count: pagyer.count, total_page: pagyer.pages, page: pagyer.page, items: records }
 

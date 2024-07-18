@@ -14,7 +14,6 @@ module Mutations
     argument :incubation_time, String, required: true
     argument :demand_source, String, required: false
     argument :reason, String, required: true
-    argument :adaptation_method, String, required: true
     argument :functional_description, String, required: true
     argument :target_software, String, required: true
     argument :is_same_type_check, Integer, required: true
@@ -27,7 +26,6 @@ module Mutations
                 incubation_time: nil,
                 demand_source: nil,
                 reason: nil,
-                adaptation_method: nil,
                 functional_description: nil,
                 target_software: nil,
                 is_same_type_check: 0,
@@ -47,7 +45,6 @@ module Mutations
           incubation_time: incubation_time,
           demand_source: demand_source,
           reason: reason,
-          adaptation_method: adaptation_method,
           functional_description: functional_description,
           target_software: target_software,
           is_same_type_check: is_same_type_check,

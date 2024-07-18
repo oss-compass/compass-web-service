@@ -26,9 +26,10 @@ module Mutations
           version: TpcSoftwareReportMetric::Version_Default)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
 
-        TpcSoftwareReportMetricClarification.create!(
+        TpcSoftwareComment.create!(
           {
-            tpc_software_report_metric_id: report_metric.id,
+            tpc_software_id: report_metric.id,
+            tpc_software_type: TpcSoftwareComment::Type_Report_Metric,
             user_id: current_user.id,
             subject_id: report_metric.subject_id,
             metric_name: metric_name,

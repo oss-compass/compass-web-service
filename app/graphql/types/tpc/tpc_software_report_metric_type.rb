@@ -7,6 +7,7 @@ module Types
       field :status, String, description: 'progress/success'
       field :code_url, String
       field :tpc_software_report_id, Integer
+      field :tpc_software_report_type, String
 
       field :base_repo_name, Integer
       field :base_repo_name_detail, String
@@ -36,6 +37,8 @@ module Types
       field :ecology_software_quality_detail, Types::Tpc::TpcSoftwareReportMetricEcologySoftwareQualityType
       field :ecology_patent_risk, Integer
       field :ecology_patent_risk_detail, String
+      field :ecology_adaptation_method, Integer
+      field :ecology_adaptation_method_detail, String
 
       field :lifecycle_version_normalization, Integer
       field :lifecycle_version_normalization_detail, String
@@ -102,6 +105,26 @@ module Types
           object.ecology_software_quality
         end
       end
+
+      def ecology_adaptation_method_detail
+        adaptation_method = nil
+        case object.tpc_software_report_type
+        when TpcSoftwareReportMetric::Report_Type_Selection
+          query_data = TpcSoftwareSelectionReport.find_by(id: object.tpc_software_report_id)
+        else
+          query_data = nil
+        end
+        if query_data.present?
+          adaptation_method = query_data.adaptation_method
+        end
+        adaptation_method
+      end
+
+      def ecology_adaptation_method
+        adaptation_method = ecology_adaptation_method_detail
+        TpcSoftwareReportMetric.get_ecology_adaptation_method(adaptation_method)
+      end
+
     end
   end
 end
