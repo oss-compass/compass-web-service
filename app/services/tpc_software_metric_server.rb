@@ -62,9 +62,8 @@ class TpcSoftwareMetricServer
 
     Rails.logger.info("create_issue_workflow info: issue_html_url: #{issue_html_url}")
 
-    matches = issue_title.scan(/【(.*?)】/).flatten
 
-    if matches.length > 1 && matches[0] == "TPC"
+    if issue_title.include?("【孵化选型申请】")
       # save issue url
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
@@ -82,8 +81,10 @@ class TpcSoftwareMetricServer
         short_code_list = short_code.split("..").map(&:strip)
         mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
         if mail_list.length > 0
-          title = matches[0] + matches[1]
+          title = "TPC孵化选型申请"
           body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
+          state_list = ["【待TPC SIG评审】", "【TPC：待补充信息】", "【TPC SIG评审中】", "【待架构SIG评审】", "【架构：待补充信息】", "【评审通过】"]
+          issue_title = issue_title.gsub(Regexp.union(state_list), '')
           mail_list.each do |mail|
             UserMailer.with(
               type: 0,
@@ -112,9 +113,7 @@ class TpcSoftwareMetricServer
 
     Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
 
-    matches = issue_title.scan(/【(.*?)】/).flatten
-
-    if matches.length > 1 && matches[0] == "TPC" && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
+    if issue_title.include?("【孵化选型申请】") && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
       # send email
       issue_body_matched = issue_body.match(/projectId=([^&]+)/)
       if issue_body_matched
@@ -122,8 +121,10 @@ class TpcSoftwareMetricServer
         short_code_list = short_code.split("..").map(&:strip)
         mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
         if mail_list.length > 0
-          title = matches[0] + matches[1].sub("申请", "评审")
+          title = "TPC孵化选型评审"
           body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
+          state_list = ["【待TPC SIG评审】", "【TPC：待补充信息】", "【TPC SIG评审中】", "【待架构SIG评审】", "【架构：待补充信息】", "【评审通过】"]
+          issue_title = issue_title.gsub(Regexp.union(state_list), '')
           mail_list.each do |mail|
             UserMailer.with(
               type: 1,
