@@ -29,6 +29,10 @@ module Types
       field :security_vulnerability_disclosure_raw, String
       field :security_history_vulnerability_raw, String
 
+      def ecology_adaptation_method_raw
+        nil
+      end
+
     end
   end
 end
