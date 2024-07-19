@@ -7,7 +7,7 @@
 #  user_id           :integer          not null
 #  subject_id        :integer          not null
 #  metric_name       :string(255)      not null
-#  content           :string(255)      not null
+#  content           :string(5000)     not null
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  tpc_software_type :string(255)      default("TpcSoftwareReportMetric"), not null

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_17_105836) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_19_025705) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -293,7 +293,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_105836) do
     t.integer "user_id", null: false
     t.integer "subject_id", null: false
     t.string "metric_name", null: false
-    t.string "content", null: false
+    t.string "content", limit: 5000, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tpc_software_type", default: "TpcSoftwareReportMetric", null: false
