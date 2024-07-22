@@ -83,7 +83,7 @@ class TpcSoftwareMetricServer
         if mail_list.length > 0
           title = "TPC孵化选型申请"
           body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
-          state_list = ["【待TPC SIG评审】", "【TPC：待补充信息】", "【TPC SIG评审中】", "【待架构SIG评审】", "【架构：待补充信息】", "【评审通过】"]
+          state_list = TpcSoftwareCommentState::Review_States
           issue_title = issue_title.gsub(Regexp.union(state_list), '')
           mail_list.each do |mail|
             UserMailer.with(
@@ -114,6 +114,35 @@ class TpcSoftwareMetricServer
     Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
 
     if issue_title.include?("【孵化选型申请】") && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
+      # update issue title
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        task_id = issue_body_taskId_matched[1].to_i
+        review_state = TpcSoftwareCommentState.get_review_state(task_id, TpcSoftwareCommentState::Type_Selection)
+        TpcSoftwareCommentState::Review_States.each do |state|
+          if issue_title.include?(state)
+            to_issue_title = issue_title.gsub(state, review_state)
+            issue_url_list = issue_html_url.split("/issues/")
+            subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+            if issue_url_list.length && subject_customization.present?
+              repo_url = issue_url_list[0]
+              number = issue_url_list[1]
+              if repo_url.include?("gitee.com")
+                IssueServer.new(
+                  {
+                    repo_url: repo_url,
+                    gitee_token: subject_customization.gitee_token,
+                    github_token: nil
+                  }
+                ).update_gitee_issue_title(number, to_issue_title)
+              end
+            end
+            break
+          end
+        end
+
+      end
+
       # send email
       issue_body_matched = issue_body.match(/projectId=([^&]+)/)
       if issue_body_matched
@@ -123,7 +152,7 @@ class TpcSoftwareMetricServer
         if mail_list.length > 0
           title = "TPC孵化选型评审"
           body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
-          state_list = ["【待TPC SIG评审】", "【TPC：待补充信息】", "【TPC SIG评审中】", "【待架构SIG评审】", "【架构：待补充信息】", "【评审通过】"]
+          state_list = TpcSoftwareCommentState::Review_States
           issue_title = issue_title.gsub(Regexp.union(state_list), '')
           mail_list.each do |mail|
             UserMailer.with(
@@ -138,7 +167,6 @@ class TpcSoftwareMetricServer
             ).email_tpc_software_application.deliver_later
           end
         end
-
       end
     end
   end

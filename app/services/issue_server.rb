@@ -21,6 +21,12 @@ class IssueServer
     { status: true, message: result[:message] }
   end
 
+  def update_gitee_issue_title(number, title)
+    result = gitee_update_issue_title(@repo_url, @gitee_token, number, title)
+    return result unless result[:status]
+    { status: true, message: result[:message] }
+  end
+
   def create_github_issue(title, body)
     result = github_create_issue(@repo_url, @github_token, title, body)
     return result unless result[:status]
