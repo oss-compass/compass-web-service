@@ -3,9 +3,10 @@
 module Types
   module Tpc
     class TpcSoftwareReportMetricComplianceLicenseType < Types::BaseObject
-      field :license_access_list, [String]
-      field :license_non_access_list, [String]
-
+      field :osi_permissive_licenses, [String]
+      field :osi_copyleft_limited_licenses, [String]
+      field :osi_free_restricted_licenses, [String]
+      field :non_osi_licenses, [String]
     end
   end
 end
