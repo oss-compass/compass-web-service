@@ -149,13 +149,12 @@ class TpcSoftwareMetricServer
 
     # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker", "compass"]
     metric_hash = Hash.new
-    metric_raw_hash = Hash.new
     command_list.each do |command|
       case command
       when "osv-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
       when "scancode"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(@project_url, scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(scan_results.dig(command) || {}))
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
         license = TpcSoftwareReportMetric.get_license(@project_url, scan_results.dig(command) || {})
       when "binary-checker"

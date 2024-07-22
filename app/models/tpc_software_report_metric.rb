@@ -81,6 +81,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
 
   @@license_conflict_data = nil
+  @@license_data = nil
 
   def self.check_url(url)
     if url.nil?
@@ -124,24 +125,18 @@ class TpcSoftwareReportMetric < ApplicationRecord
     {
       security_vulnerability: score,
       security_vulnerability_detail: details.take(3).to_json,
-      security_vulnerability_raw: details.take(100).to_json
+      security_vulnerability_raw: details.take(30).to_json
     }
   end
 
-  def self.get_compliance_license(project_url, scancode_result)
-    # Standard location with license on the admission list: 10 points;
-    # Non-standard location with license on the admission list: 8 points;
-    # License not on the admission list: 6 points;
-    # No license: 0 points.
+  def self.get_compliance_license(scancode_result)
+    license_list = []
+    osi_permissive_license_list = []
+    osi_copyleft_limited_license_list = []
+    osi_free_restricted_license_list = []
+    non_osi_license_list = []
 
-    is_standard_license_location = false
-    license_access_list = []
-    license_non_access_list = []
-
-    subject_licenses = SubjectLicense.all
-    licenses = subject_licenses.map do |subject_license|
-      subject_license.license.strip.downcase
-    end
+    license_db_data = get_license_data
 
     raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
       (license_detection.dig("reference_matches") || []).map do |reference_match|
@@ -150,44 +145,49 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
 
-    repo_name = project_url.split('/')[-1].downcase
-    standard_license_location_list = %W[#{repo_name}/license #{repo_name}/license.txt #{repo_name}/license.md]
-
     raw_data.each do |raw|
-      (raw.dig("license_expression") || "").split(" AND ").each do |license_expression|
+      (raw.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
         license_expression = license_expression.strip.downcase
-        if licenses.include?(license_expression)
-          license_access_list << license_expression
+        license_list << license_expression
+        category = license_db_data.dig(license_expression, :category)
+        if category
+          case category
+          when "Permissive"
+            osi_permissive_license_list << license_expression
+          when "Copyleft Limited"
+            osi_copyleft_limited_license_list << license_expression
+          else
+            osi_free_restricted_license_list << license_expression
+          end
         else
-          license_non_access_list << license_expression
+          non_osi_license_list << license_expression
         end
-      end
-      if !is_standard_license_location && standard_license_location_list.include?((raw.dig("from_file") || "").downcase)
-        is_standard_license_location = true
       end
     end
 
     score = 0
-    if (license_access_list + license_non_access_list).any?
-      if license_non_access_list.length == 0
-        if is_standard_license_location
-          score = 10
-        else
-          score = 8
-        end
-      else
+    if license_list.length > 0
+      if non_osi_license_list.length > 0
+        score = 0
+      elsif osi_free_restricted_license_list.length > 0
         score = 6
+      elsif osi_copyleft_limited_license_list.length > 0
+        score = 8
+      elsif osi_permissive_license_list.length > 0
+        score = 10
       end
     end
     detail = {
-      license_access_list: license_access_list.uniq.take(5),
-      license_non_access_list: license_non_access_list.uniq.take(5)
+      osi_permissive_licenses: osi_permissive_license_list.uniq.take(5),
+      osi_copyleft_limited_licenses: osi_copyleft_limited_license_list.uniq.take(5),
+      osi_free_restricted_licenses: osi_free_restricted_license_list.uniq.take(5),
+      non_osi_licenses: non_osi_license_list.uniq.take(5)
     }
 
     {
       compliance_license: score,
       compliance_license_detail: detail.to_json,
-      compliance_license_raw: raw_data.take(100).to_json
+      compliance_license_raw: raw_data.take(30).to_json
     }
   end
 
@@ -224,12 +224,43 @@ class TpcSoftwareReportMetric < ApplicationRecord
     @@license_conflict_data
   end
 
+  def self.read_license_data
+    data_hash = {}
+
+    scancode_licenses_data = File.read(Rails.root.join('app', 'assets', 'source', 'scancode_licenses.json'))
+    scancode_licenses_json = JSON.parse(scancode_licenses_data)
+
+    spdx_licenses_data = File.read(Rails.root.join('app', 'assets', 'source', 'spdx_licenses.json'))
+    spdx_licenses_json = JSON.parse(spdx_licenses_data)
+    spdx_license_hash = spdx_licenses_json["licenses"].map { |spdx| [spdx['licenseId'], spdx] }.to_h
+
+    scancode_licenses_json.each do |scancode|
+      spdx_license_key  = scancode['spdx_license_key']
+      if spdx_license_hash.dig(spdx_license_key, 'isOsiApproved')
+        data_hash[scancode['license_key']] = {
+          license_key: scancode['license_key'],
+          category: scancode['category'],
+          spdx_license_key: scancode['spdx_license_key'],
+          is_osi_approved: spdx_license_hash.dig(spdx_license_key, 'isOsiApproved')
+        }
+      end
+    end
+    data_hash
+  end
+
+  def self.get_license_data
+    if @@license_data.nil?
+      @@license_data = read_license_data
+    end
+    @@license_data
+  end
+
   def self.get_compliance_license_compatibility(scancode_result)
     license_conflict_data = get_license_conflict_data
 
     check_license_list = []
     (scancode_result.dig("license_detections") || []).each do |license_detection|
-      (license_detection.dig("license_expression") || "").split("AND").each do |license_expression|
+      (license_detection.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
         check_license_list << license_expression.strip.downcase
       end
     end
@@ -262,7 +293,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     {
       compliance_license_compatibility: score,
       compliance_license_compatibility_detail: conflict_list.take(3).to_json,
-      compliance_license_compatibility_raw: raw_data.take(100).to_json
+      compliance_license_compatibility_raw: raw_data.take(30).to_json
     }
   end
 
@@ -275,8 +306,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
 
     raw_data = {
-      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(100),
-      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(100),
+      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
+      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
     }
 
     {
@@ -296,7 +327,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     {
       compliance_package_sig: score,
       compliance_package_sig_detail: signature_file_list.take(5).to_json,
-      compliance_package_sig_raw: signature_file_list.take(100).to_json
+      compliance_package_sig_raw: signature_file_list.take(30).to_json
     }
   end
 
@@ -539,8 +570,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
     detail = packages_without_license_list.take(5)
 
     raw_data = {
-      "packages_with_license_detect": (dependency_checker_result.dig("packages_with_license_detect") || []).take(100),
-      "packages_without_license_detect": (dependency_checker_result.dig("packages_without_license_detect") || []).take(100)
+      "packages_with_license_detect": (dependency_checker_result.dig("packages_with_license_detect") || []).take(30),
+      "packages_without_license_detect": (dependency_checker_result.dig("packages_without_license_detect") || []).take(30)
     }
 
     {
