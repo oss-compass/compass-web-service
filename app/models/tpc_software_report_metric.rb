@@ -387,11 +387,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
     commit_dco_count = base.must(wildcard: { message: { value: "*Signed-off-by*" } })
                            .execute.aggregations.dig('count', 'value')
     if commit_count == 0 || commit_dco_count == 0
-      score = 0
+      score = 6
     elsif commit_count == commit_dco_count
       score = 10
     else
-      score = 5
+      score = 8
     end
     detail = {
       commit_count: commit_count,
