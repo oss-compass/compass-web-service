@@ -18,8 +18,8 @@ module Types
           report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
           if report
             report_hash = report.attributes
-            clarification_committer_permission = TpcSoftwareCommentState.check_committer_permission?(report.tpc_software_sig_id, current_user)
-            clarification_sig_lead_permission = TpcSoftwareCommentState.check_sig_lead_permission?(current_user)
+            clarification_committer_permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user)
+            clarification_sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
             report_hash['clarification_committer_permission'] = clarification_committer_permission ? 1 : 0
             report_hash['clarification_sig_lead_permission'] = clarification_sig_lead_permission ? 1 : 0
             report = OpenStruct.new(report_hash)

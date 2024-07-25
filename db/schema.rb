@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_19_025705) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_24_022133) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -297,6 +297,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_19_025705) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tpc_software_type", default: "TpcSoftwareReportMetric", null: false
+  end
+
+  create_table "tpc_software_members", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "member_type", null: false
+    t.string "name"
+    t.string "company"
+    t.string "email"
+    t.string "github_account"
+    t.string "gitee_account"
+    t.integer "tpc_software_sig_id"
+    t.string "description"
+    t.integer "role_level", default: 0
+    t.integer "subject_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tpc_software_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|

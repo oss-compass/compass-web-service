@@ -79,7 +79,7 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
         if mail_list.length > 0
           title = "TPC孵化选型申请"
           body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
@@ -114,10 +114,16 @@ class TpcSoftwareMetricServer
     Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
 
     if issue_title.include?("【孵化选型申请】") && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
-      # update issue title
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         task_id = issue_body_taskId_matched[1].to_i
+        # save issue url
+        selection = TpcSoftwareSelection.find_by(id: task_id)
+        if selection.present?
+          selection.update!(issue_url: issue_html_url)
+        end
+
+        # update issue title
         review_state = TpcSoftwareCommentState.get_review_state(task_id, TpcSoftwareCommentState::Type_Selection)
         TpcSoftwareCommentState::Review_States.each do |state|
           if issue_title.include?(state)
@@ -148,7 +154,7 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareSig.get_eamil_list_by_short_code(short_code_list)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
         if mail_list.length > 0
           title = "TPC孵化选型评审"
           body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
