@@ -26,8 +26,6 @@ module Types
       field :user, Types::UserType
       field :clarification_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :clarification_sig_lead_permission, Integer, description: '1: permissioned, 0: unpermissioned'
-      field :created_at, GraphQL::Types::ISO8601DateTime, null: false
-      field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
       def user
         User.find_by(id: object.user_id)
