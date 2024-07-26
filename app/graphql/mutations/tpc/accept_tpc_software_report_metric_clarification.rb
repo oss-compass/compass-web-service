@@ -31,10 +31,10 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
 
         if member_type == TpcSoftwareCommentState::Member_Type_Committer && state != TpcSoftwareCommentState::State_Cancel
-          committer_permission = TpcSoftwareCommentState.check_committer_permission?(report.tpc_software_sig_id, current_user)
+          committer_permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user)
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless committer_permission
         elsif member_type == TpcSoftwareCommentState::Member_Type_Sig_Lead && state != TpcSoftwareCommentState::State_Cancel
-          sig_lead_permission = TpcSoftwareCommentState.check_sig_lead_permission?(current_user)
+          sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless sig_lead_permission
         end
 
