@@ -43,6 +43,8 @@ class User < ApplicationRecord
   has_many :lab_models, dependent: :destroy
   has_many :subject_access_levels, dependent: :destroy
   has_many :lab_model_invitations
+  has_many :tpc_software_selection_report
+  has_many :tpc_software_selections
 
   validate :check_email_change_limit
   validates :encrypted_password, presence: true
