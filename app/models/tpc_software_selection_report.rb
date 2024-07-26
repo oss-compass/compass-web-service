@@ -31,6 +31,7 @@ class TpcSoftwareSelectionReport < ApplicationRecord
 
   belongs_to :tpc_software_sig
   belongs_to :subject
+  belongs_to :user
   has_many :tpc_software_report_metrics, as: :tpc_software_report, dependent: :destroy
 
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
