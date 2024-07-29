@@ -55,12 +55,11 @@ class TpcSoftwareCommentState < ApplicationRecord
     committer_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Committer)
     sig_lead_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Sig_Lead)
     states = [committer_state, sig_lead_state]
-    review_state = Review_State_TPC_Await
-    if states.all? { |item| item == 0 }
+    if states.all? { |item| item == State_Cancel }
       review_state = Review_State_TPC_Await
-    elsif states.any? { |item| item == -1 }
+    elsif states.any? { |item| item == State_Reject }
       review_state = Review_State_TPC_Replenish
-    elsif states.all? { |item| item == 1 }
+    elsif states.all? { |item| item == State_Accept }
       review_state = Review_State_Architecture_Await
     else
       review_state = Review_State_TPC_Review
