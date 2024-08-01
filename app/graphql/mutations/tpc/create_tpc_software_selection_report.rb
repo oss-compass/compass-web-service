@@ -32,6 +32,8 @@ module Mutations
           software_report_data["user_id"] = current_user.id
           software_report_data["subject_id"] = subject.id
           software_report_data["report_type"] = report_type
+          software_report_data["manufacturer"] = ""
+          software_report_data["website_url"] = ""
           software_report_data["short_code"] = TpcSoftwareSelectionReport.generate_short_code
           tpc_software_selection_report = TpcSoftwareSelectionReport.create!(software_report_data)
 
