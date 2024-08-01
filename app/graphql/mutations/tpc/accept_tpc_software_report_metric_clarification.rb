@@ -52,10 +52,8 @@ module Mutations
           tpc_software_id: report_metric.id,
           tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric,
           metric_name: metric_name,
-          user_id: current_user.id,
-          member_type: member_type)
+          user_id: current_user.id)
         if state == TpcSoftwareCommentState::State_Cancel
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless clarification_state.user_id == current_user.id
           clarification_state.destroy
         else
           clarification_state.update!(

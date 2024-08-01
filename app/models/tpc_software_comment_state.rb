@@ -34,6 +34,12 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Type_Compliance = 3
   Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
 
+  Member_Type_Committer_Name = "TPC垂域Committer"
+  Member_Type_Sig_Lead_Name = "TPC SIG Leader"
+  Member_Type_Legal_Name = "TPC法务专家"
+  Member_Type_Compliance_Name = "TPC合规专家"
+  Member_Type_Names = [Member_Type_Committer_Name, Member_Type_Sig_Lead_Name, Member_Type_Legal_Name, Member_Type_Compliance_Name]
+
   Review_State_TPC_Await = "【待TPC SIG评审】"
   Review_State_TPC_Replenish = "【TPC：待补充信息】"
   Review_State_TPC_Review = "【TPC SIG评审中】"
@@ -80,13 +86,24 @@ class TpcSoftwareCommentState < ApplicationRecord
   def self.get_member_name(member_type)
     case member_type
     when Member_Type_Committer
-      return "TPC垂域Committer"
+      return Member_Type_Committer_Name
     when Member_Type_Sig_Lead
-      return "TPC SIG Leader"
+      return Member_Type_Sig_Lead_Name
     when Member_Type_Legal
-      return "TPC法务专家"
+      return Member_Type_Legal_Name
     when Member_Type_Compliance
-      return "TPC合规专家"
+      return Member_Type_Compliance_Name
+    end
+  end
+
+  def self.get_state_name(state)
+    case state
+    when State_Accept
+      return "评审通过"
+    when State_Cancel
+      return "评审已取消"
+    when State_Reject
+      return "评审拒绝"
     end
   end
 end

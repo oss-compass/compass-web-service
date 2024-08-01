@@ -47,17 +47,13 @@ module Mutations
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
 
-        from_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
-
         ActiveRecord::Base.transaction do
           comment_state = TpcSoftwareCommentState.find_or_initialize_by(
             tpc_software_id: selection.id,
             tpc_software_type: TpcSoftwareCommentState::Type_Selection,
             metric_name: TpcSoftwareCommentState::Metric_Name_Selection,
-            user_id: current_user.id,
-            member_type: member_type)
+            user_id: current_user.id)
           if state == TpcSoftwareCommentState::State_Cancel
-            raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless comment_state.user_id == current_user.id
             comment_state.destroy
           else
             comment_state.update!(
@@ -74,7 +70,7 @@ module Mutations
           end
         end
         to_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
-        send_issue_comment(from_state, to_state, member_type, selection.issue_url, current_user)
+        send_issue_comment(to_state, member_type, selection.issue_url, current_user)
 
 
         { status: true, message: '' }
@@ -82,25 +78,10 @@ module Mutations
         { status: false, message: ex.message }
       end
 
-      def send_issue_comment(from_state, to_state, member_type, issue_url, current_user)
+      def send_issue_comment(to_state, member_type, issue_url, current_user)
         member_type_content = TpcSoftwareCommentState.get_member_name(member_type)
-        state_change = "#{from_state}->#{to_state}"
-        case state_change
-        when "-1->0"
-          comment_content = "评审已取消"
-        when "-1->1"
-          comment_content = "评审通过"
-        when "0->-1"
-          comment_content = "评审拒绝"
-        when "0->1"
-          comment_content = "评审通过"
-        when "1->-1"
-          comment_content = "评审拒绝"
-        when "1->0"
-          comment_content = "评审已取消"
-        else
-          comment_content = nil
-        end
+        comment_content = TpcSoftwareCommentState.get_state_name(to_state)
+
         if comment_content.present? && issue_url.present?
           username = LoginBind.current_host_nickname(current_user, "gitee")
           if username.blank?
