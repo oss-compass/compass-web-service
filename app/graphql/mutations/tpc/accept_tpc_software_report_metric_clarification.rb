@@ -10,7 +10,7 @@ module Mutations
       argument :short_code, String, required: true
       argument :metric_name, String, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
-      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1', default_value: '0'
+      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3', default_value: '0'
 
 
       def resolve(short_code: nil, metric_name: nil, state: 1, member_type: 0)
@@ -30,22 +30,30 @@ module Mutations
           version: TpcSoftwareReportMetric::Version_Default)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
 
-        if member_type == TpcSoftwareCommentState::Member_Type_Committer && state != TpcSoftwareCommentState::State_Cancel
-          committer_permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user)
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless committer_permission
-        elsif member_type == TpcSoftwareCommentState::Member_Type_Sig_Lead && state != TpcSoftwareCommentState::State_Cancel
-          sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless sig_lead_permission
+        if state != TpcSoftwareCommentState::State_Cancel
+          case member_type
+          when TpcSoftwareCommentState::Member_Type_Committer
+            permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user) &&
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Sig_Lead
+            permission = TpcSoftwareMember.check_sig_lead_permission?(current_user) &&
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Legal
+            permission = TpcSoftwareMember.check_legal_permission?(current_user) &&
+              TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Compliance
+            permission = TpcSoftwareMember.check_compliance_permission?(current_user) &&
+              TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          end
+          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
 
         clarification_state = TpcSoftwareCommentState.find_or_initialize_by(
           tpc_software_id: report_metric.id,
           tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric,
           metric_name: metric_name,
-          user_id: current_user.id,
-          member_type: member_type)
+          user_id: current_user.id)
         if state == TpcSoftwareCommentState::State_Cancel
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless clarification_state.user_id == current_user.id
           clarification_state.destroy
         else
           clarification_state.update!(

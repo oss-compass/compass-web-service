@@ -107,22 +107,11 @@ module Types
       end
 
       def ecology_adaptation_method_detail
-        adaptation_method = nil
-        case object.tpc_software_report_type
-        when TpcSoftwareReportMetric::Report_Type_Selection
-          query_data = TpcSoftwareSelectionReport.find_by(id: object.tpc_software_report_id)
-        else
-          query_data = nil
-        end
-        if query_data.present?
-          adaptation_method = query_data.adaptation_method
-        end
-        adaptation_method
+        TpcSoftwareReportMetric.get_ecology_adaptation_method_detail(object.tpc_software_report_id)
       end
 
       def ecology_adaptation_method
-        adaptation_method = ecology_adaptation_method_detail
-        TpcSoftwareReportMetric.get_ecology_adaptation_method(adaptation_method)
+        TpcSoftwareReportMetric.get_ecology_adaptation_method(object.tpc_software_report_id)
       end
 
     end

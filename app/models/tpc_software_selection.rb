@@ -28,32 +28,68 @@ class TpcSoftwareSelection < ApplicationRecord
   has_many :tpc_software_output_reports
 
   def self.get_review_permission(selection)
-    metrics_list = [
+    clarify_metric_list = [
       "compliance_license",
       "compliance_license_compatibility",
+      "ecology_patent_risk",
       "ecology_dependency_acquisition",
+      "ecology_code_maintenance",
+      "ecology_community_support",
       "ecology_adaptation_method",
+      "ecology_adoption_analysis",
       "lifecycle_version_normalization",
       "lifecycle_version_lifecycle",
       "security_binary_artifact",
       "security_vulnerability"
     ]
 
-    selection_report_ids = JSON.parse(selection.tpc_software_selection_report_ids)
-    report_metrics = TpcSoftwareReportMetric.where(tpc_software_report_id: selection_report_ids)
-                                            .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
-                                            .where(version: TpcSoftwareReportMetric::Version_Default)
-    target_report_metric = nil
-    report_metrics.each do |report_metric|
-      if report_metric.code_url.include?(selection.target_software)
-        target_report_metric = report_metric
+    target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: JSON.parse(selection.tpc_software_selection_report_ids))
+                                                  .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                                  .where(version: TpcSoftwareReportMetric::Version_Default)
+                                                  .where("code_url LIKE ?", "%#{selection.target_software}%")
+                                                  .take
+    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
+    target_metric_hash = target_metric.attributes
+    target_metric_hash['ecology_adaptation_method'] = TpcSoftwareReportMetric.get_ecology_adaptation_method(target_metric.tpc_software_report_id)
+
+    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_metric.id)
+                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
+                                                .where(metric_name: clarify_metric_list.map { |str| str.camelize(:lower) })
+    committer_state_hash = {}
+    sig_leader_state_hash = {}
+    legal_state_hash = {}
+    compliance_state_hash = {}
+    comment_state_list.each do |comment_state|
+      state_hash = {}
+      case comment_state.member_type
+      when TpcSoftwareCommentState::Member_Type_Committer
+        state_hash = committer_state_hash
+      when TpcSoftwareCommentState::Member_Type_Sig_Lead
+        state_hash = sig_leader_state_hash
+      when TpcSoftwareCommentState::Member_Type_Legal
+        state_hash = legal_state_hash
+      when TpcSoftwareCommentState::Member_Type_Compliance
+        state_hash = compliance_state_hash
+      end
+      (state_hash[comment_state.metric_name] ||= []) << comment_state.state
+    end
+    clarify_metric_list.each do |clarify_metric|
+      score = target_metric_hash[clarify_metric]
+      lower_clarify_metric = clarify_metric.camelize(:lower)
+      if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric)
+        legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+        compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+        if score.present? &&  score < 10 && (!legal_state || !compliance_state)
+          return false
+        end
+      else
+        committer_state = committer_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+        sig_leader_state = sig_leader_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+        if score.present? &&  score < 10 && (!committer_state || !sig_leader_state)
+          return false
+        end
       end
     end
-    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_report_metric.nil?
-    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_report_metric.id)
-                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
-                                                .where(metric_name: metrics_list.map { |str| str.camelize(:lower) })
-    comment_state_list.any? { |item| item[:state] == -1 } ? false : true
-
+    true
   end
 end

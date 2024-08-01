@@ -9,7 +9,7 @@ module Mutations
 
       argument :selection_id, Integer, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
-      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1', default_value: '0'
+      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3', default_value: '0'
 
 
       def resolve(selection_id: nil, state: 1, member_type: 0)
@@ -26,31 +26,34 @@ module Mutations
         review_permission = TpcSoftwareSelection.get_review_permission(selection)
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_metric_not_clarified') unless review_permission
 
-        if member_type == TpcSoftwareCommentState::Member_Type_Committer && state != TpcSoftwareCommentState::State_Cancel
-          selection_report = TpcSoftwareSelectionReport.where("id IN (?)", JSON.parse(selection.tpc_software_selection_report_ids))
-                                                       .where("code_url LIKE ?", "%#{selection.target_software}%")
-                                                       .take
-          committer_permission = 0
-          if selection_report
-            committer_permission = TpcSoftwareMember.check_committer_permission?(selection_report.tpc_software_sig_id, current_user)
-          end
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless committer_permission
-        elsif member_type == TpcSoftwareCommentState::Member_Type_Sig_Lead && state != TpcSoftwareCommentState::State_Cancel
-          sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless sig_lead_permission
-        end
 
-        from_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
+        if state != TpcSoftwareCommentState::State_Cancel
+          case member_type
+          when TpcSoftwareCommentState::Member_Type_Committer
+            selection_report = TpcSoftwareSelectionReport.where("id IN (?)", JSON.parse(selection.tpc_software_selection_report_ids))
+                                                         .where("code_url LIKE ?", "%#{selection.target_software}%")
+                                                         .take
+            permission = 0
+            if selection_report
+              permission = TpcSoftwareMember.check_committer_permission?(selection_report.tpc_software_sig_id, current_user)
+            end
+          when TpcSoftwareCommentState::Member_Type_Sig_Lead
+            permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_Legal
+            permission = TpcSoftwareMember.check_legal_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_Compliance
+            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+          end
+          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
+        end
 
         ActiveRecord::Base.transaction do
           comment_state = TpcSoftwareCommentState.find_or_initialize_by(
             tpc_software_id: selection.id,
             tpc_software_type: TpcSoftwareCommentState::Type_Selection,
             metric_name: TpcSoftwareCommentState::Metric_Name_Selection,
-            user_id: current_user.id,
-            member_type: member_type)
+            user_id: current_user.id)
           if state == TpcSoftwareCommentState::State_Cancel
-            raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless comment_state.user_id == current_user.id
             comment_state.destroy
           else
             comment_state.update!(
@@ -67,7 +70,7 @@ module Mutations
           end
         end
         to_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
-        send_issue_comment(from_state, to_state, member_type, selection.issue_url, current_user)
+        send_issue_comment(to_state, member_type, selection.issue_url, current_user)
 
 
         { status: true, message: '' }
@@ -75,25 +78,10 @@ module Mutations
         { status: false, message: ex.message }
       end
 
-      def send_issue_comment(from_state, to_state, member_type, issue_url, current_user)
-        member_type_content = member_type == TpcSoftwareCommentState::Member_Type_Committer ? "TPC垂域Committer" : "TPC SIG Leader"
-        state_change = "#{from_state}->#{to_state}"
-        case state_change
-        when "-1->0"
-          comment_content = "评审已取消"
-        when "-1->1"
-          comment_content = "评审通过"
-        when "0->-1"
-          comment_content = "评审拒绝"
-        when "0->1"
-          comment_content = "评审通过"
-        when "1->-1"
-          comment_content = "评审拒绝"
-        when "1->0"
-          comment_content = "评审已取消"
-        else
-          comment_content = nil
-        end
+      def send_issue_comment(to_state, member_type, issue_url, current_user)
+        member_type_content = TpcSoftwareCommentState.get_member_name(member_type)
+        comment_content = TpcSoftwareCommentState.get_state_name(to_state)
+
         if comment_content.present? && issue_url.present?
           username = LoginBind.current_host_nickname(current_user, "gitee")
           if username.blank?

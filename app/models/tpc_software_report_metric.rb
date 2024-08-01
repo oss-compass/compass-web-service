@@ -581,8 +581,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
   end
 
+  def self.get_ecology_adaptation_method_detail(report_id)
+    query_data = TpcSoftwareSelectionReport.find_by(id: report_id)
+    if query_data.present?
+      return query_data.adaptation_method
+    end
+    nil
+  end
 
-  def self.get_ecology_adaptation_method(adaptation_method)
+  def self.get_ecology_adaptation_method(report_id)
+    adaptation_method = get_ecology_adaptation_method_detail(report_id)
     score = -1
     if adaptation_method.present?
       case adaptation_method
