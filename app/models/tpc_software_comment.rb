@@ -19,7 +19,10 @@ class TpcSoftwareComment < ApplicationRecord
 
   Type_Selection = 'TpcSoftwareSelection'
   Type_Report_Metric = 'TpcSoftwareReportMetric'
+  Type_Graduation = 'TpcSoftwareGraduation'
+  Type_Graduation_Report_Metric = 'TpcSoftwareGraduationReportMetric'
 
   Metric_Name_Selection = 'selection'
+  Metric_Name_Graduation = 'graduation'
 
 end

@@ -77,13 +77,13 @@ module Mutations
           # compliance_license, compliance_package_sig, compliance_license_compatibility
           # ecology_dependency_acquisition, ecology_software_quality, ecology_patent_risk
           # security_binary_artifact, security_vulnerability, security_history_vulnerability
-          tpc_software_metric_server.analyze_metric_by_tpc_service(tpc_software_selection_report.id, report_metric.id)
+          tpc_software_metric_server.analyze_metric_by_tpc_service(tpc_software_selection_report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
 
           # compliance_dco
           # ecology_code_maintenance, ecology_community_support
           # lifecycle_version_number, lifecycle_version_lifecycle
           # security_vulnerability_response
-          tpc_software_metric_server.analyze_metric_by_compass(tpc_software_selection_report.id, report_metric.id)
+          tpc_software_metric_server.analyze_metric_by_compass(tpc_software_selection_report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
 
         end
 

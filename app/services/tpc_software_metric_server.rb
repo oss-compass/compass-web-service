@@ -12,11 +12,14 @@ class TpcSoftwareMetricServer
   TPC_SERVICE_API_PASSWORD = ENV.fetch('TPC_SERVICE_API_PASSWORD')
   TPC_SERVICE_CALLBACK_URL = "#{DEFAULT_HOST}/api/tpc_software_callback"
 
+  Report_Type_Selection = 0
+  Report_Type_Graduation = 1
+
   def initialize(opts = {})
     @project_url = opts[:project_url]
   end
 
-  def analyze_metric_by_compass(report_id, report_metric_id)
+  def analyze_metric_by_compass(report_id, report_metric_id, report_type)
     result = AnalyzeServer.new(
       {
         repo_url: @project_url,
@@ -26,7 +29,8 @@ class TpcSoftwareMetricServer
             callback_type: "tpc_software_callback",
             task_metadata: {
               report_id: report_id,
-              report_metric_id: report_metric_id
+              report_metric_id: report_metric_id,
+              report_type: report_type
             }
           }
         }
@@ -36,16 +40,21 @@ class TpcSoftwareMetricServer
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
-  def analyze_metric_by_tpc_service(report_id, report_metric_id)
+  def analyze_metric_by_tpc_service(report_id, report_metric_id, report_type)
     token = tpc_service_token
-    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
+    if report_type == Report_Type_Selection
+      commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
+    elsif report_type == Report_Type_Graduation
+      commands = []
+    end
     payload = {
       commands: commands,
       project_url: "#{@project_url}.git",
       callback_url: TPC_SERVICE_CALLBACK_URL,
       task_metadata: {
         report_id: report_id,
-        report_metric_id: report_metric_id
+        report_metric_id: report_metric_id,
+        report_type: report_type
       }
     }
     result = base_post_request("opencheck", payload, token: token)
@@ -177,7 +186,8 @@ class TpcSoftwareMetricServer
     end
   end
 
-  def tpc_software_callback(command_list, scan_results, task_metadata)
+
+  def tpc_software_selection_callback(command_list, scan_results, report_id, report_metric_id)
     code_count = nil
     license = nil
 
@@ -210,7 +220,6 @@ class TpcSoftwareMetricServer
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
       end
     end
-    report_metric_id = task_metadata["report_metric_id"]
     tpc_software_report_metric = TpcSoftwareReportMetric.find_by(id: report_metric_id)
     raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if tpc_software_report_metric.nil?
 
@@ -230,7 +239,7 @@ class TpcSoftwareMetricServer
     ActiveRecord::Base.transaction do
       tpc_software_report_metric.update!(report_metric_data)
 
-      tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: task_metadata["report_id"])
+      tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: report_id)
       update_data = {}
       update_data[:code_count] = code_count unless code_count.nil?
       update_data[:license] = license unless license.nil?
@@ -248,6 +257,74 @@ class TpcSoftwareMetricServer
       end
     end
   end
+
+  def tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
+    code_count = nil
+    license = nil
+
+    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker", "compass"]
+    metric_hash = Hash.new
+    command_list.each do |command|
+      case command
+      when "scancode"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+      when "sonar-scanner"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
+      when "binary-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
+      when "osv-scanner"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
+      when "signature-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_package_sig(scan_results.dig(command) || {}))
+      when "compass"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_dco(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_management(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_ratio(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_time(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_code_review(@project_url))
+      else
+        raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
+      end
+    end
+    report_metric = TpcSoftwareGraduationReportMetric.find_by(id: report_metric_id)
+    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
+
+    report_metric_data = metric_hash.select { |key, _| !key.end_with?("_raw") }
+    report_metric_raw_data = metric_hash.select { |key, _| key.end_with?("_raw") }
+    if command_list.include?("compass")
+      report_metric_data["status_compass_callback"] = 1
+      if report_metric.status_tpc_service_callback == 1
+        report_metric_data["status"] = TpcSoftwareGraduationReportMetric::Status_Success
+      end
+    else
+      report_metric_data["status_tpc_service_callback"] = 1
+      if report_metric.status_compass_callback == 1
+        report_metric_data["status"] = TpcSoftwareGradutionReportMetric::Status_Success
+      end
+    end
+    ActiveRecord::Base.transaction do
+      report_metric.update!(report_metric_data)
+
+      tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(id: report_id)
+      update_data = {}
+      update_data[:code_count] = code_count unless code_count.nil?
+      update_data[:license] = license unless license.nil?
+      if update_data.present?
+        tpc_software_graduation_report.update!(update_data)
+      end
+
+
+      if report_metric_raw_data.length > 0
+        metric_raw = TpcSoftwareGraduationReportMetricRaw.find_or_initialize_by(tpc_software_report_metric_id: tpc_software_report_metric.id)
+        report_metric_raw_data[:tpc_software_report_metric_id] = tpc_software_report_metric.id
+        report_metric_raw_data[:code_url] = tpc_software_report_metric.code_url
+        report_metric_raw_data[:subject_id] = tpc_software_report_metric.subject_id
+        metric_raw.update!(report_metric_raw_data)
+      end
+    end
+  end
+
 
   def tpc_service_token
     payload = {

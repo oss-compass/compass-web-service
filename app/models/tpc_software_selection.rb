@@ -25,7 +25,6 @@ class TpcSoftwareSelection < ApplicationRecord
 
   belongs_to :subject
   belongs_to :user
-  has_many :tpc_software_output_reports
 
   def self.get_review_permission(selection)
     clarify_metric_list = [

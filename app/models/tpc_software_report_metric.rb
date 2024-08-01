@@ -70,7 +70,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
 
   Report_Type_Selection = 'TpcSoftwareSelectionReport'
-  Report_Type_Output = 'TpcSoftwareOutputReport'
 
   Status_Progress = 'progress'
   Status_Success = 'success'
