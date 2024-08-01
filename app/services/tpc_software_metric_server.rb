@@ -122,7 +122,7 @@ class TpcSoftwareMetricServer
 
     Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
 
-    if issue_title.include?("【孵化选型申请】") && (comment.start_with?("TPC垂域Committer") || comment.start_with?("TPC SIG Leader"))
+    if issue_title.include?("【孵化选型申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         task_id = issue_body_taskId_matched[1].to_i
