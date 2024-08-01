@@ -21,6 +21,8 @@ module Types
       field :same_type_software_name, String
       field :comment_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_sig_lead_permission, Integer, description: '1: permissioned, 0: unpermissioned'
+      field :comment_legal_permission, Integer, description: '1: permissioned, 0: unpermissioned'
+      field :comment_compliance_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false

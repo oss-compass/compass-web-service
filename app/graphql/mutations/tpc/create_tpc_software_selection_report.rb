@@ -45,31 +45,32 @@ module Mutations
               user_id: current_user.id,
               subject_id: subject.id,
 
-              base_repo_name: 10,
-              base_website_url: 10,
-              base_code_url: 10,
+              base_repo_name: 10,  #delete
+              base_website_url: 10,  #delete
+              base_code_url: 10,  #delete
 
               compliance_license: nil,
               compliance_dco: nil,
-              compliance_package_sig: nil,
+              compliance_package_sig: nil, #delete
               compliance_license_compatibility: nil,
+              ecology_patent_risk: nil, #don't do
 
               ecology_dependency_acquisition: nil,
               ecology_code_maintenance: nil,
               ecology_community_support: nil,
               ecology_adoption_analysis: nil,  #don't do
               ecology_software_quality: nil,
-              ecology_patent_risk: nil, #don't do
+              #ecology_adaptation_method
 
-              lifecycle_version_normalization: 10,
-              lifecycle_version_number: 10,
+              lifecycle_version_normalization: 10,  #delete
+              lifecycle_version_number: 10,  #delete
               lifecycle_version_lifecycle: nil,
 
               security_binary_artifact: nil,
               security_vulnerability: nil,
               security_vulnerability_response: TpcSoftwareReportMetric.check_url(software_report.vulnerability_response) ? 10 : 6,
-              security_vulnerability_disclosure: 6,
-              security_history_vulnerability: nil
+              security_vulnerability_disclosure: 6,  #delete
+              security_history_vulnerability: nil  #delete
             }
           )
 
