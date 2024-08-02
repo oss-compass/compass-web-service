@@ -23,8 +23,10 @@ module Mutations
         selection = TpcSoftwareSelection.find_by(id: selection_id)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
 
-        review_permission = TpcSoftwareSelection.get_review_permission(selection)
-        raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_metric_not_clarified') unless review_permission
+        if state == TpcSoftwareCommentState::State_Accept
+          review_permission = TpcSoftwareSelection.get_review_permission(selection, member_type)
+          raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_metric_not_clarified') unless review_permission
+        end
 
 
         if state != TpcSoftwareCommentState::State_Cancel
