@@ -27,7 +27,7 @@ class TpcSoftwareSelection < ApplicationRecord
   belongs_to :user
   has_many :tpc_software_output_reports
 
-  def self.get_review_permission(selection)
+  def self.get_review_permission(selection, member_type)
     clarify_metric_list = [
       "compliance_license",
       "compliance_license_compatibility",
@@ -76,16 +76,21 @@ class TpcSoftwareSelection < ApplicationRecord
     clarify_metric_list.each do |clarify_metric|
       score = target_metric_hash[clarify_metric]
       lower_clarify_metric = clarify_metric.camelize(:lower)
-      if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric)
-        legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
-        compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+      committer_state = committer_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+      sig_leader_state = sig_leader_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+      legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+      compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
+
+      if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
+        [TpcSoftwareCommentState::Member_Type_Legal].include?(member_type)
         if score.present? &&  score < 10 && (!legal_state || !compliance_state)
           return false
         end
-      else
-        committer_state = committer_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
-        sig_leader_state = sig_leader_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
-        if score.present? &&  score < 10 && (!committer_state || !sig_leader_state)
+      end
+
+      if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
+        [TpcSoftwareCommentState::Member_Type_Committer, TpcSoftwareCommentState::Member_Type_Sig_Lead].include?(member_type)
+        if score.present? &&  score < 10 && (!committer_state || !sig_leader_state || !compliance_state)
           return false
         end
       end
