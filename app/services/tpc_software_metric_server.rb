@@ -42,10 +42,11 @@ class TpcSoftwareMetricServer
 
   def analyze_metric_by_tpc_service(report_id, report_metric_id, report_type)
     token = tpc_service_token
-    if report_type == Report_Type_Selection
+    case report_type
+    when Report_Type_Selection
       commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
-    elsif report_type == Report_Type_Graduation
-      commands = []
+    when Report_Type_Graduation
+      commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker"]
     end
     payload = {
       commands: commands,
@@ -300,7 +301,7 @@ class TpcSoftwareMetricServer
     else
       report_metric_data["status_tpc_service_callback"] = 1
       if report_metric.status_compass_callback == 1
-        report_metric_data["status"] = TpcSoftwareGradutionReportMetric::Status_Success
+        report_metric_data["status"] = TpcSoftwareGraduationReportMetric::Status_Success
       end
     end
     ActiveRecord::Base.transaction do

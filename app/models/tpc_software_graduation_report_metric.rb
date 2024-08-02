@@ -258,7 +258,48 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
   end
 
   def self.get_ecology_test_coverage(sonar_scanner_result)
-    TpcSoftwareReportMetric.get_ecology_software_quality(sonar_scanner_result)
+    measures = sonar_scanner_result.dig("component", "measures") || []
+    duplication_score = 0
+    duplication_ratio = nil
+    coverage_score = 0
+    coverage_ratio = nil
+    measures.each do |measure|
+      if measure.dig("metric") == "duplicated_lines_density"
+        score_ranges = {
+          (0..2) => 10,
+          (3..4) => 8,
+          (5..9) => 6,
+          (10..19) => 4,
+          (20..99) => 2,
+          (100..100) => 0
+        }
+        duplication_ratio = measure.dig("value").to_i
+        duplication_score = score_ranges.find { |range, _| range.include?(duplication_ratio) }&.last
+      elsif measure.dig("metric") == "coverage"
+        score_ranges = {
+          (0..0) => 0,
+          (1..29) => 2,
+          (30..49) => 4,
+          (50..69) => 6,
+          (70..79) => 8,
+          (80..100) => 10
+        }
+        coverage_ratio = measure.dig("value").to_i
+        coverage_score = score_ranges.find { |range, _| range.include?(coverage_ratio) }&.last
+      end
+    end
+    score = (duplication_score + coverage_score) / 2.0
+    detail = {
+      duplication_score: duplication_score,
+      duplication_ratio: duplication_ratio,
+      coverage_score: coverage_score,
+      coverage_ratio: coverage_ratio
+    }
+    {
+      ecology_test_coverage: score,
+      ecology_test_coverage_detail: detail.to_json,
+      ecology_test_coverage_raw: sonar_scanner_result.to_json
+    }
   end
 
   def self.get_ecology_code_review(project_url)
@@ -285,6 +326,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
                 10
               when 0.6...0.8
                 6
+              else
+                0
               end
     end
 
