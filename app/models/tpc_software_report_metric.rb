@@ -547,21 +547,21 @@ class TpcSoftwareReportMetric < ApplicationRecord
     code_count
   end
 
-  def self.get_license(project_url, scancode_result)
+  def self.get_license(scancode_result)
     license_detections = scancode_result.dig("license_detections") || []
     unless license_detections&.any?
       return nil
     end
 
-    standard_license_location = "#{project_url.split("/")[-1]}/License.txt"
     license_detections.each do |license_detection|
       (license_detection.dig("reference_matches") || []).each do |reference_match|
-        if reference_match.dig("from_file") == standard_license_location
+        from_file_split = reference_match.dig("from_file").split("/")
+        if from_file_split.length == 2
           return reference_match.dig("license_expression")
         end
       end
     end
-    license_detections.first.dig("license_expression")
+    return nil
   end
 
   def self.get_ecology_dependency_acquisition(dependency_checker_result)
