@@ -54,6 +54,7 @@ class User < ApplicationRecord
 
   ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
   NORMAL_ROLE = 3
+  TPC_ROLE = 2
 
   def email_verified?
     email_verification_token.nil?
@@ -61,6 +62,10 @@ class User < ApplicationRecord
 
   def is_admin?
     role_level.to_i > NORMAL_ROLE
+  end
+
+  def is_tpc?
+    role_level.to_i >= TPC_ROLE
   end
 
   def verify_email(token)
