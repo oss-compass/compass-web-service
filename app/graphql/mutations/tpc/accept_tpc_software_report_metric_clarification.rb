@@ -34,8 +34,7 @@ module Mutations
             permission = TpcSoftwareMember.check_legal_permission?(current_user) &&
               TpcSoftwareCommentState.check_compliance_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Compliance
-            permission = TpcSoftwareMember.check_compliance_permission?(current_user) &&
-              TpcSoftwareCommentState.check_compliance_metric(metric_name)
+            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
