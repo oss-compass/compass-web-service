@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_24_022133) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_05_132509) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -433,8 +433,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_24_022133) do
     t.datetime "updated_at", null: false
     t.string "incubation_time", null: false
     t.string "adaptation_method"
-    t.string "demand_source"
-    t.string "functional_description"
+    t.string "demand_source", limit: 2000
+    t.string "functional_description", limit: 2000
     t.string "target_software"
     t.integer "is_same_type_check", default: 0
     t.string "same_type_software_name"
