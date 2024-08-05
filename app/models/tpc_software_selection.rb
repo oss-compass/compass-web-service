@@ -81,17 +81,24 @@ class TpcSoftwareSelection < ApplicationRecord
       legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
       compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
 
-      if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
-        [TpcSoftwareCommentState::Member_Type_Legal].include?(member_type)
-        if score.present? &&  score < 10 && (!legal_state || !compliance_state)
-          return false
-        end
-      end
-
-      if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
-        [TpcSoftwareCommentState::Member_Type_Committer, TpcSoftwareCommentState::Member_Type_Sig_Lead].include?(member_type)
-        if score.present? &&  score < 10 && (!committer_state || !sig_leader_state || !compliance_state)
-          return false
+      if score.present? &&  score < 10
+        case member_type
+        when TpcSoftwareCommentState::Member_Type_Committer
+          if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !committer_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Sig_Lead
+          if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !sig_leader_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Legal
+          if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !legal_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Compliance
+          if !compliance_state
+            return false
+          end
         end
       end
     end
