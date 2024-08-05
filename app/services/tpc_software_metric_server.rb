@@ -46,8 +46,9 @@ class TpcSoftwareMetricServer
     when Report_Type_Selection
       commands = %w[osv-scanner scancode binary-checker signature-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
-      commands = %w[scancode sonar-scanner binary-checker osv-scanner signature-checker readme-checker
+      commands = %w[scancode sonar-scanner binary-checker osv-scanner readme-checker
                     maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
+      # signature-checker
     end
     payload = {
       commands: commands,
@@ -79,10 +80,7 @@ class TpcSoftwareMetricServer
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         task_id = issue_body_taskId_matched[1].to_i
-        selection = TpcSoftwareSelection.find_by(id: task_id)
-        if selection.present?
-          selection.update!(issue_url: issue_html_url)
-        end
+        TpcSoftwareSelection.save_issue_url(task_id, issue_html_url)
       end
 
       # send email
@@ -91,25 +89,25 @@ class TpcSoftwareMetricServer
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
         mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
-        if mail_list.length > 0
-          title = "TPC孵化选型申请"
-          body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
-          state_list = TpcSoftwareCommentState::Review_States
-          issue_title = issue_title.gsub(Regexp.union(state_list), '')
-          mail_list.each do |mail|
-            UserMailer.with(
-              type: 0,
-              title: title,
-              body: body,
-              user_name: user_name,
-              user_html_url: user_html_url,
-              issue_title: issue_title,
-              issue_html_url: issue_html_url,
-              email: mail
-            ).email_tpc_software_application.deliver_later
-          end
-        end
+        TpcSoftwareSelection.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
+      end
+    end
 
+    if issue_title.include?("【毕业申请】")
+      # save issue url
+      issue_body_taskId_matched = issue_body.match(/graduationId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareGraduation.save_issue_url(task_id, issue_html_url)
+      end
+
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        TpcSoftwareGraduation.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
       end
     end
   end
@@ -127,37 +125,11 @@ class TpcSoftwareMetricServer
     if issue_title.include?("【孵化选型申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
-        task_id = issue_body_taskId_matched[1].to_i
         # save issue url
-        selection = TpcSoftwareSelection.find_by(id: task_id)
-        if selection.present?
-          selection.update!(issue_url: issue_html_url)
-        end
-
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareSelection.save_issue_url(task_id, issue_html_url)
         # update issue title
-        review_state = TpcSoftwareCommentState.get_review_state(task_id, TpcSoftwareCommentState::Type_Selection)
-        TpcSoftwareCommentState::Review_States.each do |state|
-          if issue_title.include?(state)
-            to_issue_title = issue_title.gsub(state, review_state)
-            issue_url_list = issue_html_url.split("/issues/")
-            subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
-            if issue_url_list.length && subject_customization.present?
-              repo_url = issue_url_list[0]
-              number = issue_url_list[1]
-              if repo_url.include?("gitee.com")
-                IssueServer.new(
-                  {
-                    repo_url: repo_url,
-                    gitee_token: subject_customization.gitee_token,
-                    github_token: nil
-                  }
-                ).update_gitee_issue_title(number, to_issue_title)
-              end
-            end
-            break
-          end
-        end
-
+        TpcSoftwareSelection.update_issue_title(task_id, issue_title, issue_html_url)
       end
 
       # send email
@@ -166,26 +138,30 @@ class TpcSoftwareMetricServer
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
         mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
-        if mail_list.length > 0
-          title = "TPC孵化选型评审"
-          body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
-          state_list = TpcSoftwareCommentState::Review_States
-          issue_title = issue_title.gsub(Regexp.union(state_list), '')
-          mail_list.each do |mail|
-            UserMailer.with(
-              type: 1,
-              title: title,
-              body: body,
-              user_name: user_name,
-              user_html_url: user_html_url,
-              issue_title: issue_title,
-              issue_html_url: issue_html_url,
-              email: mail
-            ).email_tpc_software_application.deliver_later
-          end
-        end
+        TpcSoftwareSelection.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
       end
     end
+
+    if issue_title.include?("【毕业申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
+      issue_body_taskId_matched = issue_body.match(/graduationId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        # save issue url
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareGraduation.save_issue_url(task_id, issue_html_url)
+        # update issue title
+        TpcSoftwareGraduation.update_issue_title(task_id, issue_title, issue_html_url)
+      end
+
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        TpcSoftwareGraduation.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
+      end
+    end
+
   end
 
 

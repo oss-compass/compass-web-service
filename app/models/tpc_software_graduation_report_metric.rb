@@ -396,8 +396,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     detail = {
-      "include_copyrights": include_copyrights.uniq..take(5),
-      "not_included_copyrights": not_included_copyrights.uniq..take(5),
+      "include_copyrights": include_copyrights.uniq.take(5),
+      "not_included_copyrights": not_included_copyrights.uniq.take(5),
     }
 
     {

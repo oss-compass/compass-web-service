@@ -80,20 +80,107 @@ class TpcSoftwareSelection < ApplicationRecord
       legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
       compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
 
-      if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
-        [TpcSoftwareCommentState::Member_Type_Legal].include?(member_type)
-        if score.present? &&  score < 10 && (!legal_state || !compliance_state)
-          return false
-        end
-      end
-
-      if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) &&
-        [TpcSoftwareCommentState::Member_Type_Committer, TpcSoftwareCommentState::Member_Type_Sig_Lead].include?(member_type)
-        if score.present? &&  score < 10 && (!committer_state || !sig_leader_state || !compliance_state)
-          return false
+      if score.present? &&  score < 10
+        case member_type
+        when TpcSoftwareCommentState::Member_Type_Committer
+          if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !committer_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Sig_Lead
+          if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !sig_leader_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Legal
+          if TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !legal_state
+            return false
+          end
+        when TpcSoftwareCommentState::Member_Type_Compliance
+          if !compliance_state
+            return false
+          end
         end
       end
     end
     true
   end
+
+
+  def self.save_issue_url(id, issue_html_url)
+    selection = TpcSoftwareSelection.find_by(id: id)
+    if selection.present?
+      selection.update!(issue_url: issue_html_url)
+    end
+  end
+
+
+  def self.update_issue_title(id, issue_title, issue_html_url)
+    review_state = TpcSoftwareCommentState.get_review_state(id, TpcSoftwareCommentState::Type_Selection)
+    TpcSoftwareCommentState::Review_States.each do |state|
+      if issue_title.include?(state)
+        to_issue_title = issue_title.gsub(state, review_state)
+        issue_url_list = issue_html_url.split("/issues/")
+        subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+        if issue_url_list.length && subject_customization.present?
+          repo_url = issue_url_list[0]
+          number = issue_url_list[1]
+          if repo_url.include?("gitee.com")
+            IssueServer.new(
+              {
+                repo_url: repo_url,
+                gitee_token: subject_customization.gitee_token,
+                github_token: nil
+              }
+            ).update_gitee_issue_title(number, to_issue_title)
+          end
+        end
+        break
+      end
+    end
+  end
+
+
+  def self.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
+    if mail_list.length > 0
+      title = "TPC孵化选型申请"
+      body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
+      state_list = TpcSoftwareCommentState::Review_States
+      issue_title = issue_title.gsub(Regexp.union(state_list), '')
+      mail_list.each do |mail|
+        UserMailer.with(
+          type: 0,
+          title: title,
+          body: body,
+          user_name: user_name,
+          user_html_url: user_html_url,
+          issue_title: issue_title,
+          issue_html_url: issue_html_url,
+          email: mail
+        ).email_tpc_software_application.deliver_later
+      end
+    end
+
+  end
+
+
+  def self.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
+    if mail_list.length > 0
+      title = "TPC孵化选型评审"
+      body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
+      state_list = TpcSoftwareCommentState::Review_States
+      issue_title = issue_title.gsub(Regexp.union(state_list), '')
+      mail_list.each do |mail|
+        UserMailer.with(
+          type: 1,
+          title: title,
+          body: body,
+          user_name: user_name,
+          user_html_url: user_html_url,
+          issue_title: issue_title,
+          issue_html_url: issue_html_url,
+          email: mail
+        ).email_tpc_software_application.deliver_later
+      end
+    end
+  end
+
 end

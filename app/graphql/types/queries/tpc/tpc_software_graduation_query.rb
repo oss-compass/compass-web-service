@@ -23,8 +23,13 @@ module Types
               TpcSoftwareMember.check_committer_permission?(graduation_report.tpc_software_sig_id, current_user)
             end
             sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
+            legal_permission = TpcSoftwareMember.check_legal_permission?(current_user)
+            compliance_permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+
             graduation_hash['comment_committer_permission'] = committer_permission_list.include?(true) ? 1 : 0
             graduation_hash['comment_sig_lead_permission'] = sig_lead_permission ? 1 : 0
+            selection_hash['comment_legal_permission'] = legal_permission ? 1 : 0
+            selection_hash['comment_compliance_permission'] = compliance_permission ? 1 : 0
             report = OpenStruct.new(graduation_hash)
           end
           report
