@@ -42,24 +42,24 @@ module Mutations
               compliance_license: nil,
               compliance_dco: nil,
               compliance_license_compatibility: nil,
-              compliance_copyright_statement: nil,  #don't do
+              compliance_copyright_statement: nil,
               compliance_copyright_statement_anti_tamper: nil, #don't do
 
-              ecology_readme: nil,    #don't do
-              ecology_build_doc: nil,  #don't do
-              ecology_interface_doc: nil,  #don't do
+              ecology_readme: nil,
+              ecology_build_doc: nil,
+              ecology_interface_doc: nil,
               ecology_issue_management: nil,
               ecology_issue_response_ratio: nil,
               ecology_issue_response_time: nil,
-              ecology_maintainer_doc: nil, #don't do
+              ecology_maintainer_doc: nil,
               ecology_build: nil, #don't do
               ecology_ci: nil, #don't do
               ecology_test_coverage: nil,
               ecology_code_review: nil,
-              ecology_code_upstream: nil, #don't do
+              ecology_code_upstream: software_report.round_upstream.present? ? 10 : 0,
 
               lifecycle_release_note: nil, #don't do
-              lifecycle_statement: nil,  #don't do
+              lifecycle_statement: software_report.lifecycle_policy.present? ? 10 : 0,
 
               security_binary_artifact: nil,
               security_vulnerability: nil,

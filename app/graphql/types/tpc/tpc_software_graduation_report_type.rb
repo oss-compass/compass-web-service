@@ -12,15 +12,12 @@ module Types
       field :graduation_report_metric_raw, Types::Tpc::TpcSoftwareGraduationReportMetricRawType
       field :metric_clarification_count, Types::Tpc::TpcSoftwareGraduationReportMetricClarificationCountType
       field :metric_clarification_state, Types::Tpc::TpcSoftwareGraduationReportMetricClarificationStateType
-      field :manufacturer, String
-      field :website_url, String
       field :code_url, String
+      field :upstream_code_url, String
       field :programming_language, String
-      field :code_count, Integer
-      field :license, String
-      field :vulnerability_disclosure, String
-      field :vulnerability_response, String
       field :adaptation_method, String
+      field :lifecycle_policy, String
+      field :round_upstream, String
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :clarification_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'

@@ -80,10 +80,11 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     TpcSoftwareReportMetric.check_url(url)
   end
 
-  def self.get_compliance_license(scancode_result)
+  def self.get_compliance_license(scancode_result, readme_opensource_checker_result)
     license_list = []
     osi_license_list = []
     non_osi_license_list = []
+    readme_opensource = readme_opensource_checker_result.dig("readme-opensource-checker") || false
 
     license_db_data = TpcSoftwareReportMetric.get_license_data
 
@@ -115,10 +116,11 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     score = 0
-    if license_list.length > 0 && non_osi_license_list.length == 0
+    if license_list.length > 0 && non_osi_license_list.length == 0 && readme_opensource
       score = 10
     end
     detail = {
+      readme_opensource: readme_opensource,
       osi_license_list: osi_license_list.uniq.take(5),
       non_osi_licenses: non_osi_license_list.uniq.take(5)
     }
@@ -360,5 +362,113 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       security_package_sig_raw: signature_file_list.take(30).to_json
     }
   end
+
+  def self.get_compliance_copyright_statement(scancode_result)
+    source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
+
+    include_copyrights = []
+    not_included_copyrights = []
+    raw_list = []
+    (scancode_result.dig("files") || []).each do |file|
+      file_path = file.dig("path")
+      if file.dig("type") == "file" && source_code_files.any? { |ext| file_path.end_with?(ext) }
+        if (file.dig("copyrights") || []).length > 0
+          include_copyrights << file_path
+        else
+          not_included_copyrights << file_path
+        end
+      end
+
+      if file.dig("type") == "file"
+        raw_item = {
+          "path": file_path,
+          "copyrights": (file.dig("copyrights") || []).map do |copyright|
+            copyright.dig("copyright")
+          end
+        }
+        raw_list << raw_item
+      end
+    end
+
+    score = 0
+    if include_copyrights.length > 0 && not_included_copyrights.length == 0
+      score = 10
+    end
+
+    detail = {
+      "include_copyrights": include_copyrights.uniq..take(5),
+      "not_included_copyrights": not_included_copyrights.uniq..take(5),
+    }
+
+    {
+      compliance_copyright_statement: score,
+      compliance_copyright_statement_detail: detail.to_json,
+      compliance_copyright_statement_raw: raw_list.take(30).to_json
+    }
+  end
+
+  def self.get_ecology_readme(readme_checker_result)
+    readme_files = %w[readme readme.]
+
+    score = 0
+    (readme_checker_result.dig("readme_file") || []).each do |readme_file|
+      readme_file_split = readme_file.split("/")
+      if readme_file_split.length == 2 && readme_files.any? { |item| readme_file_split[1].downcase.include?(item) }
+        score = 10
+        break
+      end
+    end
+
+    {
+      ecology_readme: score,
+      ecology_readme_detail: nil,
+      ecology_readme_raw: readme_checker_result.dig("readme_file").take(50).to_json
+    }
+  end
+
+  def self.get_ecology_maintainer_doc(maintainers_checker_result)
+    raw_data = maintainers_checker_result.dig("maintainers_file") || []
+    score = 0
+    if raw_data.length > 0
+      score = 10
+    end
+
+    {
+      ecology_maintainer_doc: score,
+      ecology_maintainer_doc_detail: nil,
+      ecology_maintainer_doc_raw: raw_data.take(30).to_json
+    }
+  end
+
+
+  def self.get_ecology_build_doc(build_doc_checker_result)
+    raw_data = build_doc_checker_result.dig("build-doc-checker") || []
+    score = 0
+    if raw_data.length > 0
+      score = 10
+    end
+
+    {
+      ecology_build_doc: score,
+      ecology_build_doc_detail: nil,
+      ecology_build_doc_raw: raw_data.take(30).to_json
+    }
+  end
+
+
+  def self.get_ecology_interface_doc(api_doc_checker_result)
+    raw_data = api_doc_checker_result.dig("api-doc-checker") || []
+    score = 0
+    if raw_data.length > 0
+      score = 10
+    end
+
+    {
+      ecology_interface_doc: score,
+      ecology_interface_doc_detail: nil,
+      ecology_interface_doc_raw: raw_data.take(30).to_json
+    }
+  end
+
 
 end

@@ -8,7 +8,8 @@ class CreateTpcSoftwareGraduationReports < ActiveRecord::Migration[7.1]
       t.string :upstream_code_url, null: true
       t.string :programming_language, null: false
       t.string :adaptation_method, null: false
-      t.string :lifecycle_policy, limit: 500, null: false
+      t.string :lifecycle_policy, null: true
+      t.string :round_upstream, null: true
       t.integer :subject_id, null: false
       t.integer :user_id, null: false
       t.timestamps

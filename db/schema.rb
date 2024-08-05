@@ -395,7 +395,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_30_081545) do
     t.string "upstream_code_url"
     t.string "programming_language", null: false
     t.string "adaptation_method", null: false
-    t.string "lifecycle_policy", limit: 500, null: false
+    t.string "lifecycle_policy"
+    t.string "round_upstream"
     t.integer "subject_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false

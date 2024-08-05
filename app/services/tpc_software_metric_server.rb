@@ -44,9 +44,10 @@ class TpcSoftwareMetricServer
     token = tpc_service_token
     case report_type
     when Report_Type_Selection
-      commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
+      commands = %w[osv-scanner scancode binary-checker signature-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
-      commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker"]
+      commands = %w[scancode sonar-scanner binary-checker osv-scanner signature-checker readme-checker
+                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
     end
     payload = {
       commands: commands,
@@ -263,13 +264,17 @@ class TpcSoftwareMetricServer
     code_count = nil
     license = nil
 
-    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker", "compass"]
+    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker", "readme-checker",
+    #             "maintainers-checker", "build-doc-checker", "api-doc-checker", "readme-opensource-checker", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
       case command
       when "scancode"
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}))
+        if command_list.include?("readme-opensource-checker")
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}))
+        end
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}))
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
       when "binary-checker"
@@ -278,6 +283,14 @@ class TpcSoftwareMetricServer
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
       when "signature-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_package_sig(scan_results.dig(command) || {}))
+      when "readme-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {}))
+      when "maintainers-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_maintainer_doc(scan_results.dig(command) || {}))
+      when "build-doc-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_build_doc(scan_results.dig(command) || {}))
+      when "api-doc-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_interface_doc(scan_results.dig(command) || {}))
       when "compass"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_dco(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_management(@project_url))

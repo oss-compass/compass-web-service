@@ -7,6 +7,7 @@ module Input
     argument :upstream_code_url, String, required: true
     argument :programming_language, String, required: true
     argument :adaptation_method, String, required: true
-    argument :lifecycle_policy, String, required: true
+    argument :lifecycle_policy, String, required: false
+    argument :round_upstream, String, required: false
   end
 end
