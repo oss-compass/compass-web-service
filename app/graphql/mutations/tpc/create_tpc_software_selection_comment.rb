@@ -12,7 +12,7 @@ module Mutations
 
       def resolve(selection_id: nil, content: nil)
         current_user = context[:current_user]
-        login_required!(current_user)
+        validate_tpc!(current_user)
 
         selection = TpcSoftwareSelection.find_by(id: selection_id)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?

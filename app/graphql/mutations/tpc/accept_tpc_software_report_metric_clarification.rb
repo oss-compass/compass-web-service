@@ -16,7 +16,7 @@ module Mutations
       def resolve(short_code: nil, metric_name: nil, state: 1, member_type: 0)
 
         current_user = context[:current_user]
-        login_required!(current_user)
+        validate_tpc!(current_user)
 
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::States.include?(state)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::Member_Types.include?(member_type)

@@ -16,7 +16,7 @@ module Mutations
                   content: nil
       )
         current_user = context[:current_user]
-        login_required!(current_user)
+        validate_tpc!(current_user)
 
         report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
