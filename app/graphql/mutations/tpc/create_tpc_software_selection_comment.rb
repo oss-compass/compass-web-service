@@ -21,7 +21,7 @@ module Mutations
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
           tpc_software_type = TpcSoftwareComment::Type_Selection
           metric_name = TpcSoftwareComment::Metric_Name_Selection
-        when report_type == TpcSoftwareMetricServer::Report_Type_Graduation
+        when TpcSoftwareMetricServer::Report_Type_Graduation
           selection = TpcSoftwareGraduation.find_by(id: selection_id)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
           tpc_software_type = TpcSoftwareComment::Type_Graduation

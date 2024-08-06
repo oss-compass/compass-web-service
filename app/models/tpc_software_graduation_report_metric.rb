@@ -168,10 +168,15 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
                       .execute
                       .aggregations
                       .dig('count', 'value')
-    issue_type_list = base.aggregate({ issue_type: { terms: { field: "issue_type" } } })
+    issue_type_buckets = base.aggregate({ issue_type: { terms: { field: "issue_type" } } })
                           .execute
                           .aggregations
                           .dig('issue_type', 'buckets')
+    issue_type_list = issue_type_buckets.map do |bucket|
+      bucket.dig("key")
+    end
+
+
     score = 0
     if issue_count > 0
       score = 6

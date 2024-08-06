@@ -533,17 +533,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def self.get_license(scancode_result)
-    license_detections = scancode_result.dig("license_detections") || []
-    unless license_detections&.any?
+    files = scancode_result.dig("files") || []
+    unless files&.any?
       return nil
     end
 
-    license_detections.each do |license_detection|
-      (license_detection.dig("reference_matches") || []).each do |reference_match|
-        from_file_split = reference_match.dig("from_file").split("/")
-        if from_file_split.length == 2
-          return reference_match.dig("license_expression")
-        end
+    files.each do |file|
+      file_type = file.dig("type") || ""
+      from_file_split = (file.dig("path") || "").split("/")
+      if file_type == "file" && from_file_split.length == 2 && file.dig("detected_license_expression")
+        return file.dig("detected_license_expression")
       end
     end
     return nil

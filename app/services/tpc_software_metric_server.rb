@@ -248,8 +248,10 @@ class TpcSoftwareMetricServer
         end
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}))
+        license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
+        code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
       when "binary-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
       when "osv-scanner"

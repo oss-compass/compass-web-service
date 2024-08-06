@@ -21,14 +21,12 @@ module Types
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
             metric_name = TpcSoftwareComment::Metric_Name_Selection
             tpc_software_type = TpcSoftwareComment::Type_Selection
-          when report_type == TpcSoftwareMetricServer::Report_Type_Graduation
+          when TpcSoftwareMetricServer::Report_Type_Graduation
             selection = TpcSoftwareGraduation.find_by(id: selection_id)
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
             metric_name = TpcSoftwareComment::Metric_Name_Graduation
             tpc_software_type = TpcSoftwareComment::Type_Graduation
           end
-          selection = TpcSoftwareSelection.find_by(id: selection_id)
-          raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
 
           items = TpcSoftwareComment.where("metric_name = ?", metric_name)
                                     .where("tpc_software_type = ?", tpc_software_type)

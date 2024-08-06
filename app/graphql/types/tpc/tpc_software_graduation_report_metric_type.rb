@@ -15,7 +15,7 @@ module Types
       field :compliance_license_compatibility, Integer
       field :compliance_license_compatibility_detail, [Types::Tpc::TpcSoftwareReportMetricComplianceLicenseCompatibilityType]
       field :compliance_copyright_statement, Integer
-      field :compliance_copyright_statement_detail, String
+      field :compliance_copyright_statement_detail, Types::Tpc::TpcSoftwareReportMetricComplianceCopyrightStatementType
       field :compliance_copyright_statement_anti_tamper, Integer
       field :compliance_copyright_statement_anti_tamper_detail, String
 

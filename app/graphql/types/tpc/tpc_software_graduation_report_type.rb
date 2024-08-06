@@ -18,6 +18,8 @@ module Types
       field :adaptation_method, String
       field :lifecycle_policy, String
       field :round_upstream, String
+      field :license, String
+      field :code_count, Integer
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :clarification_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'

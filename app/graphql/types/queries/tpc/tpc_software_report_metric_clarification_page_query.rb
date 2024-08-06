@@ -26,11 +26,11 @@ module Types
               version: TpcSoftwareReportMetric::Version_Default)
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
             tpc_software_type = TpcSoftwareComment::Type_Report_Metric
-          when report_type == TpcSoftwareMetricServer::Report_Type_Graduation
+          when TpcSoftwareMetricServer::Report_Type_Graduation
             report = TpcSoftwareGraduationReport.find_by(short_code: short_code)
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
             report_metric = TpcSoftwareGraduationReportMetric.find_by(
-              tpc_software_report_id: report.id,
+              tpc_software_graduation_report_id: report.id,
               version: TpcSoftwareGraduationReportMetric::Version_Default)
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
             tpc_software_type = TpcSoftwareComment::Type_Graduation_Report_Metric
