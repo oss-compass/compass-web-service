@@ -25,7 +25,7 @@ module Mutations
                 )
       label = ShortenedLabel.normalize_label(label)
       current_user = context[:current_user]
-      login_required!(current_user)
+      validate_tpc!(current_user)
 
       subject = Subject.find_by(label: label, level: level)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
