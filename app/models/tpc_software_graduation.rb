@@ -6,7 +6,7 @@
 #  tpc_software_graduation_report_ids :string(255)      not null
 #  incubation_start_time              :datetime
 #  incubation_time                    :string(255)
-#  demand_source                      :string(255)      not null
+#  demand_source                      :string(2000)     not null
 #  committers                         :string(255)      not null
 #  issue_url                          :string(255)
 #  subject_id                         :integer          not null

@@ -10,7 +10,7 @@
 #  upstream_code_url    :string(255)
 #  programming_language :string(255)      not null
 #  adaptation_method    :string(255)      not null
-#  lifecycle_policy     :string(255)
+#  lifecycle_policy     :string(2000)
 #  round_upstream       :string(255)
 #  subject_id           :integer          not null
 #  user_id              :integer          not null

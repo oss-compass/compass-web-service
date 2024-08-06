@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_05_132509) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_06_081545) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -297,6 +297,124 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_132509) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "tpc_software_type", default: "TpcSoftwareReportMetric", null: false
+  end
+
+  create_table "tpc_software_graduation_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "tpc_software_graduation_report_metric_id", null: false
+    t.string "code_url", null: false
+    t.integer "subject_id", null: false
+    t.text "compliance_license_raw"
+    t.text "compliance_dco_raw"
+    t.text "compliance_license_compatibility_raw"
+    t.text "compliance_copyright_statement_raw"
+    t.text "compliance_copyright_statement_anti_tamper_raw"
+    t.text "ecology_readme_raw"
+    t.text "ecology_build_doc_raw"
+    t.text "ecology_interface_doc_raw"
+    t.text "ecology_issue_management_raw"
+    t.text "ecology_issue_response_ratio_raw"
+    t.text "ecology_issue_response_time_raw"
+    t.text "ecology_maintainer_doc_raw"
+    t.text "ecology_build_raw"
+    t.text "ecology_ci_raw"
+    t.text "ecology_test_coverage_raw"
+    t.text "ecology_code_review_raw"
+    t.text "ecology_code_upstream_raw"
+    t.text "lifecycle_release_note_raw"
+    t.text "lifecycle_statement_raw"
+    t.text "security_binary_artifact_raw"
+    t.text "security_vulnerability_raw"
+    t.text "security_package_sig_raw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tpc_software_graduation_report_metric_id"], name: "idx_on_tpc_software_graduation_report_metric_id_ff1401468a", unique: true
+  end
+
+  create_table "tpc_software_graduation_report_metrics", charset: "utf8mb4", force: :cascade do |t|
+    t.string "code_url", null: false
+    t.string "status", null: false
+    t.integer "status_compass_callback", null: false
+    t.integer "status_tpc_service_callback", null: false
+    t.integer "version", null: false
+    t.integer "tpc_software_graduation_report_id", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.integer "compliance_license"
+    t.string "compliance_license_detail", limit: 500
+    t.integer "compliance_dco"
+    t.string "compliance_dco_detail", limit: 500
+    t.integer "compliance_license_compatibility"
+    t.string "compliance_license_compatibility_detail", limit: 500
+    t.integer "compliance_copyright_statement"
+    t.string "compliance_copyright_statement_detail", limit: 500
+    t.integer "compliance_copyright_statement_anti_tamper"
+    t.string "compliance_copyright_statement_anti_tamper_detail", limit: 500
+    t.integer "ecology_readme"
+    t.string "ecology_readme_detail", limit: 500
+    t.integer "ecology_build_doc"
+    t.string "ecology_build_doc_detail", limit: 500
+    t.integer "ecology_interface_doc"
+    t.string "ecology_interface_doc_detail", limit: 500
+    t.integer "ecology_issue_management"
+    t.string "ecology_issue_management_detail", limit: 500
+    t.integer "ecology_issue_response_ratio"
+    t.string "ecology_issue_response_ratio_detail", limit: 500
+    t.integer "ecology_issue_response_time"
+    t.string "ecology_issue_response_time_detail", limit: 500
+    t.integer "ecology_maintainer_doc"
+    t.string "ecology_maintainer_doc_detail", limit: 500
+    t.integer "ecology_build"
+    t.string "ecology_build_detail", limit: 500
+    t.integer "ecology_ci"
+    t.string "ecology_ci_detail", limit: 500
+    t.integer "ecology_test_coverage"
+    t.string "ecology_test_coverage_detail", limit: 500
+    t.integer "ecology_code_review"
+    t.string "ecology_code_review_detail", limit: 500
+    t.integer "ecology_code_upstream"
+    t.string "ecology_code_upstream_detail", limit: 500
+    t.integer "lifecycle_release_note"
+    t.string "lifecycle_release_note_detail", limit: 500
+    t.integer "lifecycle_statement"
+    t.string "lifecycle_statement_detail", limit: 500
+    t.integer "security_binary_artifact"
+    t.string "security_binary_artifact_detail", limit: 500
+    t.integer "security_vulnerability"
+    t.string "security_vulnerability_detail", limit: 500
+    t.integer "security_package_sig"
+    t.string "security_package_sig_detail", limit: 500
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_graduation_reports", charset: "utf8mb4", force: :cascade do |t|
+    t.string "short_code", null: false
+    t.string "name"
+    t.integer "tpc_software_sig_id"
+    t.string "code_url"
+    t.string "upstream_code_url"
+    t.string "programming_language", null: false
+    t.string "adaptation_method", null: false
+    t.string "lifecycle_policy", limit: 2000
+    t.string "round_upstream"
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["short_code"], name: "index_tpc_software_graduation_reports_on_short_code", unique: true
+  end
+
+  create_table "tpc_software_graduations", charset: "utf8mb4", force: :cascade do |t|
+    t.string "tpc_software_graduation_report_ids", null: false
+    t.datetime "incubation_start_time"
+    t.string "incubation_time"
+    t.string "demand_source", limit: 2000, null: false
+    t.string "committers", null: false
+    t.string "issue_url"
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tpc_software_members", charset: "utf8mb4", force: :cascade do |t|

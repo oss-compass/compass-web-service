@@ -14,8 +14,8 @@
 #  updated_at                        :datetime         not null
 #  incubation_time                   :string(255)      not null
 #  adaptation_method                 :string(255)
-#  demand_source                     :string(255)
-#  functional_description            :string(255)
+#  demand_source                     :string(2000)
+#  functional_description            :string(2000)
 #  target_software                   :string(255)
 #  is_same_type_check                :integer          default(0)
 #  same_type_software_name           :string(255)
