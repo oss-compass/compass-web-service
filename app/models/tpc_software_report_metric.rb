@@ -316,20 +316,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_package_sig(signature_checker_result)
-    signature_file_list = signature_checker_result.dig("signature_file_list") || []
-
-    score = 0
-    if signature_file_list.length > 0
-      score = 10
-    end
-    {
-      compliance_package_sig: score,
-      compliance_package_sig_detail: signature_file_list.take(5).to_json,
-      compliance_package_sig_raw: signature_file_list.take(30).to_json
-    }
-  end
-
   def self.get_ecology_software_quality(sonar_scanner_result)
     measures = sonar_scanner_result.dig("component", "measures") || []
     duplication_score = 0

@@ -44,7 +44,7 @@ class TpcSoftwareMetricServer
     token = tpc_service_token
     case report_type
     when Report_Type_Selection
-      commands = %w[osv-scanner scancode binary-checker signature-checker sonar-scanner dependency-checker]
+      commands = %w[osv-scanner scancode binary-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
       commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
                     maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
@@ -168,7 +168,7 @@ class TpcSoftwareMetricServer
     code_count = nil
     license = nil
 
-    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker", "compass"]
+    # commands = ["osv-scanner", "scancode", "binary-checker", "sonar-scanner", "dependency-checker", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
       case command
@@ -180,8 +180,6 @@ class TpcSoftwareMetricServer
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "binary-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
-      when "signature-checker"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_package_sig(scan_results.dig(command) || {}))
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_software_quality(scan_results.dig(command) || {}))
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
