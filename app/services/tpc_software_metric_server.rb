@@ -177,7 +177,7 @@ class TpcSoftwareMetricServer
       when "scancode"
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(scan_results.dig(command) || {}))
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
-        license = TpcSoftwareReportMetric.get_license(@project_url, scan_results.dig(command) || {})
+        license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "binary-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
       when "signature-checker"

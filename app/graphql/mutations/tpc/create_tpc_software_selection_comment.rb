@@ -13,7 +13,7 @@ module Mutations
 
       def resolve(selection_id: nil, report_type: 0,content: nil)
         current_user = context[:current_user]
-        login_required!(current_user)
+        validate_tpc!(current_user)
 
         case report_type
         when TpcSoftwareMetricServer::Report_Type_Selection

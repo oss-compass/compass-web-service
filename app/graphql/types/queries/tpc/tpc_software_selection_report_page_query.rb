@@ -17,10 +17,6 @@ module Types
         argument :sort_opts, [Input::SortOptionInput], required: false, description: 'sort options'
 
         def resolve(label: nil, level: nil, report_type_list: [], page: 1, per: 9, filter_opts: nil, sort_opts: nil)
-          current_user = context[:current_user]
-          login_required!(current_user)
-          validate_by_label!(current_user, label)
-
           subject = Subject.find_by(label: label, level: level)
 
           items = []
