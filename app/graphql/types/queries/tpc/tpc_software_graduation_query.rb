@@ -28,8 +28,8 @@ module Types
 
             graduation_hash['comment_committer_permission'] = committer_permission_list.include?(true) ? 1 : 0
             graduation_hash['comment_sig_lead_permission'] = sig_lead_permission ? 1 : 0
-            selection_hash['comment_legal_permission'] = legal_permission ? 1 : 0
-            selection_hash['comment_compliance_permission'] = compliance_permission ? 1 : 0
+            graduation_hash['comment_legal_permission'] = legal_permission ? 1 : 0
+            graduation_hash['comment_compliance_permission'] = compliance_permission ? 1 : 0
             report = OpenStruct.new(graduation_hash)
           end
           report

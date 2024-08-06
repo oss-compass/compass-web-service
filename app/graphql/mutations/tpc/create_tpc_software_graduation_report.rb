@@ -58,7 +58,7 @@ module Mutations
               ecology_code_review: nil,
               ecology_code_upstream: software_report.round_upstream.present? ? 10 : 0,
 
-              lifecycle_release_note: nil, #don't do
+              lifecycle_release_note: nil,
               lifecycle_statement: software_report.lifecycle_policy.present? ? 10 : 0,
 
               security_binary_artifact: nil,

@@ -45,7 +45,7 @@ module Types
       field :ecology_code_upstream_detail, String
 
       field :lifecycle_release_note, Integer
-      field :lifecycle_release_note_detail, String
+      field :lifecycle_release_note_detail, [String]
       field :lifecycle_statement, Integer
       field :lifecycle_statement_detail, String
 

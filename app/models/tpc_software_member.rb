@@ -33,13 +33,20 @@ class TpcSoftwareMember < ApplicationRecord
   Role_Level_Email = 1
   Role_Level_Approval = 2
 
-  def self.get_email_notify_list(short_code)
+  def self.get_email_notify_list(short_code, report_type)
     email_list = []
     subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
     return email_list if subject_customization.nil?
-    selection_report = TpcSoftwareSelectionReport.find_by(short_code: short_code, subject_id: subject_customization.subject_id)
-    return email_list if selection_report.nil?
-    tpc_software_member_list = TpcSoftwareMember.where("tpc_software_sig_id IS NULL OR tpc_software_sig_id = ?", selection_report.tpc_software_sig_id)
+    report = nil
+    case report_type
+    when TpcSoftwareMetricServer::Report_Type_Selection
+      report = TpcSoftwareSelectionReport.find_by(short_code: short_code, subject_id: subject_customization.subject_id)
+    when TpcSoftwareMetricServer::Report_Type_Graduation
+      report = TpcSoftwareGraduationReport.find_by(short_code: short_code, subject_id: subject_customization.subject_id)
+    end
+
+    return email_list if report.nil?
+    tpc_software_member_list = TpcSoftwareMember.where("tpc_software_sig_id IS NULL OR tpc_software_sig_id = ?", report.tpc_software_sig_id)
                                                 .where("role_level >= ?", Role_Level_Email)
                                                 .where(subject_id: subject_customization.subject_id)
     email_list = tpc_software_member_list.map do |tpc_software_member|

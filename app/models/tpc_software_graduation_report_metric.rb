@@ -349,17 +349,39 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     TpcSoftwareReportMetric.get_security_vulnerability(osv_scanner_result)
   end
 
-  def self.get_security_package_sig(signature_checker_result)
-    signature_file_list = signature_checker_result.dig("signature_file_list") || []
+  def self.get_security_package_sig(release_checker_result)
+    signature_file_list = release_checker_result.dig("signature_files") || []
 
-    score = 6
-    if signature_file_list.length > 0
-      score = 10
+    if release_checker_result.include?("error")
+      score = -1
+    else
+      score = 6
+      if signature_file_list.length > 0
+        score = 10
+      end
     end
     {
       security_package_sig: score,
       security_package_sig_detail: signature_file_list.take(5).to_json,
       security_package_sig_raw: signature_file_list.take(30).to_json
+    }
+  end
+
+  def self.get_lifecycle_release_note(release_checker_result)
+    release_notes = release_checker_result.dig("release_notes") || []
+
+    if release_checker_result.include?("error")
+      score = -1
+    else
+      score = 0
+      if release_notes.length > 0
+        score = 10
+      end
+    end
+    {
+      lifecycle_release_note: score,
+      lifecycle_release_note_detail: release_notes.take(5).to_json,
+      lifecycle_release_note_raw: release_notes.take(30).to_json
     }
   end
 
@@ -410,8 +432,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
   def self.get_ecology_readme(readme_checker_result)
     readme_files = %w[readme readme.]
 
+    readme_file_list = readme_checker_result.dig("readme_file") || []
+
     score = 0
-    (readme_checker_result.dig("readme_file") || []).each do |readme_file|
+    readme_file_list.each do |readme_file|
       readme_file_split = readme_file.split("/")
       if readme_file_split.length == 2 && readme_files.any? { |item| readme_file_split[1].downcase.include?(item) }
         score = 10
@@ -422,7 +446,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     {
       ecology_readme: score,
       ecology_readme_detail: nil,
-      ecology_readme_raw: readme_checker_result.dig("readme_file").take(50).to_json
+      ecology_readme_raw: readme_file_list.take(50).to_json
     }
   end
 

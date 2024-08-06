@@ -141,7 +141,7 @@ class TpcSoftwareGraduation < ApplicationRecord
 
   def self.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
     if mail_list.length > 0
-      title = "TPC毕业申请"
+      title = "TPC毕业项目申请"
       body = "用户正在申请OpenHarmony TPC毕业项目，具体如下："
       state_list = TpcSoftwareCommentState::Review_States
       issue_title = issue_title.gsub(Regexp.union(state_list), '')
@@ -164,7 +164,7 @@ class TpcSoftwareGraduation < ApplicationRecord
 
   def self.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
     if mail_list.length > 0
-      title = "TPC毕业评审"
+      title = "TPC毕业项目评审"
       body = "用户正在申请OpenHarmony TPC毕业项目，#{comment}，具体如下："
       state_list = TpcSoftwareCommentState::Review_States
       issue_title = issue_title.gsub(Regexp.union(state_list), '')

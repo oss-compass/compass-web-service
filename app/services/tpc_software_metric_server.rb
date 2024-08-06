@@ -46,9 +46,8 @@ class TpcSoftwareMetricServer
     when Report_Type_Selection
       commands = %w[osv-scanner scancode binary-checker signature-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
-      commands = %w[scancode sonar-scanner binary-checker osv-scanner readme-checker
+      commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
                     maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
-      # signature-checker
     end
     payload = {
       commands: commands,
@@ -88,14 +87,14 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Selection)
         TpcSoftwareSelection.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
       end
     end
 
     if issue_title.include?("【毕业申请】")
       # save issue url
-      issue_body_taskId_matched = issue_body.match(/graduationId=(.*?)&projectId=/)
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         task_id = issue_body_taskId_matched[1].to_i
         TpcSoftwareGraduation.save_issue_url(task_id, issue_html_url)
@@ -106,7 +105,7 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Graduation)
         TpcSoftwareGraduation.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
       end
     end
@@ -137,13 +136,13 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Selection)
         TpcSoftwareSelection.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
       end
     end
 
     if issue_title.include?("【毕业申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
-      issue_body_taskId_matched = issue_body.match(/graduationId=(.*?)&projectId=/)
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         # save issue url
         task_id = issue_body_taskId_matched[1].to_i
@@ -157,7 +156,7 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Graduation)
         TpcSoftwareGraduation.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
       end
     end
@@ -240,7 +239,7 @@ class TpcSoftwareMetricServer
     code_count = nil
     license = nil
 
-    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "signature-checker", "readme-checker",
+    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "release-checker", "readme-checker",
     #             "maintainers-checker", "build-doc-checker", "api-doc-checker", "readme-opensource-checker", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
@@ -257,8 +256,9 @@ class TpcSoftwareMetricServer
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
       when "osv-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
-      when "signature-checker"
+      when "release-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_package_sig(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_lifecycle_release_note(scan_results.dig(command) || {}))
       when "readme-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {}))
       when "maintainers-checker"
@@ -273,6 +273,8 @@ class TpcSoftwareMetricServer
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_ratio(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_time(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_code_review(@project_url))
+      when "readme-opensource-checker"
+        # no process
       else
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
       end
@@ -306,10 +308,10 @@ class TpcSoftwareMetricServer
 
 
       if report_metric_raw_data.length > 0
-        metric_raw = TpcSoftwareGraduationReportMetricRaw.find_or_initialize_by(tpc_software_report_metric_id: tpc_software_report_metric.id)
-        report_metric_raw_data[:tpc_software_report_metric_id] = tpc_software_report_metric.id
-        report_metric_raw_data[:code_url] = tpc_software_report_metric.code_url
-        report_metric_raw_data[:subject_id] = tpc_software_report_metric.subject_id
+        metric_raw = TpcSoftwareGraduationReportMetricRaw.find_or_initialize_by(tpc_software_graduation_report_metric_id: report_metric.id)
+        report_metric_raw_data[:tpc_software_graduation_report_metric_id] = report_metric.id
+        report_metric_raw_data[:code_url] = report_metric.code_url
+        report_metric_raw_data[:subject_id] = report_metric.subject_id
         metric_raw.update!(report_metric_raw_data)
       end
     end
