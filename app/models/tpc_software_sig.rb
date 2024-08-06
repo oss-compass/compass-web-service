@@ -15,7 +15,7 @@ class TpcSoftwareSig < ApplicationRecord
 
   belongs_to :subject
   has_many :tpc_software_selection_report
-  has_many :tpc_software_output_report
+  has_many :tpc_software_graduation_report
 
 
 end

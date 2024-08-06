@@ -58,12 +58,16 @@ module Types
     field :delete_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::DeleteTpcSoftwareReportMetricClarification, description: 'Delete a tpc software report metric clarification'
     field :accept_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::AcceptTpcSoftwareReportMetricClarification, description: 'Accept a tpc software report metric clarification'
 
-    field :create_tpc_software_selection_comment, mutation: Mutations::Tpc::CreateTpcSoftwareSelectionComment, description: 'Create a tpc software selection comment'
-    field :update_tpc_software_selection_comment, mutation: Mutations::Tpc::UpdateTpcSoftwareSelectionComment, description: 'Update a tpc software selection comment'
-    field :delete_tpc_software_selection_comment, mutation: Mutations::Tpc::DeleteTpcSoftwareSelectionComment, description: 'Delete a tpc software selection comment'
+    field :create_tpc_software_selection_comment, mutation: Mutations::Tpc::CreateTpcSoftwareSelectionComment, description: 'Create a tpc software comment'
+    field :update_tpc_software_selection_comment, mutation: Mutations::Tpc::UpdateTpcSoftwareSelectionComment, description: 'Update a tpc software comment'
+    field :delete_tpc_software_selection_comment, mutation: Mutations::Tpc::DeleteTpcSoftwareSelectionComment, description: 'Delete a tpc software comment'
 
-    field :create_tpc_software_output_report, mutation: Mutations::Tpc::CreateTpcSoftwareOutputReport, description: 'Create a tpc software output report'
-    field :create_tpc_software_output, mutation: Mutations::Tpc::CreateTpcSoftwareOutput, description: 'Create a tpc software output'
+    field :create_tpc_software_graduation_report, mutation: Mutations::Tpc::CreateTpcSoftwareGraduationReport, description: 'Create a tpc software graduation report'
+    field :update_tpc_software_graduation_report, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduationReport, description: 'Update a tpc software graduation report'
+
+    field :create_tpc_software_graduation, mutation: Mutations::Tpc::CreateTpcSoftwareGraduation, description: 'Create a tpc software graduation'
+    field :update_tpc_software_graduation, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduation, description: 'Update a tpc software graduation'
+    field :accept_tpc_software_graduation, mutation: Mutations::Tpc::AcceptTpcSoftwareGraduation, description: 'Accept a tpc software graduation'
 
     # User Cancellation
     def sign_out

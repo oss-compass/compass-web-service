@@ -83,10 +83,19 @@ class ApplicationController < ActionController::Base
     project_url = payload['project_url']
     scan_results = payload['scan_results'].to_h
     task_metadata = payload['task_metadata'].to_h
+    report_id = task_metadata['report_id']
+    report_metric_id = task_metadata['report_metric_id']
+    report_type = task_metadata['report_type']
 
     Rails.logger.info("tpc_software_callback info: command_list: #{command_list} project_url: #{project_url} task_metadata: #{task_metadata}")
 
-    TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")}).tpc_software_callback(command_list, scan_results, task_metadata)
+    metric_server = TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")})
+    if report_type == TpcSoftwareMetricServer::Report_Type_Selection
+      metric_server.tpc_software_selection_callback(command_list, scan_results, report_id, report_metric_id)
+    elsif report_type == TpcSoftwareMetricServer::Report_Type_Graduation
+      metric_server.tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
+    end
+
     render json: { status: true, message: 'ok' }
   rescue => ex
     Rails.logger.info(ex)

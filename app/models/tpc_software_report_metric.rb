@@ -70,7 +70,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
 
   Report_Type_Selection = 'TpcSoftwareSelectionReport'
-  Report_Type_Output = 'TpcSoftwareOutputReport'
 
   Status_Progress = 'progress'
   Status_Success = 'success'
@@ -317,20 +316,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_package_sig(signature_checker_result)
-    signature_file_list = signature_checker_result.dig("signature_file_list") || []
-
-    score = 0
-    if signature_file_list.length > 0
-      score = 10
-    end
-    {
-      compliance_package_sig: score,
-      compliance_package_sig_detail: signature_file_list.take(5).to_json,
-      compliance_package_sig_raw: signature_file_list.take(30).to_json
-    }
-  end
-
   def self.get_ecology_software_quality(sonar_scanner_result)
     measures = sonar_scanner_result.dig("component", "measures") || []
     duplication_score = 0
@@ -548,17 +533,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def self.get_license(scancode_result)
-    license_detections = scancode_result.dig("license_detections") || []
-    unless license_detections&.any?
+    files = scancode_result.dig("files") || []
+    unless files&.any?
       return nil
     end
 
-    license_detections.each do |license_detection|
-      (license_detection.dig("reference_matches") || []).each do |reference_match|
-        from_file_split = reference_match.dig("from_file").split("/")
-        if from_file_split.length == 2
-          return reference_match.dig("license_expression")
-        end
+    files.each do |file|
+      file_type = file.dig("type") || ""
+      from_file_split = (file.dig("path") || "").split("/")
+      if file_type == "file" && from_file_split.length == 2 && file.dig("detected_license_expression")
+        return file.dig("detected_license_expression")
       end
     end
     return nil

@@ -37,10 +37,10 @@ class Subject < ApplicationRecord
   has_many :subject_access_levels, dependent: :destroy
   has_many :tpc_software_sigs, dependent: :destroy
   has_many :tpc_software_selection_reports, dependent: :destroy
-  has_many :tpc_software_output_reports, dependent: :destroy
+  has_many :tpc_software_graduation_reports, dependent: :destroy
   has_many :tpc_software_report_metrics, dependent: :destroy
   has_many :tpc_software_selections, dependent: :destroy
-  has_many :tpc_software_outputs, dependent: :destroy
+  has_many :tpc_software_graduations, dependent: :destroy
 
   has_many_attached :exports
 

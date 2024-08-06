@@ -118,14 +118,16 @@ module Types
 
     field :tpc_software_selection_report_page, resolver: Queries::Tpc::TpcSoftwareSelectionReportPageQuery
     field :tpc_software_selection_report, resolver: Queries::Tpc::TpcSoftwareSelectionReportQuery
-    field :tpc_software_report_metric_clarification_page, resolver: Queries::Tpc::TpcSoftwareReportMetricClarificationPageQuery
-
     field :tpc_software_selection_page, resolver: Queries::Tpc::TpcSoftwareSelectionPageQuery
     field :tpc_software_selection, resolver: Queries::Tpc::TpcSoftwareSelectionQuery
+
+    field :tpc_software_report_metric_clarification_page, resolver: Queries::Tpc::TpcSoftwareReportMetricClarificationPageQuery
     field :tpc_software_selection_comment_page, resolver: Queries::Tpc::TpcSoftwareSelectionCommentPageQuery
 
-    field :tpc_software_output_report_page, resolver: Queries::Tpc::TpcSoftwareOutputReportPageQuery
-    field :tpc_software_output_page, resolver: Queries::Tpc::TpcSoftwareOutputPageQuery
+    field :tpc_software_graduation_report_page, resolver: Queries::Tpc::TpcSoftwareGraduationReportPageQuery
+    field :tpc_software_graduation_report, resolver: Queries::Tpc::TpcSoftwareGraduationReportQuery
+    field :tpc_software_graduation_page, resolver: Queries::Tpc::TpcSoftwareGraduationPageQuery
+    field :tpc_software_graduation, resolver: Queries::Tpc::TpcSoftwareGraduationQuery
 
   end
 end

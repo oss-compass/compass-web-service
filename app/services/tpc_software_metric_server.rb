@@ -12,11 +12,14 @@ class TpcSoftwareMetricServer
   TPC_SERVICE_API_PASSWORD = ENV.fetch('TPC_SERVICE_API_PASSWORD')
   TPC_SERVICE_CALLBACK_URL = "#{DEFAULT_HOST}/api/tpc_software_callback"
 
+  Report_Type_Selection = 0
+  Report_Type_Graduation = 1
+
   def initialize(opts = {})
     @project_url = opts[:project_url]
   end
 
-  def analyze_metric_by_compass(report_id, report_metric_id)
+  def analyze_metric_by_compass(report_id, report_metric_id, report_type)
     result = AnalyzeServer.new(
       {
         repo_url: @project_url,
@@ -26,7 +29,8 @@ class TpcSoftwareMetricServer
             callback_type: "tpc_software_callback",
             task_metadata: {
               report_id: report_id,
-              report_metric_id: report_metric_id
+              report_metric_id: report_metric_id,
+              report_type: report_type
             }
           }
         }
@@ -36,16 +40,23 @@ class TpcSoftwareMetricServer
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
-  def analyze_metric_by_tpc_service(report_id, report_metric_id)
+  def analyze_metric_by_tpc_service(report_id, report_metric_id, report_type)
     token = tpc_service_token
-    commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker"]
+    case report_type
+    when Report_Type_Selection
+      commands = %w[osv-scanner scancode binary-checker sonar-scanner dependency-checker]
+    when Report_Type_Graduation
+      commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
+                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
+    end
     payload = {
       commands: commands,
       project_url: "#{@project_url}.git",
       callback_url: TPC_SERVICE_CALLBACK_URL,
       task_metadata: {
         report_id: report_id,
-        report_metric_id: report_metric_id
+        report_metric_id: report_metric_id,
+        report_type: report_type
       }
     }
     result = base_post_request("opencheck", payload, token: token)
@@ -68,10 +79,7 @@ class TpcSoftwareMetricServer
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         task_id = issue_body_taskId_matched[1].to_i
-        selection = TpcSoftwareSelection.find_by(id: task_id)
-        if selection.present?
-          selection.update!(issue_url: issue_html_url)
-        end
+        TpcSoftwareSelection.save_issue_url(task_id, issue_html_url)
       end
 
       # send email
@@ -79,26 +87,26 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
-        if mail_list.length > 0
-          title = "TPC孵化选型申请"
-          body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
-          state_list = TpcSoftwareCommentState::Review_States
-          issue_title = issue_title.gsub(Regexp.union(state_list), '')
-          mail_list.each do |mail|
-            UserMailer.with(
-              type: 0,
-              title: title,
-              body: body,
-              user_name: user_name,
-              user_html_url: user_html_url,
-              issue_title: issue_title,
-              issue_html_url: issue_html_url,
-              email: mail
-            ).email_tpc_software_application.deliver_later
-          end
-        end
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Selection)
+        TpcSoftwareSelection.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
+      end
+    end
 
+    if issue_title.include?("【毕业申请】")
+      # save issue url
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareGraduation.save_issue_url(task_id, issue_html_url)
+      end
+
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Graduation)
+        TpcSoftwareGraduation.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
       end
     end
   end
@@ -116,37 +124,11 @@ class TpcSoftwareMetricServer
     if issue_title.include?("【孵化选型申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
-        task_id = issue_body_taskId_matched[1].to_i
         # save issue url
-        selection = TpcSoftwareSelection.find_by(id: task_id)
-        if selection.present?
-          selection.update!(issue_url: issue_html_url)
-        end
-
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareSelection.save_issue_url(task_id, issue_html_url)
         # update issue title
-        review_state = TpcSoftwareCommentState.get_review_state(task_id, TpcSoftwareCommentState::Type_Selection)
-        TpcSoftwareCommentState::Review_States.each do |state|
-          if issue_title.include?(state)
-            to_issue_title = issue_title.gsub(state, review_state)
-            issue_url_list = issue_html_url.split("/issues/")
-            subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
-            if issue_url_list.length && subject_customization.present?
-              repo_url = issue_url_list[0]
-              number = issue_url_list[1]
-              if repo_url.include?("gitee.com")
-                IssueServer.new(
-                  {
-                    repo_url: repo_url,
-                    gitee_token: subject_customization.gitee_token,
-                    github_token: nil
-                  }
-                ).update_gitee_issue_title(number, to_issue_title)
-              end
-            end
-            break
-          end
-        end
-
+        TpcSoftwareSelection.update_issue_title(task_id, issue_title, issue_html_url)
       end
 
       # send email
@@ -154,34 +136,39 @@ class TpcSoftwareMetricServer
       if issue_body_matched
         short_code = issue_body_matched[1]
         short_code_list = short_code.split("..").map(&:strip)
-        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first)
-        if mail_list.length > 0
-          title = "TPC孵化选型评审"
-          body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
-          state_list = TpcSoftwareCommentState::Review_States
-          issue_title = issue_title.gsub(Regexp.union(state_list), '')
-          mail_list.each do |mail|
-            UserMailer.with(
-              type: 1,
-              title: title,
-              body: body,
-              user_name: user_name,
-              user_html_url: user_html_url,
-              issue_title: issue_title,
-              issue_html_url: issue_html_url,
-              email: mail
-            ).email_tpc_software_application.deliver_later
-          end
-        end
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Selection)
+        TpcSoftwareSelection.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
       end
     end
+
+    if issue_title.include?("【毕业申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
+      issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
+      if issue_body_taskId_matched
+        # save issue url
+        task_id = issue_body_taskId_matched[1].to_i
+        TpcSoftwareGraduation.save_issue_url(task_id, issue_html_url)
+        # update issue title
+        TpcSoftwareGraduation.update_issue_title(task_id, issue_title, issue_html_url)
+      end
+
+      # send email
+      issue_body_matched = issue_body.match(/projectId=([^&]+)/)
+      if issue_body_matched
+        short_code = issue_body_matched[1]
+        short_code_list = short_code.split("..").map(&:strip)
+        mail_list = TpcSoftwareMember.get_email_notify_list(short_code_list.first, Report_Type_Graduation)
+        TpcSoftwareGraduation.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
+      end
+    end
+
   end
 
-  def tpc_software_callback(command_list, scan_results, task_metadata)
+
+  def tpc_software_selection_callback(command_list, scan_results, report_id, report_metric_id)
     code_count = nil
     license = nil
 
-    # commands = ["osv-scanner", "scancode", "binary-checker", "signature-checker", "sonar-scanner", "dependency-checker", "compass"]
+    # commands = ["osv-scanner", "scancode", "binary-checker", "sonar-scanner", "dependency-checker", "compass"]
     metric_hash = Hash.new
     command_list.each do |command|
       case command
@@ -193,8 +180,6 @@ class TpcSoftwareMetricServer
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "binary-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
-      when "signature-checker"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_package_sig(scan_results.dig(command) || {}))
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_software_quality(scan_results.dig(command) || {}))
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
@@ -210,7 +195,6 @@ class TpcSoftwareMetricServer
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
       end
     end
-    report_metric_id = task_metadata["report_metric_id"]
     tpc_software_report_metric = TpcSoftwareReportMetric.find_by(id: report_metric_id)
     raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if tpc_software_report_metric.nil?
 
@@ -230,7 +214,7 @@ class TpcSoftwareMetricServer
     ActiveRecord::Base.transaction do
       tpc_software_report_metric.update!(report_metric_data)
 
-      tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: task_metadata["report_id"])
+      tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: report_id)
       update_data = {}
       update_data[:code_count] = code_count unless code_count.nil?
       update_data[:license] = license unless license.nil?
@@ -248,6 +232,91 @@ class TpcSoftwareMetricServer
       end
     end
   end
+
+  def tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
+    code_count = nil
+    license = nil
+
+    # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "release-checker", "readme-checker",
+    #             "maintainers-checker", "build-doc-checker", "api-doc-checker", "readme-opensource-checker", "compass"]
+    metric_hash = Hash.new
+    command_list.each do |command|
+      case command
+      when "scancode"
+        if command_list.include?("readme-opensource-checker")
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}))
+        end
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}))
+        license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
+      when "sonar-scanner"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
+        code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
+      when "binary-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
+      when "osv-scanner"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
+      when "release-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_package_sig(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_lifecycle_release_note(scan_results.dig(command) || {}))
+      when "readme-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {}))
+      when "maintainers-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_maintainer_doc(scan_results.dig(command) || {}))
+      when "build-doc-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_build_doc(scan_results.dig(command) || {}))
+      when "api-doc-checker"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_interface_doc(scan_results.dig(command) || {}))
+      when "compass"
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_dco(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_management(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_ratio(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_time(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_code_review(@project_url))
+      when "readme-opensource-checker"
+        # no process
+      else
+        raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
+      end
+    end
+    report_metric = TpcSoftwareGraduationReportMetric.find_by(id: report_metric_id)
+    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
+
+    report_metric_data = metric_hash.select { |key, _| !key.end_with?("_raw") }
+    report_metric_raw_data = metric_hash.select { |key, _| key.end_with?("_raw") }
+    if command_list.include?("compass")
+      report_metric_data["status_compass_callback"] = 1
+      if report_metric.status_tpc_service_callback == 1
+        report_metric_data["status"] = TpcSoftwareGraduationReportMetric::Status_Success
+      end
+    else
+      report_metric_data["status_tpc_service_callback"] = 1
+      if report_metric.status_compass_callback == 1
+        report_metric_data["status"] = TpcSoftwareGraduationReportMetric::Status_Success
+      end
+    end
+    ActiveRecord::Base.transaction do
+      report_metric.update!(report_metric_data)
+
+      tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(id: report_id)
+      update_data = {}
+      update_data[:code_count] = code_count unless code_count.nil?
+      update_data[:license] = license unless license.nil?
+      if update_data.present?
+        tpc_software_graduation_report.update!(update_data)
+      end
+
+
+      if report_metric_raw_data.length > 0
+        metric_raw = TpcSoftwareGraduationReportMetricRaw.find_or_initialize_by(tpc_software_graduation_report_metric_id: report_metric.id)
+        report_metric_raw_data[:tpc_software_graduation_report_metric_id] = report_metric.id
+        report_metric_raw_data[:code_url] = report_metric.code_url
+        report_metric_raw_data[:subject_id] = report_metric.subject_id
+        metric_raw.update!(report_metric_raw_data)
+      end
+    end
+  end
+
 
   def tpc_service_token
     payload = {
