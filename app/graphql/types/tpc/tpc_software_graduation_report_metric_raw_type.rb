@@ -11,6 +11,7 @@ module Types
       field :compliance_license_compatibility_raw, String
       field :compliance_copyright_statement_raw, String
       field :compliance_copyright_statement_anti_tamper_raw, String
+      field :compliance_snippet_reference_raw, String
 
       field :ecology_readme_raw, String
       field :ecology_build_doc_raw, String

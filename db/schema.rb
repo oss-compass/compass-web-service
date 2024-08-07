@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_06_104711) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_07_080654) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -327,6 +327,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_06_104711) do
     t.text "security_package_sig_raw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "compliance_snippet_reference_raw"
     t.index ["tpc_software_graduation_report_metric_id"], name: "idx_on_tpc_software_graduation_report_metric_id_ff1401468a", unique: true
   end
 
@@ -385,6 +386,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_06_104711) do
     t.string "security_package_sig_detail", limit: 500
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "compliance_snippet_reference"
+    t.string "compliance_snippet_reference_detail", limit: 500
   end
 
   create_table "tpc_software_graduation_reports", charset: "utf8mb4", force: :cascade do |t|

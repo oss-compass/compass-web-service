@@ -57,6 +57,8 @@
 #  security_package_sig_detail                       :string(500)
 #  created_at                                        :datetime         not null
 #  updated_at                                        :datetime         not null
+#  compliance_snippet_reference                      :integer
+#  compliance_snippet_reference_detail               :string(500)
 #
 class TpcSoftwareGraduationReportMetric < ApplicationRecord
 

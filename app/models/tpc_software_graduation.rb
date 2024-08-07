@@ -26,6 +26,7 @@ class TpcSoftwareGraduation < ApplicationRecord
       "compliance_license_compatibility",
       "compliance_copyright_statement",
       "compliance_copyright_statement_anti_tamper",
+      "compliance_snippet_reference",
       "ecology_readme",
       "ecology_build_doc",
       "ecology_interface_doc",
