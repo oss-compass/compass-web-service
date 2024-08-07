@@ -119,6 +119,7 @@ module Types
     field :tpc_software_selection_report_page, resolver: Queries::Tpc::TpcSoftwareSelectionReportPageQuery
     field :tpc_software_selection_report, resolver: Queries::Tpc::TpcSoftwareSelectionReportQuery
     field :tpc_software_selection_page, resolver: Queries::Tpc::TpcSoftwareSelectionPageQuery
+    field :tpc_software_selection_search, resolver: Queries::Tpc::TpcSoftwareSelectionSearchQuery
     field :tpc_software_selection, resolver: Queries::Tpc::TpcSoftwareSelectionQuery
 
     field :tpc_software_report_metric_clarification_page, resolver: Queries::Tpc::TpcSoftwareReportMetricClarificationPageQuery
