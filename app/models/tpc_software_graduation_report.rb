@@ -18,6 +18,7 @@
 #  updated_at           :datetime         not null
 #  license              :string(255)
 #  code_count           :integer
+#  is_incubation        :integer
 #
 # Indexes
 #

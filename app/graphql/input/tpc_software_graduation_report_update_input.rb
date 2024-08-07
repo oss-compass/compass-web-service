@@ -9,5 +9,6 @@ module Input
     argument :adaptation_method, String, required: true
     argument :lifecycle_policy, String, required: true
     argument :round_upstream, String, required: false
+    argument :is_incubation, Integer, required: true
   end
 end
