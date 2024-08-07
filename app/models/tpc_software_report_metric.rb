@@ -144,8 +144,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
 
-    raw_data.each do |raw|
-      (raw.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
+    (scancode_result.dig("license_detections") || []).each do |license_detection|
+      (license_detection.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
         license_expression = license_expression.strip.downcase
         license_list << license_expression
         category = license_db_data.dig(license_expression, :category)

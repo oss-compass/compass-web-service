@@ -18,6 +18,7 @@ module Types
       field :adaptation_method, String
       field :lifecycle_policy, String
       field :round_upstream, String
+      field :is_incubation, Integer
       field :license, String
       field :code_count, Integer
       field :user_id, Integer, null: false

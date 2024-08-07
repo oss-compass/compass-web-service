@@ -44,6 +44,7 @@ module Mutations
               compliance_license_compatibility: nil,
               compliance_copyright_statement: nil,
               compliance_copyright_statement_anti_tamper: nil, #don't do
+              compliance_snippet_reference: nil, #don't do
 
               ecology_readme: nil,
               ecology_build_doc: nil,

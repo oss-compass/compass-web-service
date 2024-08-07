@@ -30,6 +30,7 @@
 #  security_package_sig_raw                       :text(65535)
 #  created_at                                     :datetime         not null
 #  updated_at                                     :datetime         not null
+#  compliance_snippet_reference_raw               :text(65535)
 #
 # Indexes
 #

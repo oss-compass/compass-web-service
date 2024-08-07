@@ -57,6 +57,8 @@
 #  security_package_sig_detail                       :string(500)
 #  created_at                                        :datetime         not null
 #  updated_at                                        :datetime         not null
+#  compliance_snippet_reference                      :integer
+#  compliance_snippet_reference_detail               :string(500)
 #
 class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
@@ -95,8 +97,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       end
     end
 
-    raw_data.each do |raw|
-      (raw.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
+    (scancode_result.dig("license_detections") || []).each do |license_detection|
+      (license_detection.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
         license_expression = license_expression.strip.downcase
         license_list << license_expression
         category = license_db_data.dig(license_expression, :category)
@@ -212,7 +214,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     issue_response_ratio = 0
     score = 6
     if issue_count > 0
-      issue_response_ratio = issue_response_count / issue_count
+      issue_response_ratio = (issue_response_count.to_f / issue_count).round(2)
       if issue_response_ratio >= 0.8
         score = 10
       end
@@ -240,11 +242,13 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
                                .execute
                                .aggregations
                                .dig('count', 'value')
-    issue_response_time = base.aggregate({ avg_count: { avg: { field: "time_to_first_attention_without_bot" } }})
+    issue_response_time = base.aggregate({ count: { avg: { field: "time_to_first_attention_without_bot" } }})
                                .execute
                                .aggregations
                                .dig('count', 'value')
-
+    if issue_response_time.present?
+      issue_response_time = issue_response_time.round(2)
+    end
     score = 0
     if issue_response_count > 0
       score = case issue_response_time
@@ -327,7 +331,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     pull_review_ratio = 0
     score = 0
     if pull_count > 0
-      pull_review_ratio = pull_review_count.to_f / pull_count
+      pull_review_ratio = (pull_review_count.to_f / pull_count).round(2)
       score = case pull_review_ratio
               when 0.8..1.0
                 10
@@ -423,8 +427,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     detail = {
-      "include_copyrights": include_copyrights.uniq.take(5),
-      "not_included_copyrights": not_included_copyrights.uniq.take(5),
+      "include_copyrights": include_copyrights.uniq.take(3),
+      "not_included_copyrights": not_included_copyrights.uniq.take(3),
     }
 
     {

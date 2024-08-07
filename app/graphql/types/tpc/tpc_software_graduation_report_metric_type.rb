@@ -18,6 +18,8 @@ module Types
       field :compliance_copyright_statement_detail, Types::Tpc::TpcSoftwareReportMetricComplianceCopyrightStatementType
       field :compliance_copyright_statement_anti_tamper, Integer
       field :compliance_copyright_statement_anti_tamper_detail, String
+      field :compliance_snippet_reference, Integer
+      field :compliance_snippet_reference_detail, String
 
       field :ecology_readme, Integer
       field :ecology_readme_detail, String
@@ -65,6 +67,7 @@ module Types
         :compliance_license_compatibility_detail,
         :compliance_copyright_statement_detail,
         :compliance_copyright_statement_anti_tamper_detail,
+        :compliance_snippet_reference_detail,
         :ecology_readme_detail,
         :ecology_build_doc_detail,
         :ecology_interface_doc_detail,

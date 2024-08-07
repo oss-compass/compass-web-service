@@ -9,6 +9,7 @@ module Types
       field :compliance_license_compatibility, Integer
       field :compliance_copyright_statement, Integer
       field :compliance_copyright_statement_anti_tamper, Integer
+      field :compliance_snippet_reference, Integer
 
       field :ecology_readme, Integer
       field :ecology_build_doc, Integer

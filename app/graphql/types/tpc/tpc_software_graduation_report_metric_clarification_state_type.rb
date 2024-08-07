@@ -9,6 +9,7 @@ module Types
       field :compliance_license_compatibility, [Types::Tpc::TpcSoftwareCommentStateType]
       field :compliance_copyright_statement, [Types::Tpc::TpcSoftwareCommentStateType]
       field :compliance_copyright_statement_anti_tamper, [Types::Tpc::TpcSoftwareCommentStateType]
+      field :compliance_snippet_reference, [Types::Tpc::TpcSoftwareCommentStateType]
 
       field :ecology_readme, [Types::Tpc::TpcSoftwareCommentStateType]
       field :ecology_build_doc, [Types::Tpc::TpcSoftwareCommentStateType]
