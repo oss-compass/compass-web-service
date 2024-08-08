@@ -319,15 +319,41 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     base = indexer.must(terms: { tag: repo_urls})
                   .must(match_phrase: { item_type: "pull request" })
                   .must(match_phrase: { merged: true })
-                  .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
-    pull_count = base.execute
+    pull_count = base.aggregate({ count: { cardinality: { field: "uuid" } }})
+                     .execute
                      .aggregations
                      .dig('count', 'value')
-    pull_review_count = base.range(:num_review_comments_without_bot, gt: 0)
-                            .execute
-                            .aggregations
-                            .dig('count', 'value')
+    if project_url.include?("gitee.com")
+      pull_id_list = []
+      pull_id_buckets = base.aggregate({ pull_id_list: { terms: { field: "id_in_repo", size: 10000 } }})
+                              .range(:num_review_comments_without_bot, gt: 0)
+                              .execute
+                              .aggregations
+                              .dig('pull_id_list', 'buckets')
+      pull_id_buckets.each {|pull_id_bucket| pull_id_list << pull_id_bucket.dig("key")}
+      event_pull_id_buckets = GiteeEventEnrich.aggregate({ pull_id_list: { terms: { field: "pull_id_in_repo", size: 10000 } } })
+                                              .must(terms: { tag: repo_urls })
+                                              .must(match_phrase: { item_type: "pull request" })
+                                              .must(match_phrase: { pull_state: "merged" })
+                                              .must(match_phrase: { action_type: "check_pass" })
+                                              .per(0)
+                                              .execute
+                                              .aggregations
+                                              .dig('pull_id_list', 'buckets')
+      event_pull_id_buckets.each { |pull_id_bucket| pull_id_list << pull_id_bucket.dig("key") }
+      pull_review_count = pull_id_list.uniq.length
+      if pull_review_count > pull_count
+        pull_review_count = pull_count
+      end
+    else
+      pull_review_count = base.aggregate({ count: { cardinality: { field: "uuid" } }})
+                              .range(:num_review_comments_without_bot, gt: 0)
+                              .execute
+                              .aggregations
+                              .dig('count', 'value')
+    end
+
     pull_review_ratio = 0
     score = 0
     if pull_count > 0
