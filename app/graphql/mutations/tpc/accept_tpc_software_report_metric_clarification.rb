@@ -22,23 +22,6 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::States.include?(state)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::Member_Types.include?(member_type)
 
-        if state != TpcSoftwareCommentState::State_Cancel
-          case member_type
-          when TpcSoftwareCommentState::Member_Type_Committer
-            permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user) &&
-              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
-          when TpcSoftwareCommentState::Member_Type_Sig_Lead
-            permission = TpcSoftwareMember.check_sig_lead_permission?(current_user) &&
-              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
-          when TpcSoftwareCommentState::Member_Type_Legal
-            permission = TpcSoftwareMember.check_legal_permission?(current_user) &&
-              TpcSoftwareCommentState.check_compliance_metric(metric_name)
-          when TpcSoftwareCommentState::Member_Type_Compliance
-            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
-          end
-          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
-        end
-
         case report_type
         when TpcSoftwareMetricServer::Report_Type_Selection
           report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
@@ -57,6 +40,23 @@ module Mutations
             version: TpcSoftwareReportMetric::Version_Default)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
           tpc_software_type = TpcSoftwareCommentState::Type_Graduation_Report_Metric
+        end
+
+        if state != TpcSoftwareCommentState::State_Cancel
+          case member_type
+          when TpcSoftwareCommentState::Member_Type_Committer
+            permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user) &&
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Sig_Lead
+            permission = TpcSoftwareMember.check_sig_lead_permission?(current_user) &&
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Legal
+            permission = TpcSoftwareMember.check_legal_permission?(current_user) &&
+              TpcSoftwareCommentState.check_compliance_metric(metric_name)
+          when TpcSoftwareCommentState::Member_Type_Compliance
+            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+          end
+          raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
 
         clarification_state = TpcSoftwareCommentState.find_or_initialize_by(
