@@ -73,6 +73,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
 
   Status_Progress = 'progress'
+  Status_Again_Progress = 'again_progress'
   Status_Success = 'success'
 
   Version_History = 0
@@ -428,6 +429,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     raw_list = []
     (scancode_result.dig("files") || []).each do |file|
       file_path = file.dig("path")
+      file_path_split = file_path.split("/")
+      next if file_path_split.length > 2 && file_path_split[1] == "hvigor"
       if file.dig("type") == "file" && source_code_files.any? { |ext| file_path.end_with?(ext) }
         if (file.dig("copyrights") || []).length > 0
           include_copyrights << file_path

@@ -72,6 +72,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   Report_Type_Selection = 'TpcSoftwareSelectionReport'
 
   Status_Progress = 'progress'
+  Status_Again_Progress = 'again_progress'
   Status_Success = 'success'
 
   Version_History = 0
