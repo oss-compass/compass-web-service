@@ -19,8 +19,8 @@
 #  short_code               :string(255)      not null
 #  subject_id               :integer          not null
 #  user_id                  :integer          not null
-#  created_at               :datetime
-#  updated_at               :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
 #  adaptation_method        :string(255)
 #
 # Indexes

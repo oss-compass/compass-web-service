@@ -185,8 +185,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_032404) do
   end
 
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
-    t.string "task_id"
-    t.string "remote_url", collation: "utf8mb4_bin"
+    t.string "task_id", null: false
+    t.string "remote_url", null: false, collation: "utf8mb4_bin"
     t.string "status"
     t.text "payload"
     t.text "extra"
@@ -253,7 +253,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_032404) do
     t.datetime "updated_at", null: false
     t.index ["subject_ref_id"], name: "index_subject_sigs_on_subject_ref_id", unique: true
   end
-  
 
   create_table "subjects", charset: "utf8mb4", force: :cascade do |t|
     t.string "label", null: false, collation: "utf8mb4_bin"
