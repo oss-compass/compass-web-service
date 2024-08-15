@@ -13,6 +13,7 @@
 #  user_id                            :integer          not null
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
+#  functional_description             :string(2000)
 #
 class TpcSoftwareGraduation < ApplicationRecord
 

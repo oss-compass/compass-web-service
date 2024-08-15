@@ -19,8 +19,8 @@
 #  short_code               :string(255)      not null
 #  subject_id               :integer          not null
 #  user_id                  :integer          not null
-#  created_at               :datetime
-#  updated_at               :datetime
+#  created_at               :datetime         not null
+#  updated_at               :datetime         not null
 #  adaptation_method        :string(255)
 #
 # Indexes
@@ -28,11 +28,15 @@
 #  index_tpc_software_selection_reports_on_short_code  (short_code) UNIQUE
 #
 class TpcSoftwareSelectionReport < ApplicationRecord
+  include ActiveStorageSupport::SupportForBase64
+  alias_attribute :architecture_diagrams, :attachments
 
   belongs_to :tpc_software_sig
   belongs_to :subject
   belongs_to :user
   has_many :tpc_software_report_metrics, as: :tpc_software_report, dependent: :destroy
+
+  has_many_base64_attached :attachments
 
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
 

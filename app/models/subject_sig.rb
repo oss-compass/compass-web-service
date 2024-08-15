@@ -2,14 +2,14 @@
 #
 # Table name: subject_sigs
 #
-#  id               :bigint           not null, primary key
-#  name             :string
-#  description      :string
-#  maintainers      :string
-#  emails           :string
-#  subject_ref_id   :integer
-#  created_at       :datetime
-#  updated_at       :datetime
+#  id             :bigint           not null, primary key
+#  name           :string(255)
+#  description    :string(255)
+#  maintainers    :string(255)
+#  emails         :string(255)
+#  subject_ref_id :integer
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
 #
 # Indexes
 #

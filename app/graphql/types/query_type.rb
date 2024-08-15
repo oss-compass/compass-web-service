@@ -123,6 +123,7 @@ module Types
     field :tpc_software_selection, resolver: Queries::Tpc::TpcSoftwareSelectionQuery
 
     field :tpc_software_report_metric_clarification_page, resolver: Queries::Tpc::TpcSoftwareReportMetricClarificationPageQuery
+    field :tpc_software_report_metric_clarification_permission, resolver: Queries::Tpc::TpcSoftwareReportMetricClarificationPermissionQuery
     field :tpc_software_selection_comment_page, resolver: Queries::Tpc::TpcSoftwareSelectionCommentPageQuery
 
     field :tpc_software_graduation_report_page, resolver: Queries::Tpc::TpcSoftwareGraduationReportPageQuery

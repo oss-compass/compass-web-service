@@ -21,6 +21,9 @@ module Mutations
         current_user = context[:current_user]
         validate_tpc!(current_user)
 
+        architecture_diagrams = software_report.architecture_diagrams || []
+        raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if architecture_diagrams.length > 5
+
         subject = Subject.find_by(label: label, level: level)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
         tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(subject_id: subject.id, code_url: software_report.code_url)
@@ -28,18 +31,22 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_code_url_invalid') unless TpcSoftwareReportMetric.check_url(software_report.code_url)
 
         ActiveRecord::Base.transaction do
-          software_report_data = software_report.as_json
+          software_report_data = software_report.as_json(except: [:architecture_diagrams])
           software_report_data["user_id"] = current_user.id
           software_report_data["subject_id"] = subject.id
           software_report_data["report_type"] = report_type
           software_report_data["manufacturer"] = ""
           software_report_data["website_url"] = ""
           software_report_data["short_code"] = TpcSoftwareSelectionReport.generate_short_code
-          tpc_software_selection_report = TpcSoftwareSelectionReport.create!(software_report_data)
+          report = TpcSoftwareSelectionReport.create(software_report_data)
+          architecture_diagrams.each do |architecture_diagram|
+            report.architecture_diagrams.attach(data: architecture_diagram.base64, filename: architecture_diagram.filename)
+          end
+          report.save!
 
-          report_metric = tpc_software_selection_report.tpc_software_report_metrics.create!(
+          report_metric = report.tpc_software_report_metrics.create!(
             {
-              code_url: tpc_software_selection_report.code_url,
+              code_url: report.code_url,
               status: TpcSoftwareReportMetric::Status_Progress,
               status_compass_callback: 0,
               status_tpc_service_callback: 0,

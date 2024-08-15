@@ -15,13 +15,15 @@ module Mutations
     argument :incubation_time, String, required: false
     argument :demand_source, String, required: true
     argument :committers, [String], required: true
+    argument :functional_description, String, required: true
     def resolve(label: nil,
                 level: 'repo',
                 tpc_software_graduation_report_ids: [],
                 incubation_start_time: nil,
                 incubation_time: nil,
                 demand_source: nil,
-                committers: []
+                committers: [],
+                functional_description: nil
                 )
       label = ShortenedLabel.normalize_label(label)
       current_user = context[:current_user]
@@ -44,6 +46,7 @@ module Mutations
           incubation_time: incubation_time,
           demand_source: demand_source,
           committers: committers.any? ? committers.to_json : nil,
+          functional_description: functional_description,
           subject_id: subject.id,
           user_id: current_user.id
         }
