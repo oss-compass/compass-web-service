@@ -12,6 +12,7 @@ module Types
       field :incubation_time, String
       field :demand_source, String
       field :committers, [String]
+      field :functional_description, String
       field :comment_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_sig_lead_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_legal_permission, Integer, description: '1: permissioned, 0: unpermissioned'

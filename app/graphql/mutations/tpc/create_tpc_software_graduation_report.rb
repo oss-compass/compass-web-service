@@ -16,6 +16,9 @@ module Mutations
         current_user = context[:current_user]
         validate_tpc!(current_user)
 
+        architecture_diagrams = software_report.architecture_diagrams || []
+        raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if architecture_diagrams.length > 5
+
         subject = Subject.find_by(label: label, level: level)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
         tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(subject_id: subject.id, code_url: software_report.code_url)
@@ -23,11 +26,15 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_code_url_invalid') unless TpcSoftwareGraduationReportMetric.check_url(software_report.code_url)
 
         ActiveRecord::Base.transaction do
-          software_report_data = software_report.as_json
+          software_report_data = software_report.as_json(except: [:architecture_diagrams])
           software_report_data["user_id"] = current_user.id
           software_report_data["subject_id"] = subject.id
           software_report_data["short_code"] = TpcSoftwareGraduationReport.generate_short_code
-          report = TpcSoftwareGraduationReport.create!(software_report_data)
+          report = TpcSoftwareGraduationReport.create(software_report_data)
+          architecture_diagrams.each do |architecture_diagram|
+            report.architecture_diagrams.attach(data: architecture_diagram.base64, filename: architecture_diagram.filename)
+          end
+          report.save!
 
           report_metric = report.tpc_software_graduation_report_metrics.create!(
             {

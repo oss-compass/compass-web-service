@@ -25,11 +25,15 @@
 #  index_tpc_software_graduation_reports_on_short_code  (short_code) UNIQUE
 #
 class TpcSoftwareGraduationReport < ApplicationRecord
+  include ActiveStorageSupport::SupportForBase64
+  alias_attribute :architecture_diagrams, :attachments
 
   belongs_to :tpc_software_sig
   belongs_to :subject
   belongs_to :user
   has_many :tpc_software_graduation_report_metrics, dependent: :destroy
+
+  has_many_base64_attached :attachments
 
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
 

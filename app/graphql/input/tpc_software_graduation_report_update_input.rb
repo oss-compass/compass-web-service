@@ -10,5 +10,6 @@ module Input
     argument :lifecycle_policy, String, required: true
     argument :round_upstream, String, required: false
     argument :is_incubation, Integer, required: true
+    argument :architecture_diagrams, [Input::Base64ImageInput], required: false
   end
 end
