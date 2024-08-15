@@ -48,6 +48,7 @@ module Types
 
     field :create_tpc_software_selection_report, mutation: Mutations::Tpc::CreateTpcSoftwareSelectionReport, description: 'Create a tpc software selection report'
     field :update_tpc_software_selection_report, mutation: Mutations::Tpc::UpdateTpcSoftwareSelectionReport, description: 'Update a tpc software selection report'
+    field :trigger_tpc_software_selection_report, mutation: Mutations::Tpc::TriggerTpcSoftwareSelectionReport, description: 'Trigger a tpc software selection report'
 
     field :create_tpc_software_selection, mutation: Mutations::Tpc::CreateTpcSoftwareSelection, description: 'Create a tpc software selection'
     field :update_tpc_software_selection, mutation: Mutations::Tpc::UpdateTpcSoftwareSelection, description: 'Update a tpc software selection'
@@ -64,6 +65,7 @@ module Types
 
     field :create_tpc_software_graduation_report, mutation: Mutations::Tpc::CreateTpcSoftwareGraduationReport, description: 'Create a tpc software graduation report'
     field :update_tpc_software_graduation_report, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduationReport, description: 'Update a tpc software graduation report'
+    field :trigger_tpc_software_graduation_report, mutation: Mutations::Tpc::TriggerTpcSoftwareGraduationReport, description: 'Trigger a tpc software graduation report'
 
     field :create_tpc_software_graduation, mutation: Mutations::Tpc::CreateTpcSoftwareGraduation, description: 'Create a tpc software graduation'
     field :update_tpc_software_graduation, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduation, description: 'Update a tpc software graduation'
