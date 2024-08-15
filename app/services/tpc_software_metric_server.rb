@@ -74,7 +74,7 @@ class TpcSoftwareMetricServer
     Rails.logger.info("create_issue_workflow info: issue_html_url: #{issue_html_url}")
 
 
-    if issue_title.include?("【孵化选型申请】")
+    if issue_title.include?("【孵化选型申请】") || issue_title.include?("【孵化申请】")
       # save issue url
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
@@ -121,7 +121,8 @@ class TpcSoftwareMetricServer
 
     Rails.logger.info("create_issue_comment_workflow info: issue_html_url: #{issue_html_url}")
 
-    if issue_title.include?("【孵化选型申请】") && TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
+    if (issue_title.include?("【孵化选型申请】") || issue_title.include?("【孵化申请】")) &&
+      TpcSoftwareCommentState::Member_Type_Names.any? { |word| comment.start_with?(word) }
       issue_body_taskId_matched = issue_body.match(/taskId=(.*?)&projectId=/)
       if issue_body_taskId_matched
         # save issue url
