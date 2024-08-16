@@ -31,8 +31,14 @@ module Mutations
           software_report_data["subject_id"] = subject.id
           software_report_data["short_code"] = TpcSoftwareGraduationReport.generate_short_code
           report = TpcSoftwareGraduationReport.create(software_report_data)
-          architecture_diagrams.each do |architecture_diagram|
-            report.architecture_diagrams.attach(data: architecture_diagram.base64, filename: architecture_diagram.filename)
+          if architecture_diagrams.length > 0
+            diagrams_to_attach = architecture_diagrams.map do |architecture_diagram|
+              {
+                data: architecture_diagram.base64,
+                filename: architecture_diagram.filename
+              }
+            end
+            report.architecture_diagrams.attach(diagrams_to_attach)
           end
           report.save!
 
