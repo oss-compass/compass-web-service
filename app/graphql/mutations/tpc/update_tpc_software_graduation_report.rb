@@ -36,9 +36,13 @@ module Mutations
           end
 
           if new_images.present?
-            new_images.each do |image|
-              graduation_report.architecture_diagrams.attach(data: image.base64, filename: image.filename)
+            diagrams_to_attach = new_images.map do |architecture_diagram|
+              {
+                data: architecture_diagram.base64,
+                filename: architecture_diagram.filename
+              }
             end
+            graduation_report.architecture_diagrams.attach(diagrams_to_attach)
           end
         end
 
