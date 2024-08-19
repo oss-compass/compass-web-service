@@ -89,8 +89,8 @@ module Mutations
           )
 
           tpc_software_metric_server = TpcSoftwareMetricServer.new({project_url: software_report.code_url})
-          tpc_software_metric_server.analyze_metric_by_tpc_service(tpc_software_selection_report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
-          tpc_software_metric_server.analyze_metric_by_compass(tpc_software_selection_report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
+          tpc_software_metric_server.analyze_metric_by_tpc_service(report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
+          tpc_software_metric_server.analyze_metric_by_compass(report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Selection)
 
         end
 

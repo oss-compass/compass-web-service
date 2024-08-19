@@ -138,30 +138,32 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
     license_db_data = get_license_data
 
-    raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
-      (license_detection.dig("reference_matches") || []).map do |reference_match|
-        keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
-        reference_match.select { |key, _| keys_to_select.include?(key) }
+    raw_data = (scancode_result.dig("files") || []).map do |file|
+      keys_to_select = %w[path type detected_license_expression detected_license_expression_spdx]
+      file_type = file.dig("type") || ""
+      from_file_split = (file.dig("path") || "").downcase.split("/")
+      if file_type == "file" && file.dig("detected_license_expression") &&
+        (from_file_split.length == 2 || from_file_split.length >= 2 && from_file_split[1] == "license")
+        file.select { |key, _| keys_to_select.include?(key) }
       end
-    end
+    end.compact
 
-    (scancode_result.dig("license_detections") || []).each do |license_detection|
-      (license_detection.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
-        license_expression = license_expression.strip.downcase
-        license_list << license_expression
-        category = license_db_data.dig(license_expression, :category)
-        if category
-          case category
-          when "Permissive"
-            osi_permissive_license_list << license_expression
-          when "Copyleft Limited"
-            osi_copyleft_limited_license_list << license_expression
-          else
-            osi_free_restricted_license_list << license_expression
-          end
+    raw_data.each do |raw|
+      license_expression = raw['detected_license_expression']
+      license_expression = license_expression.strip.downcase
+      license_list << license_expression
+      category = license_db_data.dig(license_expression, :category)
+      if category
+        case category
+        when "Permissive"
+          osi_permissive_license_list << license_expression
+        when "Copyleft Limited"
+          osi_copyleft_limited_license_list << license_expression
         else
-          non_osi_license_list << license_expression
+          osi_free_restricted_license_list << license_expression
         end
+      else
+        non_osi_license_list << license_expression
       end
     end
 
@@ -534,19 +536,22 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def self.get_license(scancode_result)
-    files = scancode_result.dig("files") || []
-    unless files&.any?
-      return nil
-    end
+    root_directory_license = []
+    sub_directory_license = []
 
-    files.each do |file|
+    (scancode_result.dig("files") || []).each do |file|
       file_type = file.dig("type") || ""
-      from_file_split = (file.dig("path") || "").split("/")
-      if file_type == "file" && from_file_split.length == 2 && file.dig("detected_license_expression")
-        return file.dig("detected_license_expression")
+      from_file_split = (file.dig("path") || "").downcase.split("/")
+      if file_type == "file" && file.dig("detected_license_expression")
+        if from_file_split.length == 2
+          root_directory_license << file.dig("detected_license_expression")
+        end
+        if from_file_split.length > 2 && from_file_split[1] == "license"
+          sub_directory_license << file.dig("detected_license_expression")
+        end
       end
     end
-    return nil
+    return root_directory_license.first || sub_directory_license.first || nil
   end
 
   def self.get_ecology_dependency_acquisition(dependency_checker_result)
