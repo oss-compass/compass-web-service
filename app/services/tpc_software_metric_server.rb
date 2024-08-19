@@ -35,7 +35,7 @@ class TpcSoftwareMetricServer
           }
         }
       }
-    ).simple_execute
+    ).execute_tpc
     Rails.logger.info("analyze metric by compass info: #{result}")
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end

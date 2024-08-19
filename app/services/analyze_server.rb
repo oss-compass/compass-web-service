@@ -3,6 +3,7 @@
 class AnalyzeServer
   PROJECT = 'insight'
   WORKFLOW = 'ETL_V1'
+  WORKFLOW_TPC = 'ETL_V1_TPC'
 
   include Common
   include CompassUtils
@@ -79,13 +80,13 @@ class AnalyzeServer
     { status: nil, message: ex.message }
   end
 
-  def simple_execute
+  def execute_tpc
     validate!
 
     response =
       Faraday.post(
         "#{CELERY_SERVER}/api/workflows",
-        payload.to_json,
+        payload(project: PROJECT, name: WORKFLOW_TPC).to_json,
         { 'Content-Type' => 'application/json' }
       )
     task_resp = JSON.parse(response.body)
@@ -123,10 +124,10 @@ class AnalyzeServer
     raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))
   end
 
-  def payload
+  def payload(project: PROJECT, name: WORKFLOW)
     {
-      project: PROJECT,
-      name: WORKFLOW,
+      project: project,
+      name: name,
       payload: {
         deubg: false,
         enrich: @enrich,
