@@ -98,20 +98,15 @@ module Types
       end
 
       def ecology_software_quality
-        quality_detail = object.ecology_software_quality_detail.present? ? JSON.parse(object.ecology_software_quality_detail) : {}
-        if quality_detail.dig("duplication_ratio").nil? || quality_detail.dig("coverage_ratio").nil?
-          -1
-        else
-          object.ecology_software_quality
-        end
+        object.get_ecology_software_quality
       end
 
       def ecology_adaptation_method_detail
-        TpcSoftwareReportMetric.get_ecology_adaptation_method_detail(object.tpc_software_report_id)
+        object.get_ecology_adaptation_method_detail
       end
 
       def ecology_adaptation_method
-        TpcSoftwareReportMetric.get_ecology_adaptation_method(object.tpc_software_report_id)
+        object.get_ecology_adaptation_method
       end
 
     end

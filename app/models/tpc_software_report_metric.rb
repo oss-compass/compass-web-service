@@ -78,10 +78,33 @@ class TpcSoftwareReportMetric < ApplicationRecord
   Version_History = 0
   Version_Default = 1
 
-
-
   @@license_conflict_data = nil
   @@license_data = nil
+
+  def report_score
+
+    compliance_metric_score = [compliance_license, compliance_dco, compliance_license_compatibility, ecology_patent_risk]
+    compliance_metric_score_filter = compliance_metric_score.compact.reject { |element| element == -1 }
+    compliance_score = compliance_metric_score_filter.sum(0) * 10 / compliance_metric_score_filter.size
+
+    ecology_metric_score = [ecology_dependency_acquisition, ecology_code_maintenance, ecology_community_support,
+                               ecology_adoption_analysis, get_ecology_software_quality, get_ecology_adaptation_method]
+    ecology_metric_score_filter = ecology_metric_score.compact.reject { |element| element == -1 }
+    ecology_score = ecology_metric_score_filter.sum(0) * 10 / ecology_metric_score_filter.size
+
+    lifecycle_metric_score = [lifecycle_version_lifecycle]
+    lifecycle_metric_score_filter = lifecycle_metric_score.compact.reject { |element| element == -1 }
+    lifecycle_score = lifecycle_metric_score_filter.sum(0) * 10 / lifecycle_metric_score_filter.size
+
+    security_metric_score = [security_binary_artifact, security_vulnerability, security_vulnerability_response]
+    security_metric_score_filter = security_metric_score.compact.reject { |element| element == -1 }
+    security_score = security_metric_score_filter.sum(0) * 10 / security_metric_score_filter.size
+
+    total_score = [compliance_score, ecology_score, lifecycle_score, security_score]
+    total_score = total_score.sum(0) / total_score.size
+
+    [total_score, compliance_score, ecology_score, lifecycle_score, security_score]
+  end
 
   def self.check_url(url)
     if url.nil?
@@ -571,16 +594,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_ecology_adaptation_method_detail(report_id)
-    query_data = TpcSoftwareSelectionReport.find_by(id: report_id)
+  def get_ecology_adaptation_method_detail
+    query_data = TpcSoftwareSelectionReport.find_by(id: tpc_software_report_id)
     if query_data.present?
       return query_data.adaptation_method
     end
     nil
   end
 
-  def self.get_ecology_adaptation_method(report_id)
-    adaptation_method = get_ecology_adaptation_method_detail(report_id)
+  def get_ecology_adaptation_method
+    adaptation_method = get_ecology_adaptation_method_detail
     score = -1
     if adaptation_method.present?
       case adaptation_method
@@ -597,6 +620,15 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
     score
+  end
+
+  def get_ecology_software_quality
+    quality_detail = ecology_software_quality_detail.present? ? JSON.parse(ecology_software_quality_detail) : {}
+    if quality_detail.dig("duplication_ratio").nil? || quality_detail.dig("coverage_ratio").nil?
+      -1
+    else
+      ecology_software_quality
+    end
   end
 
 end

@@ -94,12 +94,7 @@ module Types
       end
 
       def ecology_test_coverage
-        quality_detail = object.ecology_test_coverage_detail.present? ? JSON.parse(object.ecology_test_coverage_detail) : {}
-        if quality_detail.dig("duplication_ratio").nil? || quality_detail.dig("coverage_ratio").nil?
-          -1
-        else
-          object.ecology_test_coverage
-        end
+        object.get_ecology_test_coverage
       end
 
     end
