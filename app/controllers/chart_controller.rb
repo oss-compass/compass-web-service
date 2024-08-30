@@ -27,7 +27,8 @@ class ChartController < ApplicationController
     send_data png, type: 'image/png', disposition: 'inline'
   rescue => ex
     Rails.logger.error("Failed to render PNG chart: #{ex.message}")
-    send_data '', type: 'image/png', disposition: 'inline'
+    default_png = File.read(Rails.root.join('app', 'assets', 'images', 'default-tpc-report.png'))
+    send_data default_png, type: 'image/png', disposition: 'inline'
   end
 
   def extract_range
