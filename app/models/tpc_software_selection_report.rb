@@ -38,6 +38,9 @@ class TpcSoftwareSelectionReport < ApplicationRecord
 
   has_many_base64_attached :attachments
 
+  Report_Type_Incubation = 0
+  Report_Type_Sandbox = 1
+
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
 
   def self.generate_short_code

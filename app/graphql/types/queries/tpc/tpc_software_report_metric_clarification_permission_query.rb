@@ -17,9 +17,12 @@ module Types
 
           case report_type
           when TpcSoftwareMetricServer::Report_Type_Selection
-            report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
+            report = TpcSoftwareSelectionReport.where(report_type: TpcSoftwareSelectionReport::Report_Type_Incubation)
+                                               .where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
+                                               .first
           when TpcSoftwareMetricServer::Report_Type_Graduation
-            report = TpcSoftwareGraduationReport.find_by(short_code: short_code)
+            report = TpcSoftwareGraduationReport.where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
+                                                .first
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
 
