@@ -12,7 +12,9 @@ module Types
 
 
         def resolve(short_code: nil)
-          TpcSoftwareSelectionReport.find_by(short_code: short_code)
+          TpcSoftwareSelectionReport.where(report_type: TpcSoftwareSelectionReport::Report_Type_Incubation)
+                                    .where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
+                                    .first
         end
       end
     end

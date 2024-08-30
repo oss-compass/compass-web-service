@@ -49,7 +49,7 @@ class TpcSoftwareSelection < ApplicationRecord
                                                   .take
     raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
     target_metric_hash = target_metric.attributes
-    target_metric_hash['ecology_adaptation_method'] = TpcSoftwareReportMetric.get_ecology_adaptation_method(target_metric.tpc_software_report_id)
+    target_metric_hash['ecology_adaptation_method'] = target_metric.get_ecology_adaptation_method
 
     comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_metric.id)
                                                 .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)

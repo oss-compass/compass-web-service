@@ -12,7 +12,8 @@ module Types
 
 
         def resolve(short_code: nil)
-          TpcSoftwareGraduationReport.find_by(short_code: short_code)
+          TpcSoftwareGraduationReport.where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
+                                     .first
         end
       end
     end

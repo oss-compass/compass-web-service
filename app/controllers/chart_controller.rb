@@ -22,6 +22,15 @@ class ChartController < ApplicationController
     render template: 'chart/empty', layout: false, content_type: 'image/svg+xml'
   end
 
+  def show_tpc
+    png = ChartTpcRenderServer.new(params).render
+    send_data png, type: 'image/png', disposition: 'inline'
+  rescue => ex
+    Rails.logger.error("Failed to render PNG chart: #{ex.message}")
+    default_png = File.read(Rails.root.join('app', 'assets', 'images', 'default-tpc-report.png'))
+    send_data default_png, type: 'image/png', disposition: 'inline'
+  end
+
   def extract_range
     today = Date.today.end_of_day
     case params[:range]
