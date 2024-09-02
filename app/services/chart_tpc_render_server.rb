@@ -18,9 +18,9 @@ class ChartTpcRenderServer
                                                         render_tpc_incubating_chart
                                                       end
     payload = {
-      total: total,
-      compliance: compliance,
-      ecology: ecology,
+      global: total,
+      legal: compliance,
+      technology_ecosystem: ecology,
       lifecycle: lifecycle,
       security: security
     }

@@ -23,10 +23,10 @@ class ChartController < ApplicationController
   end
 
   def show_tpc
-    png = ChartTpcRenderServer.new(params).render
-    send_data png, type: 'image/png', disposition: 'inline'
+    svg = ChartTpcRenderServer.new(params).render
+    render xml: svg, layout: false, content_type: 'image/svg+xml'
   rescue => ex
-    Rails.logger.error("Failed to render PNG chart: #{ex.message}")
+    Rails.logger.error("Failed to render svg chart: #{ex.message}")
     default_png = File.read(Rails.root.join('app', 'assets', 'images', 'default-tpc-report.png'))
     send_data default_png, type: 'image/png', disposition: 'inline'
   end
