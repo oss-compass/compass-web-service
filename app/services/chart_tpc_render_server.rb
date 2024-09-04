@@ -24,12 +24,10 @@ class ChartTpcRenderServer
       lifecycle: lifecycle,
       security: security
     }
-
-    Faraday.post(
-      "#{ECHARTS_TPC_SERVER}",
-      payload.to_json,
-      { 'Content-Type' => 'application/json'}
-    ).body
+    token = tpc_service_token
+    result = base_post_request("report-summary", payload, token: token)
+    raise GraphQL::ExecutionError.new result[:message] unless result[:status]
+    result[:body]
   end
 
   def render_tpc_incubating_chart
@@ -49,6 +47,37 @@ class ChartTpcRenderServer
       tpc_software_graduation_report_id: report.id,
       version: TpcSoftwareGraduationReportMetric::Version_Default)
     report_metric.report_score
+  end
+
+  def tpc_service_token
+    payload = {
+      client_id: TPC_SERVICE_API_USERNAME,
+      client_secret: TPC_SERVICE_API_PASSWORD
+    }
+    result = base_post_request("login", payload)
+    raise GraphQL::ExecutionError.new result[:message] unless result[:status]
+    JSON.parse(result[:body])["access_token"]
+  end
+
+  def base_post_request(request_path, payload, token: nil)
+    header = { 'Content-Type' => 'application/json' }
+    if token
+      header["Authorization"] = "Bearer #{token}"
+    end
+    resp = RestClient::Request.new(
+      method: :post,
+      url: "#{ECHARTS_TPC_SERVER}/#{request_path}",
+      payload: payload.to_json,
+      headers: header,
+      proxy: PROXY
+    ).execute
+    if resp.body.include?("error")
+      { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: resp.body) }
+    else
+      { status: true, body: resp.body }
+    end
+  rescue => ex
+    { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: ex.message) }
   end
 
 end
