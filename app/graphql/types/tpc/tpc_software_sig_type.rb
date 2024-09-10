@@ -6,6 +6,7 @@ module Types
       field :id, Integer, null: false
       field :name, String, null: false
       field :description, String, null: false
+      field :sig_committer, [Types::Tpc::TpcSoftwareMemberType]
     end
   end
 end
