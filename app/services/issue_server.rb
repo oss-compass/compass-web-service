@@ -22,7 +22,13 @@ class IssueServer
   end
 
   def update_gitee_issue_title(number, title)
-    result = gitee_update_issue_title(@repo_url, @gitee_token, number, title)
+    result = gitee_update_issue(@repo_url, @gitee_token, number, title: title)
+    return result unless result[:status]
+    { status: true, message: result[:message] }
+  end
+
+  def update_gitee_issue_body(number, body)
+    result = gitee_update_issue(@repo_url, @gitee_token, number, body: body)
     return result unless result[:status]
     { status: true, message: result[:message] }
   end

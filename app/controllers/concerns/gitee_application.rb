@@ -181,18 +181,19 @@ module GiteeApplication
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
   end
 
-  def gitee_update_issue_title(repo_url, gitee_token, number, title)
+  def gitee_update_issue(repo_url, gitee_token, number, title: nil, body: nil)
     resp = Faraday.patch(
       "#{GITEE_API_ENDPOINT}/repos/#{gitee_owner(repo_url)}/issues/#{number}",
       {
         repo: gitee_repo(repo_url),
         title: title,
+        body: body,
         access_token: gitee_token
       }.to_json,
       { 'Content-Type' => 'application/json' }
     )
     issue = JSON.parse(resp.body)
-    Rails.logger.info "gitee_update_issue_title: #{issue}"
+    Rails.logger.info "gitee_update_issue: #{issue}"
     { status: true, message: '' }
   rescue => ex
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
