@@ -69,7 +69,7 @@ module Mutations
 
   > #{values.demand_source}
 
-  3. 【Committers】
+  3. 【垂域 Committers】
 
   > #{committer}
 

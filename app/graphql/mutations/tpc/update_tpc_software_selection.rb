@@ -100,7 +100,7 @@ module Mutations
 
   > #{values.incubation_time}
 
-  5. 【Committers】
+  5. 【垂域 Committers】
 
   > #{committer}
 
