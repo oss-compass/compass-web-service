@@ -16,6 +16,13 @@ class TpcSoftwareSig < ApplicationRecord
   belongs_to :subject
   has_many :tpc_software_selection_report
   has_many :tpc_software_graduation_report
+  has_many :tpc_software_members
 
+  def sig_committer
+    TpcSoftwareMember.where(tpc_software_sig_id: id)
+                     .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
+                     .where.not(gitee_account: nil)
+
+  end
 
 end

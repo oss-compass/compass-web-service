@@ -140,6 +140,24 @@ class TpcSoftwareGraduation < ApplicationRecord
     end
   end
 
+  def self.update_issue_body(issue_body, issue_html_url)
+    issue_url_list = issue_html_url.split("/issues/")
+    subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+    if issue_url_list.length && subject_customization.present?
+      repo_url = issue_url_list[0]
+      number = issue_url_list[1]
+      if repo_url.include?("gitee.com")
+        IssueServer.new(
+          {
+            repo_url: repo_url,
+            gitee_token: subject_customization.gitee_token,
+            github_token: nil
+          }
+        ).update_gitee_issue_body(number, issue_body)
+      end
+    end
+  end
+
 
   def self.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
     if mail_list.length > 0
