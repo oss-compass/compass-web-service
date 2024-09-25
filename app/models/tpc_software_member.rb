@@ -104,5 +104,13 @@ class TpcSoftwareMember < ApplicationRecord
     return tpc_software_member.present?
   end
 
+  def self.get_committer_list(current_user, subject_id)
+    committer_list = TpcSoftwareMember.where(user_id: current_user.id)
+                                           .where(member_type: Member_Type_Sig_Committer)
+                                           .where("role_level >= ?", Role_Level_Approval)
+                                           .where(subject_id: subject_id)
+    return committer_list
+  end
+
 
 end

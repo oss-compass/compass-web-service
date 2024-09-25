@@ -14,8 +14,8 @@
 class TpcSoftwareSig < ApplicationRecord
 
   belongs_to :subject
-  has_many :tpc_software_selection_report
-  has_many :tpc_software_graduation_report
+  has_many :tpc_software_selection_reports
+  has_many :tpc_software_graduation_reports
   has_many :tpc_software_members
 
   def sig_committer

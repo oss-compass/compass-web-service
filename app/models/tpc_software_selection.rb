@@ -20,27 +20,38 @@
 #  is_same_type_check                :integer          default(0)
 #  same_type_software_name           :string(255)
 #  issue_url                         :string(255)
+#  state                             :integer
+#  target_software_report_id         :integer
 #
 class TpcSoftwareSelection < ApplicationRecord
 
   belongs_to :subject
   belongs_to :user
+  belongs_to :tpc_software_selection_report, foreign_key: 'target_software_report_id'
+
+  State_Awaiting_Clarification = 0
+  State_Awaiting_Confirmation = 1
+  State_Awaiting_Review = 2
+  State_Completed = 3
+  State_Rejected = -1
+
+  Clarify_Metric_List = [
+    "compliance_license",
+    "compliance_license_compatibility",
+    "ecology_patent_risk",
+    "ecology_dependency_acquisition",
+    "ecology_code_maintenance",
+    "ecology_community_support",
+    "ecology_adaptation_method",
+    "ecology_adoption_analysis",
+    "lifecycle_version_normalization",
+    "lifecycle_version_lifecycle",
+    "security_binary_artifact",
+    "security_vulnerability"
+  ]
 
   def self.get_review_permission(selection, member_type)
-    clarify_metric_list = [
-      "compliance_license",
-      "compliance_license_compatibility",
-      "ecology_patent_risk",
-      "ecology_dependency_acquisition",
-      "ecology_code_maintenance",
-      "ecology_community_support",
-      "ecology_adaptation_method",
-      "ecology_adoption_analysis",
-      "lifecycle_version_normalization",
-      "lifecycle_version_lifecycle",
-      "security_binary_artifact",
-      "security_vulnerability"
-    ]
+    clarify_metric_list = TpcSoftwareSelection::Clarify_Metric_List
 
     target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: JSON.parse(selection.tpc_software_selection_report_ids))
                                                   .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
@@ -103,6 +114,65 @@ class TpcSoftwareSelection < ApplicationRecord
     end
     true
   end
+
+  def self.get_risk_metric_list(report_id)
+    target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(version: TpcSoftwareReportMetric::Version_Default)
+                                           .take
+    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
+    target_metric_hash = target_metric.attributes
+    target_metric_hash['ecology_adaptation_method'] = target_metric.get_ecology_adaptation_method
+
+    risk_metric_list = []
+    TpcSoftwareSelection::Clarify_Metric_List.each do |clarify_metric|
+      score = target_metric_hash[clarify_metric]
+      if score.present? &&  score < 10
+        risk_metric_list << clarify_metric.camelize(:lower)
+      end
+    end
+    risk_metric_list
+  end
+
+  def self.get_clarified_metric_list(report_id)
+    comment_list = TpcSoftwareComment.where(tpc_software_id: report_id)
+                                     .where(tpc_software_type: TpcSoftwareComment::Type_Report_Metric)
+                                     .where(metric_name: get_risk_metric_list(report_id))
+    comment_metric_name_list = comment_list.map do |comment_item|
+      comment_item.metric_name
+    end
+    comment_metric_name_list.uniq
+  end
+
+  def self.get_confirmed_metric_list(report_id)
+    risk_metric_list = get_risk_metric_list(report_id)
+    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: report_id)
+                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
+                                                .where(metric_name: risk_metric_list)
+    member_type_hash = comment_state_list.each_with_object({}) do |comment_state_item, hash|
+      (hash[comment_state_item.metric_name] ||= []) << comment_state_item.member_type
+    end
+    confirmed_metrics = []
+    risk_metric_list.each do |risk_metric|
+      if member_type_hash.key?(risk_metric)
+        member_type_list = member_type_hash[risk_metric]
+        if TpcSoftwareCommentState.check_compliance_metric(risk_metric)
+          if [TpcSoftwareCommentState::Member_Type_Compliance,
+              TpcSoftwareCommentState::Member_Type_Legal].all? { |element| member_type_list.include?(element) }
+            confirmed_metrics << risk_metric
+          end
+        else
+          if [TpcSoftwareCommentState::Member_Type_Compliance,
+              TpcSoftwareCommentState::Member_Type_Committer,
+              TpcSoftwareCommentState::Member_Type_Sig_Lead].all? { |element| member_type_list.include?(element) }
+            confirmed_metrics << risk_metric
+          end
+        end
+      end
+    end
+    confirmed_metrics
+  end
+
 
 
   def self.save_issue_url(id, issue_html_url)

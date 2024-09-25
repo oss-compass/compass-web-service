@@ -125,6 +125,12 @@ module Types
         raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
       end
 
+      def validate_tpc!(current_user)
+        login_required!(current_user)
+        return if current_user&.is_tpc?
+        raise GraphQL::ExecutionError.new I18n.t('users.forbidden')
+      end
+
       def validate_date!(current_user, label, level, begin_date, end_date)
         login_required!(current_user)
         ok, valid_range, _admin = validate_date(current_user, label, level, begin_date, end_date)

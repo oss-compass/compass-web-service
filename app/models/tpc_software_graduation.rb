@@ -14,38 +14,49 @@
 #  created_at                         :datetime         not null
 #  updated_at                         :datetime         not null
 #  functional_description             :string(2000)
+#  state                              :integer
+#  target_software_report_id          :integer
 #
 class TpcSoftwareGraduation < ApplicationRecord
 
   belongs_to :subject
   belongs_to :user
+  belongs_to :tpc_software_graduation_report, foreign_key: 'target_software_report_id'
+
+  State_Awaiting_Clarification = 0
+  State_Awaiting_Confirmation = 1
+  State_Awaiting_Review = 2
+  State_Completed = 3
+  State_Rejected = -1
+
+  Clarify_Metric_List = [
+    "compliance_license",
+    "compliance_dco",
+    "compliance_license_compatibility",
+    "compliance_copyright_statement",
+    "compliance_copyright_statement_anti_tamper",
+    "compliance_snippet_reference",
+    "ecology_readme",
+    "ecology_build_doc",
+    "ecology_interface_doc",
+    "ecology_issue_management",
+    "ecology_issue_response_ratio",
+    "ecology_issue_response_time",
+    "ecology_maintainer_doc",
+    "ecology_build",
+    "ecology_ci",
+    "ecology_test_coverage",
+    "ecology_code_review",
+    "ecology_code_upstream",
+    "lifecycle_release_note",
+    "lifecycle_statement",
+    "security_binary_artifact",
+    "security_vulnerability",
+    "security_package_sig"
+  ]
 
   def self.get_review_permission(graduation, member_type)
-    clarify_metric_list = [
-      "compliance_license",
-      "compliance_dco",
-      "compliance_license_compatibility",
-      "compliance_copyright_statement",
-      "compliance_copyright_statement_anti_tamper",
-      "compliance_snippet_reference",
-      "ecology_readme",
-      "ecology_build_doc",
-      "ecology_interface_doc",
-      "ecology_issue_management",
-      "ecology_issue_response_ratio",
-      "ecology_issue_response_time",
-      "ecology_maintainer_doc",
-      "ecology_build",
-      "ecology_ci",
-      "ecology_test_coverage",
-      "ecology_code_review",
-      "ecology_code_upstream",
-      "lifecycle_release_note",
-      "lifecycle_statement",
-      "security_binary_artifact",
-      "security_vulnerability",
-      "security_package_sig"
-    ]
+    clarify_metric_list = TpcSoftwareGraduation::Clarify_Metric_List
 
     target_metric_list = TpcSoftwareGraduationReportMetric.where(tpc_software_graduation_report_id: JSON.parse(graduation.tpc_software_graduation_report_ids))
                                                           .where(version: TpcSoftwareReportMetric::Version_Default)
@@ -106,6 +117,68 @@ class TpcSoftwareGraduation < ApplicationRecord
     end
     true
   end
+
+
+  def self.get_risk_metric_list(report_id)
+    clarify_metric_list = TpcSoftwareGraduation::Clarify_Metric_List
+
+    target_metric = TpcSoftwareGraduationReportMetric.where(tpc_software_graduation_report_id: report_id)
+                                                          .where(version: TpcSoftwareReportMetric::Version_Default)
+                                                          .take
+    raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
+    target_metric_hash = target_metric.attributes
+
+    risk_metric_list = []
+    clarify_metric_list.each do |clarify_metric|
+      score = target_metric_hash[clarify_metric]
+      if score.present? &&  score < 10
+        risk_metric_list << clarify_metric.camelize(:lower)
+      end
+    end
+    risk_metric_list
+  end
+
+  def self.get_clarified_metric_list(report_id)
+    comment_list = TpcSoftwareComment.where(tpc_software_id: report_id)
+                                     .where(tpc_software_type: TpcSoftwareComment::Type_Graduation_Report_Metric)
+                                     .where(metric_name: get_risk_metric_list(report_id))
+    comment_metric_name_list = comment_list.map do |comment_item|
+      comment_item.metric_name
+    end
+    comment_metric_name_list.uniq
+  end
+
+  def self.get_confirmed_metric_list(report_id)
+    risk_metric_list = get_risk_metric_list(report_id)
+    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: report_id)
+                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Graduation_Report_Metric)
+                                                .where(metric_name: risk_metric_list)
+    member_type_hash = comment_state_list.each_with_object({}) do |comment_state_item, hash|
+      (hash[comment_state_item.metric_name] ||= []) << comment_state_item.member_type
+    end
+    confirmed_metrics = []
+    risk_metric_list.each do |risk_metric|
+      if member_type_hash.key?(risk_metric)
+        member_type_list = member_type_hash[risk_metric]
+        if TpcSoftwareCommentState.check_compliance_metric(risk_metric)
+          if [TpcSoftwareCommentState::Member_Type_Compliance,
+              TpcSoftwareCommentState::Member_Type_Legal].all? { |element| member_type_list.include?(element) }
+            confirmed_metrics << risk_metric
+          end
+        else
+          if [TpcSoftwareCommentState::Member_Type_Compliance,
+              TpcSoftwareCommentState::Member_Type_Committer,
+              TpcSoftwareCommentState::Member_Type_Sig_Lead].all? { |element| member_type_list.include?(element) }
+            confirmed_metrics << risk_metric
+          end
+        end
+      end
+    end
+    confirmed_metrics
+  end
+
+
+
 
   def self.save_issue_url(id, issue_html_url)
     graduation = TpcSoftwareGraduation.find_by(id: id)
