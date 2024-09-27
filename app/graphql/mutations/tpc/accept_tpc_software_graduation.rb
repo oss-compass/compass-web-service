@@ -69,6 +69,7 @@ module Mutations
               }
             )
           end
+          TpcSoftwareGraduation.update_state(graduation.id)
         end
         to_state = TpcSoftwareCommentState.get_state(graduation.id, TpcSoftwareCommentState::Type_Graduation, member_type)
         send_issue_comment(to_state, member_type, graduation.issue_url, current_user)

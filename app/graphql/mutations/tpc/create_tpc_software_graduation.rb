@@ -47,6 +47,8 @@ module Mutations
           demand_source: demand_source,
           committers: committers.any? ? committers.to_json : nil,
           functional_description: functional_description,
+          target_software_report_id: tpc_software_graduation_report_ids[0],
+          state: TpcSoftwareGraduation.get_report_current_state(tpc_software_graduation_report_ids[0]),
           subject_id: subject.id,
           user_id: current_user.id
         }
