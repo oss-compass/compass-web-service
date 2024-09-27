@@ -31,30 +31,36 @@ module Types
               else
                 tpc_software = TpcSoftwareSelection
             end
-            items = tpc_software.joins(:user)
+            items = tpc_software.joins(:user, :tpc_software_report)
                                 .where(subject_id: subject.id)
                                 .where(user_id: current_user.id)
                                 .where.not(issue_url: nil)
                                 .where.not(state: nil)
-            if filter_opts.present?
-              filter_opts.each do |filter_opt|
-                if filter_opt.type == "user"
-                  conditions = filter_opt.values.map { |value| "users.name LIKE ?" }.join(" OR ")
-                  like_values = filter_opt.values.map { |value| "%#{value}%" }
-                else
-                  conditions = filter_opt.values.map { |value| "#{filter_opt.type} LIKE ?" }.join(" OR ")
-                  like_values = filter_opt.values.map { |value| "%#{value}%" }
-                end
-                items = items.where(conditions, *like_values)
-              end
-            end
 
-            if sort_opts.present?
-              sort_opts.each do |sort_opt|
-                items = items.order("#{sort_opt.type} #{sort_opt.direction}")
+            if items.is_a?(ActiveRecord::Relation)
+              if filter_opts.present?
+                filter_opts.each do |filter_opt|
+                  if filter_opt.type == "user"
+                    conditions = filter_opt.values.map { |value| "users.name LIKE ?" }.join(" OR ")
+                    like_values = filter_opt.values.map { |value| "%#{value}%" }
+                  elsif filter_opt.type == "name"
+                      conditions = filter_opt.values.map { |value| "#{tpc_software.reflect_on_association(:tpc_software_report).table_name}.name LIKE ?" }.join(" OR ")
+                      like_values = filter_opt.values.map { |value| "%#{value}%" }
+                  else
+                    conditions = filter_opt.values.map { |value| "#{filter_opt.type} LIKE ?" }.join(" OR ")
+                    like_values = filter_opt.values.map { |value| "%#{value}%" }
+                  end
+                  items = items.where(conditions, *like_values)
+                end
               end
-            else
-              items = items.order("created_at desc")
+
+              if sort_opts.present?
+                sort_opts.each do |sort_opt|
+                  items = items.order("#{sort_opt.type} #{sort_opt.direction}")
+                end
+              else
+                items = items.order("created_at desc")
+              end
             end
           end
           pagyer, records = pagy(items, { page: page, items: per })

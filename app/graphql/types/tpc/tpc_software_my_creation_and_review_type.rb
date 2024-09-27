@@ -5,10 +5,11 @@ module Types
     class TpcSoftwareMyCreationAndReviewType < Types::BaseObject
       field :id, Integer
       field :target_software_report_id, Integer
+      field :software_report_short_codes, [String]
       field :application_type, Integer, description: '0: incubation 1: graduation'
       field :issue_url, String
       field :name, String
-      field :state, Integer
+      field :state, Integer, description: '0: awaiting_clarification 1: awaiting_confirmation 2: awaiting_review 3: completed -1:rejected'
       field :user_id, Integer
       field :user, Types::UserType
 
@@ -25,6 +26,26 @@ module Types
 
       field :created_at, GraphQL::Types::ISO8601DateTime
       field :updated_at, GraphQL::Types::ISO8601DateTime
+
+      def software_report_short_codes
+
+        case object.application_type
+        when 0
+          ids = JSON.parse(object.tpc_software_selection_report_ids)
+          report_list = TpcSoftwareSelectionReport.where(id: ids)
+        when 1
+          ids = JSON.parse(object.tpc_software_graduation_report_ids)
+          report_list = TpcSoftwareGraduationReport.where(id: ids)
+        else
+          ids = JSON.parse(object.tpc_software_selection_report_ids)
+          report_list = TpcSoftwareSelectionReport.where(id: ids)
+        end
+        sort_report_list = report_list.index_by(&:id).values_at(*ids)
+        sort_report_list.map do |report|
+          report.short_code
+        end
+      end
+
 
       def user
         User.find_by(id: object.user_id)
@@ -112,16 +133,15 @@ module Types
       def get_member_count(member_type)
         case object.application_type
         when 0
-          metric_name = TpcSoftwareCommentState::Metric_Name_Selection
+          tpc_software = TpcSoftwareSelection
         when 1
-          metric_name = TpcSoftwareCommentState::Metric_Name_Graduation
+          tpc_software = TpcSoftwareGraduation
         else
-          metric_name = TpcSoftwareCommentState::Metric_Name_Selection
+          tpc_software = TpcSoftwareSelection
         end
-        TpcSoftwareCommentState.where(tpc_software_id: object.id)
-                               .where(metric_name: metric_name)
-                               .where(member_type: member_type)
-                               .count
+        tpc_software.get_comment_state_list(object.id)
+                    .where(member_type: member_type)
+                    .count
       end
 
 

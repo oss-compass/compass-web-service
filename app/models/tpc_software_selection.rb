@@ -28,6 +28,7 @@ class TpcSoftwareSelection < ApplicationRecord
   belongs_to :subject
   belongs_to :user
   belongs_to :tpc_software_selection_report, foreign_key: 'target_software_report_id'
+  belongs_to :tpc_software_report, foreign_key: 'target_software_report_id', class_name: 'TpcSoftwareSelectionReport'
 
   State_Awaiting_Clarification = 0
   State_Awaiting_Confirmation = 1
@@ -135,7 +136,11 @@ class TpcSoftwareSelection < ApplicationRecord
   end
 
   def self.get_clarified_metric_list(report_id)
-    comment_list = TpcSoftwareComment.where(tpc_software_id: report_id)
+    target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(version: TpcSoftwareReportMetric::Version_Default)
+                                           .take
+    comment_list = TpcSoftwareComment.where(tpc_software_id: target_metric.id)
                                      .where(tpc_software_type: TpcSoftwareComment::Type_Report_Metric)
                                      .where(metric_name: get_risk_metric_list(report_id))
     comment_metric_name_list = comment_list.map do |comment_item|
@@ -146,7 +151,11 @@ class TpcSoftwareSelection < ApplicationRecord
 
   def self.get_confirmed_metric_list(report_id)
     risk_metric_list = get_risk_metric_list(report_id)
-    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: report_id)
+    target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(version: TpcSoftwareReportMetric::Version_Default)
+                                           .take
+    comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_metric.id)
                                                 .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
                                                 .where(metric_name: risk_metric_list)
     member_type_hash = comment_state_list.each_with_object({}) do |comment_state_item, hash|
@@ -173,6 +182,54 @@ class TpcSoftwareSelection < ApplicationRecord
     confirmed_metrics
   end
 
+  def self.get_comment_state_list(selection_id)
+    TpcSoftwareCommentState.where(tpc_software_id: selection_id)
+                           .where(metric_name: TpcSoftwareCommentState::Metric_Name_Selection)
+  end
+
+
+  def self.get_report_current_state(report_id)
+    risk_metric_count = get_risk_metric_list(report_id).length
+    clarified_metric_count = get_clarified_metric_list(report_id).length
+    if risk_metric_count != clarified_metric_count
+      return State_Awaiting_Clarification
+    end
+
+    confirmed_metric_count = get_confirmed_metric_list(report_id).length
+    if risk_metric_count != confirmed_metric_count
+      return State_Awaiting_Confirmation
+    end
+    State_Awaiting_Review
+  end
+
+  def self.get_current_state(tpc_software)
+    report_id = tpc_software.target_software_report_id
+    risk_metric_count = get_risk_metric_list(report_id).length
+    clarified_metric_count = get_clarified_metric_list(report_id).length
+    if risk_metric_count != clarified_metric_count
+      return State_Awaiting_Clarification
+    end
+
+    confirmed_metric_count = get_confirmed_metric_list(report_id).length
+    if risk_metric_count != confirmed_metric_count
+      return State_Awaiting_Confirmation
+    end
+
+    comment_state_list = get_comment_state_list(tpc_software.id)
+    if comment_state_list.any? { |item| item.state == TpcSoftwareCommentState::State_Reject }
+      return State_Rejected
+    elsif TpcSoftwareCommentState::Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+      return State_Completed
+    else
+      return State_Awaiting_Review
+    end
+  end
+
+  def self.update_state(id)
+    selection = TpcSoftwareSelection.find_by(id: id)
+    state = get_current_state(selection)
+    selection.update!(state: state)
+  end
 
 
   def self.save_issue_url(id, issue_html_url)
