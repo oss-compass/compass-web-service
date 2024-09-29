@@ -331,13 +331,13 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
 
     raw_data = {
-      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
-      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
+      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
+      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
     }
 
     {
       security_binary_artifact: score,
-      security_binary_artifact_detail: binary_archive_list.take(5).to_json,
+      security_binary_artifact_detail: binary_archive_list.take(1).to_json,
       security_binary_artifact_raw: raw_data.to_json
     }
   end
