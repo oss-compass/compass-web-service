@@ -485,14 +485,14 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     detail = {
-      "include_copyrights": include_copyrights.uniq.take(3),
-      "not_included_copyrights": not_included_copyrights.uniq.take(3),
+      "include_copyrights": include_copyrights.uniq.take(1),
+      "not_included_copyrights": not_included_copyrights.uniq.take(1),
     }
 
     {
       compliance_copyright_statement: score,
       compliance_copyright_statement_detail: detail.to_json,
-      compliance_copyright_statement_raw: raw_list.take(30).to_json
+      compliance_copyright_statement_raw: raw_list.take(5).to_json
     }
   end
 
