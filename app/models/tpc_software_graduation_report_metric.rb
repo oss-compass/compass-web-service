@@ -445,7 +445,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
     {
       lifecycle_release_note: score,
-      lifecycle_release_note_detail: release_notes.take(5).to_json,
+      lifecycle_release_note_detail: release_notes.take(1).to_json,
       lifecycle_release_note_raw: release_notes.take(30).to_json
     }
   end
