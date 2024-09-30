@@ -44,10 +44,8 @@ class TpcSoftwareMetricServer
     when Report_Type_Selection
       commands = %w[osv-scanner scancode binary-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
-      # commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
-      #               maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
       commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
-                    maintainers-checker readme-opensource-checker]
+                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
     end
     payload = {
       commands: commands,
