@@ -153,14 +153,14 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
     detail = {
       readme_opensource: readme_opensource,
-      osi_license_list: osi_license_list.uniq.take(5),
-      non_osi_licenses: non_osi_license_list.uniq.take(5)
+      osi_license_list: osi_license_list.uniq.take(1),
+      non_osi_licenses: non_osi_license_list.uniq.take(1)
     }
 
     {
       compliance_license: score,
       compliance_license_detail: detail.to_json,
-      compliance_license_raw: raw_data.take(30).to_json
+      compliance_license_raw: raw_data.take(10).to_json
     }
   end
 
@@ -427,7 +427,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
     {
       security_package_sig: score,
-      security_package_sig_detail: signature_file_list.take(5).to_json,
+      security_package_sig_detail: signature_file_list.take(2).to_json,
       security_package_sig_raw: signature_file_list.take(30).to_json
     }
   end
@@ -445,7 +445,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
     {
       lifecycle_release_note: score,
-      lifecycle_release_note_detail: release_notes.take(5).to_json,
+      lifecycle_release_note_detail: release_notes.take(1).to_json,
       lifecycle_release_note_raw: release_notes.take(30).to_json
     }
   end
@@ -485,14 +485,14 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     detail = {
-      "include_copyrights": include_copyrights.uniq.take(3),
-      "not_included_copyrights": not_included_copyrights.uniq.take(3),
+      "include_copyrights": include_copyrights.uniq.take(1),
+      "not_included_copyrights": not_included_copyrights.uniq.take(1),
     }
 
     {
       compliance_copyright_statement: score,
       compliance_copyright_statement_detail: detail.to_json,
-      compliance_copyright_statement_raw: raw_list.take(30).to_json
+      compliance_copyright_statement_raw: raw_list.take(5).to_json
     }
   end
 

@@ -136,7 +136,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
           details << {
             package_name: package.dig("package", "name"),
             package_version: package.dig("package", "version"),
-            vulnerabilities: vulnerabilities.uniq.take(5)
+            vulnerabilities: vulnerabilities.uniq.take(1)
           }
         end
       end
@@ -147,8 +147,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
     {
       security_vulnerability: score,
-      security_vulnerability_detail: details.take(3).to_json,
-      security_vulnerability_raw: details.take(30).to_json
+      security_vulnerability_detail: details.take(1).to_json,
+      security_vulnerability_raw: details.take(5).to_json
     }
   end
 
@@ -203,10 +203,10 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
     detail = {
-      osi_permissive_licenses: osi_permissive_license_list.uniq.take(5),
-      osi_copyleft_limited_licenses: osi_copyleft_limited_license_list.uniq.take(5),
-      osi_free_restricted_licenses: osi_free_restricted_license_list.uniq.take(5),
-      non_osi_licenses: non_osi_license_list.uniq.take(5)
+      osi_permissive_licenses: osi_permissive_license_list.uniq.take(1),
+      osi_copyleft_limited_licenses: osi_copyleft_limited_license_list.uniq.take(1),
+      osi_free_restricted_licenses: osi_free_restricted_license_list.uniq.take(1),
+      non_osi_licenses: non_osi_license_list.uniq.take(1)
     }
 
     {
@@ -331,13 +331,13 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
 
     raw_data = {
-      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
-      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(30),
+      "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
+      "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
     }
 
     {
       security_binary_artifact: score,
-      security_binary_artifact_detail: binary_archive_list.take(5).to_json,
+      security_binary_artifact_detail: binary_archive_list.take(1).to_json,
       security_binary_artifact_raw: raw_data.to_json
     }
   end
