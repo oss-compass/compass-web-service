@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_14_032404) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -421,6 +421,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_032404) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "functional_description", limit: 2000
+    t.integer "state"
+    t.integer "target_software_report_id"
   end
 
   create_table "tpc_software_members", charset: "utf8mb4", force: :cascade do |t|
@@ -563,6 +565,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_032404) do
     t.integer "is_same_type_check", default: 0
     t.string "same_type_software_name"
     t.string "issue_url"
+    t.integer "state"
+    t.integer "target_software_report_id"
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|

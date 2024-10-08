@@ -19,12 +19,25 @@ module Types
       field :target_software, String
       field :is_same_type_check, Integer
       field :same_type_software_name, String
+      field :state, Integer, description: '0: awaiting_clarification 1: awaiting_confirmation 2: awaiting_review 3: completed -1:rejected'
       field :comment_committer_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_sig_lead_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_legal_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_compliance_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :user_id, Integer, null: false
       field :user, Types::UserType
+
+      field :risk_count, Integer
+      field :awaiting_clarification_count, Integer
+      field :clarified_count, Integer
+      field :awaiting_confirmation_count, Integer
+      field :confirmed_count, Integer
+
+      field :committer_count, Integer
+      field :sig_lead_count, Integer
+      field :legal_count, Integer
+      field :compliance_count, Integer
+
       field :created_at, GraphQL::Types::ISO8601DateTime, null: false
       field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
@@ -62,6 +75,50 @@ module Types
           tpc_software_type: TpcSoftwareCommentState::Type_Selection,
           metric_name: TpcSoftwareCommentState::Metric_Name_Selection
         )
+      end
+
+
+      def risk_count
+        TpcSoftwareSelection.get_risk_metric_list(object.target_software_report_id).length
+      end
+
+
+      def awaiting_clarification_count
+        risk_count - clarified_count
+      end
+
+
+      def clarified_count
+        TpcSoftwareSelection.get_clarified_metric_list(object.target_software_report_id).length
+      end
+
+      def awaiting_confirmation_count
+        risk_count - confirmed_count
+      end
+
+      def confirmed_count
+        TpcSoftwareSelection.get_confirmed_metric_list(object.target_software_report_id).length
+      end
+
+
+      def committer_count
+        get_member_count(TpcSoftwareCommentState::Member_Type_Committer)
+      end
+
+      def sig_lead_count
+        get_member_count(TpcSoftwareCommentState::Member_Type_Sig_Lead)
+      end
+
+      def legal_count
+        get_member_count(TpcSoftwareCommentState::Member_Type_Legal)
+      end
+
+      def compliance_count
+        get_member_count(TpcSoftwareCommentState::Member_Type_Compliance)
+      end
+
+      def get_member_count(member_type)
+        TpcSoftwareSelection.get_comment_state_list(object.id).where(member_type: member_type).count
       end
 
     end

@@ -131,5 +131,10 @@ module Types
     field :tpc_software_graduation_page, resolver: Queries::Tpc::TpcSoftwareGraduationPageQuery
     field :tpc_software_graduation, resolver: Queries::Tpc::TpcSoftwareGraduationQuery
 
+    field :tpc_software_my_creation_overview, resolver: Queries::Tpc::TpcSoftwareMyCreationOverviewQuery
+    field :tpc_software_my_creation_page, resolver: Queries::Tpc::TpcSoftwareMyCreationPageQuery
+    field :tpc_software_my_review_overview, resolver: Queries::Tpc::TpcSoftwareMyReviewOverviewQuery
+    field :tpc_software_my_review_page, resolver: Queries::Tpc::TpcSoftwareMyReviewPageQuery
+
   end
 end

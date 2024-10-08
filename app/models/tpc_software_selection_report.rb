@@ -35,6 +35,7 @@ class TpcSoftwareSelectionReport < ApplicationRecord
   belongs_to :subject
   belongs_to :user
   has_many :tpc_software_report_metrics, as: :tpc_software_report, dependent: :destroy
+  has_many :tpc_software_selections, foreign_key: 'target_software_report_id'
 
   has_many_base64_attached :attachments
 

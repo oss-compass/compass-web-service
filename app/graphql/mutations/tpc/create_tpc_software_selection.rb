@@ -42,12 +42,16 @@ module Mutations
 
       subject = Subject.find_by(label: label, level: level)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
+      target_software_report_id = nil
       tpc_software_selection_report_ids.each_with_index do |report_id, index|
         tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: report_id)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if tpc_software_selection_report.nil?
         tpc_software_report_metric = tpc_software_selection_report.tpc_software_report_metrics.find_by(
           tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection,
           version: TpcSoftwareReportMetric::Version_Default)
+        if tpc_software_selection_report.code_url.end_with?(target_software)
+          target_software_report_id = report_id
+        end
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if tpc_software_report_metric.nil?
         raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_progress') if tpc_software_report_metric.status == TpcSoftwareReportMetric::Status_Progress
       end
@@ -63,8 +67,10 @@ module Mutations
           reason: reason,
           functional_description: functional_description,
           target_software: target_software,
+          target_software_report_id: target_software_report_id,
           is_same_type_check: is_same_type_check,
           same_type_software_name: same_type_software_name,
+          state: TpcSoftwareSelection.get_report_current_state(target_software_report_id),
           subject_id: subject.id,
           user_id: current_user.id
         }

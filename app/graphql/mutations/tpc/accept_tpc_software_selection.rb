@@ -70,6 +70,7 @@ module Mutations
               }
             )
           end
+          TpcSoftwareSelection.update_state(selection.id)
         end
         to_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
         send_issue_comment(to_state, member_type, selection.issue_url, current_user)

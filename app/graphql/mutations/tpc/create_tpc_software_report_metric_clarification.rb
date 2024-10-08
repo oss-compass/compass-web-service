@@ -16,6 +16,7 @@ module Mutations
         current_user = context[:current_user]
         validate_tpc!(current_user)
 
+        tpc_software_id_list = []
         case report_type
         when TpcSoftwareMetricServer::Report_Type_Selection
           report = TpcSoftwareSelectionReport.find_by(short_code: short_code)
@@ -26,6 +27,11 @@ module Mutations
             version: TpcSoftwareReportMetric::Version_Default)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
           tpc_software_type = TpcSoftwareComment::Type_Report_Metric
+          tpc_software_list = TpcSoftwareSelection.where(target_software_report_id: report.id)
+          tpc_software_list.each do |tpc_software|
+            tpc_software_id_list << tpc_software.id
+          end
+          tpc_software_id_list.uniq
         when TpcSoftwareMetricServer::Report_Type_Graduation
           report = TpcSoftwareGraduationReport.find_by(short_code: short_code)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
@@ -34,17 +40,33 @@ module Mutations
             version: TpcSoftwareReportMetric::Version_Default)
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
           tpc_software_type = TpcSoftwareComment::Type_Graduation_Report_Metric
+          tpc_software_list = TpcSoftwareGraduation.where(target_software_report_id: report.id)
+          tpc_software_list.each do |tpc_software|
+            tpc_software_id_list << tpc_software.id
+          end
+          tpc_software_id_list.uniq
         end
-        TpcSoftwareComment.create!(
-          {
-            tpc_software_id: report_metric.id,
-            tpc_software_type: tpc_software_type,
-            user_id: current_user.id,
-            subject_id: report_metric.subject_id,
-            metric_name: metric_name,
-            content: content
-          }
-        )
+        ActiveRecord::Base.transaction do
+          TpcSoftwareComment.create!(
+            {
+              tpc_software_id: report_metric.id,
+              tpc_software_type: tpc_software_type,
+              user_id: current_user.id,
+              subject_id: report_metric.subject_id,
+              metric_name: metric_name,
+              content: content
+            }
+          )
+          case report_type
+          when TpcSoftwareMetricServer::Report_Type_Selection
+            tpc_software = TpcSoftwareSelection
+          when TpcSoftwareMetricServer::Report_Type_Graduation
+            tpc_software = TpcSoftwareGraduation
+          end
+          tpc_software_id_list.each do |tpc_software_id|
+            tpc_software.update_state(tpc_software_id)
+          end
+        end
 
 
         { status: true, message: '' }
