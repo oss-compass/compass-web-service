@@ -90,6 +90,15 @@ Rails.application.configure do
   # [Blocked host] clear the entire whitelist, which lets through requests for all hostnames.
   config.hosts.clear
 
+  config.session_store :redis_session_store,
+                       key: 'session',
+                       redis: {
+                         expire_after: 1.day, # cookie expiration
+                         ttl: 1.day, # Redis expiration, defaults to 'expire_after'
+                         key_prefix: "#{ENV['DEFAULT_HOST']}:session:",
+                         url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
+                       }
+
   # enable lograge
 
   config.lograge.enabled = true

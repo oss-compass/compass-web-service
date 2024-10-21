@@ -24,6 +24,9 @@ gem 'redis'
 
 gem 'redis-rails'
 
+# Use Riak Client
+gem 'riak-client', github: 'spreedly/riak-ruby-client', tag: 'v2.6.2'
+
 # Provides a low-level time-based throttle.
 gem 'prorate'
 
