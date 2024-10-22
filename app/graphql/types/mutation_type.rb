@@ -22,6 +22,8 @@ module Types
     field :delete_lab_model_version, mutation: Mutations::DeleteLabModelVersion, description: 'Delete a Lab model version'
     field :update_lab_model_version, mutation: Mutations::UpdateLabModelVersion, description: 'Update a Lab model version'
     field :trigger_lab_model_version, mutation: Mutations::TriggerLabModelVersion, description: 'Trigger the analysis of a Lab model version'
+    field :create_lab_model_dataset, mutation: Mutations::CreateLabModelDataset, description: 'Create a Lab model dataset'
+    field :create_lab_dataset, mutation: Mutations::CreateLabDataset, description: 'Create a Lab  dataset'
 
     field :send_member_invite, mutation: Mutations::SendMemberInvite, description: 'Send member invitation'
     field :cancel_member_invite, mutation: Mutations::CancelMemberInvite, description: 'Cancel a member invitation'

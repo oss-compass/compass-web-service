@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_21_094118) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -88,6 +88,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.bigint "lab_model_report_id"
   end
 
   create_table "lab_metrics", charset: "utf8mb4", force: :cascade do |t|
@@ -114,6 +116,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
     t.index ["lab_model_id", "lab_model_version_id", "lab_model_metric_id"], name: "index_comments_on_m_v_m"
     t.index ["reply_to"], name: "index_lab_model_comments_on_reply_to"
     t.index ["user_id"], name: "index_lab_model_comments_on_user_id"
+  end
+
+  create_table "lab_model_datasets", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "lab_model_version_id"
+    t.integer "lab_dataset_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "lab_model_invitations", charset: "utf8mb4", force: :cascade do |t|
@@ -147,6 +156,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
     t.index ["lab_model_version_id", "lab_metric_id"], name: "index_metrics_on_v_m"
   end
 
+  create_table "lab_model_reports", charset: "utf8mb4", force: :cascade do |t|
+    t.integer "lab_model_id", null: false
+    t.integer "lab_model_version_id", null: false
+    t.integer "lab_dataset_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "lab_model_versions", charset: "utf8mb4", force: :cascade do |t|
     t.string "version", default: ""
     t.integer "lab_model_id", null: false
@@ -154,6 +172,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_14_063029) do
     t.integer "lab_algorithm_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_score", default: false
     t.index ["lab_model_id", "version"], name: "index_lab_model_versions_on_lab_model_id_and_version"
   end
 

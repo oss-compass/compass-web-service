@@ -7,6 +7,7 @@ module Mutations
     argument :model_id, Integer, required: true, description: "lab model id"
     argument :version_id, Integer, required: true, description: "lab model version id"
     argument :version, String, required: false, description: "version string"
+    argument :is_score, Boolean, required: false, description: 'whether or not calculate the score, default: false'
     argument :datasets, [Input::DatasetRowTypeInput], required: false, description: 'the collection of the repositories'
     argument :metrics, [Input::LabModelMetricInput], required: false, description: 'lab model metrics'
     argument :algorithm, String, required: false, description: 'the ident of algorithm'
@@ -15,6 +16,7 @@ module Mutations
           model_id: nil,
           version_id: nil,
           version: '',
+          is_score:false,
           datasets: [],
           metrics: [],
           algorithm:
@@ -55,6 +57,12 @@ module Mutations
         if version.present?
           model_version.update!(version: version)
         end
+
+        if is_score.present?
+          model_version.update!(version: is_score)
+        end
+
+
       end
 
       { data: model_version }

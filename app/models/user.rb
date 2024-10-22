@@ -214,7 +214,7 @@ class User < ApplicationRecord
     LabModel
       .joins(:lab_model_members)
       .where(lab_model_members: { user_id: id })
-      .order('updated_at desc')
+      .order('lab_models.updated_at desc')
       .order(:name)
   end
 

@@ -5,9 +5,9 @@ module Types
     class ModelDetailType < Types::BaseObject
       field :id, Integer, null: false
       field :name, String, null: false
-      field :dimension, Integer, null: false
+      # field :dimension, Integer, null: false
       field :is_public, Boolean, null: false
-      field :is_general, Boolean, null: false
+      # field :is_general, Boolean, null: false
       field :user_id, Integer, null: false
       field :default_version, ModelVersionType
       field :latest_versions, [ModelVersionType], description: 'Details of the 1000 latest updates'
