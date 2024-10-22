@@ -27,6 +27,17 @@ module Types
               )
           fuzzy_list = resp&.[]('hits')&.[]('hits')
 
+          if fuzzy_list.nil? || fuzzy_list.empty?
+            resp =
+              ActivityMetric
+                .fuzzy_search(
+                  keyword.gsub('/', ' '),
+                  'label',
+                  'label.keyword',
+                )
+            fuzzy_list = resp&.[]('hits')&.[]('hits')
+          end
+
           resp =
             BaseCollection
               .prefix_search(

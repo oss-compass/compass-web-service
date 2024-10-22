@@ -59,7 +59,7 @@ module Mutations
         end
 
         if is_score.present?
-          model_version.update!(version: is_score)
+          model_version.update!(is_score: is_score)
         end
 
 

@@ -16,17 +16,6 @@ module Types
           current_user = context[:current_user]
           login_required!(current_user)
 
-          models = current_user.lab_models_has_participated_in
-
-          model_ids = models.pluck(:id)
-
-          # pagyer, records = pagy(LabModelVersion
-          #                          .joins(:lab_model)
-          #                          .joins(:lab_model_reports)
-          #                          .where(lab_model_id: model_ids)
-          #                          .select('lab_model_versions.*, lab_model_versions.id as versionId,  lab_models.name AS modelName,lab_models.id as modelId'),
-          #                        { page: page, items: per })
-
           pagyer, records = pagy(LabModelReport
                                    .joins(:lab_model)
                                    .joins(:lab_model_version)
