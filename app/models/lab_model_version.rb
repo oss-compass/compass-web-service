@@ -9,6 +9,7 @@
 #  lab_algorithm_id :integer          not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  is_score         :boolean          default(FALSE)
 #
 # Indexes
 #
@@ -16,6 +17,7 @@
 #
 class LabModelVersion < ApplicationRecord
   alias_attribute :dataset, :lab_dataset
+  alias_attribute :report, :lab_model_report
   alias_attribute :algorithm, :lab_algorithm
   alias_attribute :metrics, :lab_model_metrics
   alias_attribute :comments, :lab_model_comments
@@ -27,6 +29,7 @@ class LabModelVersion < ApplicationRecord
   belongs_to :lab_algorithm
   belongs_to :lab_model
   has_many :lab_model_metrics, dependent: :destroy
+  has_many :lab_model_reports, dependent: :destroy
   has_many :lab_model_comments, dependent: :destroy
   has_many :lab_metrics, through: :lab_model_metrics
 

@@ -23,8 +23,10 @@ class LabModel < ApplicationRecord
   has_many :lab_model_versions, dependent: :delete_all
   has_many :lab_model_members, dependent: :delete_all
   has_many :lab_model_invitations, dependent: :delete_all
+  has_many :lab_model_reports, dependent: :delete_all
 
   has_many :lab_model_comments, dependent: :destroy # need to purge attachments
+
 
   validates :name, presence: true
   validates :user_id, presence: true
