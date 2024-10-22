@@ -7,9 +7,13 @@ module Types
       field :model_name, String
       field :version_id, Integer
       field :version, String
-      field :dataset, DatasetType
+      # field :dataset, DatasetType
+      field :metrics, [ModelMetricType]
       field :dimension, Integer
       field :reports, [SimpleReportType]
+      field :loginBinds, Types::LoginBindType
+      field :created_at, GraphQL::Types::ISO8601DateTime
+
 
       def reports
         today = Date.today.end_of_day
@@ -19,9 +23,9 @@ module Types
         build_simple_report_data(resp)
       end
 
-      def dataset
-        model_version.dataset
-      end
+      # def dataset
+      #   model_version.dataset
+      # end
 
       def model_id
         model.id
@@ -41,6 +45,14 @@ module Types
 
       def model_name
         model.name
+      end
+
+      def metrics
+        model_version.metrics
+      end
+
+      def loginBinds
+        LoginBind.find_by(user_id: model.user_id)
       end
 
       private
