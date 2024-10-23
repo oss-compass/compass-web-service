@@ -39,7 +39,8 @@ module Mutations
           metrics = version.metrics
           version = model.versions.create!(algorithm: version.algorithm, lab_dataset_id: 0, is_score: version.is_score)
           model.members.create!(user: current_user, permission: LabModelMember::All)
-          metrics = LabModelMetric.bulk_create_and_validate!(version, metrics)
+          # metrics = LabModelMetric.bulk_create_and_validate!(version, metrics)
+          LabModelMetric.create_by_version(version, metrics)
         end
       end
 

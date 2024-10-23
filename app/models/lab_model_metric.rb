@@ -42,4 +42,17 @@ class LabModelMetric < ApplicationRecord
     end
     version.lab_model_metrics.create!(lab_metrics)
   end
+
+  def self.create_by_version(version, metrics)
+    lab_metrics =
+      metrics.map do |metric|
+        {
+          lab_metric_id: metric.lab_metric_id,
+          weight: metric.weight,
+          threshold: metric.threshold,
+          lab_model_version_id: version.id
+        }
+      end
+    LabModelMetric.create!(lab_metrics)
+  end
 end
