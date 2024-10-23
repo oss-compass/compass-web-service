@@ -44,12 +44,6 @@ class LabModelMetric < ApplicationRecord
   end
 
   def self.create_by_version(version, metrics)
-
-    metrics.each do |metric|
-      unless LabMetric.exists?(metric.id)
-        puts "LabMetric with id #{metric.id} does not exist"
-      end
-    end
     lab_metrics =
       metrics.map do |metric|
         {
