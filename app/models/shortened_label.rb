@@ -22,19 +22,32 @@ class ShortenedLabel < ApplicationRecord
 
   CacheTTL = 1.week
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
+  Bucket = 'shortened_labels'
 
   def self.convert(label, level)
     label = normalize_label(label)
-    Rails.cache.fetch("#{self.name}:#{level}:#{label}", expires_in: CacheTTL) do
-      ShortenedLabel.find_or_create_by(label: label, level: level).short_code
+    key = "#{self.name}:#{level}:#{label}"
+    cached_short_code = nil
+    cached_short_code = CompassRiak.get(Bucket, key) if Rails.env.production?
+    return cached_short_code if cached_short_code
+    Rails.cache.fetch(key, expires_in: CacheTTL) do
+      code = ShortenedLabel.find_or_create_by(label: label, level: level).short_code
+      CompassRiak.put(Bucket, key, code) if code && Rails.env.production?
+      code
     end
   end
 
   def self.revert(short_code)
-    short = Rails.cache.read("#{self.name}:#{short_code.to_s.downcase}")
+    short = nil
+    normalize_short_code = short_code.to_s.downcase
+    key = "#{self.name}:#{normalize_short_code}"
+    short = CompassRiak.get(Bucket, key) if Rails.env.production?
     return short if short
-    short = ShortenedLabel.find_by(short_code: short_code.to_s.downcase)
-    Rails.cache.write("#{self.name}:#{short.short_code}", short, expires_in: CacheTTL) if short
+    short = Rails.cache.read(key)
+    return short if short
+    short = ShortenedLabel.find_by(short_code: normalize_short_code)
+    Rails.cache.write(key, short, expires_in: CacheTTL) if short
+    CompassRiak.put(Bucket, key, code) if short && Rails.env.production?
     short
   end
 
