@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_23_021926) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_23_090253) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -186,6 +186,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_23_021926) do
     t.datetime "updated_at", null: false
     t.integer "default_version_id"
     t.text "description"
+    t.bigint "parent_model_id"
+    t.integer "reference_count", default: 0
   end
 
   create_table "login_binds", charset: "utf8mb4", force: :cascade do |t|

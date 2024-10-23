@@ -12,6 +12,8 @@
 #  updated_at         :datetime         not null
 #  default_version_id :integer
 #  description        :text(65535)
+#  parent_model_id    :bigint
+#  reference_count    :integer          default(0)
 #
 class LabModel < ApplicationRecord
   alias_attribute :versions, :lab_model_versions

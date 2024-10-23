@@ -16,32 +16,47 @@ module Mutations
 
       current_user = context[:current_user]
       dataset = nil
-      version = nil
       report = nil
       login_required!(current_user)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.datasets_required') unless datasets.present?
 
-      ActiveRecord::Base.transaction do
-        version = LabModelVersion.find_by(id: version_id)
-        # report = LabModelReport.create(lab_model_id: model_id, lab_model_version_id: version_id, user_id: current_user.id)
-        # if report.errors.any?
-        #   raise "Failed to create report: #{report.errors.full_messages.join(", ")}"
-        # end
-        report = LabModelReport.create!(lab_model_id: model_id, lab_model_version_id: version_id, user_id: current_user.id)
-        puts report.inspect
-        dataset = LabDataset.create_report_and_validate!(version, datasets,report)
-        version.update!({ lab_dataset_id: dataset.id })
-        report.update!({lab_dataset_id: dataset.id})
+      model = LabModel.find_by(id: model_id)
+      version = LabModelVersion.find_by(id: version_id)
+      unless ::Pundit.policy(current_user, model).execute?
+        # fork
+        ActiveRecord::Base.transaction do
+          model =
+            current_user.lab_models.create!(
+              {
+                name: model.name,
+                dimension: 0,
+                description: model.description,
+                is_public: false,
+                is_general: true,
+                parent_model_id: model.id
+              }
+            )
+          metrics = version.metrics
+          version = model.versions.create!(algorithm: version.algorithm, lab_dataset_id: 0, is_score: version.is_score)
+          model.members.create!(user: current_user, permission: LabModelMember::All)
+          metrics = LabModelMetric.bulk_create_and_validate!(version, metrics)
+        end
       end
 
-      model = LabModel.find_by(id: model_id)
+
+      ActiveRecord::Base.transaction do
+        report = LabModelReport.create!(lab_model_id: model.id, lab_model_version_id: version.id, user_id: current_user.id)
+        dataset = LabDataset.create_report_and_validate!(version, datasets, report)
+        version.update!({ lab_dataset_id: dataset.id })
+        report.update!({ lab_dataset_id: dataset.id })
+      end
+
+
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless model.present?
 
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless version.present?
 
-      raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless ::Pundit.policy(current_user, model).execute?
-
-      # raise GraphQL::ExecutionError.new I18n.t('lab_models.reaching_daily_limit') unless model.trigger_remaining_count > 0
+      # raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless ::Pundit.policy(current_user, model).execute?
 
       CustomAnalyzeReportServer.new({ user: current_user, model: model, version: version, report: report }).execute
 

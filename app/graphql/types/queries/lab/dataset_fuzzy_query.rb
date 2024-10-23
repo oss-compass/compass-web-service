@@ -52,10 +52,10 @@ module Types
           [fuzzy_list, prefix_list].each do |list|
             list.flat_map do |item|
               item = item['_source']
-              if item.present?
+              if item.present? && item['level'] == 'repo'
                 candidates << {
-                  first_ident: item['first_collection'],
-                  second_ident: item['collection'],
+                  first_ident: item['first_collection'].presence || 'Other',
+                  second_ident: item['collection'].presence || 'Other',
                   label: item['label'],
                   level: item['level'],
                   short_code: ShortenedLabel.convert(item['label'], item['level'])
