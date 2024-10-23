@@ -5,6 +5,7 @@ module Types
     class ModelDetailType < Types::BaseObject
       field :id, Integer, null: false
       field :name, String, null: false
+      field :description, String
       # field :dimension, Integer, null: false
       field :is_public, Boolean, null: false
       # field :is_general, Boolean, null: false

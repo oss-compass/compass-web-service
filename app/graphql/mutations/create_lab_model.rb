@@ -6,32 +6,26 @@ module Mutations
     field :data, Types::Lab::ModelDetailType, null: true
 
     argument :name, String, required: true, description: 'lab model name'
-    # argument :dimension, Integer, required: false, description: 'lab model dimension: `productivity => 0, robustness => 1, niche_creation => 2, default: 0`'
+    argument :description, String, required: false, description: 'lab model description'
     argument :is_public, Boolean, required: true, description: 'whether or not a public model, default: false'
-    # argument :is_general, Boolean, required: false, description: 'whether or not a generic domain model, default: true'
-    # argument :datasets, [Input::DatasetRowTypeInput], required: true, description: 'the collection of the repositories'
     argument :is_score, Boolean, required: true, description: 'whether or not calculate the score, default: false'
     argument :metrics, [Input::LabModelMetricInput], required: true, description: 'lab model metrics'
     argument :algorithm, String, required: false, description: 'the algorithm of the model, default: `default`'
 
     def resolve(name: nil,
-                # dimension: nil,
                 is_public: false,
                 is_score: false,
-                # is_general: true,
-                # datasets: [],
                 metrics: [],
+                description: nil,
                 algorithm: 'default')
       current_user = context[:current_user]
 
       login_required!(current_user)
 
       raise GraphQL::ExecutionError.new I18n.t('lab_models.metrics_required') unless metrics.present?
-      # raise GraphQL::ExecutionError.new I18n.t('lab_models.datasets_required') unless datasets.present?
 
       name = name.strip
       raise GraphQL::ExecutionError.new I18n.t('lab_models.invalid_name') if name.blank?
-      # raise GraphQL::ExecutionError.new I18n.t('lab_models.invalid_dimension') unless LabModel::Dimensions.include?(dimension)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.metrics_too_large', limit: LabMetric::Limit) if metrics.length > LabMetric::Limit
 
       algorithm = LabAlgorithm.find_by(ident: algorithm)
@@ -45,6 +39,7 @@ module Mutations
             {
               name: name,
               dimension: 0,
+              description: description,
               is_public: is_public,
               is_general: true,
             }
@@ -53,9 +48,7 @@ module Mutations
         # When initializing a new version, the dataset is temporarily unbound
         version = model.versions.create!(algorithm: algorithm, lab_dataset_id: 0,is_score:is_score)
         model.members.create!(user: current_user, permission: LabModelMember::All)
-        # dataset = LabDataset.create_and_validate!(version, datasets)
         metrics = LabModelMetric.bulk_create_and_validate!(version, metrics)
-        # version.update!({ lab_dataset_id: dataset.id })
       end
 
       { data: model }
