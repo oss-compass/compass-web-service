@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_21_094118) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_23_021926) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -99,9 +99,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_21_094118) do
     t.string "from"
     t.float "default_weight"
     t.float "default_threshold"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "extra", default: "{}"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text "extra", default: "'{}'"
   end
 
   create_table "lab_model_comments", charset: "utf8mb4", force: :cascade do |t|
@@ -159,7 +159,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_21_094118) do
   create_table "lab_model_reports", charset: "utf8mb4", force: :cascade do |t|
     t.integer "lab_model_id", null: false
     t.integer "lab_model_version_id", null: false
-    t.integer "lab_dataset_id", null: false
+    t.integer "lab_dataset_id"
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -185,6 +185,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_21_094118) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "default_version_id"
+    t.text "description"
   end
 
   create_table "login_binds", charset: "utf8mb4", force: :cascade do |t|
