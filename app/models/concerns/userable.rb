@@ -10,6 +10,8 @@ module Userable
       record = to_adapter.get(key)
       return record if record && record.authenticatable_salt == salt && CompassRiak.put('users', "user_#{single_key}", record)
       super
+    rescue
+      super
     end
   end
 end
