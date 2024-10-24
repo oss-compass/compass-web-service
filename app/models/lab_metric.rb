@@ -9,9 +9,9 @@
 #  from              :string(255)
 #  default_weight    :float(24)
 #  default_threshold :float(24)
-#  created_at        :datetime
-#  updated_at        :datetime
-#  extra             :text(65535)      default("'{}'")
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  extra             :text(65535)      default("{}")
 #
 class LabMetric < ApplicationRecord
   Limit = 10
