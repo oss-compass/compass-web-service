@@ -47,7 +47,7 @@ class ShortenedLabel < ApplicationRecord
     return short if short
     short = ShortenedLabel.find_by(short_code: normalize_short_code)
     Rails.cache.write(key, short, expires_in: CacheTTL) if short
-    CompassRiak.put(Bucket, key, code) if short && Rails.env.production?
+    CompassRiak.put(Bucket, key, short) if short && Rails.env.production?
     short
   end
 
