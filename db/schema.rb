@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_23_090253) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_29_103514) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -163,6 +163,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_23_090253) do
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_public", default: false
   end
 
   create_table "lab_model_versions", charset: "utf8mb4", force: :cascade do |t|
@@ -173,6 +174,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_23_090253) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_score", default: false
+    t.bigint "parent_lab_model_version_id"
     t.index ["lab_model_id", "version"], name: "index_lab_model_versions_on_lab_model_id_and_version"
   end
 

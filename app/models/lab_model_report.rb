@@ -9,6 +9,7 @@
 #  user_id              :integer          not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  is_public            :boolean          default(FALSE)
 #
 class LabModelReport < ApplicationRecord
   alias_attribute :versions, :lab_model_versions

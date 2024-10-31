@@ -12,9 +12,11 @@ module Types
       field :latest_versions, [ModelVersionType], description: 'Details of the 1000 latest updates'
       field :trigger_remaining_count, Integer, null: false
       field :permissions, PermissionType
-      field :reference_count, Integer ,description: 'Reference count of the model'
-      field :loginBinds, Types::LoginBindType
+      field :reference_count, Integer, description: 'Reference count of the model'
+      field :login_binds, Types::LoginBindType
       field :created_at, GraphQL::Types::ISO8601DateTime
+
+      field :parent_lab_model, ModelDetailType
 
       def name
         object.name_after_reviewed
@@ -24,8 +26,12 @@ module Types
         context[:current_user].my_member_permission_of(object)
       end
 
-      def loginBinds
+      def login_binds
         LoginBind.find_by(user_id: model.user_id)
+      end
+
+      def parent_lab_model
+        LabModel.find_by(id: model.parent_model_id)
       end
 
       def model
