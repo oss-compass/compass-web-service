@@ -7,6 +7,8 @@ module Types
       field :versionId, Integer, null: false
       field :modelId, Integer, null: false
       field :reportId, Integer, null: false
+      field :parent_model_id, Integer
+      field :is_public, Boolean
 
       field :version, String
       field :modelName, String
@@ -15,8 +17,15 @@ module Types
       field :dataset, DatasetType
       field :metrics, [ModelMetricType], null: true
       field :algorithm, AlgorithmType
-      # field :algorithm, Types::AlgorithmType, null: true
+      field :parent_lab_model, ModelDetailType
 
+      def parent_lab_model
+        LabModel.find_by(id: model.parent_model_id)
+      end
+
+      def model
+        @model ||= object
+      end
     end
   end
 end

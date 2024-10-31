@@ -27,16 +27,16 @@ module Types
               )
           fuzzy_list = resp&.[]('hits')&.[]('hits')
 
-          if fuzzy_list.nil? || fuzzy_list.empty?
-            resp =
-              ActivityMetric
-                .fuzzy_search(
-                  keyword.gsub('/', ' '),
-                  'label',
-                  'label.keyword',
-                )
-            fuzzy_list = resp&.[]('hits')&.[]('hits')
-          end
+          resp_home =
+            ActivityMetric
+              .fuzzy_search(
+                keyword.gsub('/', ' '),
+                'label',
+                'label.keyword',
+              )
+          fuzzy_home_list = resp_home&.[]('hits')&.[]('hits')
+          combined_list = (fuzzy_list + fuzzy_home_list)
+          fuzzy_list = combined_list.uniq { |item| item['_source']['label'] }
 
           resp =
             BaseCollection
@@ -46,6 +46,7 @@ module Types
                 'label.keyword',
               )
           prefix_list = resp&.[]('hits')&.[]('hits')
+          prefix_list = prefix_list.uniq { |item| item['_source']['label'] }
 
           candidates = []
 
@@ -53,6 +54,7 @@ module Types
             list.flat_map do |item|
               item = item['_source']
               if item.present? && item['level'] == 'repo'
+
                 candidates << {
                   first_ident: item['first_collection'].presence || 'Other',
                   second_ident: item['collection'].presence || 'Other',

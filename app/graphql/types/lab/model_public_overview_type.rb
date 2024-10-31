@@ -11,11 +11,11 @@ module Types
       field :metrics, [ModelMetricType]
       field :dimension, Integer
       field :reports, [SimpleReportType]
-      field :loginBinds, Types::LoginBindType
+      field :login_binds, Types::LoginBindType
       field :created_at, GraphQL::Types::ISO8601DateTime
 
 
-      def reports
+      def reportshuijin
         today = Date.today.end_of_day
         begin_date = today - 3.months
         end_date = today
@@ -51,7 +51,7 @@ module Types
         model_version.metrics
       end
 
-      def loginBinds
+      def login_binds
         LoginBind.find_by(user_id: model.user_id)
       end
 

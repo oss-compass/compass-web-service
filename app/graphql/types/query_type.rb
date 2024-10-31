@@ -42,6 +42,7 @@ module Types
     field :lab_model_comment_detail, resolver: Queries::Lab::ModelCommentDetailQuery
     field :lab_model_public_overview, resolver: Queries::Lab::ModelPublicOverviewQuery
     field :my_model_reports, resolver: Queries::Lab::MyModelReportsQuery
+    field :reference_model_reports, resolver: Queries::Lab::ReferenceModelReportsQuery
 
     field :dataset_overview, resolver: Queries::Lab::DatasetOverviewQuery
     field :dataset_fuzzy_search, resolver: Queries::Lab::DatasetFuzzyQuery

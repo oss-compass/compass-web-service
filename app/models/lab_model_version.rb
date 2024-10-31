@@ -2,14 +2,15 @@
 #
 # Table name: lab_model_versions
 #
-#  id               :bigint           not null, primary key
-#  version          :string(255)      default("")
-#  lab_model_id     :integer          not null
-#  lab_dataset_id   :integer          not null
-#  lab_algorithm_id :integer          not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  is_score         :boolean          default(FALSE)
+#  id                          :bigint           not null, primary key
+#  version                     :string(255)      default("")
+#  lab_model_id                :integer          not null
+#  lab_dataset_id              :integer          not null
+#  lab_algorithm_id            :integer          not null
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  is_score                    :boolean          default(FALSE)
+#  parent_lab_model_version_id :bigint
 #
 # Indexes
 #
