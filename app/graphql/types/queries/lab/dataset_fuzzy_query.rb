@@ -17,6 +17,7 @@ module Types
           keyword = keyword.gsub(/^https:\/\//, '')
           keyword = keyword.gsub(/^http:\/\//, '')
           keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
+          fields = ['label', 'level']
 
           resp =
             BaseCollection
@@ -35,7 +36,18 @@ module Types
                 'label.keyword',
               )
           fuzzy_home_list = resp_home&.[]('hits')&.[]('hits')
-          combined_list = (fuzzy_list + fuzzy_home_list)
+
+          resp =
+            ActivityMetric
+              .prefix_search(
+                prefix,
+                'label.keyword',
+                'label.keyword',
+                fields: fields,
+                filters: { level: "repo" }
+              )
+          prefix_home_list = resp&.[]('hits')&.[]('hits')
+          combined_list = (fuzzy_list + fuzzy_home_list + prefix_home_list)
           fuzzy_list = combined_list.uniq { |item| item['_source']['label'] }
 
           resp =
