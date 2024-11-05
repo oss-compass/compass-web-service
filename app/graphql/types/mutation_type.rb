@@ -22,6 +22,7 @@ module Types
     field :delete_lab_model_version, mutation: Mutations::DeleteLabModelVersion, description: 'Delete a Lab model version'
     field :update_lab_model_version, mutation: Mutations::UpdateLabModelVersion, description: 'Update a Lab model version'
     field :trigger_lab_model_version, mutation: Mutations::TriggerLabModelVersion, description: 'Trigger the analysis of a Lab model version'
+    field :trigger_single_project, mutation: Mutations::TriggerSingleProject, description: 'Trigger the analysis of a Lab model version project'
     field :create_lab_model_dataset, mutation: Mutations::CreateLabModelDataset, description: 'Create a Lab model dataset'
     field :create_lab_dataset, mutation: Mutations::CreateLabDataset, description: 'Create a Lab  dataset'
     field :update_lab_model_report, mutation: Mutations::UpdateLabModelReport, description: 'Update a lab report dataset'
