@@ -9,9 +9,6 @@ module Types
         description 'Get overview data of metrics set on compass lab'
 
         def resolve()
-          current_user = context[:current_user]
-
-          login_required!(current_user)
 
           ::LabMetric.all
         end

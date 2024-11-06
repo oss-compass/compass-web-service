@@ -39,6 +39,8 @@ module Types
 
           resp = CustomV1Metric.query_repo_by_date(model.id, version.id, label, begin_date, end_date, page: 1, per: limit)
 
+          puts resp.inspect
+
           build_report_data(label, model, version, resp)
         end
       end
