@@ -107,8 +107,8 @@ module Mutations
         projects = get_new_dataset(nil, datasets)
       end
 
-      project_url = JSON.parse(projects)
-      project_url.each do |project|
+
+      projects.each do |project|
         CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project.label).execute
       end
 
@@ -141,7 +141,7 @@ module Mutations
       raise ValidateFailed.new(I18n.t('lab_models.invalid_dataset')) if filtered_rows.blank?
       raise ValidateFailed.new(I18n.t('lab_models.datasets_too_large', limit: Limit)) if filtered_rows.length > Limit
       if existing_content.nil?
-        return JSON.dump(filtered_rows)
+        filtered_rows
       end
       # return new_datasets if existing_content.nil?
       existing_content = JSON.parse(existing_content)
@@ -149,8 +149,8 @@ module Mutations
         hash[item["label"]] = item
       end
       # Not in existing_content
-      filtered_content = new_datasets.reject { |dataset| existing_hash.key?(dataset.label) }
-      JSON.dump(filtered_content)
+      new_datasets.reject { |dataset| existing_hash.key?(dataset.label) }
+
     end
 
   end

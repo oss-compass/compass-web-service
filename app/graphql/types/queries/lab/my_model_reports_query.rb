@@ -21,7 +21,7 @@ module Types
                                    .joins(:lab_model_version)
                                    .where(user_id: current_user.id)
                                    .select('lab_model_versions.id as version_id, lab_model_versions.version,
-lab_model_reports.id as report_id, lab_models.name AS model_name,lab_models.id as model_id, lab_models.parent_model_id,
+lab_model_reports.id as report_id, lab_models.name,lab_models.id as model_id, lab_models.parent_model_id,
 lab_model_reports.*')
                                    .order('lab_model_reports.created_at DESC'),
                                  { page: page, items: per })

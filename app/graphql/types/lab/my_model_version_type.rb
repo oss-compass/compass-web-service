@@ -24,6 +24,10 @@ module Types
         LabModel.find_by(id: model.parent_model_id)
       end
 
+      def model_name
+        model.name
+      end
+
       def dataset_status
         dataset = model.dataset
         return nil unless dataset
