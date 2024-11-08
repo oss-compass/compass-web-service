@@ -24,8 +24,8 @@ module Types
                                    .joins(:lab_model_version)
                                    .where(lab_model_id: model.id, is_public: true)
                                    .or(LabModelReport.where(lab_model_id: model.parent_model_id, is_public: true))
-                                   .select('lab_model_versions.id as versionId, lab_model_versions.version,
-lab_model_reports.id as reportId, lab_models.name AS modelName,lab_models.id as modelId, lab_models.parent_model_id,
+                                   .select('lab_model_versions.id as version_id, lab_model_versions.version,
+lab_model_reports.id as report_id, lab_models.name AS modelName,lab_models.id as model_id, lab_models.parent_model_id,
 lab_model_reports.*')
                                    .order('lab_model_reports.created_at DESC'),
                                  { page: page, items: per })
