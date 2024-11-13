@@ -12,6 +12,7 @@ module Types
 
       field :version, String
       field :model_name, String
+      field :description, String
       field :trigger_status, String
       field :trigger_updated_at, GraphQL::Types::ISO8601DateTime
       field :dataset, DatasetType
@@ -25,7 +26,11 @@ module Types
       end
 
       def model_name
-        model.name
+        model.modelName
+      end
+
+      def description
+        model.description
       end
 
       def dataset_status

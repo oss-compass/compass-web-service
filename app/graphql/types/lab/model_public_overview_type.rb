@@ -7,6 +7,7 @@ module Types
       field :model_name, String
       field :version_id, Integer
       field :version, String
+      field :description, String
       # field :dataset, DatasetType
       field :metrics, [ModelMetricType]
       field :dimension, Integer
@@ -47,6 +48,9 @@ module Types
         model.name
       end
 
+      def description
+        model.description
+      end
       def metrics
         model_version.metrics
       end
