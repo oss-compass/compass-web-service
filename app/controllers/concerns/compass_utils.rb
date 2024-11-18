@@ -79,27 +79,6 @@ module CompassUtils
     [begin_date, end_date, interval]
   end
 
-  def extract_date_year(begin_date, end_date)
-    today = Date.today.end_of_day
-
-    begin_date = begin_date || today - 1.year
-    end_date = [end_date || today, today].min
-    diff_seconds = end_date.to_i - begin_date.to_i
-
-    if diff_seconds < SEVEN_DAYS
-      begin_date = today - 1.year
-      end_date = today
-      interval = false
-    elsif diff_seconds <= TWO_YEARS
-      interval = false
-    else
-      interval = '1M'
-    end
-    [begin_date, end_date, interval]
-  end
-
-
-
   def extract_repos_source(label, level)
     repo_list = [label]
     if level == 'community'

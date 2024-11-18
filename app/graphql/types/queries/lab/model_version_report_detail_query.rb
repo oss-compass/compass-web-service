@@ -19,7 +19,7 @@ module Types
           label = ShortenedLabel.normalize_label(label) if label
           label = ShortenedLabel.revert(short_code)&.label if short_code
 
-          begin_date, end_date, interval = extract_date_year(begin_date, end_date)
+          begin_date, end_date, interval = extract_date(begin_date, end_date)
 
           limit = 60
 
@@ -31,7 +31,7 @@ module Types
           version = model.versions.find_by(id: version_id)
           raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless version.present?
 
-          begin_date, end_date, interval = extract_date_year(begin_date, end_date)
+          begin_date, end_date, interval = extract_date(begin_date, end_date)
 
           diff_seconds = end_date.to_i - begin_date.to_i
 
