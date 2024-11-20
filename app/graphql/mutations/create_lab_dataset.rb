@@ -109,7 +109,7 @@ module Mutations
 
 
       projects.each do |project|
-        CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project.label).execute
+        CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project[:label]).execute
       end
 
       { data: dataset }
@@ -141,7 +141,7 @@ module Mutations
       raise ValidateFailed.new(I18n.t('lab_models.invalid_dataset')) if filtered_rows.blank?
       raise ValidateFailed.new(I18n.t('lab_models.datasets_too_large', limit: Limit)) if filtered_rows.length > Limit
       if existing_content.nil?
-        filtered_rows
+        return filtered_rows
       end
       # return new_datasets if existing_content.nil?
       existing_content = JSON.parse(existing_content)

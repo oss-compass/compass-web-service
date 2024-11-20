@@ -35,11 +35,9 @@ module Types
 
           diff_seconds = end_date.to_i - begin_date.to_i
 
-          raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if diff_seconds > TWO_YEARS
+          raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if diff_seconds > FIVE_YEARS
 
           resp = CustomV1Metric.query_repo_by_date(model.id, version.id, label, begin_date, end_date, page: 1, per: limit)
-
-          puts resp.inspect
 
           build_report_data(label, model, version, resp)
         end
