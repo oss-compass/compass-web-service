@@ -155,7 +155,7 @@ class CustomAnalyzeProjectServer
 
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
-    Rails.logger.error("Failed to sumbit task Model #{model.id}: Version #{version.id}: ReportId #{report.id}  status, #{ex.message}")
+    Rails.logger.error("Failed to sumbit task Model #{model.id}: Version #{version.id}  status, #{ex.message}")
     { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
