@@ -85,7 +85,7 @@ class GroupActivityMetric < BaseMetric
     ) do
       self
         .must(match: { 'label.keyword': repo_url })
-        .where(is_org: true)
+        #  .where(is_org: true)
         .where('type.keyword': type)
         .page(1)
         .per(1)
