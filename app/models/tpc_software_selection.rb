@@ -92,7 +92,7 @@ class TpcSoftwareSelection < ApplicationRecord
       legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
       compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
 
-      if score.present? &&  score < 10
+      if score.present? && (0 <= score) && (score < 10)
         case member_type
         when TpcSoftwareCommentState::Member_Type_Committer
           if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !committer_state
@@ -128,7 +128,7 @@ class TpcSoftwareSelection < ApplicationRecord
     risk_metric_list = []
     TpcSoftwareSelection::Clarify_Metric_List.each do |clarify_metric|
       score = target_metric_hash[clarify_metric]
-      if score.present? &&  score < 10
+      if score.present? && (0 <= score) && (score < 10)
         risk_metric_list << clarify_metric.camelize(:lower)
       end
     end
