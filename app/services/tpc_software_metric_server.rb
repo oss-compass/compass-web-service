@@ -40,7 +40,7 @@ class TpcSoftwareMetricServer
     raise GraphQL::ExecutionError.new result[:message] unless result[:status]
   end
 
-  def analyze_metric_by_tpc_service(report_id, report_metric_id, report_type)
+  def analyze_metric_by_tpc_service(report_id, report_metric_id, oh_commit_sha, report_type)
     token = tpc_service_token
     case report_type
     when Report_Type_Selection
@@ -53,6 +53,7 @@ class TpcSoftwareMetricServer
       commands: commands,
       project_url: "#{@project_url}.git",
       callback_url: TPC_SERVICE_CALLBACK_URL,
+      oh_commit_sha: oh_commit_sha,
       task_metadata: {
         report_id: report_id,
         report_metric_id: report_metric_id,

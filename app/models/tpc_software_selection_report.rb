@@ -22,6 +22,7 @@
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
 #  adaptation_method        :string(255)
+#  oh_commit_sha            :string(255)
 #
 # Indexes
 #

@@ -9,5 +9,6 @@ module Input
     argument :vulnerability_response, String, required: true
     argument :adaptation_method, String, required: true
     argument :architecture_diagrams, [Input::Base64ImageInput], required: false
+    argument :oh_commit_sha, String, required: true
   end
 end
