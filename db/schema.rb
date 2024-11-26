@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_26_080837) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -569,6 +569,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_080837) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "adaptation_method"
+    t.string "oh_commit_sha"
     t.index ["short_code"], name: "index_tpc_software_selection_reports_on_short_code", unique: true
   end
 
