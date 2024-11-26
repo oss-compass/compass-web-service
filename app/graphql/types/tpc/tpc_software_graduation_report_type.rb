@@ -24,6 +24,7 @@ module Types
       field :architecture_diagrams, [Types::ImageType]
       field :user_id, Integer, null: false
       field :user, Types::UserType
+      field :oh_commit_sha, String
 
       def user
         User.find_by(id: object.user_id)

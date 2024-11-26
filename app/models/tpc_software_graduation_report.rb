@@ -19,6 +19,7 @@
 #  license              :string(255)
 #  code_count           :integer
 #  is_incubation        :integer
+#  oh_commit_sha        :string(500)
 #
 # Indexes
 #

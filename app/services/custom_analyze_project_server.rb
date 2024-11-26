@@ -3,6 +3,7 @@
 class CustomAnalyzeProjectServer
   PROJECT = 'insight'
   WORKFLOW = 'CUSTOM_V1'
+  # FATCHWORKFLOW = 'ETL_V1'
   LongCacheTTL = 3.days
   CacheTTL = 2.minutes
 

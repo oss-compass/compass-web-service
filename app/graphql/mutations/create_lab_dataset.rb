@@ -109,6 +109,15 @@ module Mutations
 
 
       projects.each do |project|
+        # Determine whether the project has updated the data in the last 6 months, and pull the data if not
+        begin
+          total_hits = resp.dig("hits", "total", "value") || 0
+          if total_hits == 0
+            AnalyzeServer.new(repo_url: project[:label]).execute(only_validate: false)
+          end
+        rescue => e
+          puts "Error processing project #{project[:label]}: #{e.message}"
+        end
         CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project[:label]).execute
       end
 
