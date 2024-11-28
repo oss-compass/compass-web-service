@@ -180,10 +180,21 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     TpcSoftwareReportMetric.get_compliance_license_compatibility(scancode_result)
   end
 
-  def self.get_compliance_dco(project_url)
+  def self.get_compliance_dco(project_url,oh_commit_sha)
     indexer, repo_urls =
       select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+
+    commit_time_query = indexer.must(term: { "hash.keyword": oh_commit_sha })
+                               .aggregate({ commit_time: { min: { field: "author_date" } } })
+                               .per(0)
+    commit_time = commit_time_query.execute.aggregations.dig('commit_time', 'value')
+
+    if commit_time.nil?
+      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+    end
+
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                  .must(range: { commit_date: { gt: commit_time } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 
@@ -249,10 +260,16 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     issue_count = base.execute
                       .aggregations
                       .dig('count', 'value')
-    issue_response_count = base.range(:num_of_comments_without_bot, gt: 0)
-                          .execute
-                          .aggregations
-                          .dig('count', 'value')
+
+    # issue_response_count = base.range(:num_of_comments_without_bot, gt: 0)
+    #                       .execute
+    #                       .aggregations
+    #                       .dig('count', 'value')
+    issue_response_count = base.should({ range: { num_of_comments_without_bot: { gt: 0 } } }, { match_phrase: { status: "closed" } })
+                               .minimum_should_match(1)
+                               .execute
+                               .aggregations
+                               .dig('count', 'value')
     issue_response_ratio = 0
     score = 6
     if issue_count > 0
@@ -462,16 +479,22 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_copyright_statement(scancode_result)
-    source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
+  def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file)
+    # source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
+    source_code_files = %w[.c .cpp .cc .h .hpp .cs .java .py .rb .js .ts .jsx .tsx .html .css .scss .less .php .go
+                           .swift .kt .m .mm .rs .pl .sh .bat .sql .yaml .yml .json .xml .md .vue .dart .erl .ex .exs
+                           .scala .r .nim .lua .groovy .gradle .makefile .dockerfile .tf]
 
+    new_files =  scancode_result_change_file.dig("new_files")|| []
     include_copyrights = []
     not_included_copyrights = []
     raw_list = []
     (scancode_result.dig("files") || []).each do |file|
       file_path = file.dig("path")
       file_path_split = file_path.split("/")
+      relative_path =  file_path.split("/", 2).last
       next if file_path_split.length > 2 && file_path_split[1] == "hvigor"
+      next unless new_files.include?(relative_path)
       if file.dig("type") == "file" && source_code_files.any? { |ext| file_path.end_with?(ext) }
         if (file.dig("copyrights") || []).length > 0
           include_copyrights << file_path

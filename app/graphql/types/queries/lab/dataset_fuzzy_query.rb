@@ -43,8 +43,7 @@ module Types
                 prefix,
                 'label.keyword',
                 'label.keyword',
-                fields: fields,
-                filters: { level: "repo" }
+                fields: fields
               )
           prefix_home_list = resp&.[]('hits')&.[]('hits')
           combined_list = (fuzzy_list + fuzzy_home_list + prefix_home_list)
@@ -65,8 +64,7 @@ module Types
           [fuzzy_list, prefix_list].each do |list|
             list.flat_map do |item|
               item = item['_source']
-              if item.present? && item['level'] == 'repo'
-
+              if item.present?
                 candidates << {
                   first_ident: item['first_collection'].presence || 'Other',
                   second_ident: item['collection'].presence || 'Other',

@@ -47,13 +47,13 @@ class TpcSoftwareMetricServer
       commands = %w[osv-scanner scancode binary-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
       commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
-                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker]
+                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker changed-files-since-commit-detector]
     end
     payload = {
       commands: commands,
       project_url: "#{@project_url}.git",
       callback_url: TPC_SERVICE_CALLBACK_URL,
-      oh_commit_sha: oh_commit_sha,
+      commit_hash: oh_commit_sha,
       task_metadata: {
         report_id: report_id,
         report_metric_id: report_metric_id,
@@ -169,8 +169,10 @@ class TpcSoftwareMetricServer
   def tpc_software_selection_callback(command_list, scan_results, report_id, report_metric_id)
     code_count = nil
     license = nil
-
     # commands = ["osv-scanner", "scancode", "binary-checker", "sonar-scanner", "dependency-checker", "compass"]
+    tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: report_id)
+    oh_commit_sha = tpc_software_selection_report.oh_commit_sha
+
     metric_hash = Hash.new
     command_list.each do |command|
       case command
@@ -188,7 +190,7 @@ class TpcSoftwareMetricServer
       when "dependency-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_dependency_acquisition(scan_results.dig(command) || {}))
       when "compass"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url,oh_commit_sha))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_community_support(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
@@ -238,9 +240,10 @@ class TpcSoftwareMetricServer
   def tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
     code_count = nil
     license = nil
-
     # commands = ["scancode", "sonar-scanner", "binary-checker", "osv-scanner", "release-checker", "readme-checker",
     #             "maintainers-checker", "build-doc-checker", "api-doc-checker", "readme-opensource-checker", "compass"]
+    tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(id: report_id)
+    oh_commit_sha = tpc_software_graduation_report.oh_commit_sha
     metric_hash = Hash.new
     command_list.each do |command|
       case command
@@ -249,7 +252,10 @@ class TpcSoftwareMetricServer
           metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}))
         end
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}))
+
+        if command_list.include?("changed-files-since-commit-detector")
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}))
+        end
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
@@ -270,12 +276,14 @@ class TpcSoftwareMetricServer
       when "api-doc-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_interface_doc(scan_results.dig(command) || {}))
       when "compass"
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_dco(@project_url))
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_dco(@project_url,oh_commit_sha))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_management(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_ratio(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_issue_response_time(@project_url))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_code_review(@project_url))
       when "readme-opensource-checker"
+        # no process
+      when "changed-files-since-commit-detector"
         # no process
       else
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
@@ -300,7 +308,7 @@ class TpcSoftwareMetricServer
     ActiveRecord::Base.transaction do
       report_metric.update!(report_metric_data)
 
-      tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(id: report_id)
+      # tpc_software_graduation_report = TpcSoftwareGraduationReport.find_by(id: report_id)
       update_data = {}
       update_data[:code_count] = code_count unless code_count.nil?
       update_data[:license] = license unless license.nil?
