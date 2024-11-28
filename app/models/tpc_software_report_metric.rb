@@ -401,7 +401,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
 
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
-                  .must(range: { commit_date: { gte: commit_time } })
+                  .must(range: { commit_date: { gt: commit_time } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 

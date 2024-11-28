@@ -182,7 +182,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
-                  .must(range: { commit_date: { gte: commit_time } })
+                  .must(range: { commit_date: { gt: commit_time } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 
@@ -249,19 +249,19 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
                       .aggregations
                       .dig('count', 'value')
 
-    closed_issue_count = base.must(match_phrase: { status: "closed" })
-                             .execute
-                             .aggregations
-                             .dig('count', 'value')
-
-    issue_response_count = base.range(:num_of_comments_without_bot, gt: 0)
-                          .execute
-                          .aggregations
-                          .dig('count', 'value')
+    # issue_response_count = base.range(:num_of_comments_without_bot, gt: 0)
+    #                       .execute
+    #                       .aggregations
+    #                       .dig('count', 'value')
+    issue_response_count = base.should({ range: { num_of_comments_without_bot: { gt: 0 } } }, { match_phrase: { status: "closed" } })
+                               .minimum_should_match(1)
+                               .execute
+                               .aggregations
+                               .dig('count', 'value')
     issue_response_ratio = 0
     score = 6
     if issue_count > 0
-      issue_response_ratio = ((issue_response_count + closed_issue_count).to_f / issue_count).round(2)
+      issue_response_ratio = (issue_response_count.to_f / issue_count).round(2)
       if issue_response_ratio >= 0.8
         score = 10
       end
