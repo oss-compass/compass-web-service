@@ -9,7 +9,7 @@ class CustomAnalyzeProjectServer
 
   include Common
 
-  attr_reader :user, :model, :version, :project
+  attr_reader :user, :model, :version, :project, :level
 
   class TaskExists < StandardError; end
 
@@ -17,11 +17,12 @@ class CustomAnalyzeProjectServer
 
   class ValidateFailed < StandardError; end
 
-  def initialize(opts = { user:, model:, version:, project: })
+  def initialize(opts = { user:, model:, version:, project:, level: })
     @user = opts[:user]
     @model = opts[:model]
     @version = opts[:version]
     @project = opts[:project]
+    @level = opts[:level]
   end
 
   def project_urls
@@ -98,7 +99,7 @@ class CustomAnalyzeProjectServer
   end
 
   def execute
-    validate!
+    # validate!
 
     status = check_task_status
 
@@ -133,7 +134,7 @@ class CustomAnalyzeProjectServer
       name: WORKFLOW,
       payload: {
         deubg: false,
-        level: 'repo',
+        level: level,
         custom_fields: custom_fields,
         project_urls: project_urls,
         metrics_weights_thresholds: metrics_weights_thresholds

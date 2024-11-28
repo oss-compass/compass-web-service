@@ -6,10 +6,10 @@ module Mutations
 
 
     argument :report_id, Integer, required: true, description: 'lab model report id'
-    argument :project_url, String, required: true, description: 'project url'
+    argument :project_url, String, required: true, description: 'project url or community name'
+    argument :level, String, required: true, description: 'level'
 
-
-    def resolve(report_id: nil,project_url: nil)
+    def resolve(report_id: nil, project_url: nil, level: nil)
       current_user = context[:current_user]
 
       login_required!(current_user)
@@ -27,7 +27,7 @@ module Mutations
 
       # raise GraphQL::ExecutionError.new I18n.t('lab_models.reaching_daily_limit') unless model.trigger_remaining_count > 0
 
-      CustomAnalyzeProjectServer.new({ user: current_user, model: model, version: model_version, project: project_url }).execute
+      CustomAnalyzeProjectServer.new({ user: current_user, model: model, version: model_version, project: project_url, level: level }).execute
     rescue => ex
       raise GraphQL::ExecutionError.new I18n.t('lab_models.trigger_failed', reason: ex.message)
     end
