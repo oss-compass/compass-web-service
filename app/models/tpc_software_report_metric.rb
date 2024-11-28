@@ -387,10 +387,21 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_dco(project_url)
-    indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+  def self.get_compliance_dco(project_url,oh_commit_sha)
+    indexer, repo_urls =  select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+
+
+    commit_time_query = indexer.must(term: { "hash.keyword": oh_commit_sha })
+                               .aggregate({ commit_time: { min: { field: "author_date" } } })
+                               .per(0)
+    commit_time = commit_time_query.execute.aggregations.dig('commit_time', 'value')
+
+    if commit_time.nil?
+      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+    end
+
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                  .must(range: { commit_date: { gte: commit_time } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 
@@ -410,6 +421,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
     { compliance_dco: score, compliance_dco_detail: detail.to_json }
   end
+
 
   def self.get_ecology_code_maintenance(project_url)
     begin_date = 1.year.ago
