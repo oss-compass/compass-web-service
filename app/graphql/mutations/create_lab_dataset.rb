@@ -107,7 +107,6 @@ module Mutations
         projects = get_new_dataset(nil, datasets)
       end
 
-
       projects.each do |project|
         # Determine whether the project has updated the data in the last 6 months, and pull the data if not
         begin
@@ -118,7 +117,7 @@ module Mutations
         rescue => e
           puts "Error processing project #{project[:label]}: #{e.message}"
         end
-        CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project[:label]).execute
+        CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project[:label], level: project[:level]).execute
       end
 
       { data: dataset }
