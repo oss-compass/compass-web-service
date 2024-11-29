@@ -97,7 +97,7 @@ class CustomAnalyzeReportServer
   end
 
   def execute
-    validate!
+    # validate!
 
     status = check_task_status
 
