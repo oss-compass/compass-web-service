@@ -11,5 +11,6 @@ module Input
     argument :round_upstream, String, required: false
     argument :is_incubation, Integer, required: true
     argument :architecture_diagrams, [Input::Base64ImageInput], required: false
+    argument :oh_commit_sha, String, required: false
   end
 end
