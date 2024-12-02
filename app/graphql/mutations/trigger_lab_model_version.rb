@@ -23,8 +23,7 @@ module Mutations
 
       raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless ::Pundit.policy(current_user, model).execute?
 
-       
-      raise GraphQL::ExecutionError.new I18n.t('lab_models.reaching_daily_limit') unless model.trigger_remaining_count > 0
+      # raise GraphQL::ExecutionError.new I18n.t('lab_models.reaching_daily_limit') unless model.trigger_remaining_count > 0
 
       # CustomAnalyzeServer.new({ user: current_user, model: model, version: model_version }).execute
       CustomAnalyzeReportServer.new({ user: current_user, model: model, version: model_version,report: report }).execute
