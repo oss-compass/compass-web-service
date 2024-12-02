@@ -499,9 +499,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
   def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file)
     # source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
-    source_code_files = %w[.c .cpp .cc .h .hpp .cs .java .py .rb .js .ts .jsx .tsx .html .css .scss .less .php .go
-                           .swift .kt .m .mm .rs .pl .sh .bat .sql .yaml .yml .json .xml .md .vue .dart .erl .ex .exs
-                           .scala .r .nim .lua .groovy .gradle .makefile .dockerfile .tf]
+    source_code_files = %w[.c .cpp .cc .h .hpp .cxx .cs  .java .jsp  .py  .pyx .rb .js  .jsx .ts .tsx .html .php .go .swift .kt .m .mm .rs .pl .vue .dart  .erl  .ex .exs .scala .r .nim  .lua .groovy]
 
     new_files =  scancode_result_change_file.dig("new_files")|| []
     include_copyrights = []
