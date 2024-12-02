@@ -172,10 +172,23 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     indexer, repo_urls =
       select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
 
-    commit_time_query = indexer.must(term: { "hash.keyword": oh_commit_sha })
-                               .aggregate({ commit_time: { min: { field: "author_date" } } })
-                               .per(0)
-    commit_time = commit_time_query.execute.aggregations.dig('commit_time', 'value')
+    # commit_time_query = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+    #                            .must(term: { "hash.keyword": oh_commit_sha })
+    #                            .aggregate({ commit_time: { min: { field: "metadata__updated_on" } } })
+    #                            .per(0)
+    commit_time_query = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                               .must(match_phrase: { "hash": oh_commit_sha })
+    result = commit_time_query.execute
+
+    if result.results.nil?
+      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+    end
+
+    if result.results.first.nil?
+      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+    end
+
+    commit_time = result.results.first['metadata__updated_on']
 
     if commit_time.nil?
       return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
@@ -253,11 +266,16 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     #                       .execute
     #                       .aggregations
     #                       .dig('count', 'value')
-    issue_response_count = base.should({ range: { num_of_comments_without_bot: { gt: 0 } } }, { match_phrase: { status: "closed" } })
-                               .minimum_should_match(1)
-                               .execute
-                               .aggregations
-                               .dig('count', 'value')
+
+    issue_response = base.must(
+      bool: {
+        should: [
+          { range: { num_of_comments_without_bot: { gt: 0 } } },
+          { match_phrase: { state: "closed" } }
+        ]
+      }
+    ).execute
+    issue_response_count = issue_response.aggregations.dig('count', 'value')
     issue_response_ratio = 0
     score = 6
     if issue_count > 0
