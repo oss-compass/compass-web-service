@@ -19,6 +19,8 @@ module Types
           label = ShortenedLabel.normalize_label(label) if label
           label = ShortenedLabel.revert(short_code)&.label if short_code
 
+          label = label.downcase unless label&.include?('https://')
+
           begin_date, end_date, interval = extract_date(begin_date, end_date)
 
           limit = 60
