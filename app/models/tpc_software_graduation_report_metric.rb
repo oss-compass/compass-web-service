@@ -207,6 +207,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                  .must(terms: { branches: ["'master'", "'main'"] })
                   .must(range: { commit_date: { gt: commit_time } })
                   .must_not(wildcard: { message: { value: "*Merge pull request*" } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
