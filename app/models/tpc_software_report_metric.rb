@@ -434,6 +434,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
                   .must(terms: { branches: ["'master'", "'main'"] })
                   .must(range: { commit_date: { gt: commit_time } })
                   .must_not(wildcard: { message: { value: "*Merge pull request*" } })
+                  .must_not(wildcard: { message: { value: "*Merge branch*" } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 
