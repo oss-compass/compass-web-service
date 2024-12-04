@@ -423,7 +423,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
       return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
     end
 
-    commit_time = result.results.first['metadata__updated_on']
+    commit_time = result.results.first['commit_date']
 
 
     if commit_time.nil?
