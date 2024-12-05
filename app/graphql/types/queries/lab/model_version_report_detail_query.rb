@@ -19,6 +19,8 @@ module Types
           label = ShortenedLabel.normalize_label(label) if label
           label = ShortenedLabel.revert(short_code)&.label if short_code
 
+          level = ShortenedLabel.revert(short_code)&.level if short_code
+
           label = label.downcase unless label&.include?('https://')
 
           begin_date, end_date, interval = extract_date(begin_date, end_date)
@@ -41,7 +43,7 @@ module Types
 
           resp = CustomV1Metric.query_repo_by_date(model.id, version.id, label, begin_date, end_date, page: 1, per: limit)
 
-          build_report_data(label, model, version, resp)
+          build_report_data(label, model, version, resp,level)
         end
       end
     end

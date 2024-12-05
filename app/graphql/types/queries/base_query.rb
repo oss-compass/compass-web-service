@@ -207,7 +207,7 @@ module Types
           .map { |row| remove_suffix ? row.sub(/\.git/, '') : row }
       end
 
-      def build_report_data(label, model, version, resp)
+      def build_report_data(label, model, version, resp, level)
         hits = resp&.fetch('hits', {})&.fetch('hits', [])
         metric_with_fields = version.metrics.reduce({}) do |acc, metric|
           acc.merge(metric => metric.extra_fields)
@@ -236,8 +236,8 @@ module Types
 
         {
           label: label,
-          level: 'repo',
-          short_code: ShortenedLabel.convert(label, 'repo'),
+          level: level,
+          short_code: ShortenedLabel.convert(label, level),
           type: nil,
           main_score: { tab_ident: 'score', type: 'line', dates: dates, values: scores },
           panels: panels,
