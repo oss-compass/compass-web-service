@@ -304,18 +304,12 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
     check_license_list = []
     (scancode_result.dig("license_detections") || []).each do |license_detection|
-      (license_detection.dig("reference_matches") || []).each do |reference_match|
-        file_path = reference_match.dig("from_file") || ""
-        from_file_split = file_path.downcase.split("/")
-        next if from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last)
-        
-        (license_detection.dig("license_expression") || "").gsub(Regexp.union(replacements.keys), replacements).split.each do |license_expression_item|
-          unless license_expression_item.include?("unknown")
-            check_license_list << license_expression_item.strip.downcase
+      (license_detection.dig("license_expression") || "").gsub(Regexp.union(replacements.keys), replacements).split.each do |license_expression_item|
+        unless license_expression_item.include?("unknown")
+          check_license_list << license_expression_item.strip.downcase
         end
       end
     end
-
 
     conflict_list = []
     check_license_list = check_license_list.uniq
