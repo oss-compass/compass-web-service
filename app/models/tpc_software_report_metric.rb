@@ -286,10 +286,16 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
     check_license_list = []
     (scancode_result.dig("license_detections") || []).each do |license_detection|
-      (license_detection.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
-        check_license_list << license_expression.strip.downcase
+      (license_detection.dig("reference_matches") || []).each do |reference_match|
+        file_path = reference_match.dig("from_file") || ""
+        from_file_split = file_path.downcase.split("/")
+        next if from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last)
+        (reference_match.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
+          check_license_list << license_expression.strip.downcase
+        end
       end
     end
+
 
     conflict_list = []
     check_license_list = check_license_list.uniq
