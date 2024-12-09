@@ -64,6 +64,16 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  config.session_store :riak_session_store,
+                       key: 'session',
+                       riak: {
+                         expire_after: 1.day, # cookie expiration
+                         host: ENV.fetch('RIAK_HOST') { 'localhost' },
+                         pb_port: ENV.fetch('RIAK_PORT') { 8087 },
+                         key_prefix: "#{ENV['DEFAULT_HOST']}:session:"
+                       },
+                       serializer: :json
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false

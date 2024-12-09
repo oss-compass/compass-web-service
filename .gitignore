@@ -64,3 +64,5 @@ node_modules
 
 # Ignore VSCode working files
 .vscode
+.aider*
+.env

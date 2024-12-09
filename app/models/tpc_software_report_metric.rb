@@ -172,22 +172,34 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end.compact
 
+    replacements = {
+      "(" => "",
+      ")" => "",
+      "and" => "",
+      "or" => ""
+    }
     raw_data.each do |raw|
       license_expression = raw['detected_license_expression']
       license_expression = license_expression.strip.downcase
-      license_list << license_expression
-      category = license_db_data.dig(license_expression, :category)
-      if category
-        case category
-        when "Permissive"
-          osi_permissive_license_list << license_expression
-        when "Copyleft Limited"
-          osi_copyleft_limited_license_list << license_expression
-        else
-          osi_free_restricted_license_list << license_expression
+      license_expression = license_expression.gsub(Regexp.union(replacements.keys), replacements)
+      license_expression_list = license_expression.split
+      license_expression_list.each do |license_expression_item|
+        unless license_expression_item.include?("unknown")
+          license_list << license_expression_item
+          category = license_db_data.dig(license_expression_item, :category)
+          if category
+            case category
+            when "Permissive"
+              osi_permissive_license_list << license_expression_item
+            when "Copyleft Limited"
+              osi_copyleft_limited_license_list << license_expression_item
+            else
+              osi_free_restricted_license_list << license_expression_item
+            end
+          else
+            non_osi_license_list << license_expression_item
+          end
         end
-      else
-        non_osi_license_list << license_expression
       end
     end
 
@@ -284,14 +296,22 @@ class TpcSoftwareReportMetric < ApplicationRecord
   def self.get_compliance_license_compatibility(scancode_result)
     license_conflict_data = get_license_conflict_data
 
+    replacements = {
+      "(" => "",
+      ")" => "",
+      "AND" => "",
+      "OR" => ""
+    }
     check_license_list = []
     (scancode_result.dig("license_detections") || []).each do |license_detection|
       (license_detection.dig("reference_matches") || []).each do |reference_match|
         file_path = reference_match.dig("from_file") || ""
         from_file_split = file_path.downcase.split("/")
         next if from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last)
-        (reference_match.dig("license_expression") || "").split(/ AND | OR /).each do |license_expression|
-          check_license_list << license_expression.strip.downcase
+        
+        (license_detection.dig("license_expression") || "").gsub(Regexp.union(replacements.keys), replacements).split.each do |license_expression_item|
+          unless license_expression_item.include?("unknown")
+            check_license_list << license_expression_item.strip.downcase
         end
       end
     end
@@ -305,7 +325,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
         if license_conflict_list.any?
           conflict_list << {
             license: check_license,
-            license_conflict_list: license_conflict_list.take(5)
+            license_conflict_list: license_conflict_list.take(1)
           }
         end
       end
@@ -324,7 +344,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
     {
       compliance_license_compatibility: score,
-      compliance_license_compatibility_detail: conflict_list.take(3).to_json,
+      compliance_license_compatibility_detail: conflict_list.take(1).to_json,
       compliance_license_compatibility_raw: raw_data.take(30).to_json
     }
   end
@@ -410,7 +430,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
       return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
     end
 
-    commit_time = result.results.first['metadata__updated_on']
+    commit_time = result.results.first['commit_date']
 
 
     if commit_time.nil?
@@ -418,8 +438,10 @@ class TpcSoftwareReportMetric < ApplicationRecord
     end
 
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                  .must(terms: { branches: ["'master'", "'main'"] })
                   .must(range: { commit_date: { gt: commit_time } })
                   .must_not(wildcard: { message: { value: "*Merge pull request*" } })
+                  .must_not(wildcard: { message: { value: "*Merge branch*" } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 
@@ -592,15 +614,28 @@ class TpcSoftwareReportMetric < ApplicationRecord
     root_directory_license = []
     sub_directory_license = []
 
+    replacements = {
+      "(" => "",
+      ")" => "",
+      "AND" => "",
+      "OR" => ""
+    }
     (scancode_result.dig("files") || []).each do |file|
       file_type = file.dig("type") || ""
       from_file_split = (file.dig("path") || "").downcase.split("/")
       if file_type == "file" && file.dig("detected_license_expression")
-        if from_file_split.length == 2
-          root_directory_license << file.dig("detected_license_expression")
-        end
-        if from_file_split.length > 2 && from_file_split[1] == "license"
-          sub_directory_license << file.dig("detected_license_expression")
+        license_expression = file.dig("detected_license_expression")
+        license_expression = license_expression.gsub(Regexp.union(replacements.keys), replacements)
+        license_expression_list = license_expression.split
+        license_expression_list.each do |license_expression_item|
+          unless license_expression_item.include?("unknown")
+            if from_file_split.length == 2
+              root_directory_license << license_expression_item
+            end
+            if from_file_split.length > 2 && from_file_split[1] == "license"
+              sub_directory_license << license_expression_item
+            end
+          end
         end
       end
     end

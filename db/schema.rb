@@ -99,9 +99,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
     t.string "from"
     t.float "default_weight"
     t.float "default_threshold"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.text "extra", default: "'{}'"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "extra", default: "{}"
   end
 
   create_table "lab_model_comments", charset: "utf8mb4", force: :cascade do |t|
@@ -209,8 +209,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
   end
 
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
-    t.string "task_id", null: false
-    t.string "remote_url", null: false, collation: "utf8mb4_bin"
+    t.string "task_id"
+    t.string "remote_url", collation: "utf8mb4_bin"
     t.string "status"
     t.text "payload"
     t.text "extra"

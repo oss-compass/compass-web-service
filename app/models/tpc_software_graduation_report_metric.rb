@@ -130,22 +130,34 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       end
     end.compact
 
+    replacements = {
+      "(" => "",
+      ")" => "",
+      "and" => "",
+      "or" => ""
+    }
     raw_data.each do |raw|
       license_expression = raw['detected_license_expression']
       license_expression = license_expression.strip.downcase
-      license_list << license_expression
-      category = license_db_data.dig(license_expression, :category)
-      if category
-        case category
-        when "Permissive"
-          osi_license_list << license_expression
-        when "Copyleft Limited"
-          osi_license_list << license_expression
-        else
-          osi_license_list << license_expression
+      license_expression = license_expression.gsub(Regexp.union(replacements.keys), replacements)
+      license_expression_list = license_expression.split
+      license_expression_list.each do |license_expression_item|
+        unless license_expression_item.include?("unknown")
+          license_list << license_expression_item
+          category = license_db_data.dig(license_expression_item, :category)
+          if category
+            case category
+            when "Permissive"
+              osi_license_list << license_expression_item
+            when "Copyleft Limited"
+              osi_license_list << license_expression_item
+            else
+              osi_license_list << license_expression_item
+            end
+          else
+            non_osi_license_list << license_expression_item
+          end
         end
-      else
-        non_osi_license_list << license_expression
       end
     end
 
@@ -190,15 +202,17 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
     end
 
-    commit_time = result.results.first['metadata__updated_on']
+    commit_time = result.results.first['commit_date']
 
     if commit_time.nil?
       return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
     end
 
     base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                  .must(terms: { branches: ["'master'", "'main'"] })
                   .must(range: { commit_date: { gt: commit_time } })
                   .must_not(wildcard: { message: { value: "*Merge pull request*" } })
+                  .must_not(wildcard: { message: { value: "*Merge branch*" } })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
                   .per(0)
 

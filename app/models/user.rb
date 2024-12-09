@@ -35,6 +35,8 @@ class User < ApplicationRecord
          :recoverable, :validatable, :trackable,
          :jwt_authenticatable, :omniauthable, jwt_revocation_strategy: self
 
+  include Userable
+
   alias_attribute :metric_models, :lab_models
   alias_attribute :invitations, :lab_model_invitations
 
@@ -50,6 +52,7 @@ class User < ApplicationRecord
   validates :encrypted_password, presence: true
   after_initialize :set_default_language, if: :new_record?
 
+  after_save :expire_cache
   after_update :send_email_verification, if: -> { saved_changes.keys.include?('email') }
 
   ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
@@ -266,5 +269,9 @@ class User < ApplicationRecord
   def set_default_language
     self.language = I18n.locale
     self.language ||= I18n.default_locale
+  end
+
+  def expire_cache
+    CompassRiak.delete('users', "user_#{self.id}")
   end
 end

@@ -10,6 +10,7 @@ module CompassWebService
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    config.autoload_lib(ignore: ["assets", "tasks", "generators"])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -28,15 +29,6 @@ module CompassWebService
       reconnect_attempts: 2,   # Defaults to 0
       namespace: 'cache'
     }
-
-    config.session_store :redis_session_store,
-                         key: 'session',
-                         redis: {
-                           expire_after: 1.day, # cookie expiration
-                           ttl: 1.day, # Redis expiration, defaults to 'expire_after'
-                           key_prefix: "#{ENV['DEFAULT_HOST']}:session:",
-                           url: ENV.fetch('REDIS_URL') { 'redis://redis:6379/1' },
-                         }
 
     # Set Sneakers as the back-end for Active Job.
     config.active_job.queue_adapter = :sneakers

@@ -23,8 +23,6 @@ module Common
   SAFELIST_IPS = (ENV.fetch('SAFELIST_IPS') { '' })&.split(',')
   RESTRICTED_LABEL_LIST = (ENV.fetch('RESTRICTED_LABEL_LIST') { '' })&.split(',')
   RESTRICTED_LABEL_VIEWERS = (ENV.fetch('RESTRICTED_LABEL_VIEWERS') { '' })&.split(',')
-  TPC_SERVICE_API_USERNAME = ENV.fetch('TPC_SERVICE_API_USERNAME') { 'user' }
-  TPC_SERVICE_API_PASSWORD = ENV.fetch('TPC_SERVICE_API_PASSWORD') { 'password' }
 
   Faraday.ignore_env_proxy = true
 
