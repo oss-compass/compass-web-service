@@ -122,8 +122,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       keys_to_select = %w[path type detected_license_expression detected_license_expression_spdx]
       file_type = file.dig("type") || ""
       from_file_split = (file.dig("path") || "").downcase.split("/")
-      if file_type == "file" && file.dig("detected_license_expression") &&
-        (from_file_split.length == 2 || from_file_split.length >= 2 && from_file_split[1] == "license")
+      if file_type == "file" &&
+        file.dig("detected_license_expression") &&
+        (from_file_split.length == 2 || (from_file_split.length >= 2 && from_file_split[1] == "license")) &&
+        !(from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last))
         file.select { |key, _| keys_to_select.include?(key) }
       end
     end.compact
