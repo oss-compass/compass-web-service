@@ -339,6 +339,10 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
     raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
       (license_detection.dig("reference_matches") || []).map do |reference_match|
+        file_path = reference_match.dig("from_file") || ""
+        from_file_split = file_path.downcase.split("/")
+        next if from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last)
+
         keys_to_select = %w[license_expression license_expression_spdx from_file start_line end_line matcher score]
         reference_match.select { |key, _| keys_to_select.include?(key) }
       end
