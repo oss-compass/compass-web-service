@@ -421,35 +421,40 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
   def self.get_compliance_dco(project_url,oh_commit_sha)
     indexer, repo_urls =  select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+    if oh_commit_sha.present?
+      commit_time_query = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                                 .must(match_phrase: { "hash": oh_commit_sha })
+      result = commit_time_query.execute
+
+      if result.results.nil?
+        return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+      end
+
+      if result.results.first.nil?
+        return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+      end
+
+      commit_time = result.results.first['commit_date']
 
 
-    commit_time_query = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
-                               .must(match_phrase: { "hash": oh_commit_sha })
-    result = commit_time_query.execute
+      if commit_time.nil?
+        return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+      end
 
-    if result.results.nil?
-      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
+      base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                    .must(terms: { branches: ["'master'", "'main'"] })
+                    .must(range: { commit_date: { gt: commit_time } })
+                    .must_not(wildcard: { message: { value: "*Merge*" } })
+                    .aggregate({ count: { cardinality: { field: "uuid" } } })
+                    .per(0)
+    else
+      base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
+                    .must_not(wildcard: { message: { value: "*Merge*" } })
+                    .aggregate({ count: { cardinality: { field: "uuid" } } })
+                    .per(0)
+
     end
 
-    if result.results.first.nil?
-      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
-    end
-
-    commit_time = result.results.first['commit_date']
-
-
-    if commit_time.nil?
-      return { compliance_dco: 6, compliance_dco_detail: { commit_count: 0, commit_dco_count: 0 }.to_json }
-    end
-
-    base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
-                  .must(terms: { branches: ["'master'", "'main'"] })
-                  .must(range: { commit_date: { gt: commit_time } })
-                  .must_not(wildcard: { message: { value: "*Merge pull request*" } })
-                  .must_not(wildcard: { message: { value: "*Merge branch*" } })
-                  .must_not(wildcard: { message: { value: "*Merge remote*" } })
-                  .aggregate({ count: { cardinality: { field: "uuid" } }})
-                  .per(0)
 
     commit_count = base.execute.aggregations.dig('count', 'value')
     commit_dco_count = base.must(wildcard: { message: { value: "*Signed-off-by*" } })
