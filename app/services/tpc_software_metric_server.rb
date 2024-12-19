@@ -253,9 +253,9 @@ class TpcSoftwareMetricServer
         end
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
 
-        if command_list.include?("changed-files-since-commit-detector")
-          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}))
-        end
+        # if command_list.include?("changed-files-since-commit-detector")
+        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}))
+        # end
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
