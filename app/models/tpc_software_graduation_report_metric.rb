@@ -503,7 +503,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file)
+  def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file, oh_commit_sha)
     # source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
     source_code_files = %w[.c .cpp .cc .h .hpp .cxx .cs  .java .jsp  .py  .pyx .rb .js  .jsx .ts .tsx .html .php .go .swift .kt .m .mm .rs .pl .vue .dart  .erl  .ex .exs .scala .r .nim  .lua .groovy]
 
@@ -516,7 +516,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       file_path_split = file_path.split("/")
       relative_path =  file_path.split("/", 2).last
       next if file_path_split.length > 2 && file_path_split[1] == "hvigor"
-      next unless new_files.include?(relative_path)
+      next if oh_commit_sha.present? && !new_files.include?(relative_path)
       if file.dig("type") == "file" && source_code_files.any? { |ext| file_path.end_with?(ext) }
         if (file.dig("copyrights") || []).length > 0
           include_copyrights << file_path
