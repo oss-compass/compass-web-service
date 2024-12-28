@@ -213,6 +213,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     else
       base = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
                     .must_not(wildcard: { message: { value: "*Merge*" } })
+                    .must(terms: { branches: ["'master'", "'main'"] })
                     .aggregate({ count: { cardinality: { field: "uuid" } } })
                     .per(0)
     end
