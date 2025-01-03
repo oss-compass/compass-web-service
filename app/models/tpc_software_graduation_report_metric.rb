@@ -541,6 +541,9 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     if include_copyrights.length > 0 && not_included_copyrights.length == 0
       score = 10
     end
+    if include_copyrights.length == 0 && not_included_copyrights.length == 0
+      score = 10
+    end
 
     detail = {
       "include_copyrights": include_copyrights.uniq.take(1),
