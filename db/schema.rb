@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_08_075442) do
   create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -99,9 +99,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
     t.string "from"
     t.float "default_weight"
     t.float "default_threshold"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "extra", default: "{}"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text "extra", default: "'{}'"
   end
 
   create_table "lab_model_comments", charset: "utf8mb4", force: :cascade do |t|
@@ -209,8 +209,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
   end
 
   create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
-    t.string "task_id"
-    t.string "remote_url", collation: "utf8mb4_bin"
+    t.string "task_id", null: false
+    t.string "remote_url", null: false, collation: "utf8mb4_bin"
     t.string "status"
     t.text "payload"
     t.text "extra"
@@ -351,6 +351,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "compliance_snippet_reference_raw"
+    t.text "import_valid_raw"
     t.index ["tpc_software_graduation_report_metric_id"], name: "idx_on_tpc_software_graduation_report_metric_id_ff1401468a", unique: true
   end
 
@@ -411,6 +412,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_112221) do
     t.datetime "updated_at", null: false
     t.integer "compliance_snippet_reference"
     t.string "compliance_snippet_reference_detail", limit: 500
+    t.integer "import_valid"
+    t.string "import_valid_detail", limit: 500
   end
 
   create_table "tpc_software_graduation_reports", charset: "utf8mb4", force: :cascade do |t|
