@@ -173,7 +173,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       if count > 0
         score = 0
       end
-      oat_detail = oat_result.dig("details")||[]
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
     end
 
     detail = {
@@ -563,7 +563,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       if count > 0
         score = 0
       end
-      oat_detail = oat_result.dig("details")||[]
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
     end
 
     detail = {
@@ -669,7 +669,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     else
       score = 10
     end
-    oat_detail = oat_result.dig("details")||[]
+    oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
 
     {
       import_valid: score,
