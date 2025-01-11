@@ -342,7 +342,8 @@ class TpcSoftwareReportMetric < ApplicationRecord
       if count > 0
         score = 0
       end
-      oat_detail = oat_result.dig("details")||[]
+      # oat_detail = oat_result.dig("details")||[]
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
     end
 
     raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
@@ -356,14 +357,14 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
 
-    detail = {
+    detail = [
       tpc_detail: conflict_list.take(1),
       oat_detail: oat_detail.take(1)
-    }
+    ]
 
     {
       compliance_license_compatibility: score,
-      compliance_license_compatibility_detail: detail.to_json,
+      compliance_license_compatibility_detail: detail.to_json ,
       compliance_license_compatibility_raw: raw_data.take(30).to_json
     }
   end
@@ -382,7 +383,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
       if count > 0
         score = 0
       end
-      oat_detail = oat_result.dig("details")
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
 
     end
 
@@ -393,7 +394,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     }
 
     artifact_detail = {
-      tcp_detail: binary_archive_list.take(1),
+      tpc_detail: binary_archive_list.take(1),
       oat_detail: (oat_detail||[]).take(1)
     }
 
