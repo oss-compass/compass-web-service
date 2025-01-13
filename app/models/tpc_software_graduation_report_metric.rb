@@ -59,8 +59,6 @@
 #  updated_at                                        :datetime         not null
 #  compliance_snippet_reference                      :integer
 #  compliance_snippet_reference_detail               :string(500)
-#  import_valid                                      :integer
-#  import_valid_detail                               :string(500)
 #
 class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
@@ -112,7 +110,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     TpcSoftwareReportMetric.check_url(url)
   end
 
-  def self.get_compliance_license(scancode_result, readme_opensource_checker_result, oat_result)
+  def self.get_compliance_license(scancode_result, readme_opensource_checker_result)
     license_list = []
     osi_license_list = []
     non_osi_license_list = []
@@ -167,20 +165,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     if license_list.length > 0 && non_osi_license_list.length == 0 && readme_opensource
       score = 10
     end
-    oat_detail = []
-    if oat_result.present?
-      count = oat_result.dig("total_count")
-      if count > 0
-        score = 0
-      end
-      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
-    end
-
     detail = {
       readme_opensource: readme_opensource,
       osi_license_list: osi_license_list.uniq.take(1),
-      non_osi_licenses: non_osi_license_list.uniq.take(1),
-      oat_detail: oat_detail.take(1)
+      non_osi_licenses: non_osi_license_list.uniq.take(1)
     }
 
     {
@@ -190,8 +178,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_license_compatibility(scancode_result, oat_result)
-    TpcSoftwareReportMetric.get_compliance_license_compatibility(scancode_result, oat_result)
+  def self.get_compliance_license_compatibility(scancode_result)
+    TpcSoftwareReportMetric.get_compliance_license_compatibility(scancode_result)
   end
 
   def self.get_compliance_dco(project_url,oh_commit_sha)
@@ -472,8 +460,8 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     { ecology_code_review: score, ecology_code_review_detail: detail.to_json }
   end
 
-  def self.get_security_binary_artifact(binary_checker_result, oat_result)
-    TpcSoftwareReportMetric.get_security_binary_artifact(binary_checker_result, oat_result)
+  def self.get_security_binary_artifact(binary_checker_result)
+    TpcSoftwareReportMetric.get_security_binary_artifact(binary_checker_result)
   end
 
   def self.get_security_vulnerability(osv_scanner_result)
@@ -516,8 +504,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file, oh_commit_sha, oat_result)
-
+  def self.get_compliance_copyright_statement(scancode_result, scancode_result_change_file, oh_commit_sha)
     # source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
     source_code_files = %w[.c .cpp .cc .h .hpp .cxx .cs  .java .jsp  .py  .pyx .rb .js  .jsx .ts .tsx .html .php .go .swift .kt .m .mm .rs .pl .vue .dart  .erl  .ex .exs .scala .r .nim  .lua .groovy]
 
@@ -557,19 +544,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     if include_copyrights.length == 0 && not_included_copyrights.length == 0
       score = 10
     end
-    oat_detail = []
-    if oat_result.present?
-      count = oat_result.dig("total_count")
-      if count > 0
-        score = 0
-      end
-      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
-    end
 
     detail = {
       "include_copyrights": include_copyrights.uniq.take(1),
       "not_included_copyrights": not_included_copyrights.uniq.take(1),
-      "oat_detail": oat_detail.take(1)
     }
 
     {
@@ -579,8 +557,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     }
   end
 
-  def self.get_ecology_readme(readme_checker_result,oat_result)
-
+  def self.get_ecology_readme(readme_checker_result)
     readme_files = %w[readme readme.]
 
     readme_file_list = readme_checker_result.dig("readme_file") || []
@@ -591,13 +568,6 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       if readme_file_split.length == 2 && readme_files.any? { |item| readme_file_split[1].downcase.include?(item) }
         score = 10
         break
-      end
-    end
-
-    if oat_result.present?
-      count = oat_result.dig("total_count")
-      if count > 0
-        score = 0
       end
     end
 
@@ -659,23 +629,6 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     else
       ecology_test_coverage
     end
-  end
-
-
-  def self.get_import_valid(oat_result)
-    count = oat_result.dig("total_count")
-    if count > 0
-      score = 0
-    else
-      score = 10
-    end
-    oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
-
-    {
-      import_valid: score,
-      import_valid_detail: oat_detail.take(1).to_json,
-      import_valid_raw: oat_detail.take(30).to_json
-    }
   end
 
 end
