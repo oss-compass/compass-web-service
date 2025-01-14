@@ -52,11 +52,14 @@ module Types
       field :lifecycle_statement_detail, String
 
       field :security_binary_artifact, Integer
-      field :security_binary_artifact_detail, [String]
+      field :security_binary_artifact_detail, Types::Tpc::TpcSoftwareReportMetricSecurityBinaryArtifactType
       field :security_vulnerability, Integer
       field :security_vulnerability_detail, [Types::Tpc::TpcSoftwareReportMetricSecurityVulnerabilityType]
       field :security_package_sig, Integer
       field :security_package_sig_detail, [String]
+
+      field :import_valid, Integer
+      field :import_valid_detail, [String]
 
       field :created_at, GraphQL::Types::ISO8601DateTime
       field :updated_at, GraphQL::Types::ISO8601DateTime
@@ -84,7 +87,8 @@ module Types
         :lifecycle_statement_detail,
         :security_binary_artifact_detail,
         :security_vulnerability_detail,
-        :security_package_sig_detail
+        :security_package_sig_detail,
+        :import_valid_detail
       ].each do |method_name|
         define_method(method_name) do
           value = object.send(method_name)
