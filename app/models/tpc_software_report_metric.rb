@@ -357,10 +357,10 @@ class TpcSoftwareReportMetric < ApplicationRecord
       end
     end
 
-    detail = [
+    detail = {
       tpc_detail: conflict_list.take(1),
       oat_detail: oat_detail.take(1)
-    ]
+    }
 
     {
       compliance_license_compatibility: score,

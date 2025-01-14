@@ -5,7 +5,6 @@ module Types
     class TpcSoftwareReportMetricComplianceLicenseCompatibilityTpcType < Types::BaseObject
       field :license, String
       field :license_conflict_list, [String]
-      field :oat_detail, [String]
     end
   end
 end

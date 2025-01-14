@@ -116,7 +116,20 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     license_list = []
     osi_license_list = []
     non_osi_license_list = []
+
+    # readme_opensource: no:0, have:1,non-compliance 2
+    readme_opensource_result = 0
+
+
     readme_opensource = readme_opensource_checker_result.dig("readme-opensource-checker") || false
+    if readme_opensource
+      readme_opensource_result = 1
+    end
+
+    readme_opensource_error = readme_opensource_checker_result.dig("error")
+    if  readme_opensource_error.present?
+      readme_opensource_result = 2
+    end
 
     license_db_data = TpcSoftwareReportMetric.get_license_data
 
@@ -164,7 +177,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     score = 0
-    if license_list.length > 0 && non_osi_license_list.length == 0 && readme_opensource
+    if license_list.length > 0 && non_osi_license_list.length == 0 && readme_opensource_result == 1
       score = 10
     end
     oat_detail = []
@@ -177,7 +190,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     end
 
     detail = {
-      readme_opensource: readme_opensource,
+      readme_opensource: readme_opensource_result,
       osi_license_list: osi_license_list.uniq.take(1),
       non_osi_licenses: non_osi_license_list.uniq.take(1),
       oat_detail: oat_detail.take(1)
