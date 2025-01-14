@@ -47,7 +47,8 @@ class TpcSoftwareMetricServer
       commands = %w[osv-scanner scancode binary-checker sonar-scanner dependency-checker]
     when Report_Type_Graduation
       commands = %w[scancode sonar-scanner binary-checker osv-scanner release-checker readme-checker
-                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker changed-files-since-commit-detector]
+                    maintainers-checker build-doc-checker api-doc-checker readme-opensource-checker
+                    changed-files-since-commit-detector oat-scanner]
     end
     payload = {
       commands: commands,
@@ -180,10 +181,10 @@ class TpcSoftwareMetricServer
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
       when "scancode"
         metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license(scan_results.dig(command) || {}))
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}, nil))
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "binary-checker"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_security_binary_artifact(scan_results.dig(command) || {},nil))
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_software_quality(scan_results.dig(command) || {}))
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
@@ -248,27 +249,69 @@ class TpcSoftwareMetricServer
     command_list.each do |command|
       case command
       when "scancode"
-        if command_list.include?("readme-opensource-checker")
-          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}))
-        end
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}))
+        if command_list.include?("oat-scanner")
+          oat_status_code = scan_results.dig("oat-scanner").dig("status_code")
+          oat_result = {}
+          if oat_status_code == 200
+            if command_list.include?("readme-opensource-checker")
+              oat_result = scan_results.dig("oat-scanner").dig("No Readme.OpenSource") || {}
+              metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}, oat_result))
+            end
+            oat_result = scan_results.dig("oat-scanner").dig("License Not Compatible") || {}
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}, oat_result))
+            if command_list.include?("changed-files-since-commit-detector")
+              oat_result = scan_results.dig("oat-scanner").dig("Copyright Header Invalid") || {}
+              metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}, oh_commit_sha, oat_result))
+            end
+            oat_result = scan_results.dig("oat-scanner").dig("Import Invalid") || {}
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_import_valid(oat_result))
 
-        # if command_list.include?("changed-files-since-commit-detector")
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}, oh_commit_sha))
-        # end
+          else
+            if command_list.include?("readme-opensource-checker")
+              metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}, nil))
+            end
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}, nil))
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}, oh_commit_sha, nil))
+          end
+        else
+          # not include "oat-scanner"
+          if command_list.include?("readme-opensource-checker")
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license(scan_results.dig(command) || {}, scan_results.dig("readme-opensource-checker") || {}, nil))
+          end
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_license_compatibility(scan_results.dig(command) || {}, nil))
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_compliance_copyright_statement(scan_results.dig(command) || {}, scan_results.dig("changed-files-since-commit-detector") || {}, oh_commit_sha, nil))
+        end
+
         license = TpcSoftwareReportMetric.get_license(scan_results.dig(command) || {})
       when "sonar-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_test_coverage(scan_results.dig(command) || {}))
         code_count = TpcSoftwareReportMetric.get_code_count(scan_results.dig(command) || {})
       when "binary-checker"
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}))
+        if  command_list.include?("oat-scanner")
+          oat_status_code = scan_results.dig("oat-scanner").dig("status_code")
+          oat_result = {}
+          if oat_status_code == 200
+          oat_result =  scan_results.dig("oat-scanner").dig("Invalid File Type")||{}
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {}, oat_result))
+          else
+            metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {},nil))
+          end
+        else
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_binary_artifact(scan_results.dig(command) || {},nil))
+        end
       when "osv-scanner"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_vulnerability(scan_results.dig(command) || {}))
       when "release-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_security_package_sig(scan_results.dig(command) || {}))
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_lifecycle_release_note(scan_results.dig(command) || {}))
       when "readme-checker"
-        metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {}))
+        if  command_list.include?("oat-scanner")
+          oat_result =  scan_results.dig("oat-scanner").dig("No Readme")||{}
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {},oat_result))
+        else
+          metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_readme(scan_results.dig(command) || {},nil))
+        end
+
       when "maintainers-checker"
         metric_hash.merge!(TpcSoftwareGraduationReportMetric.get_ecology_maintainer_doc(scan_results.dig(command) || {}))
       when "build-doc-checker"
@@ -284,6 +327,8 @@ class TpcSoftwareMetricServer
       when "readme-opensource-checker"
         # no process
       when "changed-files-since-commit-detector"
+        # no process
+      when "oat-scanner"
         # no process
       else
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)

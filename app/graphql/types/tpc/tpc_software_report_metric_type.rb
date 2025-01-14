@@ -48,7 +48,7 @@ module Types
       field :lifecycle_version_lifecycle_detail, Types::Tpc::TpcSoftwareReportMetricLifecycleVersionLifecycleType
 
       field :security_binary_artifact, Integer
-      field :security_binary_artifact_detail, [String]
+      field :security_binary_artifact_detail, Types::Tpc::TpcSoftwareReportMetricSecurityBinaryArtifactType
       field :security_vulnerability, Integer
       field :security_vulnerability_detail, [Types::Tpc::TpcSoftwareReportMetricSecurityVulnerabilityType]
       field :security_vulnerability_response, Integer

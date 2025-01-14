@@ -293,7 +293,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     @@license_data
   end
 
-  def self.get_compliance_license_compatibility(scancode_result)
+  def self.get_compliance_license_compatibility(scancode_result, oat_result)
     license_conflict_data = get_license_conflict_data
 
     replacements = {
@@ -336,6 +336,15 @@ class TpcSoftwareReportMetric < ApplicationRecord
     if conflict_list.length == 0
       score = 10
     end
+    oat_detail = []
+    if oat_result.present?
+      count = oat_result.dig("total_count")
+      if count > 0
+        score = 0
+      end
+      # oat_detail = oat_result.dig("details")||[]
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
+    end
 
     raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
       (license_detection.dig("reference_matches") || []).map do |reference_match|
@@ -347,14 +356,20 @@ class TpcSoftwareReportMetric < ApplicationRecord
         reference_match.select { |key, _| keys_to_select.include?(key) }
       end
     end
+
+    detail = {
+      tpc_detail: conflict_list.take(1),
+      oat_detail: oat_detail.take(1)
+    }
+
     {
       compliance_license_compatibility: score,
-      compliance_license_compatibility_detail: conflict_list.take(1).to_json,
+      compliance_license_compatibility_detail: detail.to_json ,
       compliance_license_compatibility_raw: raw_data.take(30).to_json
     }
   end
 
-  def self.get_security_binary_artifact(binary_checker_result)
+  def self.get_security_binary_artifact(binary_checker_result, oat_result)
     binary_archive_list = binary_checker_result.dig("binary_archive_list") || []
 
     score = 0
@@ -362,14 +377,30 @@ class TpcSoftwareReportMetric < ApplicationRecord
       score = 10
     end
 
+    oat_detail = []
+    if oat_result.present?
+      count = oat_result.dig("total_count")
+      if count > 0
+        score = 0
+      end
+      oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
+
+    end
+
     raw_data = {
       "binary_file_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
       "binary_archive_list": (binary_checker_result.dig("binary_archive_list") || []).take(5),
+      "oat_binary_file_list":( oat_detail || []).take(1)
+    }
+
+    artifact_detail = {
+      tpc_detail: binary_archive_list.take(1),
+      oat_detail: (oat_detail||[]).take(1)
     }
 
     {
       security_binary_artifact: score,
-      security_binary_artifact_detail: binary_archive_list.take(1).to_json,
+      security_binary_artifact_detail: artifact_detail.to_json,
       security_binary_artifact_raw: raw_data.to_json
     }
   end
