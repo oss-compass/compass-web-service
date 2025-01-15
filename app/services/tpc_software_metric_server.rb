@@ -196,6 +196,8 @@ class TpcSoftwareMetricServer
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_community_support(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_lifecycle_version_lifecycle(@project_url))
+      when "oat-scanner"
+        # no process
       else
         raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
       end
