@@ -23,7 +23,7 @@ module Types
       field :compliance_package_sig, Integer
       field :compliance_package_sig_detail, [String]
       field :compliance_license_compatibility, Integer
-      field :compliance_license_compatibility_detail, [Types::Tpc::TpcSoftwareReportMetricComplianceLicenseCompatibilityType]
+      field :compliance_license_compatibility_detail, Types::Tpc::TpcSoftwareReportMetricComplianceLicenseCompatibilityType
 
       field :ecology_dependency_acquisition, Integer
       field :ecology_dependency_acquisition_detail, [String]
