@@ -126,7 +126,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       readme_opensource_result = 1
     end
 
-    readme_opensource_error = readme_opensource_checker_result.dig("error")
+    readme_opensource_error = oat_result.dig("error")
     if  readme_opensource_error.present?
       readme_opensource_result = 2
     end
@@ -594,11 +594,11 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       "oat_detail": oat_detail
     }
 
+
     if detail.to_json.length > 500
       detail = {
-        readme_opensource: readme_opensource_result,
-        osi_license_list: osi_license_list.uniq.take(1),
-        non_osi_licenses: non_osi_license_list.uniq.take(1),
+        "include_copyrights": include_copyrights.uniq.take(1),
+        "not_included_copyrights": not_included_copyrights.uniq.take(1),
         oat_detail: oat_detail.take(4)
       }
     end
