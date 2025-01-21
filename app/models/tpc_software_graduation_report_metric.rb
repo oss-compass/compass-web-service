@@ -193,13 +193,22 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       readme_opensource: readme_opensource_result,
       osi_license_list: osi_license_list.uniq.take(1),
       non_osi_licenses: non_osi_license_list.uniq.take(1),
-      oat_detail: oat_detail.take(1)
+      oat_detail: oat_detail
     }
+
+    if detail.to_json.length > 500
+      detail = {
+        readme_opensource: readme_opensource_result,
+        osi_license_list: osi_license_list.uniq.take(1),
+        non_osi_licenses: non_osi_license_list.uniq.take(1),
+        oat_detail: oat_detail.take(4)
+      }
+    end
 
     {
       compliance_license: score,
       compliance_license_detail: detail.to_json,
-      compliance_license_raw: raw_data.take(10).to_json
+      compliance_license_raw: (raw_data.take(10) + oat_detail).to_json
     }
   end
 
@@ -582,13 +591,21 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     detail = {
       "include_copyrights": include_copyrights.uniq.take(1),
       "not_included_copyrights": not_included_copyrights.uniq.take(1),
-      "oat_detail": oat_detail.take(1)
+      "oat_detail": oat_detail
     }
 
+    if detail.to_json.length > 500
+      detail = {
+        readme_opensource: readme_opensource_result,
+        osi_license_list: osi_license_list.uniq.take(1),
+        non_osi_licenses: non_osi_license_list.uniq.take(1),
+        oat_detail: oat_detail.take(4)
+      }
+    end
     {
       compliance_copyright_statement: score,
       compliance_copyright_statement_detail: detail.to_json,
-      compliance_copyright_statement_raw: raw_list.take(5).to_json
+      compliance_copyright_statement_raw: (raw_list.take(5) + oat_detail).to_json
     }
   end
 
@@ -686,7 +703,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
     {
       import_valid: score,
-      import_valid_detail: oat_detail.take(1).to_json,
+      import_valid_detail: oat_detail.take(4).to_json,
       import_valid_raw: oat_detail.take(30).to_json
     }
   end

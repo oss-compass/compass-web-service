@@ -359,13 +359,20 @@ class TpcSoftwareReportMetric < ApplicationRecord
 
     detail = {
       tpc_detail: conflict_list.take(1),
-      oat_detail: oat_detail.take(1)
+      oat_detail: oat_detail
     }
+
+    if detail.to_json.length > 500
+      detail = {
+        tpc_detail: conflict_list.take(1),
+        oat_detail: oat_detail.take(4)
+      }
+    end
 
     {
       compliance_license_compatibility: score,
       compliance_license_compatibility_detail: detail.to_json ,
-      compliance_license_compatibility_raw: raw_data.take(30).to_json
+      compliance_license_compatibility_raw: (raw_data.take(30) + oat_detail).to_json
     }
   end
 
