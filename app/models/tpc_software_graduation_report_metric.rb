@@ -542,7 +542,13 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
     # source_code_files = %w[.c .cpp .java .py .rb .js .html .css .php .swift .kt]
     source_code_files = %w[.c .cpp .cc .h .hpp .cxx .cs  .java .jsp  .py  .pyx .rb .js  .jsx .ts .tsx .html .php .go .swift .kt .m .mm .rs .pl .vue .dart  .erl  .ex .exs .scala .r .nim  .lua .groovy]
-
+    exclude_patterns = [
+      /hvigorfile\.ts$/,                       # exclude *hvigorfile.ts
+      /hvigor-wrapper\.js$/,                   # exclude *hvigor-wrapper.js
+      /OpenHarmonyTestRunner\.ts$/            # exclude *OpenHarmonyTestRunner.ts
+    ]
+    
+    
     new_files =  scancode_result_change_file.dig("new_files")|| []
     include_copyrights = []
     not_included_copyrights = []
@@ -553,6 +559,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       relative_path =  file_path.split("/", 2).last
       next if file_path_split.length > 2 && file_path_split[1] == "hvigor"
       next if oh_commit_sha.present? && !new_files.include?(relative_path)
+      next if exclude_patterns.any? { |pattern| file_path.match?(pattern) }
       if file.dig("type") == "file" && source_code_files.any? { |ext| file_path.end_with?(ext) }
         if (file.dig("copyrights") || []).length > 0
           include_copyrights << file_path
