@@ -189,6 +189,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
       oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
     end
 
+    if oat_result.present? && oat_detail.empty?
+      score = 10
+    end
+
     detail = {
       readme_opensource: readme_opensource_result,
       osi_license_list: osi_license_list.uniq.take(1),
@@ -593,6 +597,10 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
         score = 0
       end
       oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
+    end
+
+    if oat_result.present? && oat_detail.empty?
+      score = 10
     end
 
     detail = {
