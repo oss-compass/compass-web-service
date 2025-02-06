@@ -346,6 +346,10 @@ class TpcSoftwareReportMetric < ApplicationRecord
       oat_detail = oat_result.dig("details")&.map { |detail| detail["file"] } || []
     end
 
+    if oat_result.present? && oat_detail.empty?
+      score = 10
+    end
+
     raw_data = (scancode_result.dig("license_detections") || []).flat_map do |license_detection|
       (license_detection.dig("reference_matches") || []).map do |reference_match|
         file_path = reference_match.dig("from_file") || ""
