@@ -1,0 +1,74 @@
+name: Test Coverage
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      RAILS_ENV: test
+      REDIS_URL: redis://localhost:6379/1
+      MARIADB_USER: compass-web-service
+      MARIADB_PASSWORD: 123456
+      MARIADB_DB: compass-web-service_test
+      MARIADB_HOST: localhost
+      MARIADB_PORT: 3306
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.6
+          bundler-cache: true
+
+      - name: Cache gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y default-mysql-client default-mysql-server
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
+      - name: Setup Database
+        run: |
+          sudo /etc/init.d/mysql start
+          bundle exec rails db:create
+          bundle exec rails db:schema:load
+
+      - name: Run tests with coverage
+        run: |
+          bundle exec rspec --format progress --force-color --require rails_helper --coverage
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage
+        if: always()

@@ -88,7 +88,9 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   # [Blocked host] clear the entire whitelist, which lets through requests for all hostnames.
+  # Add config.hosts << /.*/ to allow any host to access the application
   config.hosts.clear
+  config.hosts << /.*/
 
   config.session_store :redis_session_store,
                        key: 'session',
