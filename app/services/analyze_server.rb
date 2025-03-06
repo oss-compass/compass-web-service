@@ -17,6 +17,7 @@ class AnalyzeServer
   def initialize(opts = {})
     @raw = opts.fetch(:raw, true)
     @enrich = opts.fetch(:enrich, true)
+    @license = opts.fetch(:license, true)
     @identities_load = opts.fetch(:identities_load, true)
     @identities_merge = opts.fetch(:identities_merge, true)
     @repo_url = opts[:repo_url]
@@ -143,6 +144,7 @@ class AnalyzeServer
         panels: false,
         project_url: @repo_url,
         raw: @raw,
+        license: @license,
         callback: @callback
       }
     }
