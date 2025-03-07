@@ -4,13 +4,6 @@ class OpencheckMetric < BaseMetric
     "#{MetricsIndexPrefix}_opencheck"
   end
 
-  def self.settings
-    {
-      number_of_shards: 1,
-      number_of_replicas: 1
-    }
-  end
-
   def self.mapping
     {
       properties: {
@@ -32,7 +25,6 @@ class OpencheckMetric < BaseMetric
             osi_license_list: { type: 'text' },
             non_osi_licenses: { type: 'text' }
           }
-
         },
         security: {
           properties: {
@@ -51,7 +43,6 @@ class OpencheckMetric < BaseMetric
       }
     }
   end
-
 
   def self.ensure_index
     return if index_exists?
