@@ -14,6 +14,7 @@ class TpcSoftwareMetricServer
 
   Report_Type_Selection = 0
   Report_Type_Graduation = 1
+  Report_Type_License = -1
 
   def initialize(opts = {})
     @project_url = opts[:project_url]
@@ -405,6 +406,114 @@ class TpcSoftwareMetricServer
     end
   rescue => ex
     { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: ex.message) }
+  end
+
+  def tpc_software_license_callback(command_list, scan_results)
+    license = nil
+    security = nil
+    # commands = ["scancode","osv-scanner"]
+    command_list.each do |command|
+      case command
+      when "scancode"
+        license = get_opencheck_license(scan_results.dig(command) || {})
+      when "osv-scanner"
+        security = get_security(scan_results.dig(command) || {})
+      else
+        # raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
+      end
+    end
+    OpencheckMetric.save_license(license, security, @project_url)
+  end
+
+  def get_opencheck_license(scancode_result)
+    license_list = []
+    osi_license_list = []
+    non_osi_license_list = []
+
+    license_db_data = TpcSoftwareReportMetric.get_license_data
+
+    raw_data = (scancode_result.dig("files") || []).map do |file|
+      keys_to_select = %w[path type detected_license_expression detected_license_expression_spdx]
+      file_type = file.dig("type") || ""
+      from_file_split = (file.dig("path") || "").downcase.split("/")
+      if file_type == "file" &&
+        file.dig("detected_license_expression") &&
+        (from_file_split.length == 2 || (from_file_split.length >= 2 && from_file_split[1] == "license")) &&
+        !(from_file_split.length == 2 && %w[readme.opensource oat.xml].include?(from_file_split.last))
+        file.select { |key, _| keys_to_select.include?(key) }
+      end
+    end.compact
+
+    replacements = {
+      "(" => "",
+      ")" => "",
+      "and" => "",
+      "or" => ""
+    }
+    raw_data.each do |raw|
+      license_expression = raw['detected_license_expression']
+      license_expression = license_expression.strip.downcase
+      license_expression = license_expression.gsub(Regexp.union(replacements.keys), replacements)
+      license_expression_list = license_expression.split
+      license_expression_list.each do |license_expression_item|
+        unless license_expression_item.include?("unknown")
+          license_list << license_expression_item
+          category = license_db_data.dig(license_expression_item, :category)
+          if category
+            case category
+            when "Permissive"
+              osi_license_list << license_expression_item
+            when "Copyleft Limited"
+              osi_license_list << license_expression_item
+            else
+              osi_license_list << license_expression_item
+            end
+          else
+            non_osi_license_list << license_expression_item
+          end
+        end
+      end
+    end
+
+    {
+      license_list: license_list.uniq,
+      osi_license_list: osi_license_list.uniq,
+      non_osi_licenses: non_osi_license_list.uniq
+    }
+
+  end
+
+  def get_security(osv_scanner_result)
+    details = []
+    (osv_scanner_result.dig("results") || []).each do |item|
+      packages = item.dig("packages") || []
+      packages.each do |package|
+        vulnerabilities = (package.dig("vulnerabilities") || []).flat_map do |vulnerability|
+          fixed_version = (vulnerability.dig("affected") || []).flat_map do |affected|
+            (affected.dig("ranges") || []).flat_map do |range|
+              (range.dig("events") || []).filter_map { |event| event["fixed"] if event.key?("fixed") }
+            end
+          end.uniq
+
+          severity = vulnerability.dig("database_specific", "severity") || ""
+          {
+            published: vulnerability.dig("published"),
+            aliases: vulnerability.dig("aliases") || [],
+            severity: severity,
+            fixed_version: fixed_version
+          }
+        end
+
+        if vulnerabilities.any?
+          details << {
+            package_name: package.dig("package", "name"),
+            package_version: package.dig("package", "version"),
+            vulnerabilities: vulnerabilities.uniq
+          }
+        end
+      end
+    end
+    details
   end
 
 end

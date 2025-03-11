@@ -94,6 +94,8 @@ class ApplicationController < ActionController::Base
       metric_server.tpc_software_selection_callback(command_list, scan_results, report_id, report_metric_id)
     elsif report_type == TpcSoftwareMetricServer::Report_Type_Graduation
       metric_server.tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
+    elsif report_type == TpcSoftwareMetricServer::Report_Type_License
+      metric_server.tpc_software_license_callback(command_list, scan_results)
     end
 
     render json: { status: true, message: 'ok' }
