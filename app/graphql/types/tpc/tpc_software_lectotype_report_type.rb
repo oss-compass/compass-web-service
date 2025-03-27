@@ -2,7 +2,7 @@
 
 module Types
   module Tpc
-    class TpcSoftwareSelectionReportType < Types::BaseObject
+    class TpcSoftwareLectotypeReportType < Types::BaseObject
       field :id, Integer, null: false
       field :report_type, Integer, null: false
       field :short_code, String, null: false
@@ -25,7 +25,7 @@ module Types
       field :architecture_diagrams, [Types::ImageType]
       field :user_id, Integer, null: false
       field :user, Types::UserType
-      field :report_category, Integer
+      # field :report_category, Integer
 
       def user
         User.find_by(id: object.user_id)
@@ -36,16 +36,16 @@ module Types
       end
 
       def tpc_software_report_metric
-        TpcSoftwareReportMetric.find_by(
+        TpcSoftwareLectotypeReportMetric.find_by(
           tpc_software_report_id: object.id,
-          tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection,
+          tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Lectotype,
           version: TpcSoftwareReportMetric::Version_Default)
       end
 
       def tpc_software_report_metric_raw
         report_metric = tpc_software_report_metric
         if report_metric.present?
-          TpcSoftwareReportMetricRaw.find_by(tpc_software_report_metric_id: report_metric.id)
+          TpcSoftwareLectotypeReportMetricRaw.find_by(tpc_software_lectotype_report_metric_id: report_metric.id)
         end
       end
 

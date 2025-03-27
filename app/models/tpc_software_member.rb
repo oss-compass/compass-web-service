@@ -28,6 +28,7 @@ class TpcSoftwareMember < ApplicationRecord
   Member_Type_Sig_Lead = 3
   Member_Type_Legal = 4
   Member_Type_Compliance = 5
+  Member_Type_QA = 6
 
   Role_Level_Normal = 0
   Role_Level_Email = 1
@@ -112,5 +113,16 @@ class TpcSoftwareMember < ApplicationRecord
     return committer_list
   end
 
+  def self.check_qa_permission?(current_user)
+    permission = false
+    subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
+    return permission if subject_customization.nil?
+    tpc_software_member = TpcSoftwareMember.where(user_id: current_user.id)
+                                           .where(member_type: Member_Type_QA)
+                                           .where("role_level >= ?", Role_Level_Approval)
+                                           .where(subject_id: subject_customization.subject_id)
+                                           .take
+    return tpc_software_member.present?
+  end
 
 end

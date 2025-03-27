@@ -24,6 +24,7 @@ module Types
       field :comment_sig_lead_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_legal_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :comment_compliance_permission, Integer, description: '1: permissioned, 0: unpermissioned'
+      field :comment_qa_permission, Integer, description: '1: permissioned, 0: unpermissioned'
       field :user_id, Integer, null: false
       field :user, Types::UserType
 

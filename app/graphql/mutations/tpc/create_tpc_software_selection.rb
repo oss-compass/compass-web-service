@@ -11,6 +11,7 @@ module Mutations
     argument :label, String, required: true, description: 'repo or project label'
     argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
     argument :selection_type, Integer, required: true, description: 'incubation: 0, sandbox: 1, graduation: 2'
+    argument :report_category, Integer, required: false, description: 'incubation: 0, selection: 2'
     argument :tpc_software_selection_report_ids, [Integer], required: true
     argument :repo_url, [String], required: false
     argument :committers, [String], required: true
@@ -25,6 +26,7 @@ module Mutations
     def resolve(label: nil,
                 level: 'repo',
                 selection_type: 0,
+                report_category: 0,
                 tpc_software_selection_report_ids: [],
                 repo_url: [],
                 committers: [],
@@ -59,6 +61,7 @@ module Mutations
       selection = TpcSoftwareSelection.create!(
         {
           selection_type: selection_type,
+          report_category: report_category,
           tpc_software_selection_report_ids: tpc_software_selection_report_ids.any? ? tpc_software_selection_report_ids.to_json : nil,
           repo_url: repo_url.join(","),
           committers: committers.any? ? committers.to_json : nil,
