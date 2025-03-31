@@ -11,8 +11,8 @@ module Common
   CELERY_SERVER = ENV.fetch('CELERY_SERVER') { 'http://localhost:8000' }
   ECHARTS_SERVER = ENV.fetch('ECHARTS_SERVER') { 'http://localhost:8084' }
   ECHARTS_TPC_SERVER = ENV.fetch('ECHARTS_TPC_SERVER') { 'http://localhost:8766' }
-  SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com']
-  SUPPORT_DOMAIN_NAMES = ['gitee', 'github']
+  SUPPORT_DOMAINS = ['gitee.com', 'github.com', 'raw.githubusercontent.com','gitcode.com']
+  SUPPORT_DOMAIN_NAMES = ['gitee', 'github','gitcode']
   BOT_NAME = ENV.fetch('BOT_NAME') { 'compass-bot' }
   BOT_EMAIL = ENV.fetch('BOT_EMAIL') { 'compass-bot@gitee.com' }
   GITEE_REPO = ENV.fetch('GITEE_WORKFLOW_REPO')
