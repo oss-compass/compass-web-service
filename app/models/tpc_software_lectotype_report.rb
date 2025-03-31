@@ -30,7 +30,7 @@ class TpcSoftwareLectotypeReport < ApplicationRecord
   has_many :tpc_software_lectotype_report_metrics, as: :tpc_software_report, dependent: :destroy
   has_many :tpc_software_lectotype, foreign_key: 'target_software_report_id'
 
-  has_many_base64_attached :attachments
+#  has_many_base64_attached :attachments
 
 
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'

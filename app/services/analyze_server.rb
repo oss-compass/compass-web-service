@@ -35,7 +35,14 @@ class AnalyzeServer
       uri = Addressable::URI.parse(@repo_url)
       @repo_url = "https://#{uri&.normalized_host}#{uri&.path}"
       @domain = uri&.normalized_host
-      @domain_name = @domain.starts_with?('gitee.com') ? 'gitee' : 'github'
+      # @domain_name = @domain.starts_with?('gitee.com') ? 'gitee' : 'github'
+      @domain_name = if @domain.starts_with?('gitee.com')
+                       'gitee'
+                     elsif @domain.starts_with?('gitcode.com')
+                       'gitcode'
+                     else
+                       'github'
+                     end
       @project_name = @repo_url
     end
   end
