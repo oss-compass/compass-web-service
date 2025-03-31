@@ -22,9 +22,13 @@ class TpcSoftwareCommentState < ApplicationRecord
   Type_Report_Metric = 'TpcSoftwareReportMetric'
   Type_Graduation = 'TpcSoftwareGraduation'
   Type_Graduation_Report_Metric = 'TpcSoftwareGraduationReportMetric'
+  Type_Lectotype = 'TpcSoftwareLectotype'
+  Type_Lectotype_Report_Metric = 'TpcSoftwareLectotypeReportMetric'
+
 
   Metric_Name_Selection = 'selection'
   Metric_Name_Graduation = 'graduation'
+  Metric_Name_Lectotype = 'lectotype'
 
   State_Accept = 1
   State_Cancel = 0
@@ -35,13 +39,17 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Type_Sig_Lead = 1
   Member_Type_Legal = 2
   Member_Type_Compliance = 3
+
+  Member_Type_QA = 4
   Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
+  Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_QA]
 
   Member_Type_Committer_Name = "TPC垂域Committer"
   Member_Type_Sig_Lead_Name = "TPC SIG Leader"
   Member_Type_Legal_Name = "TPC法务专家"
   Member_Type_Compliance_Name = "TPC合规专家"
-  Member_Type_Names = [Member_Type_Committer_Name, Member_Type_Sig_Lead_Name, Member_Type_Legal_Name, Member_Type_Compliance_Name]
+  Member_Type_QA_Name = "TPC QA"
+  Member_Type_Names = [Member_Type_Committer_Name, Member_Type_Sig_Lead_Name, Member_Type_Legal_Name, Member_Type_Compliance_Name,Member_Type_QA_Name]
 
   Review_State_TPC_Await = "【待TPC SIG评审】"
   Review_State_TPC_Replenish = "【TPC：待补充信息】"
@@ -61,14 +69,15 @@ class TpcSoftwareCommentState < ApplicationRecord
     return State_Accept if comment_state_list.all? { |item| item[:state] == 1 }
   end
 
-
+  #
   def self.get_review_state(tpc_software_id, tpc_software_type)
     committer_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Committer)
     sig_lead_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Sig_Lead)
     legal_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Legal)
     compliance_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_Compliance)
+    qa_state  = get_state(tpc_software_id, tpc_software_type, Member_Type_QA)
 
-    states = [committer_state, sig_lead_state, legal_state, compliance_state]
+    states = [committer_state, sig_lead_state, legal_state, compliance_state, qa_state]
     if states.all? { |item| item == State_Cancel }
       review_state = Review_State_TPC_Await
     elsif states.any? { |item| item == State_Reject }
@@ -96,6 +105,8 @@ class TpcSoftwareCommentState < ApplicationRecord
       return Member_Type_Legal_Name
     when Member_Type_Compliance
       return Member_Type_Compliance_Name
+    when Member_Type_QA
+      return Member_Type_QA_Name
     end
   end
 

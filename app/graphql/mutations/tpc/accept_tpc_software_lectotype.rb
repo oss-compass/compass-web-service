@@ -2,17 +2,17 @@
 
 module Mutations
   module Tpc
-    class AcceptTpcSoftwareSelection < BaseMutation
+    class AcceptTpcSoftwareLectotype < BaseMutation
       include CompassUtils
 
       field :status, String, null: false
 
-      argument :selection_id, Integer, required: true
+      argument :lectotype_id, Integer, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
-      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3, qa:4', default_value: '0'
+      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3', default_value: '0'
 
 
-      def resolve(selection_id: nil, state: 1, member_type: 0)
+      def resolve(lectotype_id: nil, state: 1, member_type: 0)
 
         current_user = context[:current_user]
         validate_tpc!(current_user)
@@ -20,11 +20,11 @@ module Mutations
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::States.include?(state)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::Member_Types_QA.include?(member_type)
 
-        selection = TpcSoftwareSelection.find_by(id: selection_id)
-        raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if selection.nil?
+        lectotype = TpcSoftwareLectotype.find_by(id: lectotype_id)
+        raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if lectotype.nil?
 
         if state == TpcSoftwareCommentState::State_Accept
-          review_permission = TpcSoftwareSelection.get_review_permission(selection, member_type)
+          review_permission = TpcSoftwareLectotype.get_review_permission(lectotype, member_type)
           raise GraphQL::ExecutionError.new I18n.t('tpc.software_report_metric_not_clarified') unless review_permission
         end
 
@@ -32,12 +32,12 @@ module Mutations
         if state != TpcSoftwareCommentState::State_Cancel
           case member_type
           when TpcSoftwareCommentState::Member_Type_Committer
-            selection_report = TpcSoftwareSelectionReport.where("id IN (?)", JSON.parse(selection.tpc_software_selection_report_ids))
-                                                         .where("code_url LIKE ?", "%#{selection.target_software}%")
+            lectotype_report = TpcSoftwareLectotypeReport.where("id IN (?)", JSON.parse(lectotype.tpc_software_lectotype_report_ids))
+                                                         .where("code_url LIKE ?", "%#{lectotype.target_software}%")
                                                          .take
             permission = 0
-            if selection_report
-              permission = TpcSoftwareMember.check_committer_permission?(selection_report.tpc_software_sig_id, current_user)
+            if lectotype_report
+              permission = TpcSoftwareMember.check_committer_permission?(lectotype_report.tpc_software_sig_id, current_user)
             end
           when TpcSoftwareCommentState::Member_Type_Sig_Lead
             permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
@@ -49,33 +49,34 @@ module Mutations
             permission = TpcSoftwareMember.check_qa_permission?(current_user)
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
+
         end
 
         ActiveRecord::Base.transaction do
           comment_state = TpcSoftwareCommentState.find_or_initialize_by(
-            tpc_software_id: selection.id,
-            tpc_software_type: TpcSoftwareCommentState::Type_Selection,
-            metric_name: TpcSoftwareCommentState::Metric_Name_Selection,
+            tpc_software_id: lectotype.id,
+            tpc_software_type: TpcSoftwareCommentState::Type_Lectotype,
+            metric_name: TpcSoftwareCommentState::Metric_Name_Lectotype,
             user_id: current_user.id)
           if state == TpcSoftwareCommentState::State_Cancel
             comment_state.destroy
           else
             comment_state.update!(
               {
-                tpc_software_id: selection.id,
-                tpc_software_type: TpcSoftwareCommentState::Type_Selection,
+                tpc_software_id: lectotype.id,
+                tpc_software_type: TpcSoftwareCommentState::Type_Lectotype,
                 user_id: current_user.id,
-                subject_id: selection.subject_id,
-                metric_name: TpcSoftwareCommentState::Metric_Name_Selection,
+                subject_id: lectotype.subject_id,
+                metric_name: TpcSoftwareCommentState::Metric_Name_Lectotype,
                 state: state,
                 member_type: member_type
               }
             )
           end
-          TpcSoftwareSelection.update_state(selection.id)
+          TpcSoftwareLectotype.update_state(lectotype.id)
         end
-        to_state = TpcSoftwareCommentState.get_state(selection.id, TpcSoftwareCommentState::Type_Selection, member_type)
-        send_issue_comment(to_state, member_type, selection.issue_url, current_user)
+        to_state = TpcSoftwareCommentState.get_state(lectotype.id, TpcSoftwareCommentState::Type_Lectotype, member_type)
+        send_issue_comment(to_state, member_type, lectotype.issue_url, current_user)
 
 
         { status: true, message: '' }

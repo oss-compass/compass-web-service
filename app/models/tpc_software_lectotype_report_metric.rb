@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: tpc_software_report_metrics
+# Table name: tpc_software_lectotype_report_metrics
 #
 #  id                                       :bigint           not null, primary key
 #  code_url                                 :string(255)      not null
@@ -33,8 +33,6 @@
 #  security_vulnerability_response          :integer
 #  security_vulnerability_disclosure        :integer
 #  security_history_vulnerability           :integer
-#  created_at                               :datetime         not null
-#  updated_at                               :datetime         not null
 #  base_repo_name_detail                    :string(500)
 #  base_website_url_detail                  :string(500)
 #  base_code_url_detail                     :string(500)
@@ -55,26 +53,26 @@
 #  security_vulnerability_detail            :string(500)
 #  security_vulnerability_response_detail   :string(500)
 #  security_vulnerability_disclosure_detail :string(500)
-#  security_history_vulnerability_detail    :string(5000)
+#  security_history_vulnerability_detail    :text(65535)
+#  created_at                               :datetime         not null
+#  updated_at                               :datetime         not null
 #
-class TpcSoftwareReportMetric < ApplicationRecord
-
+class TpcSoftwareLectotypeReportMetric < ApplicationRecord
   include Common
   extend CompassUtils
 
-  belongs_to :tpc_software_report, polymorphic: true
+  belongs_to :tpc_software_lectotype_report
   belongs_to :subject
   belongs_to :user
-  has_one :tpc_software_report_metric_raw
+  has_one :tpc_software_lectotype_report_metric_raw
   has_many :tpc_software_comments, as: :tpc_software, dependent: :destroy
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
-
-  Report_Type_Selection = 'TpcSoftwareSelectionReport'
-  Report_Type_Lectotype = 'TpcSoftwareLectotypeReport'
 
   Status_Progress = 'progress'
   Status_Again_Progress = 'again_progress'
   Status_Success = 'success'
+
+
 
   Version_History = 0
   Version_Default = 1
@@ -89,7 +87,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     compliance_score = compliance_metric_score_filter.sum(0) * 10 / compliance_metric_score_filter.size
 
     ecology_metric_score = [ecology_dependency_acquisition, ecology_code_maintenance, ecology_community_support,
-                               ecology_adoption_analysis, get_ecology_software_quality, get_ecology_adaptation_method]
+                            ecology_adoption_analysis, get_ecology_software_quality, get_ecology_adaptation_method]
     ecology_metric_score_filter = ecology_metric_score.compact.reject { |element| element == -1 }
     ecology_score = ecology_metric_score_filter.sum(0) * 10 / ecology_metric_score_filter.size
 
@@ -750,5 +748,6 @@ class TpcSoftwareReportMetric < ApplicationRecord
       ecology_software_quality
     end
   end
+
 
 end

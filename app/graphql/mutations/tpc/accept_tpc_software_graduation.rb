@@ -9,7 +9,7 @@ module Mutations
 
       argument :graduation_id, Integer, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
-      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3', default_value: '0'
+      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3, QA: 4', default_value: '0'
 
 
       def resolve(graduation_id: nil, state: 1, member_type: 0)
@@ -18,7 +18,7 @@ module Mutations
         validate_tpc!(current_user)
 
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::States.include?(state)
-        raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::Member_Types.include?(member_type)
+        raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') unless TpcSoftwareCommentState::Member_Types_QA.include?(member_type)
 
         graduation = TpcSoftwareGraduation.find_by(id: graduation_id)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if graduation.nil?
@@ -43,6 +43,8 @@ module Mutations
             permission = TpcSoftwareMember.check_legal_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_Compliance
             permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_QA
+            permission = TpcSoftwareMember.check_qa_permission?(current_user)
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end

@@ -14,6 +14,7 @@ class TpcSoftwareMetricServer
 
   Report_Type_Selection = 0
   Report_Type_Graduation = 1
+  Report_Type_Lectotype = 2
   Report_Type_License = -1
 
   def initialize(opts = {})

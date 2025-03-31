@@ -20,6 +20,7 @@ module Types
             sig_lead_permission = false
             legal_permission = false
             compliance_permission = false
+            qa_permission = false
             if current_user.present?
               selection_report = TpcSoftwareSelectionReport.where("id IN (?)", JSON.parse(selection.tpc_software_selection_report_ids))
                                                            .where("code_url LIKE ?", "%#{selection.target_software}%")
@@ -30,12 +31,14 @@ module Types
               sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
               legal_permission = TpcSoftwareMember.check_legal_permission?(current_user)
               compliance_permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+              qa_permission = TpcSoftwareMember.check_qa_permission?(current_user)
             end
 
             selection_hash['comment_committer_permission'] = committer_permission ? 1 : 0
             selection_hash['comment_sig_lead_permission'] = sig_lead_permission ? 1 : 0
             selection_hash['comment_legal_permission'] = legal_permission ? 1 : 0
             selection_hash['comment_compliance_permission'] = compliance_permission ? 1 : 0
+            selection_hash['comment_qa_permission'] = qa_permission ? 1 : 0
             report = OpenStruct.new(selection_hash)
           end
           report

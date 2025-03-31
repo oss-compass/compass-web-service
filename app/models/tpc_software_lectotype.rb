@@ -1,40 +1,35 @@
 # == Schema Information
 #
-# Table name: tpc_software_selections
+# Table name: tpc_software_lectotypes
 #
 #  id                                :bigint           not null, primary key
-#  selection_type                    :integer          not null
-#  tpc_software_selection_report_ids :string(255)      not null
+#  tpc_software_lectotype_report_ids :string(255)      not null
 #  repo_url                          :string(255)
 #  committers                        :string(255)      not null
 #  reason                            :string(255)      not null
 #  subject_id                        :integer          not null
 #  user_id                           :integer          not null
-#  created_at                        :datetime         not null
-#  updated_at                        :datetime         not null
 #  incubation_time                   :string(255)      not null
 #  adaptation_method                 :string(255)
-#  demand_source                     :string(2000)
-#  functional_description            :string(2000)
+#  demand_source                     :text(65535)
+#  functional_description            :text(65535)
 #  target_software                   :string(255)
 #  is_same_type_check                :integer          default(0)
 #  same_type_software_name           :string(255)
 #  issue_url                         :string(255)
 #  state                             :integer
 #  target_software_report_id         :integer
-#  report_category                   :integer
+#  created_at                        :datetime         not null
+#  updated_at                        :datetime         not null
 #
-class TpcSoftwareSelection < ApplicationRecord
-
+class TpcSoftwareLectotype < ApplicationRecord
   belongs_to :subject
   belongs_to :user
-  belongs_to :tpc_software_selection_report, foreign_key: 'target_software_report_id'
-  belongs_to :tpc_software_report, foreign_key: 'target_software_report_id', class_name: 'TpcSoftwareSelectionReport'
+  belongs_to :tpc_software_lectotype_report, foreign_key: 'target_software_report_id'
 
   State_Awaiting_Clarification = 0
   State_Awaiting_Confirmation = 1
   State_Awaiting_Review = 2
-
   State_Awaiting_QA = 4
   State_Completed = 3
   State_Rejected = -1
@@ -55,19 +50,19 @@ class TpcSoftwareSelection < ApplicationRecord
   ]
 
   def self.get_review_permission(selection, member_type)
-    clarify_metric_list = TpcSoftwareSelection::Clarify_Metric_List
+    clarify_metric_list = TpcSoftwareLectotype::Clarify_Metric_List
 
     target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: JSON.parse(selection.tpc_software_selection_report_ids))
-                                                  .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
-                                                  .where(version: TpcSoftwareReportMetric::Version_Default)
-                                                  .where("code_url LIKE ?", "%#{selection.target_software}%")
-                                                  .take
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Lectotype)
+                                           .where(version: TpcSoftwareReportMetric::Version_Default)
+                                           .where("code_url LIKE ?", "%#{selection.target_software}%")
+                                           .take
     raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
     target_metric_hash = target_metric.attributes
     target_metric_hash['ecology_adaptation_method'] = target_metric.get_ecology_adaptation_method
 
     comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_metric.id)
-                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
+                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Lectotype_Report_Metric)
                                                 .where(metric_name: clarify_metric_list.map { |str| str.camelize(:lower) })
     committer_state_hash = {}
     sig_leader_state_hash = {}
@@ -121,7 +116,7 @@ class TpcSoftwareSelection < ApplicationRecord
 
   def self.get_risk_metric_list(report_id)
     target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
-                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Lectotype)
                                            .where(version: TpcSoftwareReportMetric::Version_Default)
                                            .take
     raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if target_metric.nil?
@@ -129,7 +124,7 @@ class TpcSoftwareSelection < ApplicationRecord
     target_metric_hash['ecology_adaptation_method'] = target_metric.get_ecology_adaptation_method
 
     risk_metric_list = []
-    TpcSoftwareSelection::Clarify_Metric_List.each do |clarify_metric|
+    TpcSoftwareLectotype::Clarify_Metric_List.each do |clarify_metric|
       score = target_metric_hash[clarify_metric]
       if score.present? && (0 <= score) && (score < 10)
         risk_metric_list << clarify_metric.camelize(:lower)
@@ -140,11 +135,11 @@ class TpcSoftwareSelection < ApplicationRecord
 
   def self.get_clarified_metric_list(report_id)
     target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
-                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Lectotype)
                                            .where(version: TpcSoftwareReportMetric::Version_Default)
                                            .take
     comment_list = TpcSoftwareComment.where(tpc_software_id: target_metric.id)
-                                     .where(tpc_software_type: TpcSoftwareComment::Type_Report_Metric)
+                                     .where(tpc_software_type: TpcSoftwareComment::Type_Lectotype_Report_Metric)
                                      .where(metric_name: get_risk_metric_list(report_id))
     comment_metric_name_list = comment_list.map do |comment_item|
       comment_item.metric_name
@@ -155,11 +150,11 @@ class TpcSoftwareSelection < ApplicationRecord
   def self.get_confirmed_metric_list(report_id)
     risk_metric_list = get_risk_metric_list(report_id)
     target_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
-                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Selection)
+                                           .where(tpc_software_report_type: TpcSoftwareReportMetric::Report_Type_Lectotype)
                                            .where(version: TpcSoftwareReportMetric::Version_Default)
                                            .take
     comment_state_list = TpcSoftwareCommentState.where(tpc_software_id: target_metric.id)
-                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Report_Metric)
+                                                .where(tpc_software_type: TpcSoftwareCommentState::Type_Lectotype_Report_Metric)
                                                 .where(metric_name: risk_metric_list)
     member_type_hash = comment_state_list.each_with_object({}) do |comment_state_item, hash|
       (hash[comment_state_item.metric_name] ||= []) << comment_state_item.member_type
@@ -185,11 +180,10 @@ class TpcSoftwareSelection < ApplicationRecord
     confirmed_metrics
   end
 
-  def self.get_comment_state_list(selection_id)
-    TpcSoftwareCommentState.where(tpc_software_id: selection_id)
-                           .where(metric_name: TpcSoftwareCommentState::Metric_Name_Selection)
+  def self.get_comment_state_list(tpc_software_id)
+    TpcSoftwareCommentState.where(tpc_software_id: tpc_software_id)
+                           .where(metric_name: TpcSoftwareCommentState::Metric_Name_Lectotype)
   end
-
 
   def self.get_report_current_state(report_id)
     risk_metric_count = get_risk_metric_list(report_id).length
@@ -221,32 +215,28 @@ class TpcSoftwareSelection < ApplicationRecord
     comment_state_list = get_comment_state_list(tpc_software.id)
     if comment_state_list.any? { |item| item.state == TpcSoftwareCommentState::State_Reject }
       return State_Rejected
-    elsif TpcSoftwareCommentState::Member_Types_QA.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
-      return State_Completed
     elsif TpcSoftwareCommentState::Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
-        return State_Awaiting_QA
+      return State_Completed
     else
       return State_Awaiting_Review
     end
   end
 
   def self.update_state(id)
-    selection = TpcSoftwareSelection.find_by(id: id)
-    state = get_current_state(selection)
-    selection.update!(state: state)
+    lectotype = TpcSoftwareLectotype.find_by(id: id)
+    state = get_current_state(lectotype)
+    lectotype.update!(state: state)
   end
 
-
   def self.save_issue_url(id, issue_html_url)
-    selection = TpcSoftwareSelection.find_by(id: id)
-    if selection.present?
-      selection.update!(issue_url: issue_html_url)
+    lectotype = TpcSoftwareLectotype.find_by(id: id)
+    if lectotype.present?
+      lectotype.update!(issue_url: issue_html_url)
     end
   end
 
-
   def self.update_issue_title(id, issue_title, issue_html_url)
-    review_state = TpcSoftwareCommentState.get_review_state(id, TpcSoftwareCommentState::Type_Selection)
+    review_state = TpcSoftwareCommentState.get_review_state(id, TpcSoftwareCommentState::Type_Lectotype)
     TpcSoftwareCommentState::Review_States.each do |state|
       if issue_title.include?(state)
         to_issue_title = issue_title.gsub(state, review_state)
@@ -270,7 +260,6 @@ class TpcSoftwareSelection < ApplicationRecord
     end
   end
 
-
   def self.update_issue_body(issue_body, issue_html_url)
     issue_url_list = issue_html_url.split("/issues/")
     subject_customization = SubjectCustomization.find_by(name: "OpenHarmony")
@@ -289,10 +278,9 @@ class TpcSoftwareSelection < ApplicationRecord
     end
   end
 
-
   def self.send_apply_email(mail_list, user_name, user_html_url, issue_title, issue_html_url)
     if mail_list.length > 0
-      title = "TPC孵化项目申请"
+      title = "TPC选型项目申请"
       body = "用户正在申请项目进入 OpenHarmony TPC，具体如下："
       state_list = TpcSoftwareCommentState::Review_States
       issue_title = issue_title.gsub(Regexp.union(state_list), '')
@@ -309,13 +297,12 @@ class TpcSoftwareSelection < ApplicationRecord
         ).email_tpc_software_application.deliver_later
       end
     end
-
+    # 
   end
-
 
   def self.send_review_email(mail_list, user_name, user_html_url, issue_title, issue_html_url, comment)
     if mail_list.length > 0
-      title = "TPC孵化项目评审"
+      title = "TPC选型项目评审"
       body = "用户正在申请项目进入 OpenHarmony TPC，#{comment}，具体如下："
       state_list = TpcSoftwareCommentState::Review_States
       issue_title = issue_title.gsub(Regexp.union(state_list), '')

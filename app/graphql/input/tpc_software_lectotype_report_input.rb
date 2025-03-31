@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Input
-  class TpcSoftwareSelectionReportInput < Types::BaseInputObject
+  class TpcSoftwareLectotypeReportInput < Types::BaseInputObject
     argument :name, String, required: true
     argument :tpc_software_sig_id, Integer, required: true
     argument :code_url, String, required: true
@@ -10,6 +10,5 @@ module Input
     argument :adaptation_method, String, required: true
     argument :architecture_diagrams, [Input::Base64ImageInput], required: false
     argument :oh_commit_sha, String, required: true
-    argument :report_category, Integer, required: false
   end
 end
