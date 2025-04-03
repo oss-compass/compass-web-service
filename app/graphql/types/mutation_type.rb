@@ -28,6 +28,8 @@ module Types
     field :update_lab_model_report, mutation: Mutations::UpdateLabModelReport, description: 'Update a lab report dataset'
     field :delete_lab_model_report, mutation: Mutations::DeleteLabModelReport, description: 'Update a lab report dataset'
 
+    field :trigger_project_version, mutation: Mutations::TriggerProjectVersion, description: 'Trigger the analysis of a Lab model version'
+
     field :send_member_invite, mutation: Mutations::SendMemberInvite, description: 'Send member invitation'
     field :cancel_member_invite, mutation: Mutations::CancelMemberInvite, description: 'Cancel a member invitation'
     field :update_member_permission, mutation: Mutations::UpdateMemberPermission, description: 'Update a member permission'

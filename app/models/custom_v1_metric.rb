@@ -64,6 +64,24 @@ class CustomV1Metric < BaseMetric
     end
   end
 
+  def self.query_repo_by_version(label, version_number, page:, per:)
+    Rails.cache.fetch(
+      "#{self.name}:#{__method__}:225:264:#{label}-#{version_number}-#{page}-#{per}",
+      expires_in: CacheTTL
+    ) do
+      self
+        .where(model_id: 298)
+        .where(version_id: 358)
+        .where(version_number: version_number)
+        .must(match: { 'label.keyword': label })
+        .page(page)
+        .per(per)
+        .sort(grimoire_creation_date: :desc)
+        .execute
+        .raw_response
+    end
+  end
+
   def self.aggs_repo_by_date(repo_url, begin_date, end_date, aggs)
     Rails.cache.fetch(
       "#{self.name}:#{__method__}:#{model_id}:#{version_id}:#{label}-#{begin_date}-#{end_date}",

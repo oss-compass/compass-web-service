@@ -44,6 +44,9 @@ module Types
     field :my_model_reports, resolver: Queries::Lab::MyModelReportsQuery
     field :reference_model_reports, resolver: Queries::Lab::ReferenceModelReportsQuery
 
+    field :project_version_models_type, resolver: Queries::Lab::ProjectVersionModelsQuery
+    field :project_version_models_status_type, resolver: Queries::Lab::ProjectVersionModelsStatusQuery
+
     field :dataset_overview, resolver: Queries::Lab::DatasetOverviewQuery
     field :dataset_fuzzy_search, resolver: Queries::Lab::DatasetFuzzyQuery
 

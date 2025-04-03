@@ -9,6 +9,7 @@ class OpencheckMetric < BaseMetric
       properties: {
         id: { type: 'keyword' },
         status: { type: 'text' },
+        version_number: { type: 'text' },
         grimoire_creation_date: { type: 'date' },
         project_url: {
           type: 'text',
@@ -52,13 +53,14 @@ class OpencheckMetric < BaseMetric
     Rails.logger.error "[OpenSearch] create index error: #{e.class}: #{e.message}"
   end
 
-  def self.save_license(license, security, project_url)
+  def self.save_license(license, security, project_url, version_number)
     ensure_index
 
     document_hash = {
       project_url: project_url,
       grimoire_creation_date: Time.now.utc.iso8601,
       license: license,
+      version_number: version_number,
       security: security,
       id: SecureRandom.uuid,
       status: "success"
