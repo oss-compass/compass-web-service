@@ -409,7 +409,7 @@ class TpcSoftwareMetricServer
     { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: ex.message) }
   end
 
-  def tpc_software_license_callback(command_list, scan_results)
+  def tpc_software_license_callback(command_list, scan_results, version_number)
     license = nil
     security = nil
     # commands = ["scancode","osv-scanner"]
@@ -423,7 +423,7 @@ class TpcSoftwareMetricServer
         # raise GraphQL::ExecutionError.new I18n.t('tpc.callback_command_not_exist', command: command)
       end
     end
-    OpencheckMetric.save_license(license, security, @project_url)
+    OpencheckMetric.save_license(license, security, @project_url, version_number)
   end
 
   def get_opencheck_license(scancode_result)

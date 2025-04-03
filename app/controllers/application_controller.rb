@@ -86,6 +86,7 @@ class ApplicationController < ActionController::Base
     report_id = task_metadata['report_id']
     report_metric_id = task_metadata['report_metric_id']
     report_type = task_metadata['report_type']
+    version_number = task_metadata['version_number']
 
     Rails.logger.info("tpc_software_callback info: command_list: #{command_list} project_url: #{project_url} task_metadata: #{task_metadata}")
 
@@ -95,7 +96,7 @@ class ApplicationController < ActionController::Base
     elsif report_type == TpcSoftwareMetricServer::Report_Type_Graduation
       metric_server.tpc_software_graduation_callback(command_list, scan_results, report_id, report_metric_id)
     elsif report_type == TpcSoftwareMetricServer::Report_Type_License
-      metric_server.tpc_software_license_callback(command_list, scan_results)
+      metric_server.tpc_software_license_callback(command_list, scan_results, version_number)
     end
 
     render json: { status: true, message: 'ok' }
