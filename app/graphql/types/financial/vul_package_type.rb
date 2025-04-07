@@ -2,7 +2,7 @@
 
 module Types
   module Financial
-    class VulPackageDetailType < BaseObject
+    class VulPackageType < BaseObject
 
       field :package_name, String, null: true
       field :package_version, String, null: true

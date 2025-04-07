@@ -5,7 +5,7 @@ module Types
     class VulType < BaseObject
 
       field :vul_levels, Integer, null: true
-      field :vul_level_details, [VulPackageDetailType], null: true
+      field :vul_level_details, [VulLevelDetailType], null: true
 
     end
   end
