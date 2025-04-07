@@ -3,7 +3,7 @@
 module Types
   module Queries
     module Lab
-      class ProjectVersionModelsStatusQuery < BaseQuery
+      class FinanceStandardProjectVersionStatusQuery < BaseQuery
 
         type Types::Lab::ProjectVersionModelsStatusType, null: true
         description 'Get project trigger status'
@@ -13,7 +13,7 @@ module Types
         def resolve(label: nil, version_number: nil)
           model = LabModel.find_by(id: 298)
           version = LabModelVersion.find_by(id: 358)
-          status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: label, version_num: version_number, level: 'repo').check_task_status
+          status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: label, version_number: version_number, level: 'repo').check_task_status
           { trigger_status: status }
         end
       end
