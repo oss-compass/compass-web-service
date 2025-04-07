@@ -81,7 +81,7 @@ module Types
       #
       # code_readability
       field :code_readability, Integer, null: true
-      field :code_readability_details, [CodeReadabilityDetailType], null: true
+      field :code_readability_detail, [CodeReadabilityDetailType], null: true
 
       # field :created_at, GraphQL::Types::ISO8601DateTime
 
