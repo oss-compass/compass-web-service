@@ -5,6 +5,7 @@ module Types
     class ProjectVersionModelDetailType < Types::BaseObject
       field :uuid, String, null: false
       field :label, String, null: false
+      field :version_number, String, null: false
 
       # license_commercial_allowed
       field :license_list, [String], null: true
@@ -32,9 +33,9 @@ module Types
       field :non_osi_licenses, [String], null: true
 
       # activity_quarterly_contribution
-      field :activity_quarterly_contribution, Integer, null: true
-      field :activity_quarterly_contribution_bot, String, null: true
-      field :activity_quarterly_contribution_without_bot, String, null: true
+      field :activity_quarterly_contribution, [Integer], null: true
+      field :activity_quarterly_contribution_bot, [Integer], null: true
+      field :activity_quarterly_contribution_without_bot, [Integer], null: true
 
       # security_vul_stat
       field :security_vul_stat, Integer, null: true
@@ -71,8 +72,8 @@ module Types
       field :vul_level_details, [VulLevelDetailType], null: true
 
       # vul_detect_time
-      # field :zh_files_number, Integer, null: true
-      # field :zh_files_details, [FolderDocumentDetailsType], null: true
+      field :vul_detect_time, Integer, null: true
+      field :vul_detect_time_details, [VulDetectTimeDetailType], null: true
 
       # vulnerablity_feedback_channels
       field :vulnerablity_feedback_channels, Integer, null: true

@@ -15,7 +15,7 @@ module Mutations
       model = LabModel.find_by(id: 298)
       version = LabModelVersion.find_by(id: 358)
       projects.each do |project|
-        status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: project[:label], version_number: project[:version_num], level: 'repo').execute
+        status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: project[:label], version_number: project[:version_number], level: 'repo').execute
       end
       status
     rescue => ex
