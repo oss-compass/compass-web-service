@@ -3,7 +3,8 @@
 module Types
   module Queries
     module Lab
-      class ProjectVersionModelsQuery < BaseQuery
+      class FinanceStandardProjectVersionQuery < BaseQuery
+
 
         type Types::Financial::ProjectVersionModelType, null: true
         description 'Get project detail'

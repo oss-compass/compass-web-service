@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Mutations
-  class TriggerProjectVersion < BaseMutation
+  class TriggerFinanceStandardProjectVersion < BaseMutation
     field :status, String
 
     argument :datasets, [Input::ProjectVersionTypeInput], required: true, description: 'the collection of the repositories'

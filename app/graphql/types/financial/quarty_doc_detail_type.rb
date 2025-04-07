@@ -7,8 +7,8 @@ module Types
       field :name, String, null: true
 
       field :path, String, null: true
-      field :word_count, Integer, null: true
-      field :picture_count, PictureCountDetailType, null: true
+      field :Word_count, Integer, null: true
+      field :Picture_count, PictureCountDetailType, null: true
 
 
     end

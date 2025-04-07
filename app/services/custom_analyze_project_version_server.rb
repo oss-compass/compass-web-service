@@ -51,6 +51,7 @@ class CustomAnalyzeProjectVersionServer
   end
 
   def analysis_task_key
+    Rails.logger.info("analysis_task_key:, #{self.class.name}:#{model.id}:#{version.id}:#{project}:#{version_number}:task_status")
     "#{self.class.name}:#{model.id}:#{version.id}:#{project}:#{version_number}:task_status"
   end
 
@@ -61,7 +62,6 @@ class CustomAnalyzeProjectVersionServer
   def task_info
     Rails.cache.fetch(analysis_task_key, expires_in: LongCacheTTL) do
       {
-        'trigger_user_id' => user&.id,
         'task_id' => nil,
         'status' => ProjectTask::UnSubmit,
         'updated_at' => nil
@@ -70,7 +70,6 @@ class CustomAnalyzeProjectVersionServer
   end
 
   def update_task_info(task_id:, status:, updated_at:)
-    task_info = { 'trigger_user_id' => user&.id }
     task_info['task_id'] = task_id if task_id.present?
     task_info['status'] = status if status.present?
     task_info['updated_at'] = updated_at if updated_at.present?
@@ -82,6 +81,7 @@ class CustomAnalyzeProjectVersionServer
     if task_id.present?
       update_task_status(task_id)
     end
+    Rails.logger.info("check_task_status  #{task_id}, #{task_info.to_json}")
     status = task_info&.[]('status')
     return status if status != ProjectTask::UnSubmit
     return ProjectTask::Success if CustomV1Metric.exist_model_and_version(model.id, version.id)
@@ -150,6 +150,7 @@ class CustomAnalyzeProjectVersionServer
       )
     task_resp = JSON.parse(response.body)
 
+    Rails.logger.info("submit_task_status #{task_resp} ")
     update_task_info(status: task_resp['status'], task_id: task_resp['id'], updated_at: task_resp['updated'])
 
     model.decreasing_trigger_remaining_count
@@ -163,6 +164,7 @@ class CustomAnalyzeProjectVersionServer
   def update_task_status(task_id)
     response = Faraday.get("#{CELERY_SERVER}/api/workflows/#{task_id}")
     task_resp = JSON.parse(response.body)
+    Rails.logger.info("update_task_status #{task_resp}")
     update_task_info(status: task_resp['status'], task_id:, updated_at: task_resp['updated'])
   rescue => ex
     Rails.logger.error("Failed to update task #{task_id} status, #{ex.message}")
