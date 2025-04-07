@@ -33,9 +33,9 @@ module Types
       field :non_osi_licenses, [String], null: true
 
       # activity_quarterly_contribution
-      field :activity_quarterly_contribution, Integer, null: true
-      field :activity_quarterly_contribution_bot, String, null: true
-      field :activity_quarterly_contribution_without_bot, String, null: true
+      field :activity_quarterly_contribution, [Integer], null: true
+      field :activity_quarterly_contribution_bot, [Integer], null: true
+      field :activity_quarterly_contribution_without_bot, [Integer], null: true
 
       # security_vul_stat
       field :security_vul_stat, Integer, null: true
