@@ -72,7 +72,7 @@ class CustomV1Metric < BaseMetric
       self
         .where(model_id: 298)
         .where(version_id: 358)
-        .where(version_number: version_number)
+        .must(term: { 'version_number.keyword': version_number })
         .must(match: { 'label.keyword': label })
         .page(page)
         .per(per)
