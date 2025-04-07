@@ -66,7 +66,7 @@ class CustomV1Metric < BaseMetric
 
   def self.query_repo_by_version(label, version_number, page:, per:)
     Rails.cache.fetch(
-      "#{self.name}:#{__method__}:225:264:#{label}-#{version_number}-#{page}-#{per}",
+      "#{self.name}:#{__method__}:298:358:#{label}-#{version_number}-#{page}-#{per}",
       expires_in: CacheTTL
     ) do
       self
