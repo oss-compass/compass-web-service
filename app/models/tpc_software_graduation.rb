@@ -28,6 +28,7 @@ class TpcSoftwareGraduation < ApplicationRecord
   State_Awaiting_Confirmation = 1
   State_Awaiting_Review = 2
   State_Completed = 3
+  State_Awaiting_QA = 4
   State_Rejected = -1
 
   Clarify_Metric_List = [
