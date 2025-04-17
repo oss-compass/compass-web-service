@@ -9,7 +9,7 @@ You need to do few small steps to run the app
 ### Clone the repo
 
 ```sh
-git clone https://github.com/open-metrics-code/compass-web-service
+git clone https://github.com/oss-compass/compass-web-service
 cd compass-web-service
 ```
 
