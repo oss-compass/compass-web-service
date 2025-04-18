@@ -37,6 +37,7 @@ gem 'sneakers'
 # Use Grape
 gem 'grape'
 gem 'grape-swagger'
+gem 'grape-swagger-rails'
 
 # Use Kafka (only for Content Review)
 gem 'connection_pool'
@@ -147,7 +148,7 @@ gem "lograge"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'annotate'
-  gem 'debug', platforms: %i[mri mingw x64_mingw]
+  gem 'debug', '>= 1.6.2', platforms: %i[mri mingw x64_mingw]
   gem 'pry'
   gem 'rspec-rails', '~> 5.0.0'
   gem 'rubocop', require: false

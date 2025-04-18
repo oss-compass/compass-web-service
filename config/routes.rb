@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   mount with_dev_auth.call(Crono::Engine), at: '/crono'
   mount Openapi::Base => "/"
 
+  mount GrapeSwaggerRails::Engine => '/api/docs'
+
+
   root to: 'application#website'
 
   devise_for :users, defaults: { format: :json }, only: :omniauth_callbacks, controllers: { omniauth_callbacks: 'omniauth_callbacks' }
