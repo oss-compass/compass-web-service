@@ -63,12 +63,12 @@ module Types
 
 
     field :create_tpc_software_lectotype_report, mutation: Mutations::Tpc::CreateTpcSoftwareLectotypeReport, description: 'Create a tpc software lectotype report'
-    # field :update_tpc_software_lectotype_report, mutation: Mutations::Tpc::UpdateTpcSoftwareLectotypeReport, description: 'Update a tpc software lectotype report'
+    field :update_tpc_software_lectotype_report, mutation: Mutations::Tpc::UpdateTpcSoftwareLectotypeReport, description: 'Update a tpc software lectotype report'
     field :trigger_tpc_software_lectotype_report, mutation: Mutations::Tpc::TriggerTpcSoftwareLectotypeReport, description: 'Trigger a tpc software lectotype report'
 
-    # field :create_tpc_software_lectotype, mutation: Mutations::Tpc::CreateTpcSoftwareLectotype, description: 'Create a tpc software lectotype'
-    # field :update_tpc_software_lectotype, mutation: Mutations::Tpc::UpdateTpcSoftwareLectotype, description: 'Update a tpc software lectotype'
-    # field :accept_tpc_software_lectotype, mutation: Mutations::Tpc::AcceptTpcSoftwareLectotype, description: 'Accept a tpc software lectotype'
+    field :create_tpc_software_lectotype, mutation: Mutations::Tpc::CreateTpcSoftwareLectotype, description: 'Create a tpc software lectotype'
+    field :update_tpc_software_lectotype, mutation: Mutations::Tpc::UpdateTpcSoftwareLectotype, description: 'Update a tpc software lectotype'
+    field :accept_tpc_software_lectotype, mutation: Mutations::Tpc::AcceptTpcSoftwareLectotype, description: 'Accept a tpc software lectotype'
 
     field :create_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::CreateTpcSoftwareReportMetricClarification, description: 'Create a tpc software report metric clarification'
     field :update_tpc_software_report_metric_clarification, mutation: Mutations::Tpc::UpdateTpcSoftwareReportMetricClarification, description: 'Update a tpc software report metric clarification'

@@ -1,4 +1,6 @@
 class CodequalityMetric < BaseMetric
+  include BaseModelMetric
+
   def self.index_name
     "#{MetricsIndexPrefix}_codequality"
   end
