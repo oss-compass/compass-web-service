@@ -27,7 +27,15 @@ module Openapi
 
     mount Openapi::V2::Pull
     mount Openapi::V2::Issue
+    mount Openapi::V2::Event
+    mount Openapi::V2::Contributors
     mount Openapi::V2::ModelCodequality
+    mount Openapi::V2::ModelCommunity
+    mount Openapi::V2::ModelActivity
+    mount Openapi::V2::ModelGroupActivity
+    mount Openapi::V2::ModelDomainPersona
+    mount Openapi::V2::ModelRolePersona
+    mount Openapi::V2::ModelMilestonePersona
 
 
 
