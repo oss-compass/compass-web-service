@@ -34,7 +34,7 @@ module Openapi
         label = ShortenedLabel.normalize_label(label)
         validate_by_label!(label)
         begin_date, end_date = extract_search_date(begin_date, end_date)
-        validate_date!(label, level, begin_date, end_date)
+        # validate_date!(label, level, begin_date, end_date)
 
         [label, level, filter_opts, sort_opts, begin_date, end_date, page, size]
       end
