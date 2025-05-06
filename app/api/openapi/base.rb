@@ -28,6 +28,12 @@ module Openapi
     mount Openapi::V2::Pull
     mount Openapi::V2::Issue
     mount Openapi::V2::ModelCodequality
+    mount Openapi::V2::Fork
+    mount Openapi::V2::Git
+    mount Openapi::V2::Stargazer
+    mount Openapi::V2::Watch
+    mount Openapi::V2::Repo
+    mount Openapi::V2::Releases
 
 
 
