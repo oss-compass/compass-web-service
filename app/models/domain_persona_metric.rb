@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DomainPersonaMetric < BaseMetric
+  include BaseModelMetric
+
   def self.index_name
     "#{MetricsIndexPrefix}_domain_persona"
   end

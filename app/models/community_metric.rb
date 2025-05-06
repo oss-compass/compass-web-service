@@ -1,4 +1,7 @@
 class CommunityMetric < BaseMetric
+  include BaseModelMetric
+
+
   def self.index_name
     "#{MetricsIndexPrefix}_community"
   end

@@ -1,4 +1,7 @@
 class ActivityMetric < BaseMetric
+  include BaseModelMetric
+
+  
   def self.index_name
     "#{MetricsIndexPrefix}_activity"
   end
