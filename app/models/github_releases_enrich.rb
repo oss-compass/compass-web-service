@@ -1,16 +1,13 @@
-# frozen_string_literal: true
+# fro_zen_string_literal: true
 
-class GithubStargazerEnrich < GithubBase
+class GithubReleasesEnrich < GithubBase
   include BaseEnrich
-  # include StargazerEnrich
+  # include ReleasesEnrich
 
-  # # Include the necessary modules for enrichment
-  # include GithubStargazerEnrich::StargazerEnrich
-
-  # # Define the index name for the enriched data
   def self.index_name
-    'github-stargazer_enriched'
+    'github-releases_enriched'
   end
+
   def self.platform_type
     'github'
   end
@@ -208,5 +205,5 @@ class GithubStargazerEnrich < GithubBase
         "metadata__enriched_on" => { "type" => "date" }
       }
     }
-  end
+    end
 end
