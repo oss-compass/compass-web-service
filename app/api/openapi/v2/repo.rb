@@ -9,7 +9,7 @@ module Openapi
       prefix :api
       format :json
 
-      # before { require_login! }
+      before { require_login! }
       helpers Openapi::SharedParams::Search
 
 
