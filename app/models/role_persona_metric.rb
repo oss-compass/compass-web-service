@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class RolePersonaMetric < BaseMetric
+  include BaseModelMetric
+
   def self.index_name
     "#{MetricsIndexPrefix}_role_persona"
   end
