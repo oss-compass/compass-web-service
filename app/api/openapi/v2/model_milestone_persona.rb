@@ -12,7 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :milestone_persona do
-        desc 'Query milestone_persona data'
+        desc 'Query milestone_persona data', { tags: ['L3 Evaluate model data'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

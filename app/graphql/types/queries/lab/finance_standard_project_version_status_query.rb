@@ -13,7 +13,8 @@ module Types
         def resolve(label: nil, version_number: nil)
           model = LabModel.find_by(id: 298)
           version = LabModelVersion.find_by(id: 358)
-          status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: label, version_number: version_number, level: 'repo').check_task_status
+          status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: label,
+                                                         version_number: version_number, level: 'repo').check_task_status_query
           { trigger_status: status }
         end
       end

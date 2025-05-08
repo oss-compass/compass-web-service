@@ -2,22 +2,22 @@
 
 module Openapi
   module V2
-    class ModelCommunity < Grape::API
+    class ModelOpencheck < Grape::API
 
       version 'v2', using: :path
       prefix :api
       format :json
 
-      before { require_login! }
+      # before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :community do
-        desc 'Query community data', { tags: ['L3 Evaluate model data'] }
+      resource :opencheck do
+        desc 'Query opencheck data', { tags: ['L3 Evaluate model data'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer = CommunityMetric
+          indexer = OpencheckMetric
           repo_urls = [label]
 
           resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)

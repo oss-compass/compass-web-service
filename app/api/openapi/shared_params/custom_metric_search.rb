@@ -1,20 +1,24 @@
 # frozen_string_literal: true
 module Openapi
   module SharedParams
-    module Search
+    module CustomMetricSearch
       extend Grape::API::Helpers
 
-      params :search do
+      params :custom_metric_search do
         requires :label, type: String, desc: 'repo or community label / 仓库或社区标签', documentation: { param_type: 'body',example: 'https://github.com/oss-compass/compass-web-service' }
         optional :level, type: String, desc: 'level (repo/community), default: repo / 层级', documentation: { param_type: 'body',example: 'repo' }
+
+
         optional :filter_opts, type: Array, desc: 'filter options / 筛选条件', documentation: { param_type: 'body' } do
           requires :type, type: String, desc: 'filter option type / 筛选类型'
-          requires :values, type: Array, desc: 'filter option values / 筛选值'
+          requires :values, type: String, desc: 'filter option values / 筛选值'
         end
-        optional :sort_opts, type: Array, desc: 'sort options / 排序条件', documentation: { param_type: 'body' ,example: [{ type: 'created_at', direction:  "desc" }]} do
-          requires :type, type: String, desc: 'sort type / 排序类型'
-          requires :direction, type: String, desc: 'sort direction (asc/desc) / 排序方向'
+
+        optional :sort_opts, type: Array, desc: 'sort options / 排序条件', documentation: { param_type: 'body' ,example: [{ type: 'grimoire_creation_date', direction:  "desc" }]} do
+          optional :type, type: String, desc: 'sort type / 排序类型'
+          optional :direction, type: String, desc: 'sort direction (asc/desc) / 排序方向'
         end
+
         optional :begin_date, type: DateTime, desc: 'begin date / 开始日期', documentation: { param_type: 'body' }
         optional :end_date, type: DateTime, desc: 'end date / 结束日期', documentation: { param_type: 'body' }
         optional :page, type: Integer, default: 1, desc: 'page number / 页码', documentation: { param_type: 'body' }

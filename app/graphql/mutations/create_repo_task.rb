@@ -19,6 +19,7 @@ module Mutations
 
       repo_urls.each do |repo_url|
         raise GraphQL::ExecutionError.new(I18n.t('analysis.validation.missing', field: 'repo_url')) unless repo_url.present?
+        repo_url = repo_url.chomp('/')
 
         uri = Addressable::URI.parse(repo_url)
         unless Common::SUPPORT_DOMAINS.include?(uri&.normalized_host)
@@ -40,15 +41,15 @@ module Mutations
         end
       end
 
-      result =
-        PullServer.new(
-          {
-            level: 'repo',
-            project_urls: repo_urls,
-            extra: { username: username, origin: origin }
-          }
-        ).execute
-      OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
+      # result =
+      #   PullServer.new(
+      #     {
+      #       level: 'repo',
+      #       project_urls: repo_urls,
+      #       extra: { username: username, origin: origin }
+      #     }
+      #   ).execute
+      # OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
     end
   end
 end

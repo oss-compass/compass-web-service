@@ -12,7 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :issue do
-        desc 'Query Issue data'
+        desc 'Query Issue data / 搜索接口', { tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

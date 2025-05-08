@@ -14,7 +14,7 @@ module Openapi
 
 
       resource :releases do
-        desc 'Query Stargazer data'
+        desc 'Query Stargazer data', { tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

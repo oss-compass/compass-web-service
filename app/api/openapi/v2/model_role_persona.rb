@@ -12,7 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :role_persona do
-        desc 'Query role_persona data'
+        desc 'Query role_persona data', { tags: ['L3 Evaluate model data'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
