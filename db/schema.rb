@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
-  create_table "active_storage_attachments", charset: "utf8mb4", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2025_04_29_011336) do
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", charset: "utf8mb4", force: :cascade do |t|
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -33,13 +33,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", charset: "utf8mb4", force: :cascade do |t|
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "allowlisted_jwts", charset: "utf8mb4", force: :cascade do |t|
+  create_table "allowlisted_jwts", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "jti", null: false
     t.string "aud"
     t.datetime "exp", null: false
@@ -50,7 +50,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
   end
 
-  create_table "beta_metrics", charset: "utf8mb4", force: :cascade do |t|
+  create_table "beta_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "dimensionality"
     t.string "metric"
     t.string "desc"
@@ -64,7 +64,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "crono_jobs", charset: "utf8mb4", force: :cascade do |t|
+  create_table "crono_jobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "job_id", null: false
     t.text "log", size: :long
     t.datetime "last_performed_at", precision: nil
@@ -74,14 +74,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
-  create_table "lab_algorithms", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_algorithms", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "ident", null: false
     t.text "extra"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "lab_datasets", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_datasets", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "ident"
     t.string "name"
     t.integer "lab_model_version_id", null: false
@@ -92,7 +92,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.bigint "lab_model_report_id"
   end
 
-  create_table "lab_metrics", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "ident", null: false
     t.string "category", null: false
@@ -102,9 +102,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text "extra", default: "'{}'"
+    t.integer "type", default: 0, null: false
+    t.integer "metric_type", default: 0
   end
 
-  create_table "lab_model_comments", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_comments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.text "content", null: false
     t.integer "reply_to"
@@ -118,14 +120,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["user_id"], name: "index_lab_model_comments_on_user_id"
   end
 
-  create_table "lab_model_datasets", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_datasets", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "lab_model_version_id"
     t.integer "lab_dataset_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "lab_model_invitations", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_invitations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", null: false
     t.string "token", null: false
     t.integer "lab_model_id", null: false
@@ -137,7 +139,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["lab_model_id"], name: "index_lab_model_invitations_on_lab_model_id"
   end
 
-  create_table "lab_model_members", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_members", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "lab_model_id", null: false
     t.integer "permission", null: false
@@ -146,7 +148,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["lab_model_id", "user_id"], name: "index_lab_model_members_on_lab_model_id_and_user_id", unique: true
   end
 
-  create_table "lab_model_metrics", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "lab_metric_id", null: false
     t.integer "lab_model_version_id", null: false
     t.float "weight"
@@ -156,7 +158,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["lab_model_version_id", "lab_metric_id"], name: "index_metrics_on_v_m"
   end
 
-  create_table "lab_model_reports", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "lab_model_id", null: false
     t.integer "lab_model_version_id", null: false
     t.integer "lab_dataset_id"
@@ -166,7 +168,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.boolean "is_public", default: false
   end
 
-  create_table "lab_model_versions", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_model_versions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "version", default: ""
     t.integer "lab_model_id", null: false
     t.integer "lab_dataset_id", null: false
@@ -178,7 +180,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["lab_model_id", "version"], name: "index_lab_model_versions_on_lab_model_id_and_version"
   end
 
-  create_table "lab_models", charset: "utf8mb4", force: :cascade do |t|
+  create_table "lab_models", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "user_id", null: false
     t.integer "dimension", null: false
@@ -192,7 +194,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.integer "reference_count", default: 0
   end
 
-  create_table "login_binds", charset: "utf8mb4", force: :cascade do |t|
+  create_table "login_binds", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "provider", null: false
     t.string "account", null: false
@@ -208,7 +210,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["user_id"], name: "index_login_binds_on_user_id"
   end
 
-  create_table "project_tasks", charset: "utf8mb4", force: :cascade do |t|
+  create_table "project_tasks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "task_id", null: false
     t.string "remote_url", null: false, collation: "utf8mb4_bin"
     t.string "status"
@@ -222,7 +224,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["remote_url"], name: "index_project_tasks_on_remote_url", unique: true
   end
 
-  create_table "reports", charset: "utf8mb4", force: :cascade do |t|
+  create_table "reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.text "content"
     t.string "lang"
     t.string "associated_id"
@@ -232,7 +234,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "shortened_labels", charset: "utf8mb4", force: :cascade do |t|
+  create_table "shortened_labels", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "label", null: false, collation: "utf8mb4_bin"
     t.string "short_code", null: false
     t.string "level", null: false
@@ -242,7 +244,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["short_code"], name: "index_shortened_labels_on_short_code", unique: true
   end
 
-  create_table "subject_access_levels", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subject_access_levels", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "subject_id", null: false
     t.integer "access_level", default: 0, null: false
     t.integer "user_id", null: false
@@ -251,7 +253,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["user_id", "subject_id"], name: "index_subject_access_levels_on_user_id_and_subject_id", unique: true
   end
 
-  create_table "subject_customizations", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subject_customizations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name"
     t.integer "subject_id"
     t.datetime "created_at", null: false
@@ -262,13 +264,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["subject_id"], name: "index_subject_customizations_on_subject_id", unique: true
   end
 
-  create_table "subject_licenses", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subject_licenses", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "license"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "subject_refs", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subject_refs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "parent_id"
     t.integer "child_id"
     t.integer "sub_type"
@@ -277,7 +279,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["parent_id", "child_id", "sub_type"], name: "index_subject_refs_on_parent_id_and_child_id_and_sub_type", unique: true
   end
 
-  create_table "subject_sigs", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subject_sigs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name"
     t.string "description"
     t.string "maintainers"
@@ -288,7 +290,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["subject_ref_id"], name: "index_subject_sigs_on_subject_ref_id", unique: true
   end
 
-  create_table "subjects", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subjects", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "label", null: false, collation: "utf8mb4_bin"
     t.string "level", default: "repo", null: false, comment: "repo/community"
     t.string "status", default: "pending", null: false, comment: "pending/progress/complete"
@@ -301,7 +303,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["label"], name: "index_subjects_on_label", unique: true
   end
 
-  create_table "subscriptions", charset: "utf8mb4", force: :cascade do |t|
+  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "subject_id", null: false
     t.datetime "created_at", null: false
@@ -309,7 +311,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
   end
 
-  create_table "tpc_software_comment_states", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_comment_states", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "tpc_software_id", null: false
     t.integer "user_id", null: false
     t.integer "subject_id", null: false
@@ -321,7 +323,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.string "tpc_software_type", default: "TpcSoftwareReportMetric", null: false
   end
 
-  create_table "tpc_software_comments", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_comments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "tpc_software_id", null: false
     t.integer "user_id", null: false
     t.integer "subject_id", null: false
@@ -332,7 +334,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.string "tpc_software_type", default: "TpcSoftwareReportMetric", null: false
   end
 
-  create_table "tpc_software_graduation_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_graduation_report_metric_raws", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "tpc_software_graduation_report_metric_id", null: false
     t.string "code_url", null: false
     t.integer "subject_id", null: false
@@ -365,7 +367,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["tpc_software_graduation_report_metric_id"], name: "idx_on_tpc_software_graduation_report_metric_id_ff1401468a", unique: true
   end
 
-  create_table "tpc_software_graduation_report_metrics", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_graduation_report_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code_url", null: false
     t.string "status", null: false
     t.integer "status_compass_callback", null: false
@@ -426,7 +428,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.string "import_valid_detail", limit: 500
   end
 
-  create_table "tpc_software_graduation_reports", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_graduation_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "short_code", null: false
     t.string "name"
     t.integer "tpc_software_sig_id"
@@ -447,7 +449,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["short_code"], name: "index_tpc_software_graduation_reports_on_short_code", unique: true
   end
 
-  create_table "tpc_software_graduations", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_graduations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "tpc_software_graduation_report_ids", null: false
     t.datetime "incubation_start_time"
     t.string "incubation_time"
@@ -463,7 +465,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.integer "target_software_report_id"
   end
 
-  create_table "tpc_software_lectotype_report_metric_raws", charset: "latin1", force: :cascade do |t|
+  create_table "tpc_software_lectotype_report_metric_raws", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "tpc_software_lectotype_report_metric_id", null: false
     t.string "code_url", null: false
     t.integer "subject_id", null: false
@@ -489,7 +491,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotype_report_metrics", charset: "latin1", force: :cascade do |t|
+  create_table "tpc_software_lectotype_report_metrics", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "code_url", null: false
     t.string "status", null: false
     t.integer "status_compass_callback", null: false
@@ -545,7 +547,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotype_reports", charset: "latin1", force: :cascade do |t|
+  create_table "tpc_software_lectotype_reports", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "tpc_software_sig_id", null: false
     t.string "release"
@@ -567,7 +569,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotypes", charset: "latin1", force: :cascade do |t|
+  create_table "tpc_software_lectotypes", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "tpc_software_lectotype_report_ids", null: false
     t.string "repo_url"
     t.string "committers", null: false
@@ -588,7 +590,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_members", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_members", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "user_id"
     t.integer "member_type", null: false
     t.string "name"
@@ -604,7 +606,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_report_metric_raws", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_report_metric_raws", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "tpc_software_report_metric_id", null: false
     t.string "code_url", null: false
     t.integer "subject_id", null: false
@@ -631,7 +633,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["tpc_software_report_metric_id"], name: "idx_on_tpc_software_report_metric_id_9ede761b2c", unique: true
   end
 
-  create_table "tpc_software_report_metrics", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_report_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code_url", null: false
     t.string "status", null: false
     t.integer "status_compass_callback", null: false
@@ -687,7 +689,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.string "security_history_vulnerability_detail", limit: 5000
   end
 
-  create_table "tpc_software_selection_reports", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_selection_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "report_type", null: false
     t.string "name", null: false
     t.integer "tpc_software_sig_id", null: false
@@ -712,7 +714,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.index ["short_code"], name: "index_tpc_software_selection_reports_on_short_code", unique: true
   end
 
-  create_table "tpc_software_selections", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_selections", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "selection_type", null: false
     t.string "tpc_software_selection_report_ids", null: false
     t.string "repo_url"
@@ -735,7 +737,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.integer "report_category"
   end
 
-  create_table "tpc_software_sigs", charset: "utf8mb4", force: :cascade do |t|
+  create_table "tpc_software_sigs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "value", null: false
     t.string "description", null: false
@@ -745,7 +747,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_030528) do
     t.string "committer_emails", limit: 1024
   end
 
-  create_table "users", charset: "utf8mb4", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"

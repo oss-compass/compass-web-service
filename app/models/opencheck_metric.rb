@@ -1,4 +1,5 @@
 class OpencheckMetric < BaseMetric
+  include BaseModelMetric
 
   def self.index_name
     "#{MetricsIndexPrefix}_opencheck"
@@ -20,6 +21,7 @@ class OpencheckMetric < BaseMetric
             }
           }
         },
+        label:{type:"keyword"},
         license: {
           properties: {
             license_list: { type: 'text' },
@@ -58,6 +60,7 @@ class OpencheckMetric < BaseMetric
 
     document_hash = {
       project_url: project_url,
+      label: project_url,
       grimoire_creation_date: Time.now.utc.iso8601,
       license: license,
       version_number: version_number,

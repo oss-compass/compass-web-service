@@ -1,4 +1,5 @@
 class CodequalitySummary < BaseSummary
+  include BaseModelMetric
   def self.index_name
     "#{MetricsIndexPrefix}_codequality_summary"
   end

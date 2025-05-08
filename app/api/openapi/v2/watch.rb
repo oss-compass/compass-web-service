@@ -12,7 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :watch do
-        desc 'Query Watch data'
+        desc 'Query Watch data', { tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

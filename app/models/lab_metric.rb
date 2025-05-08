@@ -12,6 +12,7 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  extra             :text(65535)      default("{}")
+#  metric_type       :integer          default(0)
 #
 class LabMetric < ApplicationRecord
   Limit = 10

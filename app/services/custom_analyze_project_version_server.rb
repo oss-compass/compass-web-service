@@ -70,10 +70,16 @@ class CustomAnalyzeProjectVersionServer
   end
 
   def update_task_info(task_id:, status:, updated_at:)
-    task_info['task_id'] = task_id if task_id.present?
-    task_info['status'] = status if status.present?
-    task_info['updated_at'] = updated_at if updated_at.present?
-    Rails.cache.write(analysis_task_key, task_info, expires_in: LongCacheTTL)
+    # task_info['task_id'] = task_id if task_id.present?
+    # task_info['status'] = status if status.present?
+    # task_info['updated_at'] = updated_at if updated_at.present?
+    # Rails.cache.write(analysis_task_key, task_info, expires_in: LongCacheTTL)
+    info = task_info
+    info['task_id'] = task_id if task_id.present?
+    info['status'] = status if status.present?
+    info['updated_at'] = updated_at if updated_at.present?
+    Rails.logger.info("update_task_info param #{task_id}, #{status}, #{updated_at}")
+    Rails.cache.write(analysis_task_key, info, expires_in: LongCacheTTL)
   end
 
   def check_task_status
@@ -86,6 +92,15 @@ class CustomAnalyzeProjectVersionServer
     return status if status != ProjectTask::UnSubmit
     return ProjectTask::Success if CustomV1Metric.exist_model_and_version(model.id, version.id)
     status
+  end
+  def check_task_status_query
+    Rails.logger.info("check_task_status task_info #{task_info.to_json}")
+    task_id = task_info&.[]('task_id')
+    if task_id.present?
+      update_task_status(task_id)
+    end
+    Rails.logger.info("check_task_status  #{task_id}, #{task_info.to_json}")
+    task_info&.[]('status')
   end
 
   def check_task_updated_time
@@ -105,7 +120,7 @@ class CustomAnalyzeProjectVersionServer
     if ProjectTask::Processing.include?(status)
       raise TaskExists.new(I18n.t('analysis.task.submitted'))
     end
-    puts(payload.inspect)
+
     result = submit_task_status
 
     { status: result[:status], message: result[:message] }
