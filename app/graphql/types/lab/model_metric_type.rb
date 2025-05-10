@@ -13,6 +13,7 @@ module Types
       field :threshold, Float
       field :default_weight, Float
       field :default_threshold, Float
+      field :metric_type, Integer
     end
   end
 end

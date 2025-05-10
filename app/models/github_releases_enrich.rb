@@ -205,5 +205,67 @@ class GithubReleasesEnrich < GithubBase
         "metadata__enriched_on" => { "type" => "date" }
       }
     }
+  end
+
+
+  def self.terms_by_repo_urls(
+    repo_urls, begin_date, end_date,
+    target: 'tag.keyword', filter: :grimoire_creation_date, sort: :grimoire_creation_date, direction: :asc,
+    filter_opts: [], sort_opts: []
+  )
+    base =
+      self
+        .must(terms: { target => repo_urls })
+        .range(filter, gte: begin_date, lte: end_date)
+
+    if filter_opts.present?
+      filter_opts.each do |filter_opt|
+        base = base.where(filter_opt.type => filter_opt.values)
+      end
     end
+
+    if sort_opts.present?
+      sort_opts.each do |sort_opt|
+        base = base.sort(sort_opt.type => sort_opt.direction)
+      end
+    else
+      base = base.sort(sort => direction)
+    end
+
+    base
+  end
+
+  def self.terms_by_repo_urls_query(
+    repo_urls, begin_date, end_date,
+    target: 'tag.keyword', filter: :grimoire_creation_date, sort: :grimoire_creation_date, direction: :asc,
+    per: 1, page: 1, filter_opts: [], sort_opts: []
+  )
+    terms_by_repo_urls(
+      repo_urls, begin_date, end_date,
+      target: target, filter: filter, sort: sort, direction: direction,
+      filter_opts: filter_opts, sort_opts: sort_opts
+    )
+      .page(page)
+      .per(per)
+      .execute
+      .raw_response
+  end
+
+  def self.count_by_repo_urls_query(
+    repo_urls, begin_date, end_date,
+    target: 'tag.keyword', filter: :grimoire_creation_date, filter_opts: []
+  )
+    base =
+      self
+        .must(terms: { target => repo_urls })
+        .range(filter, gte: begin_date, lte: end_date)
+    if filter_opts.present?
+      filter_opts.each do |filter_opt|
+        base = base.where(filter_opt.type => filter_opt.values)
+      end
+    end
+    base.total_entries
+  end
+
+
 end
