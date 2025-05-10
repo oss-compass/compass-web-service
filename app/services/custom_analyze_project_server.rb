@@ -6,7 +6,7 @@ class CustomAnalyzeProjectServer
   # FATCHWORKFLOW = 'ETL_V1'
   LongCacheTTL = 3.days
   CacheTTL = 2.minutes
-
+  ExcludeMetricType = 1
   include Common
 
   attr_reader :user, :model, :version, :project, :level
@@ -39,6 +39,9 @@ class CustomAnalyzeProjectServer
 
   def metrics_weights_thresholds
     version.metrics.reduce({}) do |acc, metric|
+      if metric.metric_type == ExcludeMetricType
+        acc
+      else
       acc.merge(
         {
           metric.ident => {
@@ -47,6 +50,7 @@ class CustomAnalyzeProjectServer
           }
         }
       )
+      end
     end
   end
 
@@ -149,6 +153,7 @@ class CustomAnalyzeProjectServer
         payload.to_json,
         { 'Content-Type' => 'application/json' }
       )
+
     task_resp = JSON.parse(response.body)
 
     update_task_info(status: task_resp['status'], task_id: task_resp['id'], updated_at: task_resp['updated'])
