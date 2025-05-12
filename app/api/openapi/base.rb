@@ -44,6 +44,8 @@ module Openapi
     mount Openapi::V2::Releases
     mount Openapi::V2::CustomMetric
     mount Openapi::V2::ModelOpencheck
+    mount Openapi::V2::ContributorRepo
+    mount Openapi::V2::ContributorContributor
 
 
 
