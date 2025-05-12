@@ -5,7 +5,7 @@ class CustomAnalyzeReportServer
   WORKFLOW = 'CUSTOM_V1'
   LongCacheTTL = 3.days
   CacheTTL = 2.minutes
-
+  ExcludeMetricType = 1
   include Common
 
   attr_reader :user, :model, :version, :report
@@ -37,14 +37,18 @@ class CustomAnalyzeReportServer
 
   def metrics_weights_thresholds
     version.metrics.reduce({}) do |acc, metric|
-      acc.merge(
-        {
-          metric.ident => {
-            threshold: metric.threshold,
-            weight: metric.weight
+      if metric.metric_type == ExcludeMetricType
+        acc
+      else
+        acc.merge(
+          {
+            metric.ident => {
+              threshold: metric.threshold,
+              weight: metric.weight
+            }
           }
-        }
-      )
+        )
+      end
     end
   end
 
