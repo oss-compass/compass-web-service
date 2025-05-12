@@ -8,7 +8,7 @@ module Openapi
       prefix :api
       format :json
 
-      # before { require_login! }
+      before { require_login! }
       MAX_PER = 10000
       # github_event_contributor_repo_enrich
       helpers Openapi::SharedParams::Search
