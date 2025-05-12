@@ -23,6 +23,7 @@ class LabModelMetric < ApplicationRecord
   has_many :lab_model_comments, dependent: :destroy # need to purge attachments
 
   delegate :name, to: :lab_metric
+  delegate :metric_type, to: :lab_metric
   delegate :ident, to: :lab_metric
   delegate :category, to: :lab_metric
   delegate :extra_fields, to: :lab_metric
@@ -54,5 +55,18 @@ class LabModelMetric < ApplicationRecord
         }
       end
     LabModelMetric.create!(lab_metrics)
+  end
+
+  def self.create_by_metric_version(version, metrics)
+    lab_metrics =
+      metrics.map do |metric|
+        {
+          lab_metric: LabMetric.find_by(id: metric.id),
+          weight: metric.weight,
+          threshold: metric.threshold,
+          lab_model_version_id: version.id
+        }
+      end
+    version.lab_model_metrics.create!(lab_metrics)
   end
 end

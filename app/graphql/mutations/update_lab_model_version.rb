@@ -31,7 +31,47 @@ module Mutations
       model_version = model.versions.find_by(id: version_id)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless model_version.present?
 
-      raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless ::Pundit.policy(current_user, model).update?
+      # raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless ::Pundit.policy(current_user, model).update?
+      message = nil
+      unless ::Pundit.policy(current_user, model).update?
+        # fork
+        user_id = current_user.id
+        query1 = LabModel.where(user_id: user_id, parent_model_id: model_id)
+        if model.parent_model_id.present?
+          query2 = LabModel.where(user_id: user_id, parent_model_id: model.parent_model_id)
+          exist_model = query1.or(query2).first
+        else
+          exist_model = query1.first
+        end
+
+        ActiveRecord::Base.transaction do
+          if exist_model.present?
+            # create a new version
+            model_version = exist_model.versions.create!(algorithm: model_version.algorithm, lab_dataset_id: 0, is_score: model_version.is_score)
+            LabModelMetric.create_by_metric_version(model_version, metrics)
+
+          else
+            # create a new model, new version
+            model =
+              current_user.lab_models.create!(
+                {
+                  name: model.name,
+                  dimension: 0,
+                  description: model.description,
+                  is_public: false,
+                  is_general: true,
+                  parent_model_id: model.id
+                }
+              )
+
+            model_version = model.versions.create!(algorithm: model_version.algorithm, lab_dataset_id: 0, is_score: model_version.is_score, parent_lab_model_version_id: version_id)
+            model.members.create!(user: current_user, permission: LabModelMember::All)
+            LabModelMetric.create_by_metric_version(model_version, metrics)
+          end
+         message= "Fork Success"
+        end
+
+      end
 
       raise GraphQL::ExecutionError.new I18n.t('lab_models.metrics_too_large', limit: LabMetric::Limit) if metrics.length > LabMetric::Limit
 
@@ -65,7 +105,7 @@ module Mutations
 
       end
 
-      { data: model_version }
+      { data: model_version, message: message }
     rescue => ex
       raise GraphQL::ExecutionError.new I18n.t('lab_models.update_failed', reason: ex.message)
     end
