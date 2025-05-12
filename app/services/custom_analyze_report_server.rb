@@ -72,11 +72,12 @@ class CustomAnalyzeReportServer
   end
 
   def update_task_info(task_id:, status:, updated_at:)
-    task_info = { 'trigger_user_id' => user&.id }
-    task_info['task_id'] = task_id if task_id.present?
-    task_info['status'] = status if status.present?
-    task_info['updated_at'] = updated_at if updated_at.present?
-    Rails.cache.write(analysis_task_key, task_info, expires_in: LongCacheTTL)
+    info = task_info
+    info['task_id'] = task_id if task_id.present?
+    info['status'] = status if status.present?
+    info['updated_at'] = updated_at if updated_at.present?
+    Rails.logger.info("update_task_info param #{task_id}, #{status}, #{updated_at}")
+    Rails.cache.write(analysis_task_key, info, expires_in: LongCacheTTL)
   end
 
   def check_task_status
