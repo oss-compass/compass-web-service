@@ -56,10 +56,10 @@ class LabModelVersion < ApplicationRecord
   end
 
   def trigger_status
-    CustomAnalyzeServer.new({user: nil, model: lab_model, version: self}).check_task_status
+    CustomAnalyzeReportServer.new({user: nil, model: lab_model, version: self}).check_task_status
   end
 
   def trigger_updated_at
-    CustomAnalyzeServer.new({user: nil, model: lab_model, version: self}).check_task_updated_time
+    CustomAnalyzeReportServer.new({user: nil, model: lab_model, version: self}).check_task_updated_time
   end
 end
