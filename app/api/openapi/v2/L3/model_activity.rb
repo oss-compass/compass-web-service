@@ -2,22 +2,23 @@
 
 module Openapi
   module V2
-    class CustomMetric < Grape::API
+    module L3
+    class ModelActivity < Grape::API
+
       version 'v2', using: :path
       prefix :api
       format :json
 
-      # before { require_login! }
-      helpers Openapi::SharedParams::CustomMetricSearch
+      before { require_login! }
+      helpers Openapi::SharedParams::Search
 
-      resource :custom_metric do
-        desc 'Query domain_persona data', { tags: ['L2 Portrait/Metric data'] }
-        params { use :custom_metric_search }
-        puts(params.inspect)
+      resource :activity do
+        desc 'Query activity data', { tags: ['L3 Evaluate model data'] }
+        params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer = CustomV2Metric
+          indexer = ActivityMetric
           repo_urls = [label]
 
           resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
@@ -31,6 +32,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end

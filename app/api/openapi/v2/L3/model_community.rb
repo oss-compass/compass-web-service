@@ -2,7 +2,8 @@
 
 module Openapi
   module V2
-    class ModelRolePersona < Grape::API
+    module L3
+    class ModelCommunity < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -11,13 +12,13 @@ module Openapi
       before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :role_persona do
-        desc 'Query role_persona data', { tags: ['L3 Evaluate model data'] }
+      resource :community do
+        desc 'Query community data', { tags: ['L3 Evaluate model data'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer = RolePersonaMetric
+          indexer = CommunityMetric
           repo_urls = [label]
 
           resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
@@ -31,6 +32,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end

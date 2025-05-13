@@ -2,13 +2,14 @@
 
 module Openapi
   module V2
-    class ContributorProfile < Grape::API
+    module L2
+      class ContributorProfile < Grape::API
 
       version 'v2', using: :path
       prefix :api
       format :json
 
-      before { require_login! }
+      # before { require_login! }
       MAX_PER = 10000
       resource :contributor_profile do
 
@@ -117,6 +118,7 @@ module Openapi
           contributor_contribution_list
         end
       end
+    end
     end
   end
 end

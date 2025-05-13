@@ -2,22 +2,23 @@
 
 module Openapi
   module V2
-    class ModelOpencheck < Grape::API
+    module L3
+    class ModelGroupActivity < Grape::API
 
       version 'v2', using: :path
       prefix :api
       format :json
 
-      # before { require_login! }
+      before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :opencheck do
-        desc 'Query opencheck data', { tags: ['L3 Evaluate model data'] }
+      resource :group_activity do
+        desc 'Query group_activity data', { tags: ['L3 Evaluate model data'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer = OpencheckMetric
+          indexer = ActivityGroupMetric
           repo_urls = [label]
 
           resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
@@ -31,6 +32,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end

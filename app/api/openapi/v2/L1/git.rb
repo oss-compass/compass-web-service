@@ -2,7 +2,8 @@
 
 module Openapi
   module V2
-    class Contributors < Grape::API
+    module L1
+      class Git < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -10,14 +11,15 @@ module Openapi
 
       before { require_login! }
       helpers Openapi::SharedParams::Search
-
-      resource :contributors do
-        desc 'Query contributors data', { tags: ['L1 Metadata'] }
+      # github-git_enriched
+      # gitee-git_enriched
+      resource :git do
+        desc 'Query Git data', { tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
 
           resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 
@@ -31,6 +33,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end
