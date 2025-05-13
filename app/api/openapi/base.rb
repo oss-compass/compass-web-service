@@ -6,12 +6,12 @@ module Openapi
   class Base < Grape::API
     helpers Openapi::V1::Helpers
 
-    # mount Openapi::V1::Pull
-    # mount Openapi::V1::Issue
-    # mount Openapi::V1::Subject
-    # mount Openapi::V1::Contributor
-    # mount Openapi::V1::MetricModel
-    # mount Openapi::V1::AnalysisTask
+    mount Openapi::V1::Pull
+    mount Openapi::V1::Issue
+    mount Openapi::V1::Subject
+    mount Openapi::V1::Contributor
+    mount Openapi::V1::MetricModel
+    mount Openapi::V1::AnalysisTask
 
     # add_swagger_documentation \
     #   doc_version: '0.0.2',

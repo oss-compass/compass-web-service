@@ -8,7 +8,7 @@ module Openapi
       prefix :api
 
       resource :subject do
-        desc 'Search for belongs_to where specific subject are included'
+        desc 'Search for belongs_to where specific subject are included',hidden: true
         params do
           requires :label, type: String, desc: 'repo/community label (repo url)'
           optional :level, type: String, desc: 'level (repo/community), default: repo'
@@ -25,7 +25,7 @@ module Openapi
             .map(&:to_project_row)
         end
 
-        desc 'Get specifical subject information'
+        desc 'Get specifical subject information',hidden: true
         params do
           requires :label, type: String, desc: 'repo/community label (repo url)'
           optional :level, type: String, desc: 'level (repo/community), default: repo'
