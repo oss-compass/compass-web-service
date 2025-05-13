@@ -1,9 +1,10 @@
 # frozen_string_literal: true
-# github-stargazer_enriched 
-# gitee-stargazer_enriched
+# github-releases_enriched
+# gitee-releases_enriched 
 module Openapi
   module V2
-    class Stargazer < Grape::API
+    module L1
+      class Releases < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -13,13 +14,13 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
 
-      resource :stargazer do
+      resource :releases do
         desc 'Query Stargazer data', { tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeStargazerEnrich, GithubStargazerEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeReleasesEnrich, GithubReleasesEnrich)
 
           resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 
@@ -33,6 +34,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end

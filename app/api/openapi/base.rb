@@ -24,27 +24,29 @@ module Openapi
     # },
     # array_use_braces: true
 
-
-    mount Openapi::V2::Pull
-    mount Openapi::V2::Issue
-    mount Openapi::V2::Event
-    mount Openapi::V2::Contributors
-    mount Openapi::V2::ModelCodequality
-    mount Openapi::V2::ModelCommunity
-    mount Openapi::V2::ModelActivity
-    mount Openapi::V2::ModelGroupActivity
-    mount Openapi::V2::ModelDomainPersona
-    mount Openapi::V2::ModelRolePersona
-    mount Openapi::V2::ModelMilestonePersona
-    mount Openapi::V2::Fork
-    mount Openapi::V2::Git
-    mount Openapi::V2::Stargazer
-    mount Openapi::V2::Watch
-    mount Openapi::V2::Repo
-    mount Openapi::V2::Releases
-    mount Openapi::V2::CustomMetric
-    mount Openapi::V2::ModelOpencheck
-    mount Openapi::V2::FinanceStandard
+    # L1
+    mount Openapi::V2::L1::Pull
+    mount Openapi::V2::L1::Issue
+    mount Openapi::V2::L1::Event
+    mount Openapi::V2::L1::Contributors
+    mount Openapi::V2::L1::Fork
+    mount Openapi::V2::L1::Git
+    mount Openapi::V2::L1::Stargazer
+    mount Openapi::V2::L1::Watch
+    mount Openapi::V2::L1::Repo
+    mount Openapi::V2::L1::Releases
+    # L2
+    mount Openapi::V2::L2::CustomMetric
+    mount Openapi::V2::L2::ContributorProfile
+    # L3
+    mount Openapi::V2::L3::ModelCodequality
+    mount Openapi::V2::L3::ModelCommunity
+    mount Openapi::V2::L3::ModelActivity
+    mount Openapi::V2::L3::ModelGroupActivity
+    mount Openapi::V2::L3::ModelDomainPersona
+    mount Openapi::V2::L3::ModelRolePersona
+    mount Openapi::V2::L3::ModelMilestonePersona
+    mount Openapi::V2::L3::ModelOpencheck
 
 
 

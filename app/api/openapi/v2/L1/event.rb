@@ -2,7 +2,8 @@
 
 module Openapi
   module V2
-    class Issue < Grape::API
+    module L1
+      class Event < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -11,13 +12,13 @@ module Openapi
       before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :issue do
-        desc 'Query Issue data / 搜索接口', { tags: ['L1 Metadata'] }
+      resource :event do
+        desc 'Query Event data',{ tags: ['L1 Metadata'] }
         params { use :search }
         post :search do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeEventEnrich, GithubEventEnrich)
 
           resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 
@@ -31,6 +32,7 @@ module Openapi
         end
 
       end
+    end
     end
   end
 end
