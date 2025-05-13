@@ -41,15 +41,15 @@ module Mutations
         end
       end
 
-      # result =
-      #   PullServer.new(
-      #     {
-      #       level: 'repo',
-      #       project_urls: repo_urls,
-      #       extra: { username: username, origin: origin }
-      #     }
-      #   ).execute
-      # OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
+      result =
+        PullServer.new(
+          {
+            level: 'repo',
+            project_urls: repo_urls,
+            extra: { username: username, origin: origin }
+          }
+        ).execute
+      OpenStruct.new(result.reverse_merge({ pr_url: nil, message: '', status: true, report_url: nil }))
     end
   end
 end
