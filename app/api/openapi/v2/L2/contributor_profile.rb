@@ -9,7 +9,7 @@ module Openapi
       prefix :api
       format :json
 
-      # before { require_login! }
+      before { require_login! }
       MAX_PER = 10000
       resource :contributor_profile do
 
