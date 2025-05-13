@@ -8,7 +8,7 @@ module Openapi
       prefix :api
 
       resource :metric_model do
-        desc 'Metric models overview'
+        desc 'Metric models overview',hidden: true
         params do
           requires :label, type: String, desc: 'repo or community label'
           optional :level, type: String, desc: 'level (repo/community), default: repo'

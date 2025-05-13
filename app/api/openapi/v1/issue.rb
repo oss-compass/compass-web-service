@@ -12,7 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Export
 
       resource :issue do
-        desc 'Issues'
+        desc 'Issues',hidden: true
         params { use :export }
         post :export do
           label, level, filter_opts, sort_opts, begin_date, end_date, interval =
@@ -41,7 +41,7 @@ module Openapi
           )
         end
 
-        desc "Return a export state."
+        desc "Return a export state.",hidden: true
         params do
           requires :uuid, type: String, desc: "task id.", allow_blank: false
         end
