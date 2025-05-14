@@ -14,10 +14,10 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
 
-      resource :stargazer do
-        desc 'Query Stargazer data', { tags: ['L1 Metadata'] }
+      resource :metadata do
+        desc '获取项目stargazer元数据', { tags: ['L1 Metadata'] }
         params { use :search }
-        post :search do
+        post :stargazers do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeStargazerEnrich, GithubStargazerEnrich)

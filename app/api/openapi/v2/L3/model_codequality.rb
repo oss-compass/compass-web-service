@@ -12,10 +12,10 @@ module Openapi
       before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :codequality do
-        desc 'Query Pull data', { tags: ['L3 Evaluate model data'] }
+      resource :metricModel do
+        desc '获取项目协作开发指数', { tags: ['L3 Evaluate model data'] }
         params { use :search }
-        post :search do
+        post :collaborationDevelopmentIndex do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer = CodequalityMetric

@@ -9,13 +9,13 @@ module Openapi
       prefix :api
       format :json
 
-      # before { require_login! }
+      before { require_login! }
       helpers Openapi::SharedParams::Search
 
       resource :opencheck do
-        desc 'Query opencheck data', { tags: ['L3 Evaluate model data'] }
+        desc '获取项目opencheck检查数据', { tags: ['L3 Evaluate model data'] }
         params { use :search }
-        post :search do
+        post :opencheck do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer = OpencheckMetric
