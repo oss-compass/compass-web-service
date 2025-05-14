@@ -3,7 +3,7 @@
 module Openapi
   module V2
     module L2
-      class ContributorProfile < Grape::API
+      class ContributorPortrait < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -11,13 +11,15 @@ module Openapi
 
       before { require_login! }
       MAX_PER = 10000
-      resource :contributor_profile do
+      resource :contributor_portrait do
 
-        desc 'Query the contribution association between contributors and repositories', { tags: ['L2 Portrait/Metric data'] }
+        desc '开发者与仓库贡献关系',
+             detail: 'repo_collaboration / 开发者与仓库贡献关系',
+             tags: ['L2 Portrait/Metric data', 'Contributor Portrait']
         params {
-          requires :contributor, type: String, desc: 'github or gitee platform user account name', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: 'begin date / 开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: 'end date / 结束日期', documentation: { param_type: 'body' }
+          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
+          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
+          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
         }
         post :repo_collaboration do
           indexer = GithubEventContributorRepoEnrich
@@ -64,11 +66,13 @@ module Openapi
         end
 
 
-        desc 'Query the contribution association between contributors and contributors', { tags: ['L2 Portrait/Metric data'] }
+        desc '开发者协作关系',
+             detail: 'contributor_collaboration / 开发者协作关系',
+             tags: ['L2 Portrait/Metric data', 'Contributor Portrait']
         params {
-          requires :contributor, type: String, desc: 'github or gitee platform user account name', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: 'begin date / 开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: 'end date / 结束日期', documentation: { param_type: 'body' }
+          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
+          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
+          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
         }
         post :contributor_collaboration do
           indexer = GithubEventContributorContributorEnrich

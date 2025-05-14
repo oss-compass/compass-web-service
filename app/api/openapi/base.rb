@@ -36,8 +36,9 @@ module Openapi
     mount Openapi::V2::L1::Repo
     mount Openapi::V2::L1::Releases
     # L2
-    mount Openapi::V2::L2::CustomMetric
-    mount Openapi::V2::L2::ContributorProfile
+    mount Openapi::V2::L2::ContributorPortrait
+    mount Openapi::V2::L2::CommunityPortrait
+    mount Openapi::V2::L2::SoftwareArtifactPortrait
     # L3
     mount Openapi::V2::L3::ModelCodequality
     mount Openapi::V2::L3::ModelCommunity
@@ -59,6 +60,14 @@ module Openapi
         description: 'The API is still in frequent development stage, the interface parameters are not stabilized, please use with caution!',
         contact_url: ENV.fetch('DEFAULT_HOST')
       },
+      tags: [
+        { name: 'L1 Metadata', description: 'Operations about L1 Metadata',
+          second_names: [] },
+        { name: 'L2 Portrait/Metric data', description: 'Operations about L2 Portrait/Metric data',
+          second_names: ['Contributor Portrait', 'Community Portrait', 'Software Artifact Portrait'] },
+        { name: 'L3 Evaluate model data', description: 'Operations about L3 Evaluate model data',
+          second_names: [] }
+      ],
       array_use_braces: true
   end
 end

@@ -6,19 +6,6 @@ module Openapi
 
       params :custom_metric_search do
         requires :label, type: String, desc: 'repo or community label / 仓库或社区标签', documentation: { param_type: 'body',example: 'https://github.com/oss-compass/compass-web-service' }
-        optional :level, type: String, desc: 'level (repo/community), default: repo / 层级', documentation: { param_type: 'body',example: 'repo' }
-
-
-        optional :filter_opts, type: Array, desc: 'filter options / 筛选条件', documentation: { param_type: 'body' } do
-          requires :type, type: String, desc: 'filter option type / 筛选类型'
-          requires :values, type: String, desc: 'filter option values / 筛选值'
-        end
-
-        optional :sort_opts, type: Array, desc: 'sort options / 排序条件', documentation: { param_type: 'body' ,example: [{ type: 'grimoire_creation_date', direction:  "desc" }]} do
-          optional :type, type: String, desc: 'sort type / 排序类型'
-          optional :direction, type: String, desc: 'sort direction (asc/desc) / 排序方向'
-        end
-
         optional :begin_date, type: DateTime, desc: 'begin date / 开始日期', documentation: { param_type: 'body' }
         optional :end_date, type: DateTime, desc: 'end date / 结束日期', documentation: { param_type: 'body' }
         optional :page, type: Integer, default: 1, desc: 'page number / 页码', documentation: { param_type: 'body' }
@@ -28,8 +15,6 @@ module Openapi
       def extract_search_params!(params)
         label = params[:label]
         level = params[:level] || 'repo'
-        filter_opts = params[:filter_opts]&.map { |opt| OpenStruct.new(opt) } || []
-        sort_opts = params[:sort_opts]&.map { |opt| OpenStruct.new(opt) } || []
         begin_date = params[:begin_date]
         end_date = params[:end_date]
         page = params[:page]
@@ -39,7 +24,7 @@ module Openapi
         begin_date, end_date = extract_search_date(begin_date, end_date)
         # validate_date!(label, level, begin_date, end_date)
 
-        [label, level, filter_opts, sort_opts, begin_date, end_date, page, size]
+        [label, level, begin_date, end_date, page, size]
       end
 
       def extract_search_date(begin_date, end_date)
@@ -49,6 +34,22 @@ module Openapi
         [begin_date, end_date]
       end
 
+      def fetch_metric_data(metric_name: nil, version_number: nil)
+        filter_opts = [OpenStruct.new({ type: "metric_name", values: [metric_name] })]
+        filter_opts << OpenStruct.new({ type: "version_number", values: [version_number] }) if version_number
+        label, level, begin_date, end_date, page, size = extract_search_params!(params)
+
+        indexer = CustomV2Metric
+        repo_urls = [label]
+
+        resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:)
+        count = indexer.count_by_metric_repo_urls(repo_urls, begin_date, end_date, filter_opts:)
+
+        hits = resp&.[]('hits')&.[]('hits') || []
+        items = hits.map { |data| data['_source'].symbolize_keys }
+
+        { count:, total_page: (count.to_f / size).ceil, page:, items: }
+      end
     end
   end
 end
