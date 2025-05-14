@@ -48,8 +48,7 @@ module Openapi
     mount Openapi::V2::L3::ModelRolePersona
     mount Openapi::V2::L3::ModelMilestonePersona
     mount Openapi::V2::L3::ModelOpencheck
-
-
+    mount Openapi::V2::FinanceStandard
 
     add_swagger_documentation \
       doc_version: '2.0.0',
@@ -66,7 +65,11 @@ module Openapi
         { name: 'L2 Portrait/Metric data', description: 'Operations about L2 Portrait/Metric data',
           second_names: ['Contributor Portrait', 'Community Portrait', 'Software Artifact Portrait'] },
         { name: 'L3 Evaluate model data', description: 'Operations about L3 Evaluate model data',
-          second_names: [] }
+          second_names: [] },
+        {
+          name: 'Finance Standard Metric', description: 'Operations about Finance Standard Metric',
+          second_names: []
+        }
       ],
       array_use_braces: true
   end

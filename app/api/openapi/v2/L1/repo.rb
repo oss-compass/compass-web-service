@@ -14,10 +14,10 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
 
-      resource :repo do
-        desc 'Query Repo data', { tags: ['L1 Metadata'] }
+      resource :metadata do
+        desc '获取项目repo元数据', { tags: ['L1 Metadata'] }
         params { use :search }
-        post :search do
+        post :repos do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepoEnrich, GithubRepoEnrich)

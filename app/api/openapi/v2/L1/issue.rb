@@ -12,10 +12,10 @@ module Openapi
       before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :issue do
-        desc 'Query Issue data / 搜索接口', { tags: ['L1 Metadata'] }
+      resource :metadata do
+        desc '获取项目issue元数据', { tags: ['L1 Metadata'] }
         params { use :search }
-        post :search do
+        post :issues do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)

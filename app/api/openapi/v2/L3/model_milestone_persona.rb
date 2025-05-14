@@ -12,10 +12,10 @@ module Openapi
       before { require_login! }
       helpers Openapi::SharedParams::Search
 
-      resource :milestone_persona do
-        desc 'Query milestone_persona data', { tags: ['L3 Evaluate model data'] }
+      resource :metricModel do
+        desc '获取贡献者里程画像', { tags: ['L3 Evaluate model data'] }
         params { use :search }
-        post :search do
+        post :contributorMilestonePersona do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer = MilestonePersonaMetric

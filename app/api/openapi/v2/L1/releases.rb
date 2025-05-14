@@ -14,17 +14,17 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
 
-      resource :releases do
-        desc 'Query Stargazer data', { tags: ['L1 Metadata'] }
+      resource :metadata do
+        desc '获取项目release元数据', { tags: ['L1 Metadata'] }
         params { use :search }
-        post :search do
+        post :releases do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeReleasesEnrich, GithubReleasesEnrich)
 
-          resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
+          resp = indexer.terms_by_repo_urls_query(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 
-          count = indexer.count_by_repo_urls(repo_urls, begin_date, end_date, filter_opts:)
+          count = indexer.count_by_repo_urls_query(repo_urls, begin_date, end_date, filter_opts:)
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data["_source"]}
