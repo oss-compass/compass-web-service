@@ -10,7 +10,7 @@ module Openapi
       format :json
 
       before { require_login! }
-      helpers Openapi::SharedParams::Param
+      helpers Openapi::SharedParams::Search
 
       resource :metadata do
         desc '获取项目pull requests元数据', { tags: ['L1 Metadata'] }
