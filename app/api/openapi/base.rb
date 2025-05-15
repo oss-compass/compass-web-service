@@ -60,11 +60,11 @@ module Openapi
         contact_url: ENV.fetch('DEFAULT_HOST')
       },
       tags: [
-        { name: 'L1 Metadata', description: 'Operations about L1 Metadata',
+        { name: 'Metadata', description: 'Operations about Metadata',
           second_names: [] },
-        { name: 'L2 Metrics Data', description: 'Operations about L2 Metrics Data',
+        { name: 'Metrics Data', description: 'Operations about Metrics Data',
           second_names: ['Contributor Portrait', 'Community Portrait', 'Software Artifact Portrait'] },
-        { name: 'L3 Metrics Model Data', description: 'Operations about L3 Metrics Model Data',
+        { name: 'Metrics Model Data', description: 'Operations about Metrics Model Data',
           second_names: [] },
         {
           name: 'Finance Standard Metric', description: 'Operations about Finance Standard Metric',

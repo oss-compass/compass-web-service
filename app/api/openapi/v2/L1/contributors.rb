@@ -13,7 +13,7 @@ module Openapi
         helpers Openapi::SharedParams::Search
 
         resource :metadata do
-          desc '获取项目贡献者元数据', { tags: ['L1 Metadata'] }
+          desc '获取项目贡献者元数据', { tags: ['Metadata'] }
           params { use :search_grimoire }
           post :contributors do
             label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
