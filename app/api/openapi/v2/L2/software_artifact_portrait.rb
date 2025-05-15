@@ -14,7 +14,7 @@ module Openapi
         resource :software_artifact_portrait do
           desc '文档数量: 评估项目文档的数量',
                detail: 'doc_number / 文档数量',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -25,7 +25,7 @@ module Openapi
 
           desc '文档质量: 评估说明文档的数量、质量等支持情况',
                detail: 'doc_quarty / 文档质量',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -36,7 +36,7 @@ module Openapi
 
           desc '漏洞响应时间: 过去五个版本的漏洞平均响应时间',
                detail: 'vul_detect_time / 漏洞响应时间',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -47,7 +47,7 @@ module Openapi
 
           desc '安全漏洞数',
                detail: 'security_vul_stat / 安全漏洞数',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -58,7 +58,7 @@ module Openapi
 
           desc '代码扫描记录: 核查是否有代码扫描记录',
                detail: 'security_scanned / 代码扫描记录',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -69,7 +69,7 @@ module Openapi
 
           desc '中文文档支持度: 评估是否有中文支持。',
                detail: 'zh_files_number / 中文文档支持度',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -80,7 +80,7 @@ module Openapi
 
           desc '安全漏洞等级: 评估开源软件的安全漏洞等级。',
                detail: 'vul_levels / 安全漏洞等级',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -91,7 +91,7 @@ module Openapi
 
           desc '漏洞反馈信息: 是否含有漏洞的反馈方式，以及反馈方式路径。',
                detail: 'vulnerability_feedback_channels / 漏洞反馈信息',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -102,7 +102,7 @@ module Openapi
 
           desc '代码可读性: 评估代码可读性（模块划分/代码注释等）。',
                detail: 'code_readability / 代码可读性',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -113,7 +113,7 @@ module Openapi
 
           desc '安全漏洞修复情况: 核查已暴露的安全漏洞是否已修复。',
                detail: 'security_vul_fixed / 安全漏洞修复情况',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -124,7 +124,7 @@ module Openapi
 
           desc '开源许可证兼容性: 评估开源项目的开源许可证之间是否兼容。',
                detail: 'license_conflicts_exist / 开源许可证兼容性',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search
@@ -135,7 +135,7 @@ module Openapi
 
           desc '依赖兼容性: 开源软件和依赖软件是否兼容。',
                detail: 'license_dep_conflicts_exist / 依赖兼容性',
-               tags: ['L2 Portrait/Metric data', 'Software Artifact Portrait']
+               tags: ['L2 Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
             use :custom_metric_search

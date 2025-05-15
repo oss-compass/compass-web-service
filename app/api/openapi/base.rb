@@ -62,9 +62,9 @@ module Openapi
       tags: [
         { name: 'L1 Metadata', description: 'Operations about L1 Metadata',
           second_names: [] },
-        { name: 'L2 Portrait/Metric data', description: 'Operations about L2 Portrait/Metric data',
+        { name: 'L2 Metrics Data', description: 'Operations about L2 Metrics Data',
           second_names: ['Contributor Portrait', 'Community Portrait', 'Software Artifact Portrait'] },
-        { name: 'L3 Evaluate model data', description: 'Operations about L3 Evaluate model data',
+        { name: 'L3 Metrics Model Data', description: 'Operations about L3 Metrics Model Data',
           second_names: [] },
         {
           name: 'Finance Standard Metric', description: 'Operations about Finance Standard Metric',

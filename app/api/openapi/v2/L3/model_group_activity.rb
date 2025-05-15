@@ -13,7 +13,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :metricModel do
-        desc '获取项目组织活跃度', { tags: ['L3 Evaluate model data'] }
+        desc '获取项目组织活跃度', { tags: ['L3 Metrics Model Data'] }
         params { use :search }
         post :organizationsActivity do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
