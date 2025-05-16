@@ -12,11 +12,12 @@ module Openapi
         before { require_login! }
         helpers Openapi::SharedParams::Search
 
-        resource :metadata do
-          desc '获取项目pull requests元数据', tags: ['Metadata'], success: {
+ 
+      resource :metadata do
+         desc '获取项目pull requests元数据', tags: ['Metadata'], success: {
             code: 201, model: Openapi::Entities::PullResponse
           }
-
+          
           params { use :search }
           post :pullRequests do
             label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
