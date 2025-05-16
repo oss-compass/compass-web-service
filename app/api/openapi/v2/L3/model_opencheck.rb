@@ -13,7 +13,11 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :opencheck do
-        desc '获取项目opencheck检查数据', { tags: ['Metrics Model Data'] }
+ 
+        desc '获取项目opencheck检查数据', tags: ['Metric model data'] , success: {
+          code: 201, model: Openapi::Entities::OpencheckResponse
+        }
+ 
         params { use :search }
         post :opencheck do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

@@ -13,7 +13,11 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :metricModel do
-        desc '获取贡献者里程画像', { tags: ['Metrics Model Data'] }
+ 
+        desc '获取项目贡献者里程画像', tags: ['Metric model data'] , success: {
+          code: 201, model: Openapi::Entities::ContributorMilestonePersonaResponse
+        }
+ 
         params { use :search }
         post :contributorMilestonePersona do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
