@@ -38,6 +38,8 @@ gem 'sneakers'
 gem 'grape'
 gem 'grape-swagger'
 gem 'grape-swagger-rails'
+gem 'grape-swagger-entity', '~> 0.3'
+gem 'grape-swagger-representable', '~> 0.2'
 
 # Use Kafka (only for Content Review)
 gem 'connection_pool'

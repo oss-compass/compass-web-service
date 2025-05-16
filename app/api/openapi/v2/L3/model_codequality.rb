@@ -13,7 +13,9 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :metricModel do
-        desc '获取项目协作开发指数', { tags: ['L3 Evaluate model data'] }
+        desc '获取项目协作开发指数', tags: ['Metric model data'] , success: {
+          code: 201, model: Openapi::Entities::CollaborationDevelopmentIndexResponse
+        }
         params { use :search }
         post :collaborationDevelopmentIndex do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

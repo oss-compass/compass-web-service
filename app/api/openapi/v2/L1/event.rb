@@ -13,7 +13,9 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :metadata do
-        desc '获取项目event元数据', { tags: ['L1 Metadata'] }
+        desc '获取项目event元数据',  tags: ['Metadata'] , success: {
+          code: 201, model: Openapi::Entities::EventResponse
+        }
         params { use :search }
         post :events do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

@@ -13,7 +13,9 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       resource :metricModel do
-        desc '获取项目贡献者角色画像', { tags: ['L3 Evaluate model data'] }
+        desc '获取项目贡献者角色画像',tags: ['Metric model data'] , success: {
+          code: 201, model: Openapi::Entities::ContributorRolePersonaResponse
+        }
         params { use :search }
         post :contributorRolePersona do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
@@ -36,3 +38,4 @@ module Openapi
     end
   end
 end
+

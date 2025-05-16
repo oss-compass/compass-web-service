@@ -14,7 +14,9 @@ module Openapi
       # github-fork_enriched
       # gitee-fork_enriched
       resource :metadata do
-        desc '获取项目fork元数据', { tags: ['L1 Metadata'] }
+        desc '获取项目fork元数据', tags: ['Metadata'] , success: {
+          code: 201, model: Openapi::Entities::ForkResponse
+        }
         params { use :search }
         post :forks do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
