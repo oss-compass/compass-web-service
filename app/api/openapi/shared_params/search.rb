@@ -19,6 +19,7 @@ module Openapi
       end
 
       params :search_grimoire do
+        requires :access_token, type: String,  desc: 'access token', documentation: { param_type: 'body' }
         requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         optional :level, type: String, desc: '层级 repo或community', default: 'repo', documentation: { param_type: 'body', example: 'repo' }
 
