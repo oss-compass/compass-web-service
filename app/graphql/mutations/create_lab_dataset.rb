@@ -89,22 +89,25 @@ module Mutations
         end
       end
 
-      # update or create
-      report = LabModelReport.find_by(lab_model_id: model_id, lab_model_version_id: version_id)
-      if report.present?
-        # update dataset
-        exist_dataset = LabDataset.find_by(id: report.lab_dataset_id)
-        projects = get_new_dataset(exist_dataset.content, datasets)
 
-        update_dataset = merge_dataset(exist_dataset.content, datasets)
-        exist_dataset.update!(content: update_dataset)
-        report.update!(is_public: is_public)
-      else
-        report = LabModelReport.create!(lab_model_id: model.id, lab_model_version_id: version.id, user_id: current_user.id)
-        dataset = LabDataset.create_report_and_validate!(version, datasets, report)
-        version.update!({ lab_dataset_id: dataset.id })
-        report.update!({ lab_dataset_id: dataset.id })
-        projects = get_new_dataset(nil, datasets)
+      if ::Pundit.policy(current_user, model).execute?
+        # update or create
+        report = LabModelReport.find_by(lab_model_id: model_id, lab_model_version_id: version_id)
+        if report.present?
+          # update dataset
+          exist_dataset = LabDataset.find_by(id: report.lab_dataset_id)
+          projects = get_new_dataset(exist_dataset.content, datasets)
+
+          update_dataset = merge_dataset(exist_dataset.content, datasets)
+          exist_dataset.update!(content: update_dataset)
+          report.update!(is_public: is_public)
+        else
+          report = LabModelReport.create!(lab_model_id: model.id, lab_model_version_id: version.id, user_id: current_user.id)
+          dataset = LabDataset.create_report_and_validate!(version, datasets, report)
+          version.update!({ lab_dataset_id: dataset.id })
+          report.update!({ lab_dataset_id: dataset.id })
+          projects = get_new_dataset(nil, datasets)
+        end
       end
 
       projects.each do |project|

@@ -87,6 +87,10 @@ module Types
     field :update_tpc_software_graduation, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduation, description: 'Update a tpc software graduation'
     field :accept_tpc_software_graduation, mutation: Mutations::Tpc::AcceptTpcSoftwareGraduation, description: 'Accept a tpc software graduation'
 
+
+    field :create_auth_token, mutation: Mutations::CreateAuthToken, description: 'Create auth token'
+    field :delete_auth_token, mutation: Mutations::DeleteAuthToken, description: 'Delete auth token'
+
     # User Cancellation
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?

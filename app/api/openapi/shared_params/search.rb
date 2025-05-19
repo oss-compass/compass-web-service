@@ -5,6 +5,7 @@ module Openapi
       extend Grape::API::Helpers
 
       params :search do
+        requires :access_token, type: String,  desc: 'access token', documentation: { param_type: 'body' }
         requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         optional :level, type: String, desc: '层级 repo或community', default: 'repo', documentation: { param_type: 'body', example: 'repo' }
 
@@ -14,6 +15,7 @@ module Openapi
         optional :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
         optional :page, type: Integer, default: 1, desc: '页码', documentation: { param_type: 'body' }
         optional :size, type: Integer, default: 20, desc: '每页条数', documentation: { param_type: 'body' }
+
       end
 
       params :search_grimoire do

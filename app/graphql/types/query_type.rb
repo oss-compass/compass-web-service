@@ -148,5 +148,8 @@ module Types
     field :tpc_software_my_review_overview, resolver: Queries::Tpc::TpcSoftwareMyReviewOverviewQuery
     field :tpc_software_my_review_page, resolver: Queries::Tpc::TpcSoftwareMyReviewPageQuery
 
+
+    field :token_list, resolver: Queries::TokenQuery
+
   end
 end
