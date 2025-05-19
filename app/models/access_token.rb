@@ -14,6 +14,8 @@
 
 class AccessToken < ApplicationRecord
   belongs_to :user
+  validates :token, presence: true, uniqueness: true
+  validates :user_id, presence: true
   before_create :generate_token
 
   scope :active, -> { where("expires_at IS NULL OR expires_at > ?", Time.current) }
