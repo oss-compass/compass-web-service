@@ -33,8 +33,6 @@ module Openapi
 
       def verify_token_remotely!(token)
 
-        # Rails.logger.info(ex)
-
         verify_url = ENV.fetch('REMOTE_VERIFY_URL')
         retries = 3
         wait_time = 1
@@ -59,7 +57,7 @@ module Openapi
             sleep(wait_time)
             retry
           else
-            error!("远程 token 校验失败: #{e.message}", 503)
+            error!("token 校验失败: #{e.message}", 503)
           end
         end
       end
