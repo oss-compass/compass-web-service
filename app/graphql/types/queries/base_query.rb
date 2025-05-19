@@ -209,7 +209,7 @@ module Types
 
       def build_report_data(label, model, version, resp, level)
         hits = resp&.fetch('hits', {})&.fetch('hits', [])
-        metric_with_fields = version.metrics.reduce({}) do |acc, metric|
+        metric_with_fields = version.metrics.select { |metric| metric.metric_type != 1 }.reduce({}) do |acc, metric|
           acc.merge(metric => metric.extra_fields)
         end
         fields_key = metric_with_fields.values.flatten
