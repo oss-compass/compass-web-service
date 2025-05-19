@@ -47,6 +47,7 @@ class User < ApplicationRecord
   has_many :lab_model_invitations
   has_many :tpc_software_selection_report
   has_many :tpc_software_selections
+  has_many :access_tokens
 
   validate :check_email_change_limit
   validates :encrypted_password, presence: true
