@@ -49,6 +49,7 @@ module Openapi
     mount Openapi::V2::L3::ModelMilestonePersona
     mount Openapi::V2::L3::ModelOpencheck
     mount Openapi::V2::FinanceStandard
+    mount Openapi::V2::Auth
 
     add_swagger_documentation \
       doc_version: '2.0.0',
@@ -67,7 +68,7 @@ module Openapi
         { name: 'Metrics Model Data', description: 'Operations about Metrics Model Data',
           second_names: [] },
         {
-          name: 'Finance Standard Metric', description: 'Operations about Finance Standard Metric',
+          name: '场景调用', description: 'Operations about Finance Standard Metric',
           second_names: []
         }
       ],

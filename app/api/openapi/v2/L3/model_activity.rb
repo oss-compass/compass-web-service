@@ -9,8 +9,10 @@ module Openapi
       prefix :api
       format :json
 
-      before { require_login! }
       helpers Openapi::SharedParams::Search
+      helpers Openapi::SharedParams::AuthHelpers
+
+      before { require_token! }
       resource :metricModel do
  
         desc '获取项目活跃度', tags: ['Metrics Model Data'] , success: {

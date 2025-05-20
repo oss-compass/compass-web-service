@@ -9,10 +9,10 @@ module Openapi
       prefix :api
       format :json
 
-      before { require_login! }
       helpers Openapi::SharedParams::Search
-      # github-fork_enriched
-      # gitee-fork_enriched
+      helpers Openapi::SharedParams::AuthHelpers
+
+      before { require_token! }
       resource :metadata do
  
         desc '获取项目fork元数据', tags: ['Metadata'] , success: {

@@ -21,7 +21,7 @@ module Openapi
 
       resource :financeStandardProjectVersion do
         # desc 'trigger FinanceStandard Project'
-        desc '触发执行金融指标', { tags: ['Finance Standard Metric'] }
+        desc '触发执行金融指标', { tags: ['场景调用'] }
         params do
           requires :datasets, type: Array, desc: '数据集列表', documentation: { param_type: 'body', example: [{ label: 'https://github.com/rabbitmq/rabbitmq-server', versionNumber: 'v4.0.7' }] } do
             requires :label, type: String, desc: '仓库地址', documentation: { example: 'https://github.com/rabbitmq/rabbitmq-server' }
@@ -43,7 +43,7 @@ module Openapi
         end
 
         # desc 'query trigger status for a given project'
-        desc '获取给定项目的金融指标执行状态', { tags: ['Finance Standard Metric'] }
+        desc '获取给定项目的金融指标执行状态', { tags: ['场景调用'] }
         params do
           requires :label, type: String, desc: '项目地址', documentation: { param_type: 'query', example: 'https://github.com/rabbitmq/rabbitmq-server' }
           optional :versionNumber, type: String, desc: '版本号', documentation: { param_type: 'query', example: 'v4.0.7' }

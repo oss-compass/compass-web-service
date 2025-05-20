@@ -14,7 +14,7 @@ module Openapi
       end
 
       resource :analysis_task do
-        desc 'Create analysis task by label and level', hidden: Rails.env.production?
+        desc 'Create analysis task by label and level', hidden: true
         params do
           requires :label, type: String, desc: 'repo label (repo url)', documentation: { param_type: 'body' }
           optional :level, type: String, desc: 'level (repo/community), default: repo',  documentation: { param_type: 'body' }
