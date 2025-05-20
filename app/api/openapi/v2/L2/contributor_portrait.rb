@@ -15,7 +15,10 @@ module Openapi
 
         desc '开发者与仓库贡献关系',
              detail: '开发者与仓库贡献关系',
-             tags: ['Metrics Data', 'Contributor Portrait']
+             tags: ['Metrics Data', 'Contributor Portrait'],
+             success: {
+               code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
+             }
         params {
           requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
           requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
@@ -68,7 +71,10 @@ module Openapi
 
         desc '开发者协作关系',
              detail: '开发者协作关系',
-             tags: ['Metrics Data', 'Contributor Portrait']
+             tags: ['Metrics Data', 'Contributor Portrait'],
+             success: {
+               code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
+             }
         params {
           requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
           requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
