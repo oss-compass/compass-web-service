@@ -8,8 +8,10 @@ module Openapi
         prefix :api
         format :json
 
-        before { require_login! }
         helpers Openapi::SharedParams::CustomMetricSearch
+        helpers Openapi::SharedParams::AuthHelpers
+
+        before { require_token! }
 
         resource :software_artifact_portrait do
           desc '评估项目文档的数量',

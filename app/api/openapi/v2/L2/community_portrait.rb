@@ -8,8 +8,11 @@ module Openapi
         prefix :api
         format :json
 
-        before { require_login! }
+
         helpers Openapi::SharedParams::CustomMetricSearch
+        helpers Openapi::SharedParams::AuthHelpers
+
+        before { require_token! }
 
         resource :community_portrait do
 

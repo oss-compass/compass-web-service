@@ -9,7 +9,9 @@ module Openapi
       prefix :api
       format :json
 
-      before { require_login! }
+      helpers Openapi::SharedParams::AuthHelpers
+
+      before { require_token! }
       MAX_PER = 10000
       resource :contributor_portrait do
 
