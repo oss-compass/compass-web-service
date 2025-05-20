@@ -13,7 +13,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
       resource :metricModel do
  
-        desc '获取项目活跃度', tags: ['Metric model data'] , success: {
+        desc '获取项目活跃度', tags: ['Metrics Model Data'] , success: {
           code: 201, model: Openapi::Entities::ActivityResponse
         }
  

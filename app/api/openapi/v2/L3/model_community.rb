@@ -14,7 +14,7 @@ module Openapi
 
       resource :metricModel do
  
-        desc '获取项目社区服务与支撑',tags: ['Metric model data'] , success: {
+        desc '获取项目社区服务与支撑',tags: ['Metrics Model Data'] , success: {
           code: 201, model: Openapi::Entities::CommunityServiceAndSupportResponse
         }
  
