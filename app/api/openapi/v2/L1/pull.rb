@@ -13,6 +13,12 @@ module Openapi
         helpers Openapi::SharedParams::AuthHelpers
 
         before { require_token! }
+
+        before do
+          token = params[:access_token]
+          Openapi::SharedParams::RateLimiter.check_token!(token)
+        end
+
         resource :metadata do
           desc '获取项目pull requests元数据', tags: ['Metadata'], success: {
             code: 201, model: Openapi::Entities::PullResponse
