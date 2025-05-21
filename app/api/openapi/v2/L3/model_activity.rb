@@ -11,6 +11,20 @@ module Openapi
 
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
+
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
+
+
 
       before { require_token! }
       before do
