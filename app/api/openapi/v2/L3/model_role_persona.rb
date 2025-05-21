@@ -13,6 +13,10 @@ module Openapi
       helpers Openapi::SharedParams::AuthHelpers
 
       before { require_token! }
+      before do
+        token = params[:access_token]
+        Openapi::SharedParams::RateLimiter.check_token!(token)
+      end
 
       resource :metricModel do
  
