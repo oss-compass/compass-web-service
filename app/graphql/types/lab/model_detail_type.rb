@@ -17,6 +17,7 @@ module Types
       field :created_at, GraphQL::Types::ISO8601DateTime
 
       field :parent_lab_model, ModelDetailType
+      field :model_type, Integer
 
       def name
         object.name_after_reviewed

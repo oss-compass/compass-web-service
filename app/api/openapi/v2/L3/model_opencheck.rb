@@ -31,11 +31,10 @@ module Openapi
       end
 
       resource :opencheck do
- 
-        desc '获取项目opencheck检查数据', tags: ['Metrics Model Data'] , success: {
+        desc '获取项目opencheck检查数据', detail: '获取项目贡献者元数据', tags: ['Metrics Model Data'], success: {
           code: 201, model: Openapi::Entities::OpencheckResponse
         }
- 
+
         params { use :search }
         post :opencheck do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
