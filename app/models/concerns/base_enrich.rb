@@ -12,7 +12,7 @@ module BaseEnrich
       base =
         self
           .must(terms: { target => repo_urls })
-          .range(filter, gte: begin_date, lte: end_date)
+          .range(filter, gte: begin_date, lt: end_date)
 
       if filter_opts.present?
         filter_opts.each do |filter_opt|
@@ -54,7 +54,7 @@ module BaseEnrich
       base =
         self
           .must(terms: { target => repo_urls })
-          .range(filter, gte: begin_date, lte: end_date)
+          .range(filter, gte: begin_date, lt: end_date)
       if filter_opts.present?
         filter_opts.each do |filter_opt|
           base = base.where(filter_opt.type => filter_opt.values)
