@@ -10,14 +10,30 @@ module Openapi
 
         helpers Openapi::SharedParams::CustomMetricSearch
         helpers Openapi::SharedParams::AuthHelpers
+        helpers Openapi::SharedParams::ErrorHelpers
+
+        rescue_from :all do |e|
+          case e
+          when Grape::Exceptions::ValidationErrors
+            handle_validation_error(e)
+          when SearchFlip::ResponseError
+            handle_open_search_error(e)
+          else
+            handle_generic_error(e)
+          end
+        end
 
         before { require_token! }
+        before do
+          token = params[:access_token]
+          Openapi::SharedParams::RateLimiter.check_token!(token)
+        end
 
         resource :software_artifact_portrait do
 
           # 仓库
-          desc '评估项目文档的数量',
-               detail: '仓库文档数量',
+          desc '仓库文档数量',
+               detail: '评估项目文档的数量',
                tags: ['Metrics Data', 'Software Artifact Portrait'],
                success: {
                  code: 201, model: Openapi::Entities::DocNumberResponse
@@ -30,8 +46,8 @@ module Openapi
             fetch_metric_data(metric_name: "doc_number", version_number: params[:version_number])
           end
 
-          desc '评估说明文档的数量、质量等支持情况',
-               detail: '仓库文档质量',
+          desc '仓库文档质量',
+               detail: '评估说明文档的数量、质量等支持情况',
                tags: ['Metrics Data', 'Software Artifact Portrait'],
                success: {
                  code: 201, model: Openapi::Entities::DocQuartyResponse
@@ -44,8 +60,8 @@ module Openapi
             fetch_metric_data(metric_name: "doc_quarty", version_number: params[:version_number])
           end
 
-          desc '评估是否有中文支持。',
-               detail: '仓库中文文档支持度',
+          desc '仓库中文文档支持度',
+               detail: '评估是否有中文支持。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -55,8 +71,8 @@ module Openapi
             fetch_metric_data(metric_name: "zh_files_number", version_number: params[:version_number])
           end
 
-          desc '评估开源项目的开源许可证之间是否兼容。',
-               detail: '仓库开源许可证兼容性',
+          desc '仓库开源许可证兼容性',
+               detail: '评估开源项目的开源许可证之间是否兼容。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -66,8 +82,8 @@ module Openapi
             fetch_metric_data(metric_name: "license_conflicts_exist", version_number: params[:version_number])
           end
 
-          desc '开源软件和依赖软件是否兼容。',
-               detail: '仓库依赖兼容性',
+          desc '仓库依赖兼容性',
+               detail: '开源软件和依赖软件是否兼容。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -78,8 +94,8 @@ module Openapi
           end
 
           # 安全
-          desc '过去五个版本的漏洞平均响应时间',
-               detail: '漏洞响应时间',
+          desc '漏洞响应时间',
+               detail: '过去五个版本的漏洞平均响应时间',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -89,8 +105,8 @@ module Openapi
             fetch_metric_data(metric_name: "vul_detect_time", version_number: params[:version_number])
           end
 
-          desc '是否含有漏洞的反馈方式，以及反馈方式路径。',
-               detail: '漏洞反馈信息',
+          desc '漏洞反馈信息',
+               detail: '是否含有漏洞的反馈方式，以及反馈方式路径。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -104,15 +120,15 @@ module Openapi
                detail: '安全漏洞数',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
-            optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
+            optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3'}
             use :custom_metric_search
           }
           post :security_vul_stat do
             fetch_metric_data(metric_name: "security_vul_stat", version_number: params[:version_number])
           end
 
-          desc '评估开源软件的安全漏洞等级。',
-               detail: '安全漏洞等级',
+          desc '安全漏洞等级',
+               detail: '评估开源软件的安全漏洞等级。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -122,21 +138,20 @@ module Openapi
             fetch_metric_data(metric_name: "vul_levels", version_number: params[:version_number])
           end
 
-          desc '核查已暴露的安全漏洞是否已修复。',
-               detail: '安全漏洞修复情况',
+          desc '安全漏洞修复情况',
+               detail: '核查已暴露的安全漏洞是否已修复。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
-            optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
+            optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3'}
             use :custom_metric_search
           }
           post :security_vul_fixed do
             fetch_metric_data(metric_name: "security_vul_fixed", version_number: params[:version_number])
           end
 
-
           # 代码
-          desc '核查是否有代码扫描记录',
-               detail: '代码扫描记录',
+          desc '代码扫描记录',
+               detail: '核查是否有代码扫描记录',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
@@ -146,8 +161,8 @@ module Openapi
             fetch_metric_data(metric_name: "security_scanned", version_number: params[:version_number])
           end
 
-          desc '评估代码可读性（模块划分/代码注释等）。',
-               detail: '代码可读性',
+          desc '代码可读性',
+               detail: '评估代码可读性（模块划分/代码注释等）。',
                tags: ['Metrics Data', 'Software Artifact Portrait']
           params {
             optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }

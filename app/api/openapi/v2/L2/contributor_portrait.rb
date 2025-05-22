@@ -10,21 +10,34 @@ module Openapi
       format :json
 
       helpers Openapi::SharedParams::AuthHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
+
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
 
       before { require_token! }
       MAX_PER = 10000
       resource :contributor_portrait do
 
-        desc '开发者与仓库贡献关系',
-             detail: '开发者与仓库贡献关系',
+        desc '开发者对仓库贡献',
+             detail: '开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',
              tags: ['Metrics Data', 'Contributor Portrait'],
              success: {
                code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
              }
         params {
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
+          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
+          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
         }
         post :repo_collaboration do
           indexer = GithubEventContributorRepoEnrich
@@ -71,16 +84,17 @@ module Openapi
         end
 
 
-        desc '开发者协作关系',
-             detail: '开发者协作关系',
+        desc '开发者协作',
+             detail: '通过Issue、PR及其对应的评论信息，与其他开发者建立协作关系',
              tags: ['Metrics Data', 'Contributor Portrait'],
              success: {
                code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
              }
         params {
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
+          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
+          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
         }
         post :contributor_collaboration do
           indexer = GithubEventContributorContributorEnrich
