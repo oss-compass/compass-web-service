@@ -14,6 +14,7 @@ module Types
       field :reports, [SimpleReportType]
       field :login_binds, Types::LoginBindType
       field :created_at, GraphQL::Types::ISO8601DateTime
+      field :model_type, Integer
 
 
       def reportshuijin

@@ -31,7 +31,7 @@ module Openapi
         end
 
         resource :metadata do
-          desc '获取项目pull requests元数据', tags: ['Metadata'], success: {
+          desc '获取项目pull requests元数据', detail: '获取项目pull requests元数据', tags: ['Metadata'], success: {
             code: 201, model: Openapi::Entities::PullResponse
           }
 

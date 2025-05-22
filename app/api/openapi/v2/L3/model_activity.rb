@@ -33,11 +33,10 @@ module Openapi
       end
 
       resource :metricModel do
- 
-        desc '获取项目活跃度', tags: ['Metrics Model Data'] , success: {
+        desc '获取项目活跃度', detail: '获取项目活跃度', tags: ['Metrics Model Data'], success: {
           code: 201, model: Openapi::Entities::ActivityResponse
         }
- 
+
         params { use :search }
         post :activity do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

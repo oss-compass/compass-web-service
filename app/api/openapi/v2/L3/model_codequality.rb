@@ -31,11 +31,10 @@ module Openapi
       end
 
       resource :metricModel do
- 
-        desc '获取项目协作开发指数', tags: ['Metrics Model Data'] , success: {
+        desc '获取项目协作开发指数', detail: '获取项目协作开发指数', tags: ['Metrics Model Data'], success: {
           code: 201, model: Openapi::Entities::CollaborationDevelopmentIndexResponse
         }
- 
+
         params { use :search }
         post :collaborationDevelopmentIndex do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
