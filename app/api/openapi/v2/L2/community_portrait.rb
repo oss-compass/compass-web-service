@@ -129,6 +129,22 @@ module Openapi
             fetch_metric_data(metric_name: "org_contribution")
           end
 
+          desc '在过去 90 天内有多少活跃的代码提交者、代码审核者和 PR 提交者',
+               detail: '代码贡献者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :code_contributor_count do
+            fetch_metric_data(metric_name: "code_contributor_count")
+          end
+
+          desc '过去 90 天中活跃的代码提交者的数量。',
+               detail: '代码提交者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :commit_contributor_count do
+            fetch_metric_data(metric_name: "commit_contributor_count")
+          end
+
           # Issue
           desc '过去 90 天新建 Issue 首次响应时间的均值和中位数（天）。这不包括机器人响应、创建者自己的评论或 Issue 的分配动作（action）。如果 Issue 一直未被响应，该 Issue 不被算入统计。',
                detail: 'Issue 首次响应时间',
@@ -168,6 +184,22 @@ module Openapi
           params { use :custom_metric_search }
           post :updated_issues_count do
             fetch_metric_data(metric_name: "updated_issues_count")
+          end
+
+          desc '过去 90 天中活跃的 Issue 作者的数量',
+               detail: 'Issue作者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :issue_authors_contributor_count do
+            fetch_metric_data(metric_name: "issue_authors_contributor_count")
+          end
+
+          desc '过去 90 天中活跃的 Issue 评论者的数量',
+               detail: 'Issue评论者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :issue_comments_contributor_count do
+            fetch_metric_data(metric_name: "issue_comments_contributor_count")
           end
 
           # PR
@@ -291,6 +323,22 @@ module Openapi
             fetch_metric_data(metric_name: "pr_issue_linked_count")
           end
 
+          desc 'Pull Request 作者数量。',
+               detail: 'PR作者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :pr_authors_contributor_count do
+            fetch_metric_data(metric_name: "pr_authors_contributor_count")
+          end
+
+          desc '过去 90 天中活跃的代码审查者的数量',
+               detail: 'PR审查者数量',
+               tags: ['Metrics Data', 'Community Portrait']
+          params { use :custom_metric_search }
+          post :pr_review_contributor_count do
+            fetch_metric_data(metric_name: "pr_review_contributor_count")
+          end
+
           # 仓库
           desc '代码仓自创建以来存在了多长时间 (月份)',
                detail: '仓库创建于',
@@ -339,54 +387,6 @@ module Openapi
           params { use :custom_metric_search }
           post :contributor_count do
             fetch_metric_data(metric_name: "contributor_count")
-          end
-
-          desc '在过去 90 天内有多少活跃的代码提交者、代码审核者和 PR 提交者',
-               detail: '代码贡献者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :code_contributor_count do
-            fetch_metric_data(metric_name: "code_contributor_count")
-          end
-
-          desc '过去 90 天中活跃的代码提交者的数量。',
-               detail: '代码提交者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :commit_contributor_count do
-            fetch_metric_data(metric_name: "commit_contributor_count")
-          end
-
-          desc 'Pull Request 作者数量。',
-               detail: 'PR作者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :pr_authors_contributor_count do
-            fetch_metric_data(metric_name: "pr_authors_contributor_count")
-          end
-
-          desc '过去 90 天中活跃的代码审查者的数量',
-               detail: 'PR审查者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :pr_review_contributor_count do
-            fetch_metric_data(metric_name: "pr_review_contributor_count")
-          end
-
-          desc '过去 90 天中活跃的 Issue 作者的数量',
-               detail: 'Issue作者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :issue_authors_contributor_count do
-            fetch_metric_data(metric_name: "issue_authors_contributor_count")
-          end
-
-          desc '过去 90 天中活跃的 Issue 评论者的数量',
-               detail: 'Issue评论者数量',
-               tags: ['Metrics Data', 'Community Portrait']
-          params { use :custom_metric_search }
-          post :issue_comments_contributor_count do
-            fetch_metric_data(metric_name: "issue_comments_contributor_count")
           end
 
           desc '过去 90 天内贡献占 50% 的最小人数。',
