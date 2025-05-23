@@ -4,9 +4,26 @@ module Openapi
     module CustomMetricSearch
       extend Grape::API::Helpers
 
-      params :custom_metric_search do
+      params :community_portrait_search do
         requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
         requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+        requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+        requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+        optional :page, type: Integer, default: 1, desc: '页码', documentation: { param_type: 'body' }
+        optional :size, type: Integer, default: 10, desc: '每页条数 默认10', documentation: { param_type: 'body' }
+      end
+
+      params :contributor_portrait_search do
+        requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+        requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
+        requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+        requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+      end
+
+      params :software_artifact_portrait_search do
+        requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+        requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+        optional :version_number, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.3' }
         requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
         requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
         optional :page, type: Integer, default: 1, desc: '页码', documentation: { param_type: 'body' }

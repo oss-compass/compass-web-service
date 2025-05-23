@@ -9,6 +9,7 @@ module Openapi
       prefix :api
       format :json
 
+      helpers Openapi::SharedParams::CustomMetricSearch
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
 
@@ -34,10 +35,7 @@ module Openapi
                code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
              }
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+          use :contributor_portrait_search
         }
         post :repo_collaboration do
           indexer = GithubEventContributorRepoEnrich
@@ -91,10 +89,7 @@ module Openapi
                code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
              }
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+          use :contributor_portrait_search
         }
         post :contributor_collaboration do
           indexer = GithubEventContributorContributorEnrich
