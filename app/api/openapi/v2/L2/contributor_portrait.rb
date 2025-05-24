@@ -24,9 +24,40 @@ module Openapi
         end
       end
 
-      before { require_token! }
+      # before { require_token! }
       MAX_PER = 10000
       resource :contributor_portrait do
+
+
+        desc '开发者贡献排名',
+             detail: '开发者的代码贡献, PR贡献, Issue贡献在全球年度排名',
+             tags: ['Metrics Data', 'Contributor Portrait'],
+             success: {
+               code: 201, model: Openapi::Entities::ContributorPortraitContributionRankResponse
+             }
+        params {
+          use :contributor_portrait_search
+        }
+        post :contribution_rank do
+
+          begin_date = Date.new(params[:begin_date].year, 1, 1)
+          end_date = Date.new(params[:begin_date].year + 1, 1, 1)
+
+          indexer = GithubEventContributorRepoEnrich
+          push_rank, push_contribution = indexer.push_contribution_rank(params[:contributor], begin_date, end_date)
+          issue_rank, issue_contribution = indexer.issue_contribution_rank(params[:contributor], begin_date, end_date)
+          pull_rank, pull_contribution = indexer.pull_contribution_rank(params[:contributor], begin_date, end_date)
+          
+          {
+            push_contribution: push_contribution,
+            pull_request_contribution: pull_contribution,
+            issue_contribution: issue_contribution,
+            push_contribution_rank: push_rank,
+            pull_request_contribution_rank: pull_rank,
+            issue_contribution_rank: issue_rank
+          }
+
+        end
 
         desc '开发者对仓库贡献',
              detail: '开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',

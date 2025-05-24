@@ -14,7 +14,7 @@ module Openapi
       end
 
       params :contributor_portrait_search do
-        requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+        # requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
         requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body', example: 'Github 用户名称'}
         requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
         requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
