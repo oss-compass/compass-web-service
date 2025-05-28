@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_17_011824) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_22_024408) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -201,6 +201,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_17_011824) do
     t.text "description"
     t.bigint "parent_model_id"
     t.integer "reference_count", default: 0
+    t.bigint "model_type"
   end
 
   create_table "login_binds", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|

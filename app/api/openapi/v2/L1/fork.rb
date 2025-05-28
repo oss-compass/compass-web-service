@@ -11,14 +11,31 @@ module Openapi
 
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
+
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
+
 
       before { require_token! }
+      before do
+        token = params[:access_token]
+        Openapi::SharedParams::RateLimiter.check_token!(token)
+      end
+
       resource :metadata do
- 
-        desc '获取项目fork元数据', tags: ['Metadata'] , success: {
+        desc '获取项目fork元数据', detail: '获取项目fork元数据', tags: ['Metadata'], success: {
           code: 201, model: Openapi::Entities::ForkResponse
         }
- 
+
         params { use :search }
         post :forks do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

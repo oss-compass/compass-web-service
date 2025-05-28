@@ -11,15 +11,30 @@ module Openapi
 
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
+
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
 
       before { require_token! }
+      before do
+        token = params[:access_token]
+        Openapi::SharedParams::RateLimiter.check_token!(token)
+      end
 
       resource :opencheck do
- 
-        desc '获取项目opencheck检查数据', tags: ['Metrics Model Data'] , success: {
+        desc '获取项目opencheck检查数据', detail: '获取项目贡献者元数据', tags: ['Metrics Model Data'], success: {
           code: 201, model: Openapi::Entities::OpencheckResponse
         }
- 
+
         params { use :search }
         post :opencheck do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)

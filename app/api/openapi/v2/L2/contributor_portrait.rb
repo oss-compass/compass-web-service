@@ -9,22 +9,64 @@ module Openapi
       prefix :api
       format :json
 
+      helpers Openapi::SharedParams::CustomMetricSearch
       helpers Openapi::SharedParams::AuthHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
 
-      before { require_token! }
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
+
+      # before { require_token! }
       MAX_PER = 10000
       resource :contributor_portrait do
 
-        desc '开发者与仓库贡献关系',
-             detail: '开发者与仓库贡献关系',
+
+        desc '开发者贡献排名',
+             detail: '开发者的代码贡献, PR贡献, Issue贡献在全球年度排名',
+             tags: ['Metrics Data', 'Contributor Portrait'],
+             success: {
+               code: 201, model: Openapi::Entities::ContributorPortraitContributionRankResponse
+             }
+        params {
+          use :contributor_portrait_search
+        }
+        post :contribution_rank do
+
+          begin_date = Date.new(params[:begin_date].year, 1, 1)
+          end_date = Date.new(params[:begin_date].year + 1, 1, 1)
+
+          indexer = GithubEventContributorRepoEnrich
+          push_rank, push_contribution = indexer.push_contribution_rank(params[:contributor], begin_date, end_date)
+          issue_rank, issue_contribution = indexer.issue_contribution_rank(params[:contributor], begin_date, end_date)
+          pull_rank, pull_contribution = indexer.pull_contribution_rank(params[:contributor], begin_date, end_date)
+          
+          {
+            push_contribution: push_contribution,
+            pull_request_contribution: pull_contribution,
+            issue_contribution: issue_contribution,
+            push_contribution_rank: push_rank,
+            pull_request_contribution_rank: pull_rank,
+            issue_contribution_rank: issue_rank
+          }
+
+        end
+
+        desc '开发者对仓库贡献',
+             detail: '开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',
              tags: ['Metrics Data', 'Contributor Portrait'],
              success: {
                code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
              }
         params {
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
+          use :contributor_portrait_search
         }
         post :repo_collaboration do
           indexer = GithubEventContributorRepoEnrich
@@ -71,16 +113,14 @@ module Openapi
         end
 
 
-        desc '开发者协作关系',
-             detail: '开发者协作关系',
+        desc '开发者协作',
+             detail: '通过Issue、PR及其对应的评论信息，与其他开发者建立协作关系',
              tags: ['Metrics Data', 'Contributor Portrait'],
              success: {
                code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
              }
         params {
-          requires :contributor, type: String, desc: '开发者名称', documentation: { param_type: 'body',example: 'lishengbao' }
-          requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body' }
-          requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body' }
+          use :contributor_portrait_search
         }
         post :contributor_collaboration do
           indexer = GithubEventContributorContributorEnrich
