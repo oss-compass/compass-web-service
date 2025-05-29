@@ -208,7 +208,6 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
             contributor = params[:contributor].downcase
-
             enrich_indexer = GithubEventContributorRepoEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -252,13 +251,15 @@ module Openapi
             code_review_count = sources.sum do |item|
               code_review_fields.sum { |field| item[field].to_i }
             end
+            level = enrich_indexer.total_rank(commit_count+pr_count+issue_count)
 
             {
               commit_count: commit_count,
               pr_count: pr_count,
               issue_count: issue_count,
               code_review_count: code_review_count,
-              contributed_to_count: contributed_to_count
+              contributed_to_count: contributed_to_count,
+              level:level
             }
           end
 
