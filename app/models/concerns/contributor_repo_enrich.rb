@@ -2,7 +2,6 @@
 module ContributorRepoEnrich
   extend ActiveSupport::Concern
 
-
   class_methods do
     def list(contributor, begin_date, end_date, page: 1, per: 1)
       self.must(match_phrase: { 'contributor.keyword': contributor })
@@ -13,7 +12,7 @@ module ContributorRepoEnrich
           .raw_response
     end
 
-    def sum_contribution(contributor, begin_date, end_date, field="push_contribution")
+    def sum_contribution(contributor, begin_date, end_date, field = "push_contribution")
 
       resp_count = self.aggregate(count: { sum: { field: field } })
                        .must(match_phrase: { 'contributor.keyword': contributor })
@@ -27,27 +26,27 @@ module ContributorRepoEnrich
     def push_contribution_rank(contributor, begin_date, end_date)
 
       push_contribution_top_rank_definition = {
-        '95%':  [2* 0, 2* 6],
-        '90%': [2* 6, 2* 12],
-        '85%': [2* 12, 2* 18],
-        '80%': [2* 18, 2* 24],
-        '75%': [2* 24, 2* 30],
-        '70%': [2* 30, 2* 36],
-        '65%': [2* 36, 2* 42],
-        '60%': [2* 42, 2* 48],
-        '55%': [2* 48, 2* 54],
-        '50%': [2* 54, 2* 60],
-        '45%': [2* 60, 2* 66],
-        '40%': [2* 66, 2* 72],
-        '35%': [2* 72, 2* 78],
-        '30%': [2* 78, 2* 92],
-        '25%': [2* 92, 2* 110],
-        '20%': [2* 110, 2* 140],
-        '15%': [2* 140, 2* 188],
-        '10%': [2* 188, 2* 296],
-        '5%': [2* 296, 2* 99_999_999]
+        '95%': [2 * 0, 2 * 6],
+        '90%': [2 * 6, 2 * 12],
+        '85%': [2 * 12, 2 * 18],
+        '80%': [2 * 18, 2 * 24],
+        '75%': [2 * 24, 2 * 30],
+        '70%': [2 * 30, 2 * 36],
+        '65%': [2 * 36, 2 * 42],
+        '60%': [2 * 42, 2 * 48],
+        '55%': [2 * 48, 2 * 54],
+        '50%': [2 * 54, 2 * 60],
+        '45%': [2 * 60, 2 * 66],
+        '40%': [2 * 66, 2 * 72],
+        '35%': [2 * 72, 2 * 78],
+        '30%': [2 * 78, 2 * 92],
+        '25%': [2 * 92, 2 * 110],
+        '20%': [2 * 110, 2 * 140],
+        '15%': [2 * 140, 2 * 188],
+        '10%': [2 * 188, 2 * 296],
+        '5%': [2 * 296, 2 * 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field="push_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field = "push_contribution")
       found_percentage = push_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max
@@ -79,7 +78,7 @@ module ContributorRepoEnrich
         '10%': [72, 102],
         '5%': [102, 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field="issues_opened_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field = "issues_opened_contribution")
       found_percentage = issue_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max
@@ -112,7 +111,7 @@ module ContributorRepoEnrich
         '10%': [2 * 72, 2 * 102],
         '5%': [2 * 102, 2 * 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field="pull_request_opened_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field = "pull_request_opened_contribution")
       found_percentage = pull_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max
@@ -122,6 +121,73 @@ module ContributorRepoEnrich
 
     end
 
+    def total_rank (count)
+      total_rank_definition = {
+        '95%' => [0, 21],
+        '90' => [21, 42],
+        '85%' => [42, 63],
+        '80%' => [63, 84],
+        '75' => [84, 105],
+        '70%' => [105, 126],
+        '65%' => [126, 147],
+        '60' => [147, 168],
+        '55%' => [168, 189],
+        '50%' => [189, 210],
+        '45' => [210, 231],
+        '40%' => [231, 252],
+        '35%' => [252, 273],
+        '30' => [273, 310],
+        '25%' => [310, 355],
+        '20%' => [355, 448],
+        '15' => [448, 592],
+        '10%' => [592, 898],
+        '5%' => [898, 99_999_999]
+      }
+
+      # 5%  -> s+
+      # 5% - 15% ->s
+      # 15% -30% -> A+
+      # 30% -40 % -> A
+      # 40% -> B
+      # 找到匹配的排名区间
+      level_map = {
+        '5%' => 'S+',
+        '10%' => 'S',
+        '15%' => 'S',
+        '20%' => 'A+',
+        '25%' => 'A+',
+        '30%' => 'A',
+        '35%' => 'A',
+        '40%' => 'B',
+        '45%' => 'B',
+        '50%' => 'B',
+        '55%' => 'B',
+        '60%' => 'B',
+        '65%' => 'B',
+        '70%' => 'B',
+        '75%' => 'B',
+        '80%' => 'B',
+        '85%' => 'B',
+        '90%' => 'B',
+        '95%' => 'B'
+      }
+
+      total_rank_definition.each do |percentile, range|
+        if count >= range[0] && count < range[1]
+          return {
+            "score" => level_map[percentile],
+            "rank" => "#{percentile}"
+          }
+        end
+      end
+
+      {
+        "score" => "B",
+        "rank" => "99%"
+      }
+
+    end
 
   end
+
 end

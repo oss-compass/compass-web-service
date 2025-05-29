@@ -149,6 +149,10 @@ module Types
     field :tpc_software_my_review_page, resolver: Queries::Tpc::TpcSoftwareMyReviewPageQuery
 
 
+    field :third_txt, resolver: Queries::Third::ThirdTxtQuery
+    field :third_tpl, resolver: Queries::Third::ThirdTplQuery
+
+
     field :token_list, resolver: Queries::TokenQuery
 
   end

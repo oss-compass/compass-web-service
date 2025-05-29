@@ -83,6 +83,8 @@ module Types
     field :update_tpc_software_graduation_report, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduationReport, description: 'Update a tpc software graduation report'
     field :trigger_tpc_software_graduation_report, mutation: Mutations::Tpc::TriggerTpcSoftwareGraduationReport, description: 'Trigger a tpc software graduation report'
 
+    field :create_third_software_report, mutation: Mutations::Tpc::CreateThirdSoftwareReport, description: 'Create a third software graduation report'
+
     field :create_tpc_software_graduation, mutation: Mutations::Tpc::CreateTpcSoftwareGraduation, description: 'Create a tpc software graduation'
     field :update_tpc_software_graduation, mutation: Mutations::Tpc::UpdateTpcSoftwareGraduation, description: 'Update a tpc software graduation'
     field :accept_tpc_software_graduation, mutation: Mutations::Tpc::AcceptTpcSoftwareGraduation, description: 'Accept a tpc software graduation'
