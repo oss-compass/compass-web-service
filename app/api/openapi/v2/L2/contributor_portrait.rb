@@ -101,7 +101,7 @@ module Openapi
           post :contributor_overview do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor] 
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_indexer = GithubEventContributor
@@ -207,7 +207,7 @@ module Openapi
           post :contribution_overview do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
             enrich_indexer = GithubEventContributorRepoEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -276,7 +276,7 @@ module Openapi
           post :contributor_language do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
 
@@ -316,7 +316,7 @@ module Openapi
           post :contributor_repos do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
 
@@ -368,7 +368,7 @@ module Openapi
           post :contribution_type do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
@@ -442,7 +442,7 @@ module Openapi
             use :contributor_portrait_search
           }
           post :monthly_commit_counts do
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
@@ -467,7 +467,7 @@ module Openapi
             use :contributor_portrait_search
           }
           post :monthly_update_issues do
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
@@ -491,7 +491,7 @@ module Openapi
             use :contributor_portrait_search
           }
           post :monthly_issue_comments do
-            contributor = params[:contributor].downcase
+            contributor = params[:contributor]
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
