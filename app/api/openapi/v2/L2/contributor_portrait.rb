@@ -166,8 +166,12 @@ module Openapi
             fallback_city = sources.map { |s| s['contributor_city'] }.compact.find { |c| !c.to_s.strip.empty? }
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
 
+
+            all_repos_contribution = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             # 构建角色映射
-            repo_roles = all_repos.map do |repo|
+            repo_roles = all_repos_contribution.map do |repos|
+              repo = repos[:repo_url]
+              contribution = repos[:contribution]
               roles = []
               roles << 'individual_manager' if personal_manage_repo.include?(repo)
               roles << 'organization_manager' if org_manage_repo.include?(repo)
@@ -175,7 +179,8 @@ module Openapi
               roles << 'guest' if frequent_project.include?(repo)
               {
                 repo: repo,
-                roles: roles
+                roles: roles,
+                contribution: contribution
               }
             end
 
@@ -319,41 +324,39 @@ module Openapi
             contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
-
+            event_repo_indexer = GithubEventRepositoryEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
-            fields_to_sum = [
-              'push_contribution',
-              'pull_request_opened_contribution',
-              'pull_request_reopened_contribution',
-              'pull_request_closed_contribution',
-              'pull_request_merged_contribution',
-              'pull_request_review_commented_contribution',
-              'issues_opened_contribution',
-              'issues_reopened_contribution',
-              'issues_closed_contribution',
-              'issue_comment_created_contribution'
-            ]
-            # 统计每个 repo 的总贡献值
-            repo_contributions = Hash.new(0)
-            sources.each do |item|
-              repo = item["repo"]
-              next unless repo
+            manage_repos = enrich_indexer.get_manage_repos(sources)
+            personal_manage_repo = enrich_indexer.get_personal_manage_repo(sources, contributor)
+            org_manage_repo = enrich_indexer.get_org_manage_repo(sources, contributor)
 
-              total = fields_to_sum.sum { |field| item[field].to_i }
+            core_project = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
+            # 所有仓库
+            all_repos = sources.map { |item| item['repo'] }.compact.uniq
 
-              repo_contributions[repo] += total
-            end
+            # 其他的为常客开发者角色
+            frequent_project = all_repos - manage_repos - core_project
 
-            # 转为数组并排序
-            repo_contributions.map do |repo_url, total|
+            repo_contributions = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER).first(5)
+
+            res =  repo_contributions.map do |repos|
+              repo = repos[:repo_url]
+              contribution = repos[:contribution]
+              roles = []
+              roles << 'individual_manager' if personal_manage_repo.include?(repo)
+              roles << 'organization_manager' if org_manage_repo.include?(repo)
+              roles << 'core' if core_project.include?(repo)
+              roles << 'guest' if frequent_project.include?(repo)
               {
-                repo_url: repo_url,
-                contribution: total
+                repo_url: repo,
+                repo: repo,
+                contribution:contribution,
+                roles: roles
               }
-            end.sort_by { |item| -item[:contribution] }.first(5)
-
+            end
+            res
           end
 
           desc '开发者贡献类型占比',
@@ -522,28 +525,10 @@ module Openapi
             sources = hits&.map { |hit| hit['_source'] } || []
 
             core_repo = event_repo_indexer.query_core_project(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
-            manage_repo = sources.select do |item|
-              (item['pull_request_merged_contribution'].to_i > 0) || (item['push_contribution'].to_i > 0) ||
-                (item['pull_request_review_approved_contribution'].to_i > 0)
-            end.map { |item| item['repo'] }.compact.uniq
 
-            personal_manage_repo = sources.select do |item|
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
-
-            org_manage_repo = sources.select do |item|
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && !repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
+            manage_repo = indexer.get_manage_repos(sources)
+            personal_manage_repo =  indexer.get_personal_manage_repo(sources, contributor)
+            org_manage_repo =  indexer.get_org_manage_repo(sources, contributor)
 
             all_repos = sources.map { |item| item['repo'] }.compact.uniq
             frequent_repo = all_repos - core_repo - manage_repo

@@ -188,6 +188,76 @@ module ContributorRepoEnrich
 
     end
 
+    def repo_list(contributor, begin_date, end_date, page: 1, per: 1)
+      resp = self.must(match_phrase: { 'contributor.keyword': contributor })
+                 .range('created_at', gte: begin_date, lte: end_date)
+                 .page(page)
+                 .per(per)
+                 .execute
+                 .raw_response
+
+      sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
+
+      fields_to_sum = [
+        'push_contribution',
+        'pull_request_opened_contribution',
+        'pull_request_reopened_contribution',
+        'pull_request_closed_contribution',
+        'pull_request_merged_contribution',
+        'pull_request_review_commented_contribution',
+        'issues_opened_contribution',
+        'issues_reopened_contribution',
+        'issues_closed_contribution',
+        'issue_comment_created_contribution'
+      ]
+
+      repo_contributions = Hash.new(0)
+      sources.each do |item|
+        repo = item["repo"]
+        next unless repo
+
+        total = fields_to_sum.sum { |field| item[field].to_i }
+        repo_contributions[repo] += total
+      end
+
+      repo_contributions.map do |repo_url, total|
+        {
+          repo_url: repo_url,
+          repo: repo_url,
+          contribution: total
+        }
+      end.sort_by { |item| -item[:contribution] }
+    end
+
+
+    def get_manage_repos(sources)
+      sources.select do |item|
+        item['pull_request_merged_contribution'].to_i > 0 ||
+          item['push_contribution'].to_i > 0 ||
+          item['pull_request_review_approved_contribution'].to_i > 0
+      end.map { |item| item['repo'] }.compact.uniq
+    end
+
+    def get_personal_manage_repo(sources, contributor)
+      sources.select do |item|
+        repo = item['repo']
+        (item['pull_request_merged_contribution'].to_i > 0 ||
+          item['push_contribution'].to_i > 0 ||
+          item['pull_request_review_approved_contribution'].to_i > 0) &&
+          repo.include?(contributor)
+      end.map { |item| item['repo'] }.compact.uniq
+    end
+
+    def get_org_manage_repo(sources, contributor)
+      sources.select do |item|
+        repo = item['repo']
+        (item['pull_request_merged_contribution'].to_i > 0 ||
+          item['push_contribution'].to_i > 0 ||
+          item['pull_request_review_approved_contribution'].to_i > 0) &&
+          !repo.include?(contributor)
+      end.map { |item| item['repo'] }.compact.uniq
+    end
+
   end
 
 end
