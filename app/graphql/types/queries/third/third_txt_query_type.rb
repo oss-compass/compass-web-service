@@ -14,22 +14,6 @@ module Types
         field :label, String
 
 
-        def normalize_repo_url(repo_url)
-          return nil if repo_url.blank?
-
-          # 只取第一个（用 ; 或空格等分隔）
-          first_url = repo_url.split(/[;\s]/).first.to_s.strip
-          return nil if first_url.blank?
-
-          # 将 git@github.com:org/repo.git 转成 https://github.com/org/repo
-          if first_url =~ %r{\Agit@github\.com:(.+?)(\.git)?\z}
-            "https://github.com/#{$1}"
-          else
-            # 如果已经是 https 或其它形式则直接返回
-            first_url
-          end
-        end
-
         def label
 
           package = object["package_id"] || object[:package_id]
