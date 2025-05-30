@@ -26,8 +26,9 @@ module Types
             force_search: force_search
           }
 
+          url =  ENV.fetch('THIRD_URL')
           response = Faraday.post(
-            "http://119.13.89.98:8888/query_with_tpl",
+            "#{url}/query_with_tpl",
             payload.to_json,
             { 'Content-Type' => 'application/json' }
           )

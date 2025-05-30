@@ -25,10 +25,11 @@ module Types
             top_n: top_n,
             online_judge: online_judge || false
           }
+          url = ENV.fetch('THIRD_URL')
           response =
             Faraday.post(
-              # "#{_SERVER}/api/workflows",
-              "http://119.13.89.98:8888/query_with_txt",
+
+              "#{url}/query_with_txt",
               payload.to_json,
               { 'Content-Type' => 'application/json' }
             )
