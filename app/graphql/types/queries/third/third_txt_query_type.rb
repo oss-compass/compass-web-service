@@ -14,22 +14,6 @@ module Types
         field :label, String
 
 
-        def normalize_repo_url(repo_url)
-          return nil if repo_url.blank?
-
-          # 只取第一个（用 ; 或空格等分隔）
-          first_url = repo_url.split(/[;\s]/).first.to_s.strip
-          return nil if first_url.blank?
-
-          # 将 git@github.com:org/repo.git 转成 https://github.com/org/repo
-          if first_url =~ %r{\Agit@github\.com:(.+?)(\.git)?\z}
-            "https://github.com/#{$1}"
-          else
-            # 如果已经是 https 或其它形式则直接返回
-            first_url
-          end
-        end
-
         def label
 
           package = object["package_id"] || object[:package_id]
@@ -43,7 +27,7 @@ module Types
           return nil if namespace_name.blank? || source.blank?
 
           source = source_part.sub('selected.', '') # 如 github/gitee/npm
-          project_url =  package_detail["repo_url"].presence || package_detail["lib_url"].presence
+          project_url =  normalize_git_url_to_https(package_detail["repo_url"]).presence || package_detail["lib_url"].presence
 
           case source
           when 'github'
@@ -62,6 +46,33 @@ module Types
           else
             project_url
           end
+        end
+
+
+        private
+
+        def normalize_git_url_to_https(url)
+          return nil if url.nil? || url.strip.empty?
+
+          normalized = url.strip
+
+          # 去掉 git+ 前缀
+          normalized = normalized.sub(/^git\+/, '')
+
+          # git:// 转 https://
+          normalized = normalized.sub(/^git:\/\//, 'https://')
+
+          # ssh://git@github.com/... 转 https://github.com/...
+          normalized = normalized.sub(/^ssh:\/\/git@/, 'https://')
+
+          # git@github.com:user/repo.git 转 https://github.com/user/repo.git
+          if normalized =~ /^git@([^:]+):(.+)$/
+            host = $1
+            path = $2
+            normalized = "https://#{host}/#{path}"
+          end
+
+          normalized.start_with?('https://') ? normalized : ''
         end
       end
 
