@@ -31,6 +31,10 @@ module Types
           source = source_part.sub('selected.', '')
           project_url = package_detail["repo_url"].presence || package_detail["lib_url"].presence
 
+          puts(project_url)
+
+          project_url =normalize_git_url_to_https(project_url)
+
           case source
           when 'github'
             parts = namespace_name.split('/')
@@ -49,6 +53,33 @@ module Types
             project_url
           end
         end
+
+        private
+
+        def normalize_git_url_to_https(url)
+          return nil if url.nil? || url.strip.empty?
+
+          normalized = url.strip
+
+          # 去掉 git+ 前缀
+          normalized = normalized.sub(/^git\+/, '')
+
+          # git:// 转 https://
+          normalized = normalized.sub(/^git:\/\//, 'https://')
+
+          # ssh://git@github.com/... 转 https://github.com/...
+          normalized = normalized.sub(/^ssh:\/\/git@/, 'https://')
+
+          # git@github.com:user/repo.git 转 https://github.com/user/repo.git
+          if normalized =~ /^git@([^:]+):(.+)$/
+            host = $1
+            path = $2
+            normalized = "https://#{host}/#{path}"
+          end
+
+          normalized.start_with?('https://') ? normalized : ''
+        end
+
       end
 
       class ThirdTplQueryType < Types::BaseObject
