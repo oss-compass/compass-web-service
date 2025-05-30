@@ -36,7 +36,7 @@ module Mutations
                 report_type: 0,
                 manufacturer: "",
                 website_url: "",
-                tpc_software_sig_id: 4,
+                tpc_software_sig_id: 13,
                 programming_language: '',
                 adaptation_method: '',
                 short_code: TpcSoftwareSelectionReport.generate_short_code
@@ -99,9 +99,7 @@ module Mutations
               end
 
             end
-          rescue => e
 
-            Rails.logger.error "error : #{e.message}"
           end
         end
 
