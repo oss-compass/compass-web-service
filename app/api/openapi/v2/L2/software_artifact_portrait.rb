@@ -60,7 +60,10 @@ module Openapi
 
           desc '仓库中文文档支持度',
                detail: '评估是否有中文支持。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::ZhFilesNumberResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -70,7 +73,10 @@ module Openapi
 
           desc '仓库开源许可证兼容性',
                detail: '评估开源项目的开源许可证之间是否兼容。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::LicenseConflictsExistResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -80,7 +86,10 @@ module Openapi
 
           desc '仓库依赖兼容性',
                detail: '开源软件和依赖软件是否兼容。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::LicenseDepConflictsExistResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -91,7 +100,10 @@ module Openapi
           # 安全
           desc '漏洞响应时间',
                detail: '过去五个版本的漏洞平均响应时间',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::VulDetectTimeResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -101,7 +113,10 @@ module Openapi
 
           desc '漏洞反馈信息',
                detail: '是否含有漏洞的反馈方式，以及反馈方式路径。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::VulnerabilityFeedbackChannelsResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -111,7 +126,10 @@ module Openapi
 
           desc '安全漏洞数',
                detail: '安全漏洞数',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::SecurityVulStatResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -121,7 +139,10 @@ module Openapi
 
           desc '安全漏洞等级',
                detail: '评估开源软件的安全漏洞等级。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::VulLevelsResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -131,7 +152,10 @@ module Openapi
 
           desc '安全漏洞修复情况',
                detail: '核查已暴露的安全漏洞是否已修复。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::SecurityVulFixedResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -142,7 +166,10 @@ module Openapi
           # 代码
           desc '代码扫描记录',
                detail: '核查是否有代码扫描记录',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::SecurityScannedResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
@@ -152,7 +179,10 @@ module Openapi
 
           desc '代码可读性',
                detail: '评估代码可读性（模块划分/代码注释等）。',
-               tags: ['Metrics Data', 'Software Artifact Portrait']
+               tags: ['Metrics Data', 'Software Artifact Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::CodeReadabilityResponse
+               }
           params {
             use :software_artifact_portrait_search
           }
