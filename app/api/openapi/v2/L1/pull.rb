@@ -28,6 +28,10 @@ module Openapi
         before do
           token = params[:access_token]
           Openapi::SharedParams::RateLimiter.check_token!(token)
+
+          label = params[:label]
+          level = params[:level]
+          Openapi::SharedParams::RepoChecker.check_repo!(label,level)
         end
 
         resource :metadata do

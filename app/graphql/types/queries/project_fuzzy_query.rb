@@ -18,7 +18,7 @@ module Types
         return [] if keyword.chop.blank?
 
         if type == 1 # developer
-          return search_developers(keyword)
+          return search_developers(prefix)
         elsif type == 2 # repo
           return search_repos(keyword, level, fields, prefix)
         else

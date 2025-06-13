@@ -93,6 +93,10 @@ module Types
     field :create_auth_token, mutation: Mutations::CreateAuthToken, description: 'Create auth token'
     field :delete_auth_token, mutation: Mutations::DeleteAuthToken, description: 'Delete auth token'
 
+
+    field :vote_down, mutation: Mutations::VoteDown, description: 'vote down'
+    field :vote_up, mutation: Mutations::VoteUp, description: 'vote up'
+
     # User Cancellation
     def sign_out
       context[:sign_out].call(context[:current_user]) if context[:current_user].present?
