@@ -30,8 +30,7 @@ module Types
 
           source = source_part.sub('selected.', '')
           project_url = package_detail["repo_url"].presence || package_detail["lib_url"].presence
-
-          puts(project_url)
+          
 
           project_url =normalize_git_url_to_https(project_url)
 
