@@ -6,10 +6,28 @@ module Openapi
       version 'v2', using: :path
       prefix :api
       format :json
-
+      GITHUB_TOKEN = ENV.fetch('GITHUB_API_TOKEN')
+      RAW_GITHUB_ENDPOINT = 'https://raw.githubusercontent.com'
+      GITHUB_API_ENDPOINT = 'https://api.github.com'
 
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+
+      helpers do
+        def check_version_exists(label, version_number)
+          puts "Checking version #{label}, #{version_number}"
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, 'repo', GiteeReleasesEnrich, GithubReleasesEnrich)
+          releases = indexer.get_releases(repo_urls)
+          flag = releases.include?(version_number)
+          if flag
+            return true, []
+          end
+
+
+          return flag, releases
+        end
+      end
 
       rescue_from :all do |e|
         case e
@@ -17,10 +35,14 @@ module Openapi
           handle_validation_error(e)
         when SearchFlip::ResponseError
           handle_open_search_error(e)
+        when Openapi::Entities::InvalidVersionNumberError
+          handle_release_error(e)
         else
           handle_generic_error(e)
         end
       end
+
+
 
       before { require_token! }
       before do
@@ -71,6 +93,25 @@ module Openapi
           version = LabModelVersion.find_by(id: 358)
 
           projects.each do |project|
+            # 查询 版本，先查询release enrich,没有的话去拉GitHub api release 和 tag 如果里面的版本信息和versionNumber对的上则进行下一步 否则返回版本信息
+            repo_path =
+              if project['label'].start_with?("https://github.com/")
+                project['label'].gsub("https://github.com/", "").strip
+              elsif project['label'].start_with?("https://gitee.com/")
+                project['label'].gsub("https://gitee.com/", "").strip
+              else
+
+
+
+                puts ""
+              end
+
+
+
+            flag, releases = check_version_exists(project[:label], project['versionNumber'])
+            unless flag
+              raise Openapi::Entities::InvalidVersionNumberError, "releases: #{releases}"
+            end
             status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: project[:label], version_number: project['versionNumber'], level: 'repo').execute
           end
           status

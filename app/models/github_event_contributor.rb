@@ -245,12 +245,26 @@ class GithubEventContributor < GithubBase
 
   def self.fuzz_query(contributor)
     return {} if contributor.blank?
-    hit = self.must(match_phrase: { 'login.keyword': contributor })
-              .page(1)
-              .per(100)
-              .execute
-              .raw_response
 
+    if contributor.match?(/^https?:\/\/github\.com\/[\w\-]+$/)
+      self.must(match_phrase: { 'html_url.keyword': contributor })
+          .page(1)
+          .per(10)
+          .execute
+          .raw_response
+    else
+      self.must(
+        multi_match: {
+          query: contributor,
+          fields: %w[login],
+          fuzziness: "AUTO"
+        }
+      )
+          .page(1)
+          .per(10)
+          .execute
+          .raw_response
+    end
   end
 
 end

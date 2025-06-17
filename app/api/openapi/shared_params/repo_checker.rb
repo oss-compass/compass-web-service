@@ -15,16 +15,19 @@ module Openapi
               {
                 level: 'repo',
                 project_urls: project_urls,
-                extra: { username: "system", origin: "github" }
+                extra: { username: "oss-compass-bot", origin: "github" }
               }
             ).execute
 
-          # pr_status = result[:status]
-          # pr_message = result[:message]
+          pr_url = result[:pr_url]
+          message = result[:message]
 
-          throw :error, status: 404, message: "查询项目尚未收录，已提交pr,请等待pr合入后再查询。"
+          if message.present?
+            return false, "#{message},请等待任务执行完毕后查询。"
+          end
+          return false, "查询项目尚未收录，已提交pr: #{pr_url} ,请等待pr合入后再查询。"
         end
-
+        return true, nil
       end
     end
   end

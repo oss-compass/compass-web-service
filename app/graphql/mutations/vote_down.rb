@@ -36,7 +36,12 @@ module Mutations
       resp = JSON.parse(response.body)
       data = resp['data'] || {}
       message = data['message'] || ''
-      { status: true, message: message }
+      mapping = {
+        'Vote down recorded successfully' => 'vote.vote_down_success'
+      }
+      key = mapping[message]
+      res = key.present? ? I18n.t(key) : message
+      { status: true, message: res }
     rescue => ex
       { status: false, message: ex.message }
     end

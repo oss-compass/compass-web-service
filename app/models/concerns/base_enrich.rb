@@ -63,6 +63,17 @@ module BaseEnrich
       base.total_entries
     end
 
+    def check_exist(repo_url)
+      resp = self.must(terms: { "tag" => repo_url })
+                 .page(1)
+                 .per(1)
+                 .execute
+                 .raw_response
+
+      hits = resp&.[]('hits')&.[]('hits') || []
+      return hits.size > 0
+
+    end
 
     ## Export csv callback
 

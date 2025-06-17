@@ -267,5 +267,18 @@ class GithubReleasesEnrich < GithubBase
     base.total_entries
   end
 
+  def self.get_releases(repo_urls)
+    resp =
+      self
+        .must(terms: { 'tag.keyword' => repo_urls })
+        .page(1)
+        .per(10000)
+        .sort('grimoire_creation_date' => 'desc')
+        .execute
+        .raw_response
+
+    hits = resp&.[]('hits')&.[]('hits') || []
+    hits.map { |data| data["_source"]["tag_name"] }
+  end
 
 end

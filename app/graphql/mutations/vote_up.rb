@@ -27,6 +27,8 @@ module Mutations
 
       }
 
+      current_user = context[:current_user]
+      login_required!(current_user)
       url =  ENV.fetch('THIRD_URL')
       response = Faraday.post(
         "#{url}/vote_up",
@@ -37,7 +39,12 @@ module Mutations
       resp = JSON.parse(response.body)
       data = resp['data'] || {}
       message = data['message'] || ''
-      { status: true, message: message }
+      mapping = {
+        'Vote up recorded successfully' => 'vote.vote_up_success'
+      }
+      key = mapping[message]
+      res =  key.present? ? I18n.t(key) : message
+      { status: true, message: res }
     rescue => ex
       { status: false, message: ex.message }
     end
