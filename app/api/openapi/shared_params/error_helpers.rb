@@ -36,6 +36,16 @@ module Openapi
         )
       end
 
+      def handle_release_error(e)
+        Rails.logger.error "release error: #{e.message}"
+        error!({
+                 error: "version number error",
+                 message: "#{e.message}"
+               },
+               500
+        )
+      end
+
       def handle_validation_error(e)
         Rails.logger.error "参数校验错误 : #{e.message}"
         error_messages = e.full_messages.map do |msg|

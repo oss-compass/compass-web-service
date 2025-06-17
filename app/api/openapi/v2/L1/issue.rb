@@ -39,6 +39,9 @@ module Openapi
         post :issues do
           label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
+          status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level)
+          return { message: message } unless status
+
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)
 
           resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
