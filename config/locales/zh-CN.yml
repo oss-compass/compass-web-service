@@ -1507,3 +1507,7 @@ zh-CN:
       invalid: '无效的YAML文件路径: %{path}'
     diff_url:
       invalid: 无效的Diff链接地址
+  vote:
+    vote_up_success: 点赞成功！
+    vote_down_success: 点踩成功！
+

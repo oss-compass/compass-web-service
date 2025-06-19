@@ -231,10 +231,12 @@ module Openapi
           desc '代码贡献者数量',
                detail: '在过去 90 天内有多少活跃的代码提交者、代码审核者和 PR 提交者',
 
+
                tags: ['Metrics Data', 'Community Portrait'],
                success: {
                  #  code: 201, model: Openapi::Entities::CodeContributorCountResponse
                }
+
 
           params { use :community_portrait_search }
           post :code_contributor_count do
@@ -257,6 +259,12 @@ module Openapi
                tags: ['Metrics Data', 'Community Portrait'],
                success: {
                  code: 201, model: Openapi::Entities::IssueFirstResponseResponse
+               }
+
+
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::CommitContributorCountResponse
                }
 
           params { use :community_portrait_search }
@@ -331,6 +339,7 @@ module Openapi
           desc 'Issue作者数量',
                detail: '过去 90 天中活跃的 Issue 作者的数量',
 
+
                tags: ['Metrics Data', 'Community Portrait']
           params { use :custom_metric_search }
           post :issue_authors_contributor_count do
@@ -364,6 +373,11 @@ module Openapi
                  code: 201, model: Openapi::Entities::CodeReviewCountResponse
                }
 
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::IssueAuthorsContributorCountResponse
+               }
+
           params { use :community_portrait_search }
           post :issue_authors_contributor_count do
             fetch_metric_data(metric_name: "issue_authors_contributor_count")
@@ -371,7 +385,10 @@ module Openapi
 
           desc 'Issue评论者数量',
                detail: '过去 90 天中活跃的 Issue 评论者的数量',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::IssueCommentsContributorCountResponse
+               }
           params { use :community_portrait_search }
           post :issue_comments_contributor_count do
             fetch_metric_data(metric_name: "issue_comments_contributor_count")
@@ -548,7 +565,10 @@ module Openapi
 
           desc 'PR合并数量(非PR作者合并)',
                detail: '过去 90 天内 PR 合并数量（不包含 PR 作者本人合并）。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::CodeMergeCountWithNonAuthorResponse
+               }
           params { use :community_portrait_search }
           post :code_merge_count_with_non_author do
             fetch_metric_data(metric_name: 'code_merge_count_with_non_author')
@@ -556,7 +576,10 @@ module Openapi
 
           desc 'PR关联Issue数量',
                detail: 'PR关联Issue数量: 过去 90 天内新建 PR 关联 Issue 的数量。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::PrIssueLinkedCountResponse
+               }
           params { use :community_portrait_search }
           post :pr_issue_linked_count do
 
@@ -635,7 +658,10 @@ module Openapi
 
           desc 'PR作者数量',
                detail: 'Pull Request 作者数量。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::PrAuthorsContributorCountResponse
+               }
           params { use :community_portrait_search }
           post :pr_authors_contributor_count do
             fetch_metric_data(metric_name: "pr_authors_contributor_count")
@@ -643,7 +669,10 @@ module Openapi
 
           desc 'PR审查者数量',
                detail: '过去 90 天中活跃的代码审查者的数量',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::PrReviewContributorCountResponse
+               }
           params { use :community_portrait_search }
           post :pr_review_contributor_count do
             fetch_metric_data(metric_name: "pr_review_contributor_count")
@@ -652,7 +681,10 @@ module Openapi
           # 仓库
           desc '仓库创建于',
                detail: '代码仓自创建以来存在了多长时间 (月份)',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::CreatedSinceResponse
+               }
           params { use :community_portrait_search }
           post :created_since do
             fetch_metric_data(metric_name: "created_since")
@@ -660,7 +692,10 @@ module Openapi
 
           desc '仓库更新于',
                detail: '每个代码仓自上次更新以来的平均时间 (天)，即多久没更新了',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::UpdatedSinceResponse
+               }
           params { use :community_portrait_search }
           post :updated_since do
             fetch_metric_data(metric_name: "updated_since")
@@ -668,7 +703,10 @@ module Openapi
 
           desc '仓库开源许可证变更声明',
                detail: '评估开源软件开源许可证发生变更时是否需向用户进行声明。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::LicenseChangeClaimsRequiredResponse
+               }
           params { use :community_portrait_search }
           post :license_change_claims_required do
             fetch_metric_data(metric_name: "license_change_claims_required")
@@ -676,7 +714,10 @@ module Openapi
 
           desc '仓库宽松型或弱著作权开源许可证',
                detail: '评估项目是否为宽松型开源许可证或弱著作权开源许可证。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::LicenseIsWeakResponse
+               }
           params { use :community_portrait_search }
           post :license_is_weak do
             fetch_metric_data(metric_name: "license_is_weak")
@@ -684,7 +725,10 @@ module Openapi
 
           desc '仓库最近版本发布次数',
                detail: '过去 12 个月版本发布的数量',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::RecentReleasesCountResponse
+               }
           params { use :community_portrait_search }
           post :recent_releases_count do
             fetch_metric_data(metric_name: "recent_releases_count")
@@ -693,7 +737,10 @@ module Openapi
           # 贡献者
           desc '贡献者数量',
                detail: '过去 90 天中活跃的代码提交者、Pull Request 作者、代码审查者、Issue 作者和 Issue 评论者的数量。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::ContributorCountResponse
+               }
           params { use :community_portrait_search }
           post :contributor_count do
             fetch_metric_data(metric_name: "contributor_count")
@@ -701,7 +748,10 @@ module Openapi
 
           desc '贡献者Bus Factor',
                detail: '过去 90 天内贡献占 50% 的最小人数。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::BusFactorResponse
+               }
           params { use :community_portrait_search }
           post :bus_factor do
             fetch_metric_data(metric_name: 'bus_factor')
@@ -710,7 +760,10 @@ module Openapi
           # 组织
           desc '组织数量',
                detail: '过去 90 天内活跃的代码提交者所属组织的数目。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::OrgCountResponse
+               }
           params { use :community_portrait_search }
           post :org_count do
             fetch_metric_data(metric_name: 'org_count')
@@ -718,7 +771,10 @@ module Openapi
 
           desc '组织代码提交频率',
                detail: '过去 90 天内平均每周有组织归属的代码提交次数。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::OrgCommitFrequencyResponse
+               }
           params { use :community_portrait_search }
           post :org_commit_frequency do
             fetch_metric_data(metric_name: 'org_commit_frequency')
@@ -726,7 +782,10 @@ module Openapi
 
           desc '组织持续贡献',
                detail: '在过去 90 天所有组织向社区有代码贡献的累计时间（周）。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::OrgContributionLastResponse
+               }
           params { use :community_portrait_search }
           post :org_contribution_last do
             fetch_metric_data(metric_name: 'org_contribution_last')
@@ -734,7 +793,10 @@ module Openapi
 
           desc '组织贡献度',
                detail: '评估组织、机构对开源软件的贡献情况。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::OrgContributionResponse
+               }
           params { use :community_portrait_search }
           post :org_contribution do
             fetch_metric_data(metric_name: 'org_contribution')
@@ -742,7 +804,10 @@ module Openapi
 
           desc '组织贡献者数量',
                detail: '过去 90 天内有组织附属关系的活跃的代码贡献者人数。',
-               tags: ['Metrics Data', 'Community Portrait']
+               tags: ['Metrics Data', 'Community Portrait'],
+               success: {
+                 code: 201, model: Openapi::Entities::OrgContributorCountResponse
+               }
           params { use :community_portrait_search }
           post :org_contributor_count do
             fetch_metric_data(metric_name: 'org_contributor_count')

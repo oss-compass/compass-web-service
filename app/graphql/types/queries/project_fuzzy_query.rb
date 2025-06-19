@@ -7,35 +7,72 @@ module Types
       description 'Fuzzy search project by keyword'
       argument :keyword, String, required: true, description: 'repo or project keyword'
       argument :level, String, required: false, description: 'filter by level (repo/project)'
+      argument :type, Integer, required: false, description: '1 developer, 2 repo'
 
-      def resolve(keyword: nil, level: nil)
+      def resolve(keyword: nil, level: nil, type: nil)
         fields = ['label', 'level']
         prefix = keyword
         keyword = keyword.gsub(/^https:\/\//, '')
         keyword = keyword.gsub(/^http:\/\//, '')
         keyword = keyword.gsub(/[^0-9a-zA-Z_\-\. ]/i, '')
         return [] if keyword.chop.blank?
-        resp =
-          ActivityMetric
-            .fuzzy_search(
-              keyword.gsub('/', ' '),
-              'label',
-              'label.keyword',
-              fields: fields,
-              filters: { level: level }
-            )
-        fuzzy_list = resp&.[]('hits')&.[]('hits')
 
-        resp =
-          ActivityMetric
-            .prefix_search(
-              prefix,
-              'label.keyword',
-              'label.keyword',
-              fields: fields,
-              filters: { level: level }
+        if type == 1 # developer
+          return search_developers(prefix)
+        elsif type == 2 # repo
+          return search_repos(keyword, level, fields, prefix)
+        else
+          # developers = search_developers(keyword, level)
+          # repos = search_repos(keyword, level, fields, prefix)
+          # return (developers + repos).uniq { |item| item[:label] }
+           return search_repos(keyword, level, fields, prefix)
+        end
+      end
+
+      private
+
+      def search_developers(keyword)
+        candidates = []
+        event_indexer = GithubEventContributor
+        resp = event_indexer.fuzz_query(keyword)
+        resp_list = resp&.[]('hits')&.[]('hits')
+
+        resp_list.each do |item|
+          source = item['_source']
+          developer = OpenStruct.new(
+            label: source['avatar_url'],
+            level: source['html_url'],
+            status: '',
+            short_code:'',
+            collections:[]
             )
-        prefix_list = resp&.[]('hits')&.[]('hits')
+          candidates << developer
+        end
+
+        candidates
+      end
+
+      def search_repos(keyword, level, fields, prefix)
+        es_filters = { level: level }
+
+        fuzzy_resp = ActivityMetric.fuzzy_search(
+          keyword.gsub('/', ' '),
+          'label',
+          'label.keyword',
+          fields: fields,
+          filters: es_filters
+        )
+        fuzzy_list = fuzzy_resp&.[]('hits')&.[]('hits')
+
+
+        prefix_resp = ActivityMetric.prefix_search(
+          prefix,
+          'label.keyword',
+          'label.keyword',
+          fields: fields,
+          filters: es_filters
+        )
+        prefix_list = prefix_resp&.[]('hits')&.[]('hits')
 
         existed, candidates = {}, []
         [fuzzy_list, prefix_list].each do |list|

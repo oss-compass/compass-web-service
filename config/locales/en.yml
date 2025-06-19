@@ -2023,3 +2023,6 @@ en:
       invalid: 'invaild configure yaml path: %{path}.'
     diff_url:
       invalid: invalid diff url.
+  vote:
+    vote_up_success: Vote up recorded successfully！
+    vote_down_success: Vote down recorded successfully！
