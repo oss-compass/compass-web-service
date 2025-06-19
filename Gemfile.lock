@@ -179,10 +179,9 @@ GEM
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
     date (3.4.1)
-    debug (1.10.0)
-      irb (~> 1.10)
-      reline (>= 0.3.8)
-    declarative (0.0.20)
+    debug (1.5.0)
+      irb (>= 1.3.6)
+      reline (>= 0.2.7)
     devise (4.8.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -251,7 +250,6 @@ GEM
     gli (2.21.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    google-protobuf (3.25.5)
     google-protobuf (3.25.5-arm64-darwin)
     google-protobuf (3.25.5-x86_64-linux)
     googleapis-common-protos-types (1.6.0)
@@ -263,21 +261,9 @@ GEM
       mustermann-grape (~> 1.0.0)
       rack (>= 1.3.0)
       rack-accept
-    grape-entity (1.0.1)
-      activesupport (>= 3.0.0)
-      multi_json (>= 1.3.2)
     grape-swagger (2.0.0)
       grape (>= 1.7, < 3.0)
       rack-test (~> 2)
-    grape-swagger-entity (0.6.2)
-      grape-entity (~> 1)
-      grape-swagger (~> 2)
-    grape-swagger-rails (0.6.0)
-      ostruct
-      railties (>= 6.0.6.1)
-    grape-swagger-representable (0.2.2)
-      grape-swagger (>= 0.31.0)
-      representable
     grape_on_rails_routes (0.3.2)
       rails (>= 3.1.1)
     graphiql-rails (1.8.0)
@@ -395,9 +381,6 @@ GEM
     net-smtp (0.4.0.1)
     netrc (0.11.0)
     nio4r (2.7.3)
-    nokogiri (1.18.4)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.18.4-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.4-x86_64-linux-gnu)
@@ -640,7 +623,6 @@ GEM
     opentelemetry-semantic_conventions (1.10.1)
       opentelemetry-api (~> 1.0)
     orm_adapter (0.5.0)
-    ostruct (0.6.1)
     overcommit (0.59.1)
       childprocess (>= 0.6.3, < 5)
       iniparse (~> 1.4)
@@ -756,10 +738,6 @@ GEM
     regexp_parser (2.4.0)
     reline (0.4.3)
       io-console (~> 0.5)
-    representable (3.2.0)
-      declarative (< 0.1.0)
-      trailblazer-option (>= 0.1.1, < 0.2.0)
-      uber (< 0.2.0)
     request_store (1.5.1)
       rack (>= 1.4)
     responders (3.0.1)
@@ -875,10 +853,8 @@ GEM
     thor (1.3.1)
     timeout (0.4.3)
     tomlrb (2.0.2)
-    trailblazer-option (0.1.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    uber (0.1.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
@@ -941,7 +917,6 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
-  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -959,7 +934,7 @@ DEPENDENCIES
   connection_pool
   crono
   database_cleaner-active_record
-  debug (>= 1.6.2)
+  debug
   devise
   devise-jwt
   dotenv-rails
@@ -970,9 +945,6 @@ DEPENDENCIES
   git_diff_parser
   grape
   grape-swagger
-  grape-swagger-entity (~> 0.3)
-  grape-swagger-rails
-  grape-swagger-representable (~> 0.2)
   grape_on_rails_routes
   graphiql-rails
   graphql (~> 2.0)
