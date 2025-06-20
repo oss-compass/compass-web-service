@@ -249,7 +249,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::CommitContributorCountResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :commit_contributor_count do
             fetch_metric_data(metric_name: 'commit_contributor_count')
           end
@@ -329,7 +329,7 @@ module Openapi
                 success: {
                   code: 201, model: Openapi::Entities::IssueAuthorsContributorCountResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :issue_authors_contributor_count do
             fetch_metric_data(metric_name: 'issue_authors_contributor_count')
           end
@@ -340,7 +340,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::IssueCommentsContributorCountResponse
                }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :issue_comments_contributor_count do
             fetch_metric_data(metric_name: 'issue_comments_contributor_count')
           end
@@ -352,7 +352,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::PrOpenTimeResponse
                }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :pr_open_time do
             fetch_metric_data(metric_name: 'pr_open_time')
           end
@@ -552,7 +552,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::PrAuthorsContributorCountResponse
                }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :pr_authors_contributor_count do
             fetch_metric_data(metric_name: 'pr_authors_contributor_count')
           end
@@ -563,7 +563,7 @@ module Openapi
                 success: {
                   code: 201, model: Openapi::Entities::PrReviewContributorCountResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :pr_review_contributor_count do
             fetch_metric_data(metric_name: 'pr_review_contributor_count')
           end
@@ -575,7 +575,7 @@ module Openapi
                success: {
                   code: 201, model: Openapi::Entities::CreatedSinceResponse
                }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :created_since do
             fetch_metric_data(metric_name: 'created_since')
           end
@@ -586,7 +586,7 @@ module Openapi
                 success: {
                   code: 201, model: Openapi::Entities::UpdatedSinceResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :updated_since do
             fetch_metric_data(metric_name: 'updated_since')
           end
@@ -597,7 +597,7 @@ module Openapi
                 success: {
                   code: 201, model: Openapi::Entities::LicenseChangeClaimsRequiredResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :license_change_claims_required do
             fetch_metric_data(metric_name: 'license_change_claims_required')
           end
@@ -608,7 +608,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::LicenseIsWeakResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :license_is_weak do
             fetch_metric_data(metric_name: 'license_is_weak')
           end
@@ -619,7 +619,7 @@ module Openapi
                success: {
                  code: 201, model: Openapi::Entities::RecentReleasesCountResponse
                }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :recent_releases_count do
             fetch_metric_data(metric_name: 'recent_releases_count')
           end
@@ -631,7 +631,7 @@ module Openapi
                success: {
                   code: 201, model: Openapi::Entities::ContributorCountResponse
                 }
-          params { use :custom_metric_search }
+          params { use :community_portrait_search }
           post :contributor_count do
             fetch_metric_data(metric_name: 'contributor_count')
           end
