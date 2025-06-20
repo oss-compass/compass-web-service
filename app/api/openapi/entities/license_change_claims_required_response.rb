@@ -9,12 +9,12 @@ module Openapi
         example: 1
       }
       expose :license_list, documentation: {
-        type: 'Array',
+        type: 'String', is_array: true,
         desc: '所有许可证列表',
         example: ['GPL-3.0', 'MIT', 'Apache-2.0']
       }
       expose :licenses_requiring_claims, documentation: {
-        type: 'Array',
+        type: 'String', is_array: true,
         desc: '需要声明变更的许可证列表',
         example: ['GPL-3.0']
       }

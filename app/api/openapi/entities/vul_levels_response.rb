@@ -11,7 +11,7 @@ module Openapi
     class VulLevelDetail < Grape::Entity
       expose :package_name, documentation: { type: 'String', desc: '漏洞包名', example: 'log4j-core' }
       expose :package_version, documentation: { type: 'String', desc: '漏洞版本信息', example: '2.14.1' }
-      expose :vulnerabilities, documentation: { type: 'Array', desc: '漏洞的编号（CVE）', example: ['CVE-2021-44228', 'CVE-2021-45046'] }
+      expose :vulnerabilities, documentation: { type: 'String', is_array: true, desc: '漏洞的编号（CVE）', example: ['CVE-2021-44228', 'CVE-2021-45046'] }
       expose :severity, documentation: { type: 'String', desc: '修复等级', example: 'high' }
     end
 
@@ -19,7 +19,7 @@ module Openapi
       expose :vul_levels, documentation: { type: 'Integer', desc: '漏洞总数', example: 16 }
       expose :vul_levels_count, using: Entities::VulLevelsCount, documentation: { type: 'Entities::VulLevelsCount', desc: '各等级漏洞数量', param_type: 'body' }
       expose :vul_level_details, using: Entities::VulLevelDetail, documentation: {
-        type: 'Array',
+        type: 'String',
         desc: '漏洞详细信息列表',
         param_type: 'body',
         is_array: true
