@@ -4,7 +4,7 @@ module Openapi
 
     class LicenseIsWeakMetricDetail < Grape::Entity
       expose :license_is_weak, documentation: { type: 'Integer', desc: '是否为宽松型许可证（0或1）', example: 1 }
-      expose :license_list, documentation: { type: 'Array', desc: '许可证列表', example: ['MIT', 'Apache-2.0'] }
+      expose :license_list, documentation: { type: 'String', is_array: true, desc: '许可证列表', example: ['MIT', 'Apache-2.0'] }
       expose :details, documentation: { type: 'String', desc: '详细信息', example: '项目使用MIT许可证，属于宽松型开源许可证' }
     end
 
