@@ -79,7 +79,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user = User.from_omniauth(auth)
         sign_in(user)
         token = request.env['warden-jwt_auth.token']
-        cookies['auth.token'] = { value: token, expires: 1.day.from_now }
+        cookies['auth.token'] = { value: token, expires: 7.day.from_now }
         default_url = DEFAULT_REDIRECT_URL
       else
         default_url = ERROR_REDIRECT_URL
