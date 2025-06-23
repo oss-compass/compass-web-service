@@ -24,8 +24,90 @@ module Openapi
             return true, []
           end
 
+          owner, repo = parse_project_url(label)
 
-          return flag, releases
+          project_releases = []
+          project_tags = []
+
+          if label.include?("github.com")
+            project_releases = fetch_github_releases(owner, repo)
+            return true, [] if project_releases.include?(version_number)
+
+            project_tags = fetch_github_tags(owner, repo)
+            return true, [] if project_tags.include?(version_number)
+
+          elsif label.include?("gitee.com")
+            project_tags = fetch_gitee_tags(owner, repo)
+            return true, [] if project_tags.include?(version_number)
+          end
+
+          return false, (releases + project_releases + project_tags).uniq
+        end
+
+        # 提取 owner 和 repo
+        def parse_project_url(url)
+          uri = URI.parse(url)
+          parts = uri.path.split('/')
+          owner = parts[1]
+          repo = parts[2].gsub(/.git$/, '')
+          [owner, repo]
+        end
+
+
+        def fetch_github_releases(owner, repo)
+          response = github_conn.get("repos/#{owner}/#{repo}/releases")
+          return [] unless response.success?
+
+          json = JSON.parse(response.body)
+          json.map { |release| release["tag_name"] }
+        rescue => e
+          Rails.logger.error "GitHub releases error: #{e.message}"
+          []
+        end
+
+        # 使用 Faraday 获取 tags
+        def fetch_github_tags(owner, repo)
+          response = github_conn.get("repos/#{owner}/#{repo}/tags")
+          return [] unless response.success?
+
+          json = JSON.parse(response.body)
+          json.map { |tag| tag["name"] }
+        rescue => e
+          Rails.logger.error "GitHub tags error: #{e.message}"
+          []
+        end
+
+        def github_conn
+          @github_conn ||= Faraday.new(url: "https://api.github.com") do |f|
+            f.request :url_encoded
+            f.headers['Accept'] = 'application/vnd.github+json'
+            f.headers['User-Agent'] = 'VersionChecker/1.0'
+
+            if ENV['GITHUB_API_TOKEN']
+              f.headers['Authorization'] = "Bearer #{ENV['GITHUB_API_TOKEN']}"
+            end
+
+            f.adapter Faraday.default_adapter
+          end
+        end
+
+        # -------- Gitee API --------
+        def fetch_gitee_tags(owner, repo)
+          response = gitee_conn.get("repos/#{owner}/#{repo}/tags")
+          # puts "Requesting: #{gitee_conn.build_url("repos/#{owner}/#{repo}/tags")}"
+          return [] unless response.success?
+          JSON.parse(response.body).map { |t| t["name"] }
+        rescue => e
+          Rails.logger.error "Gitee tags error: #{e.message}"
+          []
+        end
+
+        def gitee_conn
+          @gitee_conn ||= Faraday.new(url: "https://gitee.com/api/v5") do |f|
+            f.headers['User-Agent'] = 'VersionChecker/1.0'
+            f.params['access_token'] = ENV['GITEE_TOKEN'] if ENV['GITEE_TOKEN']
+            f.adapter Faraday.default_adapter
+          end
         end
       end
 
@@ -100,8 +182,6 @@ module Openapi
               elsif project['label'].start_with?("https://gitee.com/")
                 project['label'].gsub("https://gitee.com/", "").strip
               else
-
-
 
                 puts ""
               end
