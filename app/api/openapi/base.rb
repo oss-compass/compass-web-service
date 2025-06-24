@@ -48,6 +48,7 @@ module Openapi
     mount Openapi::V2::L3::ModelRolePersona
     mount Openapi::V2::L3::ModelMilestonePersona
     mount Openapi::V2::L3::ModelOpencheck
+    mount Openapi::V2::L3::ModelCriticalityScore
     mount Openapi::V2::FinanceStandard
     mount Openapi::V2::Auth
 

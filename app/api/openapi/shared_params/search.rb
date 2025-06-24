@@ -36,7 +36,7 @@ module Openapi
         level = params[:level] || 'repo'
         filter_opts = params[:filter_opts]&.map { |opt| OpenStruct.new(opt) } || []
         if params[:direction]
-          sort_opts = [OpenStruct.new(type: 'created_at', direction: params[:direction])]
+          sort_opts = [OpenStruct.new(type: 'grimoire_creation_date', direction: params[:direction])]
         else
           sort_opts = []
         end
