@@ -33,7 +33,7 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目活跃度', detail: '获取项目活跃度', tags: ['Metrics Model Data'], success: {
+        desc 'List Project Activity / 获取项目活跃度', detail: 'List project activity / 获取项目活跃度', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::ActivityResponse
         }
 

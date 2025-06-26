@@ -31,7 +31,7 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目协作开发指数', detail: '获取项目协作开发指数', tags: ['Metrics Model Data'], success: {
+        desc 'List project collaboration development index / 获取项目协作开发指数', detail: 'List project collaboration development index / 获取项目协作开发指数', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CollaborationDevelopmentIndexResponse
         }
 

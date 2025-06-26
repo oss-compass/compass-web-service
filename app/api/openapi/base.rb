@@ -50,6 +50,7 @@ module Openapi
     mount Openapi::V2::L3::ModelOpencheck
     mount Openapi::V2::FinanceStandard
     mount Openapi::V2::Auth
+    # mount Openapi::V2::TrackEvent
 
     add_swagger_documentation \
       doc_version: '2.0.0',
@@ -61,14 +62,14 @@ module Openapi
         contact_url: ENV.fetch('DEFAULT_HOST')
       },
       tags: [
-        { name: 'Metadata', description: 'Operations about Metadata',
+        { name: 'Metadata / 元数据', description: 'Operations about Metadata',
           second_names: [] },
-        { name: 'Metrics Data', description: 'Operations about Metrics Data',
-          second_names: ['Contributor Portrait', 'Community Portrait', 'Software Artifact Portrait'] },
-        { name: 'Metrics Model Data', description: 'Operations about Metrics Model Data',
+        { name: 'Metrics Data / 指标数据', description: 'Operations about Metrics Data',
+          second_names: ['Contributor Persona / 开发者画像', 'Community Persona / 社区画像', 'Software Artifact Persona / 软件制品画像'] },
+        { name: 'Metrics Model Data / 模型数据', description: 'Operations about Metrics Model Data',
           second_names: [] },
         {
-          name: '场景调用', description: 'Operations about Finance Standard Metric',
+          name: 'Scene Invocation / 场景调用', description: 'Operations about Scene Invocation',
           second_names: []
         }
       ],

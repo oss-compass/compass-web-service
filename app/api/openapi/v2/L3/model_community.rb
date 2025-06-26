@@ -32,7 +32,7 @@ module Openapi
 
 
       resource :metricModel do
-        desc '获取项目社区服务与支撑', detail: '获取项目社区服务与支撑', tags: ['Metrics Model Data'], success: {
+        desc 'List Project Community Service and Support / 获取项目社区服务与支撑', detail: 'List Project Community Service and Support / 获取项目社区服务与支撑', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CommunityServiceAndSupportResponse
         }
  

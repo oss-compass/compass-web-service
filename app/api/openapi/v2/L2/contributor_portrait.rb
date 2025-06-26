@@ -61,7 +61,7 @@ module Openapi
 
           desc 'Developer Contribution Ranking / 开发者贡献排名',
                detail: 'Global annual ranking of developer code contributions, PR contributions, and Issue contributions / 开发者的代码贡献, PR贡献, Issue贡献在全球年度排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributionRankResponse
                }
@@ -91,7 +91,7 @@ module Openapi
 
           desc 'Developer Overview / 开发者概览',
                detail: 'Overview of developer contributions and information / 开发者概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }
@@ -101,7 +101,7 @@ module Openapi
           post :contributor_overview do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor] 
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_indexer = GithubEventContributor
@@ -202,7 +202,7 @@ module Openapi
 
           desc '开发者贡献概览',
                detail: '开发者贡献概览',
-               tags: ['Metrics Data', 'Contributor Portrait'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }
@@ -270,7 +270,7 @@ module Openapi
 
           desc 'An overview of developer programming languages / 开发者编程语言概览',
                detail: 'An overview of developer programming languages / 开发者编程语言概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorLanguageResponse
                },
@@ -310,7 +310,7 @@ module Openapi
 
           desc 'Developer Repository Contribution Ranking / 开发者贡献仓库排名',
                detail: 'Ranking of repositories by developer contributions / 开发者贡献仓库排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorReposResponse,
                },
@@ -361,7 +361,7 @@ module Openapi
 
           desc 'Developer Contribution Type Distribution / 开发者贡献类型占比',
                detail: 'Distribution of different types of developer contributions / 开发者贡献类型占比',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributionTypeResponse
                }
@@ -436,7 +436,7 @@ module Openapi
 
           desc 'Monthly Code Commit Count / 开发者每月代码提交次数',
                detail: 'Number of code commits by developer per month / 开发者每月代码提交次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,
 
@@ -461,7 +461,7 @@ module Openapi
 
           desc 'Monthly Issue Update Count / 开发者每月更新issue次数',
                detail: 'Number of issue updates by developer per month / 开发者每月更新issue次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,
 
@@ -485,7 +485,7 @@ module Openapi
 
           desc 'Monthly Issue Comment Count / 开发者每月issue评论次数',
                detail: 'Number of issue comments by developer per month / 开发者每月issue评论次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,
 
@@ -509,7 +509,7 @@ module Openapi
 
           desc 'Developer Repository Contributions / 开发者对仓库贡献',
                detail: 'Developer contributions to repository including code, issues, issue comments, PR contributions and PR reviews / 开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
                }
@@ -588,7 +588,7 @@ module Openapi
 
           desc 'Developer Collaboration / 开发者协作',
                detail: 'Establish collaboration relationships with other developers through issues, PRs and their corresponding comments / 通过Issue、PR及其对应的评论信息，与其他开发者建立协作关系',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
                }
