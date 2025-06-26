@@ -31,7 +31,7 @@ module Openapi
       end
 
       resource :metadata do
-        desc '获取项目git元数据', detail: '获取项目git元数据', tags: ['Metadata'], success: {
+        desc 'List project git metadata / 获取项目git元数据', detail: 'List project git metadata / 获取项目git元数据', tags: ['Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::GitResponse
         }
 

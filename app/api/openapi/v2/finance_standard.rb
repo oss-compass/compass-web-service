@@ -144,7 +144,7 @@ module Openapi
 
       resource :financeStandardProjectVersion do
         # desc 'trigger FinanceStandard Project'
-        desc '触发执行金融指标', tags: ['场景调用'], success: {
+        desc 'Trigger The Finance Standard Metric / 触发执行金融指标', tags: ['Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::TriggerResponse
         }, detail: <<~DETAIL
           该接口用于触发金融指标的执行分析。
@@ -157,7 +157,7 @@ module Openapi
           根据传入的数据集信息，提交任务，调用金融指标模型进行处理。
 
           返回值：
-           status (布尔值)：状态值，表示分析任务是否提交成功。
+           status (布尔值)：状态值，表示分析任务是否提交成功。 / 
         DETAIL
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
@@ -198,7 +198,7 @@ module Openapi
         end
 
         # desc 'query trigger status for a given project'
-        desc '获取给定项目的金融指标执行状态', tags: ['场景调用'], success: {
+        desc 'Query Trigger Status / 获取给定项目的金融指标执行状态', tags: ['Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::StatusQueryResponse
         }, detail: <<~DETAIL
            该接口用于查询指定项目及版本号的金融指标执行状态。

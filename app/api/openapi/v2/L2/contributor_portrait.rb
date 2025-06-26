@@ -101,7 +101,7 @@ module Openapi
           post :contributor_overview do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor] 
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_indexer = GithubEventContributor
@@ -202,7 +202,7 @@ module Openapi
 
           desc '开发者贡献概览',
                detail: '开发者贡献概览',
-               tags: ['Metrics Data', 'Contributor Portrait'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }

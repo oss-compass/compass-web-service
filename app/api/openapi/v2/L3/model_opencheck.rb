@@ -31,7 +31,7 @@ module Openapi
       end
 
       resource :opencheck do
-        desc '获取项目opencheck检查数据', detail: '获取项目贡献者元数据', tags: ['Metrics Model Data'], success: {
+        desc 'List Project Opencheck check Data / 获取项目opencheck检查数据', detail: 'List Project Opencheck check Data / 获取项目opencheck检查数据', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::OpencheckResponse
         }
 
