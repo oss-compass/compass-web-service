@@ -200,7 +200,7 @@ module Openapi
 
           end
 
-          desc '开发者贡献概览',
+          desc 'Developer / 开发者贡献概览',
                detail: '开发者贡献概览',
                tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
@@ -438,7 +438,7 @@ module Openapi
                detail: 'Number of code commits by developer per month / 开发者每月代码提交次数',
                tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
@@ -463,7 +463,7 @@ module Openapi
                detail: 'Number of issue updates by developer per month / 开发者每月更新issue次数',
                tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
@@ -487,7 +487,7 @@ module Openapi
                detail: 'Number of issue comments by developer per month / 开发者每月issue评论次数',
                tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
