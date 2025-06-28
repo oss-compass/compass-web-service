@@ -169,12 +169,17 @@ module Openapi
 
             all_repos_contribution = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             # 构建角色映射
+            org =  event_data['company'] || fallback_org
             repo_roles = all_repos_contribution.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
               roles = []
               roles << 'individual_manager' if personal_manage_repo.include?(repo)
               roles << 'organization_manager' if org_manage_repo.include?(repo)
+              # 如果既不是个人 manager 也不是组织 manager，则为参与者
+              unless manage_repos.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
               roles << 'core' if core_project.include?(repo)
               roles << 'guest' if frequent_project.include?(repo)
               {
@@ -325,6 +330,7 @@ module Openapi
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -341,12 +347,19 @@ module Openapi
 
             repo_contributions = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER).first(5)
 
+            fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
+            event_data = event_indexer.query_name(contributor)
+            org =  event_data['company'] || fallback_org
+
             res =  repo_contributions.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
               roles = []
               roles << 'individual_manager' if personal_manage_repo.include?(repo)
               roles << 'organization_manager' if org_manage_repo.include?(repo)
+              unless manage_repos.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
               roles << 'core' if core_project.include?(repo)
               roles << 'guest' if frequent_project.include?(repo)
               {
@@ -519,6 +532,7 @@ module Openapi
           post :repo_collaboration do
             indexer = GithubEventContributorRepoEnrich
             event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             contributor = params[:contributor]
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
@@ -532,6 +546,10 @@ module Openapi
 
             all_repos = sources.map { |item| item['repo'] }.compact.uniq
             frequent_repo = all_repos - core_repo - manage_repo
+
+            fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
+            event_data = event_indexer.query_name(contributor)
+            org =  event_data['company'] || fallback_org
 
             repo_contribution_list = hits.each_with_object({}) do |hit, result|
               data = hit['_source']
@@ -550,6 +568,9 @@ module Openapi
               roles = []
               roles << 'individual_manager' if personal_manage_repo.include?(repo)
               roles << 'organization_manager' if org_manage_repo.include?(repo)
+              unless manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
               roles << 'core' if core_repo.include?(repo)
               roles << 'guest' if frequent_repo.include?(repo)
               result[repo]['repo_roles'] = roles.uniq
