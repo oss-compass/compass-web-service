@@ -32,7 +32,7 @@ module Openapi
       end
 
       resource :metadata do
-        desc '获取项目stargazer元数据', detail: '获取项目stargazer元数据', tags: ['Metadata'], success: {
+        desc 'List project stargazer metadata / 获取项目stargazer元数据', detail: 'List project stargazer metadata / 获取项目stargazer元数据', tags: ['Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::StargazerResponse
         }
 
