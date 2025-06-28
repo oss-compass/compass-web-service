@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
+ActiveRecord::Schema[7.1].define(version:  2025_06_23_065041) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -223,7 +223,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.index ["user_id"], name: "index_login_binds_on_user_id"
   end
 
-  create_table "project_tasks", charset: "utf8mb4", collation: "utf8mb4_general_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "project_tasks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "task_id", null: false
     t.string "remote_url", null: false, collation: "utf8mb4_bin"
     t.string "status"
@@ -316,7 +316,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.index ["label"], name: "index_subjects_on_label", unique: true
   end
 
-  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_general_ci", options: "ENGINE=InnoDB ROW_FORMAT=DYNAMIC", force: :cascade do |t|
+  create_table "subscriptions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "subject_id", null: false
     t.datetime "created_at", null: false
@@ -390,7 +390,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.integer "subject_id", null: false
     t.integer "user_id", null: false
     t.integer "compliance_license"
-    t.string "compliance_license_detail", limit: 500
+    t.string "compliance_license_detail", limit: 1500
     t.integer "compliance_dco"
     t.string "compliance_dco_detail", limit: 500
     t.integer "compliance_license_compatibility"
@@ -458,7 +458,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.string "license"
     t.integer "code_count"
     t.integer "is_incubation"
-    t.string "oh_commit_sha"
+    t.string "oh_commit_sha", limit: 500
     t.index ["short_code"], name: "index_tpc_software_graduation_reports_on_short_code", unique: true
   end
 
@@ -478,7 +478,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.integer "target_software_report_id"
   end
 
-  create_table "tpc_software_lectotype_report_metric_raws", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "tpc_software_lectotype_report_metric_raws", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.integer "tpc_software_lectotype_report_metric_id", null: false
     t.string "code_url", null: false
     t.integer "subject_id", null: false
@@ -504,7 +504,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotype_report_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "tpc_software_lectotype_report_metrics", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "code_url", null: false
     t.string "status", null: false
     t.integer "status_compass_callback", null: false
@@ -560,7 +560,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotype_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "tpc_software_lectotype_reports", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "name", null: false
     t.integer "tpc_software_sig_id", null: false
     t.string "release"
@@ -582,7 +582,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "tpc_software_lectotypes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+  create_table "tpc_software_lectotypes", charset: "latin1", collation: "latin1_swedish_ci", force: :cascade do |t|
     t.string "tpc_software_lectotype_report_ids", null: false
     t.string "repo_url"
     t.string "committers", null: false
@@ -760,6 +760,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.string "committer_emails", limit: 1024
   end
 
+
   create_table "tracking_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "event_type", null: false
     t.bigint "timestamp", null: false
@@ -775,6 +776,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_23_065041) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
