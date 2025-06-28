@@ -125,25 +125,6 @@ module Openapi
                 (item['pull_request_review_approved_contribution'].to_i > 0)
             end.map { |item| item['repo'] }.compact.uniq
 
-            personal_manage_repo = sources.select do |item|
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
-
-            org_manage_repo = sources.select do |item|
-
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && !repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
-
             # 累加每种语言的贡献值
             language_contributions = Hash.new(0)
             sources.each do |item|
@@ -153,13 +134,7 @@ module Openapi
             end
             # 找出 total_contribution 累加值最大的语言
             main_language = language_contributions.max_by { |_, v| v }&.first
-            core_project = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
-
-            # 所有仓库
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
-
-            # 其他的为常客开发者角色
-            frequent_project = all_repos - manage_repos - core_project
+            core_repo = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
 
             # 提取非空的国家和城市作为备选值
             fallback_country = sources.map { |s| s['contributor_country'] }.compact.find { |c| !c.to_s.strip.empty? }
@@ -174,14 +149,15 @@ module Openapi
               repo = repos[:repo_url]
               contribution = repos[:contribution]
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
-              # 如果既不是个人 manager 也不是组织 manager，则为参与者
+              if manage_repos.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
               unless manage_repos.include?(repo)
                 roles << (org.present? ? 'organization_participant' : 'individual_participant')
               end
-              roles << 'core' if core_project.include?(repo)
-              roles << 'guest' if frequent_project.include?(repo)
+
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
               {
                 repo: repo,
                 roles: roles,
@@ -334,16 +310,10 @@ module Openapi
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
-            manage_repos = enrich_indexer.get_manage_repos(sources)
-            personal_manage_repo = enrich_indexer.get_personal_manage_repo(sources, contributor)
-            org_manage_repo = enrich_indexer.get_org_manage_repo(sources, contributor)
+            manage_repo = enrich_indexer.get_manage_repos(sources)
 
-            core_project = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
-            # 所有仓库
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
+            core_repo = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
 
-            # 其他的为常客开发者角色
-            frequent_project = all_repos - manage_repos - core_project
 
             repo_contributions = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER).first(5)
 
@@ -354,14 +324,17 @@ module Openapi
             res =  repo_contributions.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
+
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
-              unless manage_repos.include?(repo)
+              if manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
+              unless manage_repo.include?(repo)
                 roles << (org.present? ? 'organization_participant' : 'individual_participant')
               end
-              roles << 'core' if core_project.include?(repo)
-              roles << 'guest' if frequent_project.include?(repo)
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
+
               {
                 repo_url: repo,
                 repo: repo,
@@ -541,11 +514,6 @@ module Openapi
             core_repo = event_repo_indexer.query_core_project(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
 
             manage_repo = indexer.get_manage_repos(sources)
-            personal_manage_repo =  indexer.get_personal_manage_repo(sources, contributor)
-            org_manage_repo =  indexer.get_org_manage_repo(sources, contributor)
-
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
-            frequent_repo = all_repos - core_repo - manage_repo
 
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
             event_data = event_indexer.query_name(contributor)
@@ -566,13 +534,16 @@ module Openapi
                 'repo_roles' => []
               }
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
+
+              if manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
               unless manage_repo.include?(repo)
                 roles << (org.present? ? 'organization_participant' : 'individual_participant')
               end
-              roles << 'core' if core_repo.include?(repo)
-              roles << 'guest' if frequent_repo.include?(repo)
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
+
               result[repo]['repo_roles'] = roles.uniq
 
               contribution_map = {
