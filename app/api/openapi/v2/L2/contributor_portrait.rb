@@ -61,7 +61,7 @@ module Openapi
 
           desc 'Developer Contribution Ranking / 开发者贡献排名',
                detail: 'Global annual ranking of developer code contributions, PR contributions, and Issue contributions / 开发者的代码贡献, PR贡献, Issue贡献在全球年度排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributionRankResponse
                }
@@ -91,7 +91,7 @@ module Openapi
 
           desc 'Developer Overview / 开发者概览',
                detail: 'Overview of developer contributions and information / 开发者概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }
@@ -101,7 +101,7 @@ module Openapi
           post :contributor_overview do
             begin_date = params[:begin_date]
             end_date = params[:end_date]
-            contributor = params[:contributor] 
+            contributor = params[:contributor]
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_indexer = GithubEventContributor
@@ -125,25 +125,6 @@ module Openapi
                 (item['pull_request_review_approved_contribution'].to_i > 0)
             end.map { |item| item['repo'] }.compact.uniq
 
-            personal_manage_repo = sources.select do |item|
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
-
-            org_manage_repo = sources.select do |item|
-
-              repo = item["repo"]
-              (
-                item['pull_request_merged_contribution'].to_i > 0 ||
-                  item['push_contribution'].to_i > 0 ||
-                  item['pull_request_review_approved_contribution'].to_i > 0
-              ) && !repo.include?(contributor)
-            end.map { |item| item['repo'] }.compact.uniq
-
             # 累加每种语言的贡献值
             language_contributions = Hash.new(0)
             sources.each do |item|
@@ -153,13 +134,7 @@ module Openapi
             end
             # 找出 total_contribution 累加值最大的语言
             main_language = language_contributions.max_by { |_, v| v }&.first
-            core_project = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
-
-            # 所有仓库
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
-
-            # 其他的为常客开发者角色
-            frequent_project = all_repos - manage_repos - core_project
+            core_repo = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
 
             # 提取非空的国家和城市作为备选值
             fallback_country = sources.map { |s| s['contributor_country'] }.compact.find { |c| !c.to_s.strip.empty? }
@@ -169,14 +144,20 @@ module Openapi
 
             all_repos_contribution = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             # 构建角色映射
+            org =  event_data['company'] || fallback_org
             repo_roles = all_repos_contribution.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
-              roles << 'core' if core_project.include?(repo)
-              roles << 'guest' if frequent_project.include?(repo)
+              if manage_repos.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
+              unless manage_repos.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
+
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
               {
                 repo: repo,
                 roles: roles,
@@ -200,9 +181,9 @@ module Openapi
 
           end
 
-          desc '开发者贡献概览',
+          desc 'Developer / 开发者贡献概览',
                detail: '开发者贡献概览',
-               tags: ['Metrics Data', 'Contributor Portrait'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }
@@ -270,7 +251,7 @@ module Openapi
 
           desc 'An overview of developer programming languages / 开发者编程语言概览',
                detail: 'An overview of developer programming languages / 开发者编程语言概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorLanguageResponse
                },
@@ -310,7 +291,7 @@ module Openapi
 
           desc 'Developer Repository Contribution Ranking / 开发者贡献仓库排名',
                detail: 'Ranking of repositories by developer contributions / 开发者贡献仓库排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorReposResponse,
                },
@@ -325,30 +306,35 @@ module Openapi
 
             enrich_indexer = GithubEventContributorRepoEnrich
             event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
-            manage_repos = enrich_indexer.get_manage_repos(sources)
-            personal_manage_repo = enrich_indexer.get_personal_manage_repo(sources, contributor)
-            org_manage_repo = enrich_indexer.get_org_manage_repo(sources, contributor)
+            manage_repo = enrich_indexer.get_manage_repos(sources)
 
-            core_project = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
-            # 所有仓库
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
+            core_repo = event_repo_indexer.query_core_project(contributor, begin_date, end_date, page: 1, per: MAX_PER)
 
-            # 其他的为常客开发者角色
-            frequent_project = all_repos - manage_repos - core_project
 
             repo_contributions = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER).first(5)
+
+            fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
+            event_data = event_indexer.query_name(contributor)
+            org =  event_data['company'] || fallback_org
 
             res =  repo_contributions.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
+
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
-              roles << 'core' if core_project.include?(repo)
-              roles << 'guest' if frequent_project.include?(repo)
+              if manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
+              unless manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
+
               {
                 repo_url: repo,
                 repo: repo,
@@ -361,7 +347,7 @@ module Openapi
 
           desc 'Developer Contribution Type Distribution / 开发者贡献类型占比',
                detail: 'Distribution of different types of developer contributions / 开发者贡献类型占比',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributionTypeResponse
                }
@@ -436,9 +422,9 @@ module Openapi
 
           desc 'Monthly Code Commit Count / 开发者每月代码提交次数',
                detail: 'Number of code commits by developer per month / 开发者每月代码提交次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
@@ -461,9 +447,9 @@ module Openapi
 
           desc 'Monthly Issue Update Count / 开发者每月更新issue次数',
                detail: 'Number of issue updates by developer per month / 开发者每月更新issue次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
@@ -485,9 +471,9 @@ module Openapi
 
           desc 'Monthly Issue Comment Count / 开发者每月issue评论次数',
                detail: 'Number of issue comments by developer per month / 开发者每月issue评论次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201,
+                 code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
                }
           params {
@@ -509,7 +495,7 @@ module Openapi
 
           desc 'Developer Repository Contributions / 开发者对仓库贡献',
                detail: 'Developer contributions to repository including code, issues, issue comments, PR contributions and PR reviews / 开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
                }
@@ -519,6 +505,7 @@ module Openapi
           post :repo_collaboration do
             indexer = GithubEventContributorRepoEnrich
             event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             contributor = params[:contributor]
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
@@ -527,11 +514,10 @@ module Openapi
             core_repo = event_repo_indexer.query_core_project(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
 
             manage_repo = indexer.get_manage_repos(sources)
-            personal_manage_repo =  indexer.get_personal_manage_repo(sources, contributor)
-            org_manage_repo =  indexer.get_org_manage_repo(sources, contributor)
 
-            all_repos = sources.map { |item| item['repo'] }.compact.uniq
-            frequent_repo = all_repos - core_repo - manage_repo
+            fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
+            event_data = event_indexer.query_name(contributor)
+            org =  event_data['company'] || fallback_org
 
             repo_contribution_list = hits.each_with_object({}) do |hit, result|
               data = hit['_source']
@@ -548,10 +534,16 @@ module Openapi
                 'repo_roles' => []
               }
               roles = []
-              roles << 'individual_manager' if personal_manage_repo.include?(repo)
-              roles << 'organization_manager' if org_manage_repo.include?(repo)
-              roles << 'core' if core_repo.include?(repo)
-              roles << 'guest' if frequent_repo.include?(repo)
+
+              if manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_manager' : 'individual_manager')
+              end
+
+              unless manage_repo.include?(repo)
+                roles << (org.present? ? 'organization_participant' : 'individual_participant')
+              end
+              roles << (core_repo.include?(repo) ? 'core' : 'guest')
+
               result[repo]['repo_roles'] = roles.uniq
 
               contribution_map = {
@@ -588,7 +580,7 @@ module Openapi
 
           desc 'Developer Collaboration / 开发者协作',
                detail: 'Establish collaboration relationships with other developers through issues, PRs and their corresponding comments / 通过Issue、PR及其对应的评论信息，与其他开发者建立协作关系',
-               tags: ['Metrics Data / 指标数据', 'Contributor Portrait / 开发者画像'],
+               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
                }

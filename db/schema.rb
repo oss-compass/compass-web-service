@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_22_024408) do
+ActiveRecord::Schema[7.1].define(version:  2025_06_23_065041) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -19,6 +19,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_024408) do
     t.datetime "expires_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["expires_at"], name: "index_access_tokens_on_expires_at"
+    t.index ["token"], name: "index_access_tokens_on_token", unique: true
+    t.index ["user_id"], name: "index_access_tokens_on_user_id"
   end
 
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -756,6 +759,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_22_024408) do
     t.datetime "updated_at", null: false
     t.string "committer_emails", limit: 1024
   end
+
+
+  create_table "tracking_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "event_type", null: false
+    t.bigint "timestamp", null: false
+    t.integer "user_id"
+    t.string "page_path", null: false
+    t.string "module_id"
+    t.string "referrer"
+    t.string "device_user_agent"
+    t.string "device_language"
+    t.string "device_timezone"
+    t.string "data", null: false
+    t.string "ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", default: "", null: false

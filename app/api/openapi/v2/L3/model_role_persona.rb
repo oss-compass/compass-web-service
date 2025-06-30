@@ -31,7 +31,7 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目贡献者角色画像', detail: '获取项目贡献者角色画像', tags: ['Metrics Model Data'], success: {
+        desc 'List Project Contributor Role Persona / 获取项目贡献者角色画像', detail: 'List Project Contributor Role Persona / 获取项目贡献者角色画像', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::ContributorRolePersonaResponse
         }
 
