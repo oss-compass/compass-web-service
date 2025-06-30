@@ -2,7 +2,7 @@
 module Openapi
   module Entities
 
-    class CriticalityScoreItem < Grape::Entity
+    class CriticalityScoreResponse < Grape::Entity
       expose :uuid, documentation: { type: 'String', desc: 'uuid', example: "9497744d49ae8c0eba2b657d55a178a4b12c2b77" }
       expose :level, documentation: { type: 'String', desc: 'level', example: "repo" }
       expose :type, documentation: { type: 'String', desc: 'type', example: '' }
@@ -23,15 +23,6 @@ module Openapi
 
       expose :grimoire_creation_date, documentation: { type: 'String', desc: 'grimoire_creation_date', example: "2022-07-18T00:00:00+00:00" }
       expose :metadata__enriched_on, documentation: { type: 'String', desc: 'metadata__enriched_on', example: "2024-01-17T22:47:46.075025+00:00" }
-    #
-    end
-
-    class CriticalityScoreResponse < Grape::Entity
-      expose :count, documentation: { type: 'int', desc: '总数', example: 100 }
-      expose :total_page, documentation: { type: 'int', desc: '总页数', example: 2 }
-      expose :page, documentation: { type: 'int', desc: '当前页', example: 1 }
-      expose :items, using: Entities::CriticalityScoreItem, documentation: { type: 'Entities::CriticalityScoreItem', desc: 'response',
-                                                                 param_type: 'body', is_array: true }
 
     end
 

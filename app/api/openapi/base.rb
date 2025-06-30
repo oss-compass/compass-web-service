@@ -35,6 +35,7 @@ module Openapi
     mount Openapi::V2::L1::Watch
     mount Openapi::V2::L1::Repo
     mount Openapi::V2::L1::Releases
+    mount Openapi::V2::L1::Opencheck
     # L2
     mount Openapi::V2::L2::ContributorPortrait
     mount Openapi::V2::L2::CommunityPortrait
@@ -49,6 +50,7 @@ module Openapi
     mount Openapi::V2::L3::ModelMilestonePersona
     mount Openapi::V2::L3::ModelOpencheck
     mount Openapi::V2::L3::ModelCriticalityScore
+    mount Openapi::V2::L3::ModelScorecard
     mount Openapi::V2::FinanceStandard
     mount Openapi::V2::Auth
 

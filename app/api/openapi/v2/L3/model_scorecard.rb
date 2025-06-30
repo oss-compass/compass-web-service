@@ -3,7 +3,7 @@
 module Openapi
   module V2
     module L3
-    class ModelCriticalityScore < Grape::API
+    class ModelScorecard < Grape::API
 
       version 'v2', using: :path
       prefix :api
@@ -33,20 +33,20 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目 Criticality Score', detail: '获取项目 Criticality Score', tags: ['Metrics Model Data'], success: {
-          code: 201, model: Openapi::Entities::CriticalityScoreResponse
+        desc '获取项目 Scorecard', detail: '获取项目 Scorecard', tags: ['Metrics Model Data'], success: {
+          code: 201, model: Openapi::Entities::ScorecardResponse
         }
 
         params {
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
           requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
-        post :criticality_score do
+        post :scorecard do
 
-          indexer = CriticalityScoreMetric
+          indexer = ScorecardMetric
           repo_urls = [params[:label]]
 
-          resp = indexer.one_by_metricMaven、Mill、sbt和Scala CLI_repo_urls(repo_urls)
+          resp = indexer.one_by_metric_repo_urls(repo_urls)
 
 
           hits = resp&.[]('hits')&.[]('hits') || []
