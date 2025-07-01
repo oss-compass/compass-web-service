@@ -7,7 +7,7 @@ module Openapi
       expose :issue_first_reponse_avg, # 注意保留字段原始拼写
              documentation: {
                type: 'Float',
-               desc: '问题首次响应时间平均值（单位：小时）',
+               desc: 'Average First Response Time for Issues (Hours)/问题首次响应时间平均值（单位：小时）',
                example: 24.5,
                format: 'float',
                minimum: 0.0,
@@ -17,7 +17,7 @@ module Openapi
       expose :issue_first_reponse_mid, # 与字段定义保持拼写一致
              documentation: {
                type: 'Float',
-               desc: '问题首次响应时间中位数（单位：小时）',
+               desc: 'Median First Response Time for Issues (Hours)/问题首次响应时间中位数（单位：小时）',
                example: 12.0,
                format: 'float',
                minimum: 0.0,
@@ -32,7 +32,7 @@ module Openapi
       expose :metric_type, documentation: { type: 'String', desc: 'metric_type', example: 'community_portrait' }
       expose :metric_name, documentation: { type: 'String', desc: 'metric_name', example: 'issue_first_reponse' }
       expose :metric_detail, using: Entities::IssueFirstResponseMetricDetail,
-                             documentation: { type: 'IssueFirstResponseMetricDetail', desc: 'metric_detail' }
+             documentation: { type: 'IssueFirstResponseMetricDetail', desc: 'metric_detail' }
       expose :version_number, documentation: { type: 'NilClass', desc: 'version_number', example: nil } # 新增字段
       expose :grimoire_creation_date,
              documentation: { type: 'String', desc: 'grimoire_creation_date', example: '2024-11-04T00:00:00+00:00' }
@@ -42,11 +42,11 @@ module Openapi
     end
 
     class IssueFirstResponseResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: '总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: '总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: '当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
       expose :items, using: Entities::IssueFirstResponseItem,
-                     documentation: { type: 'Entities::IssueFirstResponseItem', desc: 'response', param_type: 'body', is_array: true }
+             documentation: { type: 'Entities::IssueFirstResponseItem', desc: 'response', param_type: 'body', is_array: true }
     end
   end
 end
