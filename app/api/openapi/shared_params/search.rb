@@ -5,30 +5,30 @@ module Openapi
       extend Grape::API::Helpers
 
       params :search do
-        requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-        requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
-        optional :level, type: String, desc: '层级 repo或community', default: 'repo',
-                 values: ['repo', 'community'],
-                 documentation: { param_type: 'body', example: 'repo' }
+        requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+        requires :label, type: String, desc: 'Repository or community address / 仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+        optional :level, type: String, desc: 'Level repo or community / 层级 repo或community', default: 'repo',
+           values: ['repo', 'community'],
+           documentation: { param_type: 'body', example: 'repo' }
 
-        # optional :sort, type: String, desc: '排序项', documentation: { param_type: 'body', example: 'created_at' }
-        optional :direction, type: String, desc: '按时间排序,排序方向 ', documentation: { param_type: 'body', example: 'desc' }, values: ['asc', 'desc']
-        requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
-        requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
-        optional :page, type: Integer, default: 1, desc: '页码', documentation: { param_type: 'body' }
-        optional :size, type: Integer, default: 10, desc: '每页条数 默认10', documentation: { param_type: 'body' }
+        # optional :sort, type: String, desc: 'Sort field / 排序项', documentation: { param_type: 'body', example: 'created_at' }
+        optional :direction, type: String, desc: 'Sort direction by time / 按时间排序,排序方向', documentation: { param_type: 'body', example: 'desc' }, values: ['asc', 'desc']
+        requires :begin_date, type: DateTime, desc: 'Start date / 开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+        requires :end_date, type: DateTime, desc: 'End date / 结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+        optional :page, type: Integer, default: 1, desc: 'Page number / 页码', documentation: { param_type: 'body' }
+        optional :size, type: Integer, default: 10, desc: 'Number of items per page (default 10) / 每页条数 默认10', documentation: { param_type: 'body' }
 
       end
 
       params :search_grimoire do
-        requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-        requires :label, type: String, desc: '仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
-        optional :level, type: String, desc: '层级 repo或community', default: 'repo',  values: ['repo', 'community'],documentation: { param_type: 'body', example: 'repo' }
-        optional :direction, type: String, desc: '按时间排序,排序方向', documentation: { param_type: 'body', example: 'desc' }
-        requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
-        requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
-        optional :page, type: Integer, default: 1, desc: '页码', documentation: { param_type: 'body' }
-        optional :size, type: Integer, default: 10, desc: '每页条数 默认10', documentation: { param_type: 'body' }
+        requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+        requires :label, type: String, desc: 'Repository or community address / 仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+        optional :level, type: String, desc: 'Level repo or community / 层级 repo或community', default: 'repo', values: ['repo', 'community'], documentation: { param_type: 'body', example: 'repo' }
+        optional :direction, type: String, desc: 'Sort direction by time / 按时间排序,排序方向', documentation: { param_type: 'body', example: 'desc' }
+        requires :begin_date, type: DateTime, desc: 'Start date / 开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+        requires :end_date, type: DateTime, desc: 'End date / 结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+        optional :page, type: Integer, default: 1, desc: 'Page number / 页码', documentation: { param_type: 'body' }
+        optional :size, type: Integer, default: 10, desc: 'Number of items per page (default 10) / 每页条数 默认10', documentation: { param_type: 'body' }
       end
 
       def extract_search_params!(params)
