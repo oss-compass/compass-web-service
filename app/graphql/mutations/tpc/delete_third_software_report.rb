@@ -13,7 +13,7 @@ module Mutations
         current_user = context[:current_user]
         login_required!(current_user)
 
-        report = TpcSoftwareGraduationReport.find_by(id: report_id)
+        report = TpcSoftwareSelectionReport.find_by(id: report_id)
         raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
         raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless current_user&.is_admin? || report.user_id == current_user.id
         report.destroy!

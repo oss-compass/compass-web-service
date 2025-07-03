@@ -24,8 +24,90 @@ module Openapi
             return true, []
           end
 
+          owner, repo = parse_project_url(label)
 
-          return flag, releases
+          project_releases = []
+          project_tags = []
+
+          if label.include?("github.com")
+            project_releases = fetch_github_releases(owner, repo)
+            return true, [] if project_releases.include?(version_number)
+
+            project_tags = fetch_github_tags(owner, repo)
+            return true, [] if project_tags.include?(version_number)
+
+          elsif label.include?("gitee.com")
+            project_tags = fetch_gitee_tags(owner, repo)
+            return true, [] if project_tags.include?(version_number)
+          end
+
+          return false, (releases + project_releases + project_tags).uniq
+        end
+
+        # 提取 owner 和 repo
+        def parse_project_url(url)
+          uri = URI.parse(url)
+          parts = uri.path.split('/')
+          owner = parts[1]
+          repo = parts[2].gsub(/.git$/, '')
+          [owner, repo]
+        end
+
+
+        def fetch_github_releases(owner, repo)
+          response = github_conn.get("repos/#{owner}/#{repo}/releases")
+          return [] unless response.success?
+
+          json = JSON.parse(response.body)
+          json.map { |release| release["tag_name"] }
+        rescue => e
+          Rails.logger.error "GitHub releases error: #{e.message}"
+          []
+        end
+
+        # 使用 Faraday 获取 tags
+        def fetch_github_tags(owner, repo)
+          response = github_conn.get("repos/#{owner}/#{repo}/tags")
+          return [] unless response.success?
+
+          json = JSON.parse(response.body)
+          json.map { |tag| tag["name"] }
+        rescue => e
+          Rails.logger.error "GitHub tags error: #{e.message}"
+          []
+        end
+
+        def github_conn
+          @github_conn ||= Faraday.new(url: "https://api.github.com") do |f|
+            f.request :url_encoded
+            f.headers['Accept'] = 'application/vnd.github+json'
+            f.headers['User-Agent'] = 'VersionChecker/1.0'
+
+            if ENV['GITHUB_API_TOKEN']
+              f.headers['Authorization'] = "Bearer #{ENV['GITHUB_API_TOKEN']}"
+            end
+
+            f.adapter Faraday.default_adapter
+          end
+        end
+
+        # -------- Gitee API --------
+        def fetch_gitee_tags(owner, repo)
+          response = gitee_conn.get("repos/#{owner}/#{repo}/tags")
+          # puts "Requesting: #{gitee_conn.build_url("repos/#{owner}/#{repo}/tags")}"
+          return [] unless response.success?
+          JSON.parse(response.body).map { |t| t["name"] }
+        rescue => e
+          Rails.logger.error "Gitee tags error: #{e.message}"
+          []
+        end
+
+        def gitee_conn
+          @gitee_conn ||= Faraday.new(url: "https://gitee.com/api/v5") do |f|
+            f.headers['User-Agent'] = 'VersionChecker/1.0'
+            f.params['access_token'] = ENV['GITEE_TOKEN'] if ENV['GITEE_TOKEN']
+            f.adapter Faraday.default_adapter
+          end
         end
       end
 
@@ -62,20 +144,29 @@ module Openapi
 
       resource :financeStandardProjectVersion do
         # desc 'trigger FinanceStandard Project'
-        desc '触发执行金融指标', tags: ['场景调用'], success: {
+        desc 'Trigger The Finance Standard Metric / 触发执行金融指标', tags: ['Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::TriggerResponse
         }, detail: <<~DETAIL
-          该接口用于触发金融指标的执行分析。
-          请求参数说明：
-          datasets (数组)：必填。数据集列表，每个元素包含：
-            label (字符串)：仓库地址，例如 "https://github.com/rabbitmq/rabbitmq-server"
-            versionNumber (字符串)：版本号，例如 "v4.0.7"
+          This interface is used to trigger the execution and analysis of financial metrics.
+          Request Parameters:
+          datasets (array, required): A list of datasets. Each element in the array must include:
+            label (string): Repository address, e.g., "https://github.com/rabbitmq/rabbitmq-server".
+            versionNumber (string): Version number, e.g., "v4.0.7".
+        
+          Interface Logic:
+          Submits a task based on the provided dataset information and invokes the financial metrics model for processing.
 
-          接口逻辑说明：
-          根据传入的数据集信息，提交任务，调用金融指标模型进行处理。
+          Response:
+          status (boolean): Indicates whether the analysis task was successfully submitted. / 该接口用于触发金融指标的执行分析。
+                    请求参数说明：
+                    datasets (数组)：必填。数据集列表，每个元素包含：
+                      label (字符串)：仓库地址，例如 "https://github.com/rabbitmq/rabbitmq-server"
+                      versionNumber (字符串)：版本号，例如 "v4.0.7"
+                    接口逻辑说明：
+                    根据传入的数据集信息，提交任务，调用金融指标模型进行处理。
+                    返回值：
+                     status (布尔值)：状态值，表示分析任务是否提交成功。                    
 
-          返回值：
-           status (布尔值)：状态值，表示分析任务是否提交成功。
         DETAIL
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
@@ -94,20 +185,6 @@ module Openapi
 
           projects.each do |project|
             # 查询 版本，先查询release enrich,没有的话去拉GitHub api release 和 tag 如果里面的版本信息和versionNumber对的上则进行下一步 否则返回版本信息
-            repo_path =
-              if project['label'].start_with?("https://github.com/")
-                project['label'].gsub("https://github.com/", "").strip
-              elsif project['label'].start_with?("https://gitee.com/")
-                project['label'].gsub("https://gitee.com/", "").strip
-              else
-
-
-
-                puts ""
-              end
-
-
-
             flag, releases = check_version_exists(project[:label], project['versionNumber'])
             unless flag
               raise Openapi::Entities::InvalidVersionNumberError, "releases: #{releases}"
@@ -118,20 +195,32 @@ module Openapi
         end
 
         # desc 'query trigger status for a given project'
-        desc '获取给定项目的金融指标执行状态', tags: ['场景调用'], success: {
+        desc 'Query Trigger Status / 获取给定项目的金融指标执行状态', tags: ['Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::StatusQueryResponse
         }, detail: <<~DETAIL
-           该接口用于查询指定项目及版本号的金融指标执行状态。
+           This interface is used to query the execution status of financial metrics analysis for a specified project and version.
+           Request Parameters:
+           label (string, required):
+           Project repository address, e.g., "https://github.com/rabbitmq/rabbitmq-server".
+           versionNumber (string, required): Project version number, e.g., "v4.0.7".
+           Interface Logic:
+           Queries the current execution status of the financial metrics analysis task based on the provided project repository address and version number.
 
+           Response:
+           trigger_status (string): Execution status of the task. Possible values include:
+            pending: Task is in the execution queue and will start shortly.
+            progress: Task is currently being processed.
+            success: Task has completed successfully.
+            error: An error occurred during execution.
+            canceled: Task was canceled.
+            unsubmit: Task has not been submitted. / 该接口用于查询指定项目及版本号的金融指标执行状态。
            请求参数说明：
             label (字符串)：必填。项目地址，如 "https://github.com/rabbitmq/rabbitmq-server"
             versionNumber (字符串)。必填：项目版本号，如 "v4.0.7"
-
            接口逻辑说明：
            根据传入的项目地址及版本号，查询对应金融指标分析任务的当前执行状态。
-
            返回值：
-          trigger_status (字符串)：任务执行状态，可能的值包括：
+            trigger_status (字符串)：任务执行状态，可能的值包括：
             pending：已经提交执行队列，将要执行;
             progress：正在执行;
             success：执行完毕;
