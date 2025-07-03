@@ -178,7 +178,7 @@ module Openapi
               country: event_data['country'] || fallback_country,
               country_raw: country_raw,
               city: event_data['city'] || fallback_city,
-              city_row: city_raw,
+              city_raw: city_raw,
               company: event_data['company'] || fallback_org,
               main_language: main_language,
               repo_roles: repo_roles,
