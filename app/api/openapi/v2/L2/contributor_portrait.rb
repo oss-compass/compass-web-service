@@ -138,7 +138,11 @@ module Openapi
 
             # 提取非空的国家和城市作为备选值
             fallback_country = sources.map { |s| s['contributor_country'] }.compact.find { |c| !c.to_s.strip.empty? }
+            # 将 中文 country 转换为英文
+            country_raw = Openapi::SharedParams::CityMap.to_en(fallback_country)
+
             fallback_city = sources.map { |s| s['contributor_city'] }.compact.find { |c| !c.to_s.strip.empty? }
+            city_raw = sources.map { |s| s['contributor_city_raw'] }.compact.find { |c| !c.to_s.strip.empty? }
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
 
 
@@ -172,7 +176,9 @@ module Openapi
               avatar_url: event_data['avatar_url'],
               html_url: event_data['html_url'],
               country: event_data['country'] || fallback_country,
+              country_raw: country_raw,
               city: event_data['city'] || fallback_city,
+              city_row: city_raw,
               company: event_data['company'] || fallback_org,
               main_language: main_language,
               repo_roles: repo_roles,
