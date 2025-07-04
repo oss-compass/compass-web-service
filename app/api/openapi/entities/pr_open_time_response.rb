@@ -7,7 +7,7 @@ module Openapi
       expose :org_count,
              documentation: {
                type: 'Integer',
-               desc: 'Independent Organization Count/独立组织计数',
+               desc: 'Independent Organization Count / 独立组织计数',
                example: 8,
                minimum: 0,
                required: true
@@ -31,9 +31,9 @@ module Openapi
     end
 
     class PrOpenTimeResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::PrOpenTimeItem,
              documentation: { type: 'Entities::PrOpenTimeItem', desc: 'response', param_type: 'body', is_array: true }
     end

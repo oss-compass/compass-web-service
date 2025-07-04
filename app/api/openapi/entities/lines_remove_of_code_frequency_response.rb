@@ -7,7 +7,7 @@ module Openapi
       expose :lines_remove_of_code_frequency,
              documentation: {
                type: 'Float',
-               desc: 'Code Lines Removal Frequency (times/week)/删除代码行频率（单位：次/周）',
+               desc: 'Code Lines Removal Frequency (times/week) / 删除代码行频率（单位：次/周）',
                example: 5.3,
                minimum: 0.0,
                format: 'float',
@@ -17,26 +17,26 @@ module Openapi
     end
 
     class LinesRemoveOfCodeFrequencyItem < Grape::Entity
-      expose :uuid, documentation: { type: 'String', desc: 'Unique ID/唯一标识', example: 'b2495fcb8eac6407bb802a568b55cfcfd9d27f55' }
-      expose :level, documentation: { type: 'String', desc: 'Repository Level/仓库层级', example: 'repo' }
-      expose :label, documentation: { type: 'String', desc: 'Repository Label/仓库标签', example: 'https://github.com/oss-compass/compass-web-service' }
+      expose :uuid, documentation: { type: 'String', desc: 'Unique ID / 唯一标识', example: 'b2495fcb8eac6407bb802a568b55cfcfd9d27f55' }
+      expose :level, documentation: { type: 'String', desc: 'Repository Level / 仓库层级', example: 'repo' }
+      expose :label, documentation: { type: 'String', desc: 'Repository Label / 仓库标签', example: 'https://github.com/oss-compass/compass-web-service' }
       expose :metric_type, documentation: { type: 'String', desc: 'Metric Type/指标类型', example: 'community_portrait' }
       expose :metric_name,
-             documentation: { type: 'String', desc: 'Metric Name/指标名称', example: 'lines_remove_of_code_frequency' }
+             documentation: { type: 'String', desc: 'Metric Name / 指标名称', example: 'lines_remove_of_code_frequency' }
       expose :metric_detail, using: Entities::LinesRemoveOfCodeFrequencyMetricDetail,
-             documentation: { type: 'LinesRemoveOfCodeFrequencyMetricDetail', desc: 'Metric Details/指标详情' }
-      expose :version_number, documentation: { type: 'NilClass', desc: 'Version Number/版本号', example: nil } # 新增字段
+             documentation: { type: 'LinesRemoveOfCodeFrequencyMetricDetail', desc: 'Metric Details / 指标详情' }
+      expose :version_number, documentation: { type: 'NilClass', desc: 'Version Number / 版本号', example: nil } # 新增字段
       expose :grimoire_creation_date,
-             documentation: { type: 'String', desc: 'Creation Date/创建日期', example: '2024-11-04T00:00:00+00:00' }
+             documentation: { type: 'String', desc: 'Creation Date / 创建日期', example: '2024-11-04T00:00:00+00:00' }
       expose :metadata__enriched_on,
              documentation: { type: 'String', desc: 'metadata__enriched_on',
                               example: '2025-05-14T07:28:30.512875+00:00' }
     end
 
     class LinesRemoveOfCodeFrequencyResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::LinesRemoveOfCodeFrequencyItem,
              documentation: { type: 'Entities::LinesRemoveOfCodeFrequencyItem', desc: 'response', param_type: 'body', is_array: true }
     end

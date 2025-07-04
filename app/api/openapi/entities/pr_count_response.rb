@@ -7,7 +7,7 @@ module Openapi
       expose :total_create_close_pr_count,
              documentation: {
                type: 'Integer',
-               desc: 'Total Closed PRs (Including PRs Created and Closed by Users)/已关闭PR总数（包含用户创建并关闭的PR）',
+               desc: 'Total Closed PRs (Including PRs Created and Closed by Users) / 已关闭PR总数（包含用户创建并关闭的PR）',
                example: 23,
                minimum: 0,
                required: true
@@ -32,9 +32,9 @@ module Openapi
     end
 
     class PrCountResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::PrCountItem,
              documentation: { type: 'Entities::PrCountItem', desc: 'response', param_type: 'body', is_array: true }
     end

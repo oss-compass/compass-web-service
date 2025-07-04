@@ -7,7 +7,7 @@ module Openapi
       expose :updated_issues_count,
              documentation: {
                type: 'Integer',
-               desc: 'Total Updated Issues (Including Comments or Status Changes)/更新过的问题总数（包含评论或状态变更）',
+               desc: 'Total Updated Issues (Including Comments or Status Changes) / 更新过的问题总数（包含评论或状态变更）',
                example: 18,
                minimum: 0,
                required: true
@@ -31,9 +31,9 @@ module Openapi
     end
 
     class UpdatedIssuesCountResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::UpdatedIssuesCountItem,
              documentation: { type: 'Entities::UpdatedIssuesCountItem', desc: 'response', param_type: 'body', is_array: true }
     end

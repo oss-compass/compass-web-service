@@ -13,7 +13,7 @@ module Openapi
       expose :icon, documentation: { type: 'String', desc: 'icon', example: "add square icon" }
       expose :actor_username, documentation: { type: 'String', desc: 'actor_username', example: "zhuangjiaju" }
       expose :user_login, documentation: { type: 'String', desc: 'user_login', example: "zhuangjiaju" }
-      expose :content, documentation: { type: 'String', desc: 'content', example: "Created Task/创建了任务" }
+      expose :content, documentation: { type: 'String', desc: 'content', example: "Created Task" }
       expose :created_at, documentation: { type: 'String', desc: 'created_at', example: "2023-01-14T18:58:03+08:00" }
       expose :action_type, documentation: { type: 'String', desc: 'action_type', example: "create" }
       expose :event_type, documentation: { type: 'String', desc: 'event_type', example: "CreateEvent" }
@@ -66,9 +66,9 @@ module Openapi
     end
 
     class EventResponse < Grape::Entity
-      expose :count, documentation: { type: 'int', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'int', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'int', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'int', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'int', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'int', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::EventItem, documentation: { type: 'Entities::EventItem', desc: 'response',
                                                                   param_type: 'body', is_array: true }
     end

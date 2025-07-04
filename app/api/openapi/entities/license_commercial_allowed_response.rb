@@ -4,7 +4,7 @@ module Openapi
       expose :license_commercial_allowed,
              documentation: {
                type: 'Integer',
-               desc: 'Commercial License Status/商业授权许可状态',
+               desc: 'Commercial License Status / 商业授权许可状态',
                example: 1,
                values: [0, 1]
              }
@@ -12,7 +12,7 @@ module Openapi
       expose :license_list,
              documentation: {
                type: 'Array[String]',
-               desc: 'Complete License List/完整许可证列表',
+               desc: 'Complete License List / 完整许可证列表',
                example: ['MIT', 'Apache-2.0'],
                is_array: true
              }
@@ -20,7 +20,7 @@ module Openapi
       expose :non_commercial_licenses,
              documentation: {
                type: 'Array[String]',
-               desc: 'Non-Commercial License List/非商业许可列表',
+               desc: 'Non-Commercial License List / 非商业许可列表',
                example: ['CC-BY-NC-4.0'],
                is_array: true
              }
@@ -28,7 +28,7 @@ module Openapi
       expose :license_commercial_allowed_details,
              documentation: {
                type: 'String',
-               desc: 'Commercial License Details/商业授权详情描述',
+               desc: 'Commercial License Details / 商业授权详情描述',
                example: 'All licenses allow closed source modification'
              }
     end
@@ -51,9 +51,9 @@ module Openapi
     end
 
     class LicenseCommercialAllowedResponse < Grape::Entity
-      expose :count, documentation: { type: 'Integer', desc: 'Total Count/总数', example: 100 }
-      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages/总页数', example: 2 }
-      expose :page, documentation: { type: 'Integer', desc: 'Current Page/当前页', example: 1 }
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
       expose :items, using: Entities::LicenseCommercialAllowedItem,
              documentation: { type: 'Entities::LicenseCommercialAllowedItem', desc: 'response', param_type: 'body', is_array: true }
     end
