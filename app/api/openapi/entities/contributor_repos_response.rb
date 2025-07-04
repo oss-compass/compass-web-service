@@ -4,7 +4,7 @@ module Openapi
 
     class ContributorReposResponse < Grape::Entity
       expose :repo_url, documentation: {
-        type: String, desc: 'Repo url /  贡献的仓库地址', example: 'https://github.com/oss-compass/compass-web-service'
+        type: String, desc: 'Repo url / 贡献的仓库地址', example: 'https://github.com/oss-compass/compass-web-service'
       }
 
       expose :contribution, documentation: {
