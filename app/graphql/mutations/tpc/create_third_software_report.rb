@@ -12,8 +12,19 @@ module Mutations
       argument :software_reports, [Input::ThirdSoftwareReportInput], required: true
 
       def resolve(label: nil, level: 'repo', software_reports: nil)
+
         label = ShortenedLabel.normalize_label(label)
         current_user = context[:current_user]
+        login_required!(current_user)
+
+        remaining_software_count_key = "remaining_software_count:#{current_user.id}"
+        default = ENV.fetch("SOFTWARE_TRIGGER_COUNT") { 5 }
+
+        unless current_user.is_admin?
+          count = Rails.cache.fetch(remaining_software_count_key, expires_in: 7.days, raw: true) { default }.to_i
+          raise GraphQL::ExecutionError.new I18n.t('lab.trigger_analysis.times_limit') unless count > 0
+        end
+
         subject = Subject.find_by(label: label, level: level)
 
         raise GraphQL::ExecutionError.new(I18n.t('basic.subject_not_exist')) if subject.nil?
@@ -82,18 +93,25 @@ module Mutations
 
 
               begin
-                metric_server = TpcSoftwareMetricServer.new(project_url: report.code_url)
-                metric_server.analyze_metric_by_tpc_service(
-                  report.id,
-                  report_metric.id,
-                  report.oh_commit_sha,
-                  TpcSoftwareMetricServer::Report_Type_Selection
-                )
-                metric_server.analyze_metric_by_compass(
-                  report.id,
-                  report_metric.id,
-                  TpcSoftwareMetricServer::Report_Type_Selection
-                )
+                # metric_server = TpcSoftwareMetricServer.new(project_url: report.code_url)
+                # metric_server.analyze_metric_by_tpc_service(
+                #   report.id,
+                #   report_metric.id,
+                #   report.oh_commit_sha,
+                #   TpcSoftwareMetricServer::Report_Type_Selection
+                # )
+                # metric_server.analyze_metric_by_compass(
+                #   report.id,
+                #   report_metric.id,
+                #   TpcSoftwareMetricServer::Report_Type_Selection
+                # )
+
+                # 邮件通知
+                # email_software_report
+
+                UserMailer.with(
+                  email: current_user.email
+                ).email_software_report_start.deliver_later
               rescue => e
                 Rails.logger.error("MetricServer failed: #{e.message}")
               end
@@ -102,7 +120,8 @@ module Mutations
 
           end
         end
-
+        puts current_user.to_json
+        Rails.cache.decrement(remaining_software_count_key)
         { status: true, message: '' }
       rescue => ex
         { status: false, message: ex.message }
