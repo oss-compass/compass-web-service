@@ -193,7 +193,13 @@ class TpcSoftwareMetricServer
       when "dependency-checker"
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_dependency_acquisition(scan_results.dig(command) || {}))
       when "compass"
-        metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url,oh_commit_sha))
+                
+        begin
+          metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url, oh_commit_sha))
+        rescue => e
+          Rails.logger.error("Error in get_compliance_dco: #{e.message}")
+        end
+
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_community_support(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
