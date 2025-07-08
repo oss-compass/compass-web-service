@@ -49,8 +49,10 @@ module Openapi
     mount Openapi::V2::L3::ModelMilestonePersona
     mount Openapi::V2::L3::ModelOpencheck
     mount Openapi::V2::FinanceStandard
+    mount Openapi::V2::ThirdSoftwareSelection
     mount Openapi::V2::Auth
     mount Openapi::V2::TrackEvent
+    # mount Openapi::V2::Admin
 
     add_swagger_documentation \
       doc_version: '2.0.0',
