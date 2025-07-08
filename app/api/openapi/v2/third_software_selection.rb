@@ -40,7 +40,7 @@ module Openapi
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
           requires :query_txt, type: String, desc: 'query txt / 查询文本', documentation: { param_type: 'body', example: 'react' }
           requires :query_keywords, type: Array, desc: 'list of query keywords(can be an empty list) / 查询关键词列表（可为空列表）', documentation: { param_type: 'body', example: [] }
-          requires :target_ecosystem_list, type: Array, desc: 'target ecosystem list / 目标来源列表', documentation: { param_type: 'body', example: ['npm'] }
+          requires :target_ecosystem_list, type: Array, desc: 'target ecosystem list,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 目标来源列表,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: ['npm'] }
           requires :top_n, type: Integer, desc: 'top n / 返回结果数量', documentation: { param_type: 'body', example: 10 }
           optional :online_judge, type: Boolean, desc: 'online judge(optional,default false) / 是否在线投票 (可选，默认 false)', documentation: { param_type: 'body', example: false }
 
@@ -81,8 +81,8 @@ module Openapi
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
           requires :src_package_name, type: String, desc: 'src package name / 源库名称', documentation: { param_type: 'body', example: 'react' }
-          requires :src_ecosystem, type: String, desc: 'src ecosystem / 源库来源', documentation: { param_type: 'body', example: 'npm' }
-          requires :target_ecosystem_list, type: Array, desc: 'target ecosystem list / 目标来源列表', documentation: { param_type: 'body', example: ['npm'] }
+          requires :src_ecosystem, type: String, desc: 'src ecosystem,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 源库来源,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: 'npm' }
+          requires :target_ecosystem_list, type: Array, desc: 'target ecosystem list, can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 目标来源列表,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: ['npm'] }
           requires :top_n, type: Integer, desc: 'top n / 返回结果数量', documentation: { param_type: 'body', example: 10 }
           optional :online_judge, type: Boolean, desc: 'online judge(optional,default false) / 是否在线投票 (可选，默认 false)', documentation: { param_type: 'body', example: false }
           optional :force_search, type: Boolean, desc: 'force_search(optional,default false) / 是否强制搜索 (可选，默认 false)', documentation: { param_type: 'body', example: false }
@@ -125,9 +125,9 @@ module Openapi
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
           requires :src_package_name, type: String, desc: 'src package name / 源库名称', documentation: { param_type: 'body', example: 'rc-util' }
-          requires :src_ecosystem, type: String, desc: 'src ecosystem / 源库来源', documentation: { param_type: 'body', example: 'npm' }
+          requires :src_ecosystem, type: String, desc: 'src ecosystem,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 源库来源,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: 'npm' }
           requires :target_package_name, type: String, desc: 'src package name / 目标库名称', documentation: { param_type: 'body', example: 'react-semantic-render' }
-          requires :target_ecosystem, type: String, desc: 'src ecosystem / 目标库来源', documentation: { param_type: 'body', example: 'npm' }
+          requires :target_ecosystem, type: String, desc: 'src ecosystem,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 目标库来源,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: 'npm' }
           requires :who_vote, type: String, desc: 'user name / 用户名', documentation: { param_type: 'body', example: 'anonymous' }
 
         end
@@ -173,10 +173,11 @@ module Openapi
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
           requires :src_package_name, type: String, desc: 'src package name / 源库名称', documentation: { param_type: 'body', example: 'rc-util' }
-          requires :src_ecosystem, type: String, desc: 'src ecosystem / 源库来源', documentation: { param_type: 'body', example: 'npm' }
+          requires :src_ecosystem, type: String, desc: 'src ecosystem,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 源库来源,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: 'npm' }
           requires :target_package_name, type: String, desc: 'src package name / 目标库名称', documentation: { param_type: 'body', example: 'react-semantic-render' }
-          requires :target_ecosystem, type: String, desc: 'src ecosystem / 目标库来源', documentation: { param_type: 'body', example: 'npm' }
+          requires :target_ecosystem, type: String, desc: 'src ecosystem,can be: npm,ohpm,c_cpp,selected.github,selected.gitee / 目标库来源,可选值: npm,ohpm,c_cpp,selected.github,selected.gitee', documentation: { param_type: 'body', example: 'npm' }
           requires :who_vote, type: String, desc: 'user name / 用户名', documentation: { param_type: 'body', example: 'anonymous' }
+
         end
 
         post :voteDown do
