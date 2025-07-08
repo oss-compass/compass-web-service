@@ -170,9 +170,9 @@ module Openapi
         DETAIL
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :datasets, type: Array, desc: '数据集列表', documentation: { param_type: 'body', example: [{ label: 'https://github.com/rabbitmq/rabbitmq-server', versionNumber: 'v4.0.7' }] } do
-            requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/rabbitmq/rabbitmq-server' }
-            requires :versionNumber, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.7' }
+          requires :datasets, type: Array, desc: 'datasets / 数据集列表', documentation: { param_type: 'body', example: [{ label: 'https://github.com/rabbitmq/rabbitmq-server', versionNumber: 'v4.0.7' }] } do
+            requires :label, type: String, desc: 'address of the project / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/rabbitmq/rabbitmq-server' }
+            requires :versionNumber, type: String, desc: 'version number / 版本号', documentation: { param_type: 'body', example: 'v4.0.7' }
           end
         end
         post :trigger do
@@ -230,8 +230,8 @@ module Openapi
         DETAIL
         params do
           requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :label, type: String, desc: '项目地址', documentation: { param_type: 'body', example: 'https://github.com/rabbitmq/rabbitmq-server' }
-          optional :versionNumber, type: String, desc: '版本号', documentation: { param_type: 'body', example: 'v4.0.7' }
+          requires :label, type: String, desc: 'address of the project / 项目地址', documentation: { param_type: 'body', example: 'https://github.com/rabbitmq/rabbitmq-server' }
+          optional :versionNumber, type: String, desc: 'version number / 版本号', documentation: { param_type: 'body', example: 'v4.0.7' }
         end
         post :statusQuery do
           label = ShortenedLabel.normalize_label(params[:label])
