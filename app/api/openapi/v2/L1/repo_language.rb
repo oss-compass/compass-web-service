@@ -29,7 +29,7 @@ module Openapi
           Openapi::SharedParams::RateLimiter.check_token!(token)
         end
         resource :metadata do
-          desc '获取项目repo语言', detail: '获取项目repo语言', tags: ['Metadata / 元数据'], success: {
+          desc 'Obtain project repo language / 获取项目repo语言', detail: 'Obtain project repo language / 获取项目repo语言', tags: ['Metadata / 元数据'], success: {
             code: 201, model: Openapi::Entities::RepoLanguageResponse
           }
 
