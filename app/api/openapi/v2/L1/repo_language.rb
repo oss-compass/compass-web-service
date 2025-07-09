@@ -35,7 +35,7 @@ module Openapi
 
           params { use :search }
           post :repo_language do
-            label, level, _, _, _, _, page = extract_search_params!(params)
+            label, level, = extract_search_params!(params)
 
             status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level)
             return { message: message } unless status
@@ -47,7 +47,7 @@ module Openapi
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.first ? [{ language: hits.first&.[]("_source")&.[]("data")&.[]("language") }] : []
 
-            { count: 1, total_page: 1, page:, items: }
+            { count: 1, items: }
           end
 
         end
