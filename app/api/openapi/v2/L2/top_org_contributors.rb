@@ -35,8 +35,12 @@ module Openapi
           # 代码
           desc 'Obtain the distribution of organizations to which the top 10 contributors belong / 获取TOP10贡献者所属组织分布',
                detail: 'Obtain the distribution of organizations to which the top 10 contributors belong / 获取TOP10贡献者所属组织分布',
-               tags: ['Metrics Data / 指标数据', 'Community Persona / 社区画像']
+               tags: ['Metrics Data / 指标数据', 'Community Persona / 社区画像'], success: {
+              code: 201, model: Openapi::Entities::TopOrgContributorsResponse
+            }
+
           params { use :community_portrait_search }
+
           post :top_org_contributors do
             # 参数解析
             label, level, begin_date, end_date = extract_search_params!(params)
@@ -59,8 +63,8 @@ module Openapi
             org_contributors_distribution = grouped_data.map do |group, _|
               build_org_dis_data(group, grouped_data[group], total_count, scope: 'contributor')
             end
-            items = { orgContributorsDistribution: org_contributors_distribution }
-            { count: org_contributors_distribution.length, total_page: 1, page: 1, items: }
+            items = [{ orgContributorsDistribution: org_contributors_distribution }] || []
+            { count: org_contributors_distribution.length, items: }
           end
         end
       end
