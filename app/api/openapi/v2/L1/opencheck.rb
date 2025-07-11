@@ -24,19 +24,19 @@ module Openapi
         end
       end
 
-      # before { require_token! }
-      # before do
-      #   token = params[:access_token]
-      #   Openapi::SharedParams::RateLimiter.check_token!(token)
-      # end
+      before { require_token! }
+      before do
+        token = params[:access_token]
+        Openapi::SharedParams::RateLimiter.check_token!(token)
+      end
 
       resource :opencheck do
-        desc '获取项目opencheck检查数据', detail: '获取项目opencheck检查数据', tags: ['Metadata'], success: {
+        desc 'Get project opencheck data / 获取项目opencheck数据', detail: 'Get project opencheck data / 获取项目opencheck数据', tags: ['Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::OpencheckRawResponse
         }
 
         params {
-          requires :command, type: String, desc: 'These commands can be selected: binary-checker, scancode, release-checker, osv-scanner', documentation: { param_type: 'body' }
+          requires :command, type: String, desc: 'Check command / 检查命令', documentation: { param_type: 'body' }
           use :search
         }
         post :opencheck do

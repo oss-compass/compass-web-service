@@ -33,13 +33,13 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目 Scorecard', detail: '获取项目 Scorecard', tags: ['Metrics Model Data'], success: {
+        desc 'Get Project Scorecard / 获取项目 Scorecard', detail: 'Get Project Scorecard / 获取项目 Scorecard', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::ScorecardResponse
         }
 
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+          requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+          requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :scorecard do
 
@@ -54,15 +54,15 @@ module Openapi
           items.first.select { |key, _| !key.to_s.end_with?('_detail') } || {}
         end
 
-        desc '触发 Scorecard', detail: '触发 Scorecard', tags: ['Metrics Model Data'], success: {
+        desc 'Analyze Project Scorecard / 分析项目 Scorecard', detail: 'Analyze Project Scorecard / 分析项目 Scorecard', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201
         }
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
-          optional :label_token, type: String, desc: 'GitCode access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed', documentation: { param_type: 'body' }
+          requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+          requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+          optional :label_token, type: String, desc: 'GitCode access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
         }
-        post :trigger_scorecard do
+        post :analyze_scorecard do
           unless params[:label].include?("gitcode.com")
             return { code: 400, message: 'only supports the gitCode repo' }
           end
@@ -89,7 +89,7 @@ module Openapi
             scorecard: true
           }
           result = AnalyzeServer.new(opts).execute_tpc
-          Rails.logger.info("trigger scorecard info: #{result}")
+          Rails.logger.info("analyze scorecard info: #{result}")
           { code: 201, message: 'success' }
         rescue => ex
           { code: 400, message: ex.message }

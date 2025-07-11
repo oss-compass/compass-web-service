@@ -33,13 +33,13 @@ module Openapi
       end
 
       resource :metricModel do
-        desc '获取项目 Criticality Score', detail: '获取项目 Criticality Score', tags: ['Metrics Model Data'], success: {
+        desc 'Get Project Criticality Score /  获取项目 Criticality Score', detail: 'Get Project Criticality Score /  获取项目 Criticality Score', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CriticalityScoreResponse
         }
 
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+          requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+          requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :criticality_score do
 
@@ -55,14 +55,14 @@ module Openapi
         end
 
 
-        desc '触发 Criticality Score', detail: '触发 Criticality Score', tags: ['Metrics Model Data'], success: {
+        desc 'Analyze Project Criticality Score / 分析项目 Criticality Score', detail: 'Analyze Project Criticality Score / 分析项目 Criticality Score', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201
         }
         params {
-          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
-          requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+          requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
+          requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
-        post :trigger_criticality_score do
+        post :analyze_criticality_score do
           unless params[:label].include?("gitcode.com")
             return { code: 400, message: 'only supports the gitCode repo' }
           end
@@ -89,7 +89,7 @@ module Openapi
             scorecard: false
           }
           result = AnalyzeServer.new(opts).execute_tpc
-          Rails.logger.info("trigger criticality score info: #{result}")
+          Rails.logger.info("analyze criticality score info: #{result}")
           { code: 201, message: 'success' }
         rescue => ex
           { code: 400, message: ex.message }
