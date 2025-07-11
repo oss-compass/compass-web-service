@@ -7,21 +7,22 @@ module Openapi
       prefix :api
       format :json
       require 'maxminddb'
-      helpers Openapi::SharedParams::AuthHelpers
+
+      before { require_login! }
       helpers Openapi::SharedParams::ErrorHelpers
 
-      # rescue_from :all do |e|
-      #   case e
-      #   when Grape::Exceptions::ValidationErrors
-      #     handle_validation_error(e)
-      #   when SearchFlip::ResponseError
-      #     handle_open_search_error(e)
-      #   when Openapi::Entities::InvalidVersionNumberError
-      #     handle_release_error(e)
-      #   else
-      #     handle_generic_error(e)
-      #   end
-      # end
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        when Openapi::Entities::InvalidVersionNumberError
+          handle_release_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
 
       helpers do
         # 计算总停留时长
@@ -62,7 +63,7 @@ module Openapi
         end
       end
 
-      before { require_login! }
+
       resource :admin do
         desc '用户概览', hidden: true, tags: ['admin'], success: { code: 201 }, detail: '用户概览'
         get :user_overview do
