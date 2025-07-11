@@ -46,12 +46,53 @@ module Openapi
           indexer = CriticalityScoreMetric
           repo_urls = [params[:label]]
 
-          resp = indexer.one_by_metricMaven、Mill、sbt和Scala CLI_repo_urls(repo_urls)
+          resp = indexer.one_by_metric_repo_urls(repo_urls)
 
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data['_source'].symbolize_keys }
           items.first || {}
+        end
+
+
+        desc '触发 Criticality Score', detail: '触发 Criticality Score', tags: ['Metrics Model Data'], success: {
+          code: 201
+        }
+        params {
+          requires :access_token, type: String, desc: 'access token', documentation: { param_type: 'body' }
+          requires :label, type: String, desc: '仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+        }
+        post :trigger_criticality_score do
+          unless params[:label].include?("gitcode.com")
+            return { code: 400, message: 'only supports the gitCode repo' }
+          end
+
+          opts = {
+            repo_url: params[:label],
+            opencheck_raw: true,
+            opencheck_raw_param: {
+              commands: ['ohpm-info']
+            },
+            raw: true,
+            enrich: true,
+            license: false,
+            identities_load: true,
+            identities_merge: true,
+            activity: false,
+            community: false,
+            codequality: false,
+            group_activity: false,
+            domain_persona: false,
+            milestone_persona: false,
+            role_persona: false,
+            criticality_score: true,
+            scorecard: false
+          }
+          result = AnalyzeServer.new(opts).execute_tpc
+          Rails.logger.info("trigger criticality score info: #{result}")
+          { code: 201, message: 'success' }
+        rescue => ex
+          { code: 400, message: ex.message }
         end
 
       end

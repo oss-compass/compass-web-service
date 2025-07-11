@@ -30,7 +30,7 @@ module Types
     field :metric_domain_persona, resolver: Queries::DomainPersonaMetricQuery
     field :metric_role_persona, resolver: Queries::RolePersonaMetricQuery
 
-    field :metric_criticality_score, resolver: Queries::CriticalityScoreMetricQuery
+    # field :metric_criticality_score, resolver: Queries::CriticalityScoreMetricQuery
 
     ## Compass Lab Model Management
     field :custom_analysis_status, resolver: Queries::Lab::CustomAnalysisStatusQuery
