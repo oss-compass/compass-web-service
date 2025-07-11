@@ -3,8 +3,9 @@ module Openapi
   module Entities
 
     class TriggerResponse < Grape::Entity
-      expose :status, documentation: { type: 'String', desc: '状态', example: 'pending' }
-      expose :message, documentation: { type: 'String', desc: 'message', example: 'The submission has entered the analysis
+ 
+      expose :status, documentation: { type: 'String', desc: 'status / 状态', example: 'pending' }
+      expose :message, documentation: { type: 'String', desc: 'message / 信息', example: 'The submission has entered the analysis 
 service queue, and we will synchronize the analysis report address under this Pull Request after the analysis is completed.' }
 
     end

@@ -34,12 +34,14 @@ module Openapi
     mount Openapi::V2::L1::Stargazer
     mount Openapi::V2::L1::Watch
     mount Openapi::V2::L1::Repo
+    mount Openapi::V2::L1::RepoLanguage
     mount Openapi::V2::L1::Releases
     mount Openapi::V2::L1::Opencheck
     # L2
     mount Openapi::V2::L2::ContributorPortrait
     mount Openapi::V2::L2::CommunityPortrait
     mount Openapi::V2::L2::SoftwareArtifactPortrait
+    mount Openapi::V2::L2::TopOrgContributors
     # L3
     mount Openapi::V2::L3::ModelCodequality
     mount Openapi::V2::L3::ModelCommunity
@@ -52,8 +54,10 @@ module Openapi
     mount Openapi::V2::L3::ModelCriticalityScore
     mount Openapi::V2::L3::ModelScorecard
     mount Openapi::V2::FinanceStandard
+    mount Openapi::V2::ThirdSoftwareSelection
     mount Openapi::V2::Auth
     mount Openapi::V2::TrackEvent
+    # mount Openapi::V2::Admin
 
     add_swagger_documentation \
       doc_version: '2.0.0',

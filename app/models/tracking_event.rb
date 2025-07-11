@@ -18,4 +18,5 @@
 #  updated_at        :datetime         not null
 #
 class TrackingEvent < ApplicationRecord
+  belongs_to :user, optional: true
 end
