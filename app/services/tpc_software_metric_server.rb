@@ -16,6 +16,7 @@ class TpcSoftwareMetricServer
   Report_Type_Graduation = 1
   Report_Type_Lectotype = 2
   Report_Type_License = -1
+  Report_Type_Metrics_Model = -2
 
   def initialize(opts = {})
     @project_url = opts[:project_url]
@@ -431,6 +432,45 @@ class TpcSoftwareMetricServer
     end
     OpencheckMetric.save_license(license, security, @project_url, version_number)
   end
+
+
+  def save_opencheck_raw_callback(command_list, scan_results)
+    command_list.each do |command|
+      command_result = scan_results.dig(command) || {}
+      OpencheckRaw.save_opencheck_raw(command, command_result, @project_url)
+    end
+  end
+
+  def tpc_software_metrics_model_callback(metrics_model)
+    if metrics_model&.any?
+      opts = {
+        repo_url: @project_url,
+        opencheck_raw: false,
+        opencheck_raw_param: {},
+        raw: false,
+        enrich: false,
+        license: false,
+        identities_load: false,
+        identities_merge: false,
+        activity: false,
+        community: false,
+        codequality: false,
+        group_activity: false,
+        domain_persona: false,
+        milestone_persona: false,
+        role_persona: false
+      }
+      metrics_model.each do |key|
+        opts[key.to_sym] = true
+      end
+
+      result = AnalyzeServer.new(opts).execute_tpc
+      Rails.logger.info("analyze metric model info: #{result}")
+      raise GraphQL::ExecutionError.new result[:message] unless result[:status]
+    end
+
+  end
+
 
   def get_opencheck_license(scancode_result)
     license_list = []
