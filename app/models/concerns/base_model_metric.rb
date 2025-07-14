@@ -49,6 +49,15 @@ module BaseModelMetric
         .raw_response
     end
 
+    def one_by_metric_repo_urls(repo_urls, target: 'label.keyword', sort: :grimoire_creation_date, direction: :desc)
+      self.must(terms: { target => repo_urls })
+          .sort(sort => direction)
+          .page(1)
+          .per(1)
+          .execute
+          .raw_response
+    end
+
     def count_by_metric_repo_urls(
       repo_urls, begin_date, end_date,
       target: 'label.keyword', filter: :grimoire_creation_date, filter_opts: []

@@ -15,6 +15,8 @@ class AnalyzeServer
   class ValidateFailed < StandardError; end
 
   def initialize(opts = {})
+    @opencheck_raw = opts.fetch(:opencheck_raw, false)
+    @opencheck_raw_param = opts[:opencheck_raw_param] || {}
     @raw = opts.fetch(:raw, true)
     @enrich = opts.fetch(:enrich, true)
     @license = opts.fetch(:license, true)
@@ -28,6 +30,8 @@ class AnalyzeServer
     @domain_persona = opts.fetch(:domain_persona, true)
     @milestone_persona = opts.fetch(:milestone_persona, true)
     @role_persona = opts.fetch(:role_persona, true)
+    @criticality_score = opts.fetch(:criticality_score, false)
+    @scorecard = opts.fetch(:scorecard, false)
     @callback = opts[:callback]
     @developers = opts[:developers] || {}
 
@@ -89,8 +93,6 @@ class AnalyzeServer
   end
 
   def execute_tpc
-    validate!
-
     response =
       Faraday.post(
         "#{CELERY_SERVER}/api/workflows",
@@ -148,9 +150,13 @@ class AnalyzeServer
         metrics_domain_persona: @domain_persona,
         metrics_milestone_persona: @milestone_persona,
         metrics_role_persona: @role_persona,
+        metrics_criticality_score: @criticality_score,
+        metrics_scorecard: @scorecard,
         panels: false,
         project_url: @repo_url,
         raw: @raw,
+        opencheck_raw: @opencheck_raw,
+        opencheck_raw_param: @opencheck_raw_param,
         license: @license,
         callback: @callback
       }

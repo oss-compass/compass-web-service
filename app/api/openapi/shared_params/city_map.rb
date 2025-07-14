@@ -3,6 +3,8 @@ module Openapi
     module CityMap
       COUNTRY_CN_EN_MAP = {
         "中国" => "China",
+        "香港" => "Hong Kong",
+        "台湾" => "Taiwan",
         "美国" => "United States",
         "英国" => "United Kingdom",
         "法国" => "France",
@@ -32,7 +34,7 @@ module Openapi
         "挪威" => "Norway",
         "芬兰" => "Finland",
         "丹麦" => "Denmark",
-        "荷兰" => "Netherlands",
+        "荷兰" => "The Netherlands",
         "比利时" => "Belgium",
         "奥地利" => "Austria",
         "新西兰" => "New Zealand",
@@ -83,6 +85,11 @@ module Openapi
       def self.to_en(country_cn)
         return nil if country_cn.nil?
         COUNTRY_CN_EN_MAP[country_cn.strip] || country_cn.strip
+      end
+
+      def self.to_cn(country_en)
+        return nil if country_en.nil?
+        COUNTRY_CN_EN_MAP.invert[country_en.strip] || country_en.strip
       end
 
     end
