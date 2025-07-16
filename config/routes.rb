@@ -55,5 +55,6 @@ Rails.application.routes.draw do
 
   get '/badge/:id.svg', to: 'badge#show', constraint: { id:  /[a-z0-9]{8}/ }
   get '/chart/:id.svg', to: 'chart#show', constraint: { id:  /[a-z0-9]{8}/ }
+  get '/developer_chart/:developer.svg', to: 'developer_chart#show'
   get '/chart/tpc', to: 'chart#show_tpc'
 end
