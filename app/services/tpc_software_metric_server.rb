@@ -203,7 +203,13 @@ class TpcSoftwareMetricServer
 
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_community_support(@project_url))
-        metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
+
+        begin
+          metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
+        rescue => e
+          Rails.logger.error("Error in get_security_history_vulnerability: #{e.message}")
+        end
+
         metric_hash.merge!(TpcSoftwareReportMetric.get_lifecycle_version_lifecycle(@project_url))
       when "oat-scanner"
         # no process
