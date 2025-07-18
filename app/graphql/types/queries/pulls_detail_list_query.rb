@@ -27,7 +27,7 @@ module Types
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
 
         resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: per, page: page, filter_opts: filter_opts, sort_opts: sort_opts)
 

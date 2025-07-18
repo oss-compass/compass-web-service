@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-class GithubGitEnrich < GithubBase
+class GitcodeGitEnrich < GitcodeBase
 
   include BaseEnrich
   include CommitEnrich
 
   def self.index_name
-    'github-git_enriched'
+    'gitcode-git_enriched'
   end
   
   def self.platform_type
-    'github'
+    'gitcode'
   end
 
   def self.mapping

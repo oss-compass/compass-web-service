@@ -41,7 +41,7 @@ module Openapi
             status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level)
             return { message: message } unless status
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
             resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, target: 'repo_name.keyword', filter: 'grimoire_creation_date', sort: 'grimoire_creation_date', per: size, page:, filter_opts:, sort_opts:)
 

@@ -24,9 +24,9 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        pull2_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, Gitee2PullEnrich, Github2PullEnrich)
-        pull_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
-        git_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+        pull2_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, Gitee2PullEnrich, Github2PullEnrich, Gitcode2PullEnrich)
+        pull_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
+        git_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
 
         user_login_list = pull2_indexer.list_user_login_by_repo_urls(repo_urls, begin_date, end_date,
                                                                      filter_opts: filter_opts, sort_opts: sort_opts)

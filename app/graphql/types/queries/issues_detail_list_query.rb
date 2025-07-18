@@ -27,7 +27,7 @@ module Types
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeIssueEnrich, GithubIssueEnrich, GitcodeIssueEnrich)
 
         filter_opts << OpenStruct.new(type: 'pull_request', values: ['false']) if indexer == GithubIssueEnrich
 
