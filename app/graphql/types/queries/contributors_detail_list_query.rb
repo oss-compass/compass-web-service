@@ -25,7 +25,7 @@ module Types
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
         indexer, repo_urls, origin =
-                            select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+                            select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
         repo_urls_fileter_opt = filter_opts.find { |opt| opt.type == 'repo_urls' }
         filter_opts.delete_if { |opt| opt.type == 'repo_urls' }

@@ -25,7 +25,8 @@ module Types
                     label,
                     level,
                     GiteeIssueEnrich,
-                    GithubIssueEnrich
+                    GithubIssueEnrich,
+                    GitcodeIssueEnrich,
                   )
 
         issue_base =

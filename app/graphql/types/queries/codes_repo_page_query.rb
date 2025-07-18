@@ -24,10 +24,10 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
 
         pull_indexer, repo_urls =
-          select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
+          select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
 
         start_time = Time.parse("1970-01-01")
         code_repo_map = {}
