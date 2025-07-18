@@ -26,11 +26,11 @@ module Openapi
 
 
 
-      # before { require_token! }
-      # before do
-      #   token = params[:access_token]
-      #   Openapi::SharedParams::RateLimiter.check_token!(token)
-      # end
+      before { require_token! }
+      before do
+        token = params[:access_token]
+        Openapi::SharedParams::RateLimiter.check_token!(token)
+      end
 
       resource :metricModel do
         desc 'Get Project CII Best Badge / 获取项目 CII Best Badge', detail: 'Get Project CII Best Badge / 获取项目 CII Best Badge', tags: ['Metrics Model Data / 模型数据'], success: {
