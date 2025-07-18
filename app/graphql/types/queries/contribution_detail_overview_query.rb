@@ -24,7 +24,8 @@ module Types
             label,
             level,
             [GiteeGitEnrich, GiteePullEnrich, GiteeIssueEnrich, GiteeContributorEnrich, GiteeStargazerEnrich, GiteeForkEnrich, GiteeWatchEnrich],
-            [GithubGitEnrich, GithubPullEnrich, GithubIssueEnrich, GithubContributorEnrich, GithubStargazerEnrich, GithubForkEnrich, nil]
+            [GithubGitEnrich, GithubPullEnrich, GithubIssueEnrich, GithubContributorEnrich, GithubStargazerEnrich, GithubForkEnrich, nil],
+            [GitcodeGitEnrich, GitcodePullEnrich, GitcodeIssueEnrich, GitcodeContributorEnrich, GitcodeStargazerEnrich, GitcodeForkEnrich, nil]
           )
         base_type = Types::Meta::ContributionDetailOverviewType
         current_period_data = get_contribution_count(base_type, indexers, begin_date, end_date)

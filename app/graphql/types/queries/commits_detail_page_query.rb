@@ -26,10 +26,10 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
 
         pull_indexer, repo_urls =
-                  select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
+                  select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
 
         resp = indexer.fetch_commit_page_by_repo_urls(repo_urls, begin_date, end_date, branch, per: per, page: page,
                                                       filter_opts: filter_opts, sort_opts: sort_opts,

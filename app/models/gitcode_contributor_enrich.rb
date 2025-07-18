@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
-class GithubGitEnrich < GithubBase
-
+class GitcodeContributorEnrich < GitcodeBase
   include BaseEnrich
-  include CommitEnrich
+  include ContributorEnrich
 
   def self.index_name
-    'github-git_enriched'
+    'gitcode-contributors_org_repo_enriched'
   end
-  
+
   def self.platform_type
-    'github'
+    'gitcode'
   end
 
   def self.mapping
@@ -32,9 +31,6 @@ class GithubGitEnrich < GithubBase
       "grimoire_creation_date"=>{"type"=>"date"},
       "is_bot"=>{"type"=>"boolean"},
       "metadata__enriched_on"=>{"type"=>"date"},
-      "organization"=>
-      {"type"=>"text",
-       "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
       "repo_name"=>
       {"type"=>"text",
        "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},

@@ -19,7 +19,7 @@ module Openapi
                                                                       extract_params!(params)
 
           indexer, repo_urls =
-                   select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich)
+                   select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
 
           query = indexer
                     .base_terms_by_repo_urls(

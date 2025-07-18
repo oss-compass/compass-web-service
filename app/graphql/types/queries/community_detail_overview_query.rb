@@ -21,7 +21,7 @@ module Types
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
-        commit_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+        commit_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
         subject = Subject.find_by(label: label, level: level)
         subject_sig = subject.community_sigs
 

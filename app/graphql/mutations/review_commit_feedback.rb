@@ -16,7 +16,7 @@ module Mutations
       label = ShortenedLabel.normalize_label(label)
       validate_repo_admin!(context[:current_user], label, level)
 
-      indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, CommitFeedback, CommitFeedback)
+      indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, CommitFeedback, CommitFeedback, CommitFeedback)
       commit_feedback_data = indexer.fetch_commit_feedback_one(repo_urls, id)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if commit_feedback_data.nil?
 
