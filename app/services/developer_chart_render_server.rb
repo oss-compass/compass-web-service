@@ -7,8 +7,8 @@ class DeveloperChartRenderServer
     @begin_date = params[:begin_date]
     @end_date = params[:end_date]
     @option = params[:option]
-    @width = params[:width] || 800
-    @height = params[:height] || 500
+    @width = params[:width]
+    @height = params[:height]
 
   end
 
