@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version:  2025_06_23_065041) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_18_071335) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -777,6 +777,14 @@ ActiveRecord::Schema[7.1].define(version:  2025_06_23_065041) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tracking_restapis", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "api_path", null: false
+    t.string "domain", null: false
+    t.string "ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", default: "", null: false

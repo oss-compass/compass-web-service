@@ -31,17 +31,6 @@ module Openapi
         params do
 
           requires :events, type: Array[Hash], desc: '埋点事件数组', documentation: { param_type: 'body' }
-          # requires :event_type, type: String, desc: 'event type', documentation: { param_type: 'body' }
-          # requires :timestamp, type: Integer, desc: 'timestamp', documentation: { param_type: 'body' }
-          # requires :user_id, type: Integer, desc: 'user id', documentation: { param_type: 'body' }
-          # requires :page_path, type: String, desc: 'page path', documentation: { param_type: 'body' }
-          # requires :module_id, type: String, desc: 'module id', documentation: { param_type: 'body' }
-          # requires :referrer, type: String, desc: 'module id', documentation: { param_type: 'body' }
-          # requires :device_user_agent, type: String, desc: 'device user agent', documentation: { param_type: 'body' }
-          # requires :device_language, type: String, desc: 'device language', documentation: { param_type: 'body' }
-          # requires :device_timezone, type: String, desc: 'device timezone', documentation: { param_type: 'body' }
-          # requires :data, type: Hash, desc: 'data', documentation: { param_type: 'body' }
-          # requires :ip, type: String, desc: 'ip', documentation: { param_type: 'body' }
 
         end
         post :save do
@@ -75,15 +64,31 @@ module Openapi
           { code: 201, message: 'success', ids: created_ids }
         end
 
-        desc '埋点查询', tags: ['场景调用'], success: {
+        desc 'restapi埋点', tags: ['场景调用'], success: {
           code: 201
-        }, detail: '埋点查询', hidden: true
+        }, detail: 'restapi埋点', hidden: true
         params do
-          #
+          requires :payload, type: Hash, desc: '参数', documentation: { param_type: 'body', example: {
+            user_id: 1,
+            api_path: '/some/path',
+            domain: 'example.com',
+            ip: '127.0.0.1'
+          }}
         end
-        get :get do
-          events = TrackingEvent.all
-          events
+        post :remoteSave do
+          user_id = params[:payload][:user_id]
+          api_path = params[:payload][:api_path]
+          domain = params[:payload][:domain]
+          ip = params[:payload][:ip]
+
+          data = TrackingRestapi.new(
+            user_id:,
+            api_path:,
+            domain:,
+            ip:
+          )
+          data.save
+          { status: 'saved', user_id:, api_path:, domain:, ip: }
         end
 
       end

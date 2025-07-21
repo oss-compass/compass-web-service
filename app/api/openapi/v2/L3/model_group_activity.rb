@@ -12,6 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       rescue_from :all do |e|
         case e
@@ -29,6 +30,7 @@ module Openapi
         token = params[:access_token]
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
+      before { save_tracking_api! }
 
       resource :metricModel do
         desc 'List Project Organizations Activity / 获取项目组织活跃度', detail: 'List Project Organizations Activity / 获取项目组织活跃度', tags: ['Metrics Model Data / 模型数据'], success: {

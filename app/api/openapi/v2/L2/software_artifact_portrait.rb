@@ -11,6 +11,7 @@ module Openapi
         helpers Openapi::SharedParams::CustomMetricSearch
         helpers Openapi::SharedParams::AuthHelpers
         helpers Openapi::SharedParams::ErrorHelpers
+        helpers Openapi::SharedParams::RestapiHelpers
 
         rescue_from :all do |e|
           case e
@@ -28,7 +29,7 @@ module Openapi
           token = params[:access_token]
           Openapi::SharedParams::RateLimiter.check_token!(token)
         end
-
+        before { save_tracking_api! }
         resource :software_artifact_portrait do
 
           # 仓库

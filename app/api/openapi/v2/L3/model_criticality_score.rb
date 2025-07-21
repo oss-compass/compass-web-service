@@ -12,6 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       rescue_from :all do |e|
         case e
@@ -31,7 +32,7 @@ module Openapi
         token = params[:access_token]
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
-
+      before { save_tracking_api! }
       resource :metricModel do
         desc 'Get Project Criticality Score /  获取项目 Criticality Score', detail: 'Get Project Criticality Score /  获取项目 Criticality Score', tags: ['Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CriticalityScoreResponse
