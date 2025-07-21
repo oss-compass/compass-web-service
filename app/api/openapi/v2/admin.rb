@@ -71,7 +71,7 @@ module Openapi
       end
 
       resource :admin do
-        desc '用户概览', hidden: false, tags: ['admin'], success: { code: 201 }, detail: '用户概览'
+        desc '用户概览', hidden: true, tags: ['admin'], success: { code: 201 }, detail: '用户概览'
         params do
           requires :begin_date, type: DateTime, desc: 'Start date',
                    documentation: { param_type: 'body', example: '2010-02-22' }
@@ -693,7 +693,7 @@ module Openapi
           result
         end
 
-        desc '按国家/地区划分的活跃用户', hidden: false, tags: ['admin'], success: {
+        desc '按国家/地区划分的活跃用户', hidden: true, tags: ['admin'], success: {
           code: 201
         }, detail: '按国家/地区划分的活跃用户'
         params do
@@ -1257,7 +1257,7 @@ module Openapi
           result.sort_by { |item| -item[:value] }.first(10)
         end
 
-        desc '开源数据中枢API请求量',hidden: false, tags: ['admin'], success: {
+        desc '开源数据中枢API请求量',hidden: true, tags: ['admin'], success: {
           code: 201
         }, detail: '开源数据中枢API请求量'
         params do
@@ -1324,7 +1324,7 @@ module Openapi
           }
         end
 
-        desc '开源数据中枢API列表', hidden: false, tags: ['admin'], success: {
+        desc '开源数据中枢API列表', hidden: true, tags: ['admin'], success: {
           code: 201
         }, detail: '开源数据中枢API请求量'
         params do
@@ -1346,7 +1346,7 @@ module Openapi
           paths.flatten
           end
 
-        desc '开源数据中枢归档数据下载量', hidden: false, tags: ['admin'], success: {
+        desc '开源数据中枢归档数据下载量', hidden: true, tags: ['admin'], success: {
           code: 201
         }, detail: '开源数据中枢归档数据下载量'
         params do
