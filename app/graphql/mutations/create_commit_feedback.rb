@@ -14,11 +14,11 @@ module Mutations
       label = ShortenedLabel.normalize_label(label)
       login_required!(context[:current_user])
 
-      git_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+      git_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
       commit_data = git_indexer.fetch_commit_one_by_hash(repo_urls, commit_feedback_input[:commit_hash])
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if commit_data.nil?
 
-      pull_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubGitEnrich)
+      pull_indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteePullEnrich, GithubGitEnrich, GitcodeGitEnrich)
       pull_data = pull_indexer.fetch_pull_one_by_hash(repo_urls, commit_feedback_input[:commit_hash])
 
 

@@ -25,7 +25,8 @@ module Types
                                 label,
                                 level,
                                 GiteeContributorEnrich,
-                                GithubContributorEnrich
+                                GithubContributorEnrich,
+                                GitcodeContributorEnrich,
                               )
 
         contributor_base =

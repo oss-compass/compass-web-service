@@ -25,7 +25,7 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
 
         repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, repo_urls, filter_opts: filter_opts)
         map_repo_sig = repo_sig_list.group_by { |item| item[:sig_name] }
