@@ -53,6 +53,7 @@ module Openapi
     mount Openapi::V2::L3::ModelOpencheck
     mount Openapi::V2::L3::ModelCriticalityScore
     mount Openapi::V2::L3::ModelScorecard
+    mount Openapi::V2::L3::ModelCiiBestBadge
     mount Openapi::V2::FinanceStandard
     mount Openapi::V2::ThirdSoftwareSelection
     mount Openapi::V2::Auth

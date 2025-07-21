@@ -27,7 +27,8 @@ module Types
                     label,
                     level,
                     [GiteePullEnrich, GiteeGitEnrich],
-                    [GithubPullEnrich, GithubGitEnrich]
+                    [GithubPullEnrich, GithubGitEnrich],
+                    [GitcodePullEnrich, GitcodeGitEnrich]
                   )
 
         @pull_indexer, @git_indexer = indexers

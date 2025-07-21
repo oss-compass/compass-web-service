@@ -50,7 +50,7 @@ module Openapi
 
             # 选择索引类
             indexer, repo_urls =
-              select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+              select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
             # 获取贡献者列表 & 过滤
             contributors_list =

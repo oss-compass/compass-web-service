@@ -25,7 +25,7 @@ module Types
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         indexer, repo_urls =
-                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich)
+                 select_idx_repos_by_lablel_and_level(label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
 
         resp = indexer.fetch_commit_agg_list_by_repo_urls(repo_urls, begin_date, end_date, branch, agg_field: 'tag',
                                                           per: 10000, filter_opts: filter_opts, sort_opts: sort_opts,

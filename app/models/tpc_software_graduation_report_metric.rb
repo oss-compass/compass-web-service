@@ -222,7 +222,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
   def self.get_compliance_dco(project_url,oh_commit_sha)
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich)
+      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich)
     if oh_commit_sha.present?
 
       commit_time_query = indexer.must(terms: { tag: repo_urls.map { |element| element + ".git" } })
@@ -272,7 +272,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
   def self.get_ecology_issue_management(project_url)
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich)
+      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich, GitcodeIssueEnrich)
 
     base = indexer.must(terms: { tag: repo_urls })
                   .must(match_phrase: { item_type: "issue" })
@@ -309,7 +309,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     begin_date = 6.months.ago
     end_date = Time.current
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich)
+      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich, GitcodeIssueEnrich)
     base = indexer.must(terms: { tag: repo_urls})
                   .must(match_phrase: { item_type: "issue" })
                   .aggregate({ count: { cardinality: { field: "uuid" } }})
@@ -354,7 +354,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
     begin_date = 6.months.ago
     end_date = Time.current
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich)
+      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteeIssueEnrich, GithubIssueEnrich, GitcodeIssueEnrich)
     base = indexer.must(terms: { tag: repo_urls})
                   .must(match_phrase: { item_type: "issue" })
                   .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
@@ -437,7 +437,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
 
   def self.get_ecology_code_review(project_url)
     indexer, repo_urls =
-      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteePullEnrich, GithubPullEnrich)
+      select_idx_repos_by_lablel_and_level(project_url, "repo", GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich)
     base = indexer.must(terms: { tag: repo_urls})
                   .must(match_phrase: { item_type: "pull request" })
                   .must(match_phrase: { merged: true })
