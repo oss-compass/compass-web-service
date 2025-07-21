@@ -65,11 +65,14 @@ module Openapi
 
           params { use :search }
           post :package_info do
-            label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
+            label, _, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, OpencheckRaw, OpencheckRaw)
+            filter_opts << OpenStruct.new({ type: "command.keyword", values: ['code-count', 'package-info'] })
 
-            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:, filter_opts:, sort_opts:)
+            indexer, repo_urls = OpencheckRaw, [label]
+
+            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:,
+                                                     filter_opts: filter_opts, sort_opts:)
 
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.map { |data| data["_source"] }
@@ -104,11 +107,14 @@ module Openapi
 
           params { use :search }
           post :dependent do
-            label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
+            label, _, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, OpencheckRaw, OpencheckRaw)
+            filter_opts << OpenStruct.new({ type: "command.keyword", values: ['ohpm-info', 'package-info'] })
 
-            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:, filter_opts:, sort_opts:)
+            indexer, repo_urls = OpencheckRaw, [label]
+
+            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:,
+                                                     filter_opts: filter_opts, sort_opts:)
 
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.map { |data| data["_source"] }
@@ -140,11 +146,14 @@ module Openapi
 
           params { use :search }
           post :tpc do
-            label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
+            label, _, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, OpencheckRaw, OpencheckRaw)
+            filter_opts << OpenStruct.new({ type: "command.keyword", values: ['scorecard-score'] })
 
-            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:, filter_opts:, sort_opts:)
+            indexer, repo_urls = OpencheckRaw, [label]
+
+            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:,
+                                                     filter_opts: filter_opts, sort_opts:)
 
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.map { |data| data["_source"] }
@@ -178,11 +187,14 @@ module Openapi
 
           params { use :search }
           post :downcount do
-            label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
+            label, _, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, OpencheckRaw, OpencheckRaw)
+            filter_opts << OpenStruct.new({ type: "command.keyword", values: ['ohpm-info', 'package-info'] })
 
-            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:, filter_opts:, sort_opts:)
+            indexer, repo_urls = OpencheckRaw, [label]
+
+            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:,
+                                                     filter_opts: filter_opts, sort_opts:)
 
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.map { |data| data["_source"] }
@@ -214,11 +226,14 @@ module Openapi
 
           params { use :search }
           post :criticality do
-            label, level, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
+            label, _, filter_opts, sort_opts, begin_date, end_date, page, size = extract_search_params!(params)
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, OpencheckRaw, OpencheckRaw)
+            filter_opts << OpenStruct.new({ type: "command.keyword", values: ['criticality-score'] })
 
-            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:, filter_opts:, sort_opts:)
+            indexer, repo_urls = OpencheckRaw, [label]
+
+            resp = indexer.terms_by_metric_repo_urls(repo_urls, begin_date, end_date, target: 'label', per: size, page:,
+                                                     filter_opts: filter_opts, sort_opts:)
 
             hits = resp&.[]('hits')&.[]('hits') || []
             items = hits.map { |data| data["_source"] }
