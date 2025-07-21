@@ -52,7 +52,7 @@ module Openapi
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data['_source'].symbolize_keys }
-          items.first.select { |key, _| !key.to_s.end_with?('_detail') } || {}
+          items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
         end
 
         desc 'Analyze Project Scorecard / 分析项目 Scorecard', detail: 'Analyze Project Scorecard / 分析项目 Scorecard', tags: ['Metrics Model Data / 模型数据'], success: {
