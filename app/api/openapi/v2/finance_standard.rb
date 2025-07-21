@@ -12,6 +12,7 @@ module Openapi
 
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       helpers do
         def check_version_exists(label, version_number)
@@ -131,6 +132,7 @@ module Openapi
         token = params[:access_token]
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
+      before { save_tracking_api! }
 
       helpers do
         def get_projects(new_datasets)
