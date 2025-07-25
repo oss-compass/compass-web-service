@@ -30,6 +30,7 @@ class AnalyzeServer
     @domain_persona = opts.fetch(:domain_persona, true)
     @milestone_persona = opts.fetch(:milestone_persona, true)
     @role_persona = opts.fetch(:role_persona, true)
+    @custom_metrics = opts.fetch(:custom_metrics, true)
     @criticality_score = opts.fetch(:criticality_score, false)
     @scorecard = opts.fetch(:scorecard, false)
     @callback = opts[:callback]
@@ -152,6 +153,7 @@ class AnalyzeServer
         metrics_role_persona: @role_persona,
         metrics_criticality_score: @criticality_score,
         metrics_scorecard: @scorecard,
+        custom_metrics: @custom_metrics,
         panels: false,
         project_url: @repo_url,
         raw: @raw,
