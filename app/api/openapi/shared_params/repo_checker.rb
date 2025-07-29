@@ -6,7 +6,7 @@ module Openapi
       extend CompassUtils
 
       def self.check_repo!(label, level, current_user)
-        repo_indexer, project_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepoEnrich, GithubRepoEnrich)
+        repo_indexer, project_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepoEnrich, GithubRepoEnrich, GitcodeRepoEnrich)
         exist = repo_indexer.check_exist(project_urls)
 
         check_flag = false
