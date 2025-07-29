@@ -39,7 +39,7 @@ module Openapi
           post :repo_language do
             label, level, = extract_search_params!(params)
 
-            status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level)
+            status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level, current_user)
             return { message: message } unless status
 
             indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepo, GithubRepo, GitcodeRepo)
