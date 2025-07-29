@@ -85,37 +85,60 @@ module CompassUtils
       project = ProjectTask.find_by(project_name: label)
       repo_list = director_repo_list(project&.remote_url)
     end
-    github_count, gitee_count = 0,0
+    github_count, gitee_count, gticode_count = 0,0,0
     repo_list.each do |url|
       gitee_count += 1 if url =~ /gitee\.com/
       github_count += 1 if url =~ /github\.com/
+      gticode_count += 1 if url =~ /gitcode\.com/
     end
     if github_count > 0 && gitee_count == 0
       'github'
     elsif gitee_count > 0 && github_count == 0
       'gitee'
+    elsif gticode_count > 0 && gticode_count == 0
+      'gitcode'
     else
       'combine'
     end
   end
 
-  def select_idx_repos_by_lablel_and_level(label, level, gitee_idx, github_idx)
-    if level == 'repo' && label =~ /gitee\.com/
-      [gitee_idx, [label], 'gitee']
-    elsif level == 'repo'&& label =~ /github\.com/
-      [github_idx, [label], 'github']
-    else
-      project = ProjectTask.find_by(project_name: label)
-      repo_list = director_repo_list(project&.remote_url)
-      origin = extract_repos_source(label, level)
-      [origin == 'gitee' ? gitee_idx : github_idx, repo_list, origin]
+  def select_idx_repos_by_lablel_and_level(label, level, gitee_idx, github_idx, gitcode_idx = nil)
+    gitcode_idx ||= github_idx
+    # 定义仓库主机与对应索引、来源的映射关系
+    repo_host_mapping = {
+      'gitee.com'  => { idx: gitee_idx,  origin: 'gitee' },
+      'github.com' => { idx: github_idx, origin: 'github' },
+      'gitcode.com' => { idx: gitcode_idx, origin: 'gitcode' }
+    }
+
+    if level == 'repo'
+      # 查找匹配的主机配置
+      matched_host = repo_host_mapping.find { |host, _| label =~ /#{host}/ }
+      if matched_host
+        _, config = matched_host
+        return [config[:idx], [label], config[:origin]]
+      end
     end
+
+    # 非仓库级别或未匹配到主机时的处理逻辑
+    project = ProjectTask.find_by(project_name: label)
+    repo_list = director_repo_list(project&.remote_url)
+    origin = extract_repos_source(label, level)
+
+    # 根据来源选择对应的索引
+    selected_idx = case origin
+                   when 'gitee' then gitee_idx
+                   when 'gitcode' then gitcode_idx
+                   else github_idx
+                   end
+
+    [selected_idx, repo_list, origin]
   end
 
   def is_repo_admin?(current_user, label, level)
     Rails.cache.fetch("is_repo_admin:user-#{current_user.id}:#{level}:#{label}", expires_in: 15.minutes) do
       indexer, repo_urls, origin =
-                          select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+                          select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
       username = LoginBind.current_host_nickname(current_user, origin)
       indexer.repo_admin?(username, repo_urls)
     end

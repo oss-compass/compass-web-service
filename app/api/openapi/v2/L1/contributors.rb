@@ -12,6 +12,7 @@ module Openapi
         helpers Openapi::SharedParams::Search
         helpers Openapi::SharedParams::AuthHelpers
         helpers Openapi::SharedParams::ErrorHelpers
+        helpers Openapi::SharedParams::RestapiHelpers
 
         rescue_from :all do |e|
           case e
@@ -29,6 +30,7 @@ module Openapi
           token = params[:access_token]
           Openapi::SharedParams::RateLimiter.check_token!(token)
         end
+        before { save_tracking_api! }
 
         resource :metadata do
           desc 'List project contributor metadata / 获取项目贡献者元数据', detail: 'List project contributor metadata / 获取项目贡献者元数据', tags: ['Metadata / 元数据'], success: {
@@ -41,7 +43,7 @@ module Openapi
             status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level, current_user)
             return { message: message } unless status
 
-            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
             resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, target: 'repo_name.keyword', filter: 'grimoire_creation_date', sort: 'grimoire_creation_date', per: size, page:, filter_opts:, sort_opts:)
 

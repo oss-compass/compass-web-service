@@ -19,7 +19,7 @@ module Openapi
                                                                       extract_params!(params)
 
           indexer, repo_urls =
-                   select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich)
+                   select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
           uuid = get_uuid(indexer.to_s, label, level, filter_opts.to_json, sort_opts.to_json, begin_date.to_s, end_date.to_s)
 

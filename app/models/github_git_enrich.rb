@@ -10,7 +10,7 @@ class GithubGitEnrich < GithubBase
   end
   
   def self.platform_type
-    'gitee'
+    'github'
   end
 
   def self.mapping

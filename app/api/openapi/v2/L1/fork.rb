@@ -12,6 +12,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       rescue_from :all do |e|
         case e
@@ -30,7 +31,7 @@ module Openapi
         token = params[:access_token]
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
-
+      before { save_tracking_api! }
       resource :metadata do
         desc 'List project fork metadata / 获取项目fork元数据', detail: 'List project fork metadata / 获取项目fork元数据', tags: ['Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::ForkResponse
@@ -43,7 +44,7 @@ module Openapi
           status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level, current_user)
           return { message: message } unless status
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeForkEnrich, GithubForkEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeForkEnrich, GithubForkEnrich, GitcodeForkEnrich)
 
           resp = indexer.terms_by_repo_urls(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 

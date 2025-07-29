@@ -63,19 +63,32 @@ module Openapi
         end
       end
 
+      helpers do
+        include Pagy::Backend
+        def paginate_fun(scope)
+          pagy(scope, page: params[:page], items: params[:per_page])
+        end
+      end
 
       resource :admin do
         desc '用户概览', hidden: true, tags: ['admin'], success: { code: 201 }, detail: '用户概览'
-        get :user_overview do
-          # 上个月时间范围
-          current_month = Date.today.prev_month
-          current_start = current_month.beginning_of_month
-          current_end = current_month.end_of_month
+        params do
+          requires :begin_date, type: DateTime, desc: 'Start date',
+                   documentation: { param_type: 'body', example: '2010-02-22' }
+          requires :end_date, type: DateTime, desc: 'End date',
+                   documentation: { param_type: 'body', example: '2024-03-22' }
+          end
+          post :user_overview do
+          # 时间范围
 
-          # 上上个月时间范围
-          previous_month = current_month.prev_month
-          previous_start = previous_month.beginning_of_month
-          previous_end = previous_month.end_of_month
+          current_start = params[:begin_date].to_date
+          current_end = params[:end_date].to_date
+
+          # 计算上一个周期的开始和结束时间
+
+          period_length = (current_end - current_start).to_i + 1
+          previous_end = current_start - 1
+          previous_start = previous_end - (period_length - 1)
 
           # === 1. 注册用户数 ===
           current_sign_user = User.where(created_at: current_start..current_end).count
@@ -511,11 +524,19 @@ module Openapi
                       else
                         'Unknown'
                       end
+            binds = LoginBind.find_by(user_id: user.id)
+
             country_desc = Openapi::SharedParams::CityMap.to_cn(country)
             {
               id: user.id,
               name: user.name,
               ip: user.current_sign_in_ip,
+              login_binds:{
+                account: binds&.account,
+                provider: binds&.provider,
+                nickname: binds&.nickname,
+                avatar_url: binds&.avatar_url,
+              },
               country:,
               country_desc:,
               email: user.email,
@@ -539,6 +560,7 @@ module Openapi
         }, detail: '管理用户列表'
         params do
           optional :keywords, type: String, desc: 'keywords', documentation: { param_type: 'body', example: 'Nae' }
+          optional :role_levels, type: Array[Integer],  desc: 'role', documentation: { param_type: 'body', example: 0 }
           optional :page, type: Integer, default: 1
           optional :per_page, type: Integer, default: 20
         end
@@ -546,9 +568,13 @@ module Openapi
           page = params[:page]
           per_page = params[:per_page]
           keywords = params[:keywords]
+          role_levels = params[:role_levels]
 
           users = User.all
           users = users.where('name LIKE :kw OR email LIKE :kw', kw: "%#{keywords}%") if keywords.present?
+
+          users = users.where(role_level: role_levels) if role_levels.present?
+
 
           total = users.size
           paged_users = users.offset((page - 1) * per_page).limit(per_page)
@@ -703,6 +729,7 @@ module Openapi
           requires :end_date, type: DateTime, desc: 'End date',
                    documentation: { param_type: 'body', example: '2024-03-22' }
           requires :type, type: Integer, desc: 'type: 类型 月0 、 年1 ', documentation: { param_type: 'body', example: 0 }
+          requires :user_type, type: Integer, desc: 'user_type: 类型 活跃用户0 、 新增用户1 ', documentation: { param_type: 'body', example: 0 }
         end
         post :user_region_table do
           begin_date = params[:begin_date].to_date.beginning_of_day
@@ -711,32 +738,56 @@ module Openapi
           # 加载 GeoIP 数据库
           geo_db = MaxMindDB.new(Rails.root.join('db/GeoLite2-Country.mmdb'))
 
-          # 拉取 IP + UA 的唯一用户访问记录
-          events = TrackingEvent
-                     .where(created_at: begin_date..end_date, event_type: 'module_visit')
-                     .group(:ip, :device_user_agent)
-
-          # 统计每个国家的用户数量
           country_user_count = Hash.new(0)
 
-          events.find_each do |event|
-            ip = event.ip
-            record = geo_db.lookup(ip)
+          if params[:user_type] == 0
+            # === 活跃用户 ===
+            events = TrackingEvent
+                       .where(created_at: begin_date..end_date, event_type: 'module_visit')
+                       .group(:ip, :device_user_agent)
 
-            country = if record.found? && record.country.name.present?
-                        record.country.name
-                      else
-                        'Unknown'
-                      end
+            events.find_each do |event|
+              ip = event.ip
+              record = geo_db.lookup(ip)
 
-            country_user_count[country] += 1
+              country = if record.found? && record.country.name.present?
+                          record.country.name
+                        else
+                          'Unknown'
+                        end
+
+              country_user_count[country] += 1
+            end
+
+          elsif params[:user_type] == 1
+            # === 新增用户 ===
+            events = TrackingEvent
+                       .where(created_at: begin_date..end_date, event_type: 'module_visit', user_id: nil)
+                       .group(:ip, :device_user_agent)
+
+            events.find_each do |event|
+              ip = event.ip
+              record = geo_db.lookup(ip)
+
+              country = if record.found? && record.country.name.present?
+                          record.country.name
+                        else
+                          'Unknown'
+                        end
+
+              country_user_count[country] += 1
+            end
+          else
+            error!('非法的 user_type 参数', 400)
           end
 
-          # 返回排序后的数组 desc = Openapi::SharedParams::CityMap.to_cn(country)
           result = country_user_count.map do |country, count|
-            { country:, value: count, desc: Openapi::SharedParams::CityMap.to_cn(country) }
-          end
-                                     .sort_by { |item| -item[:value] }
+            {
+              country: country,
+              value: count,
+              desc: Openapi::SharedParams::CityMap.to_cn(country)
+            }
+          end.sort_by { |item| -item[:value] }
 
           result
         end
@@ -1232,6 +1283,175 @@ module Openapi
 
           result.sort_by { |item| -item[:value] }.first(10)
         end
+
+        desc '开源数据中枢API请求量',hidden: true, tags: ['admin'], success: {
+          code: 201
+        }, detail: '开源数据中枢API请求量'
+        params do
+          requires :begin_date, type: DateTime, desc: 'Start date', documentation: { param_type: 'body', example: '2010-02-22' }
+          requires :end_date, type: DateTime, desc: 'End date', documentation: { param_type: 'body', example: '2024-03-22' }
+          optional :keywords, type: String, desc: 'Keywords 用户名或邮箱', documentation: { param_type: 'body', example: '' }
+          optional :api_path, type: String, desc: 'restapi', documentation: { param_type: 'body', example: '/api/v2/metadata/releases' }
+          optional :page, type: Integer, default: 1
+          optional :per_page, type: Integer, default: 20
+
+        end
+        post :datahub_restapi_table do
+          begin_date = params[:begin_date].to_date
+          end_date = params[:end_date].to_date
+          keywords = params[:keywords]
+          api = params[:api_path]
+
+          user_ids = nil
+          if keywords.present?
+            users = User.where('name LIKE :kw OR email LIKE :kw', kw: "%#{keywords}%")
+            user_ids = users.pluck(:id)
+          end
+
+          restapi = TrackingRestapi.where(created_at: begin_date..end_date)
+          restapi = restapi.where(user_id: user_ids) if user_ids.present?
+          restapi = restapi.where(api_path: api) if api.present?
+
+          result = restapi
+                     .group('tracking_restapis.user_id', 'tracking_restapis.api_path')
+                     .select(
+                       'tracking_restapis.user_id',
+                       'tracking_restapis.api_path',
+                       'COUNT(*) AS call_count',
+                       'MAX(tracking_restapis.created_at) AS last_called_at'
+                     )
+                     .order(Arel.sql('COUNT(*) DESC'))
+
+          pages, paginated_result = paginate_fun(result)
+
+
+          items = paginated_result.map do |r|
+            binds = LoginBind.find_by(user_id: r.user_id)
+
+            {
+              user_id: r.user_id,
+              login_binds: {
+                account: binds&.account,
+                provider: binds&.provider,
+                nickname: binds&.nickname,
+                avatar_url: binds&.avatar_url
+              },
+              api_path: r.api_path,
+              call_count: r.call_count,
+              last_called_at: r.last_called_at
+            }
+          end
+
+          {
+            items: items,
+            total_count: pages.count,
+            current_page: pages.page,
+            per_page: pages.items,
+            total_pages: pages.pages
+          }
+        end
+
+        desc '开源数据中枢API列表', hidden: true, tags: ['admin'], success: {
+          code: 201
+        }, detail: '开源数据中枢API请求量'
+        params do
+        end
+        get :datahub_restapi_list do
+          domin = ENV.fetch('NOTIFICATION_URL')
+          body = Faraday.get("#{domin}/api/v2/docs").body
+          swagger_doc = JSON.parse(body)
+
+          paths = swagger_doc['paths'].map do |path, methods|
+            methods.map do |method, details|
+              {
+                api_path: path,
+                description: details['description'] || ''
+              }
+            end
+          end
+
+          paths.flatten
+          end
+
+        desc '开源数据中枢归档数据下载量', hidden: true, tags: ['admin'], success: {
+          code: 201
+        }, detail: '开源数据中枢归档数据下载量'
+        params do
+          requires :begin_date, type: DateTime, desc: 'Start date', documentation: { param_type: 'body', example: '2010-02-22' }
+          requires :end_date, type: DateTime, desc: 'End date', documentation: { param_type: 'body', example: '2024-03-22' }
+          optional :keywords, type: String, desc: 'Keywords 用户名或邮箱', documentation: { param_type: 'body', example: '' }
+          optional :dataset_name, type: String, desc: 'dataset_name', documentation: { param_type: 'body', example: '贡献者数据集' }
+          optional :page, type: Integer, default: 1
+          optional :per_page, type: Integer, default: 20
+
+        end
+        post :datahub_archive_download_table do
+          begin_date = params[:begin_date].to_date
+          end_date = params[:end_date].to_date
+          keywords = params[:keywords]
+          dataset = params[:dataset_name]
+
+
+          user_ids = nil
+          if keywords.present?
+            users = User.where('name LIKE :kw OR email LIKE :kw', kw: "%#{keywords}%")
+            user_ids = users.pluck(:id)
+          end
+
+          archive_download = TrackingEvent.where(created_at: begin_date..end_date, module_id: 'dataHub', event_type: 'module_click')
+                                          .where("data LIKE ?", "%archive_download%").where.not(user_id: nil)
+          archive_download = archive_download.where(user_id: user_ids) if user_ids.present?
+          archive_download = archive_download.where("data LIKE ?", "%#{dataset}%") if dataset.present?
+
+
+          pages, paginated_result = paginate_fun(archive_download)
+          stat = {}
+          paginated_result.find_each do |event|
+            begin
+              parsed_data = JSON.parse(event.data)
+              next unless parsed_data["type"] == "archive_download"
+              dataset_name = parsed_data.dig("content", "dataset_name")
+              next unless dataset_name
+
+              key = [event.user_id, dataset_name]
+
+              stat[key] ||= { user_id: event.user_id, dataset_name: dataset_name, call_count: 0, last_called_at: nil }
+              stat[key][:call_count] += 1
+              stat[key][:last_called_at] = [stat[key][:last_called_at], event.created_at].compact.max
+            rescue JSON::ParserError
+              next
+            end
+          end
+
+          result = stat.values.sort_by { |r| -r[:call_count] }
+          items = result.map do |r|
+
+            binds = LoginBind.find_by(user_id: r[:user_id])
+
+            {
+              user_id: r[:user_id],
+              login_binds: {
+                account: binds&.account,
+                provider: binds&.provider,
+                nickname: binds&.nickname,
+                avatar_url: binds&.avatar_url
+              },
+
+              call_count: r[:call_count],
+              last_called_at: r[:last_called_at],
+              dataset_name: r[:dataset_name]
+            }
+          end
+
+          {
+            items: items,
+            total_count: pages.count,
+            current_page: pages.page,
+            per_page: pages.items,
+            total_pages: pages.pages
+          }
+        end
+
       end
     end
   end

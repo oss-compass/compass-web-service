@@ -13,6 +13,7 @@ module Openapi
       helpers Openapi::SharedParams::Search
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       rescue_from :all do |e|
         case e
@@ -31,6 +32,9 @@ module Openapi
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
 
+      before  {save_tracking_api!}
+
+
       resource :metadata do
         desc 'List project release metadata / 获取项目release元数据', detail: 'List project release metadata / 获取项目release元数据', tags: ['Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::PullResponse
@@ -43,7 +47,7 @@ module Openapi
           status, message = Openapi::SharedParams::RepoChecker.check_repo!(label, level, current_user)
           return { message: message } unless status
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeReleasesEnrich, GithubReleasesEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeReleasesEnrich, GithubReleasesEnrich, GitcodeReleasesEnrich)
 
           resp = indexer.terms_by_repo_urls_query(repo_urls, begin_date, end_date, per: size, page:, filter_opts:, sort_opts:)
 

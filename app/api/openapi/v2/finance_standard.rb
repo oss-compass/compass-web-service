@@ -12,12 +12,13 @@ module Openapi
 
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::RestapiHelpers
 
       helpers do
         def check_version_exists(label, version_number)
           puts "Checking version #{label}, #{version_number}"
 
-          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, 'repo', GiteeReleasesEnrich, GithubReleasesEnrich)
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, 'repo', GiteeReleasesEnrich, GithubReleasesEnrich, GitcodeReleasesEnrich)
           releases = indexer.get_releases(repo_urls)
           flag = releases.include?(version_number)
           if flag
@@ -131,6 +132,7 @@ module Openapi
         token = params[:access_token]
         Openapi::SharedParams::RateLimiter.check_token!(token)
       end
+      before { save_tracking_api! }
 
       helpers do
         def get_projects(new_datasets)
