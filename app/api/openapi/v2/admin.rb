@@ -364,6 +364,32 @@ module Openapi
             }
           end
 
+
+          #  按 Google Analytics 风格 留存率
+          #  计算：过去6周内的用户（IP + UA）
+          new_user_window_start = begin_date
+          new_users_map = events
+                            .where(created_at: new_user_window_start.beginning_of_day..new_user_window_start.end_of_day)
+                            .select(:ip, :device_user_agent)
+                            .distinct
+                            .map { |e| "#{e.ip}|#{e.device_user_agent}" }
+                            .to_set
+
+          # 统计每日留存用户数
+          result_retention_users = (begin_date..end_date).map do |date|
+            day_users = events
+                          .where(created_at: date.beginning_of_day..date.end_of_day)
+                          .select(:ip, :device_user_agent)
+                          .map { |e| "#{e.ip}|#{e.device_user_agent}" }
+
+            retained_users = day_users.select { |user| new_users_map.include?(user) }.uniq
+
+            {
+              date: date.strftime('%Y-%m-%d'),
+              value: (retained_users.size.to_f / new_users_map.size).round(2)
+            }
+          end
+
           # 用户转化率 注册用户/新用户
           result_transfer_rate = result_new_users.each_with_index.map do |row, idx|
             new_val = row[:value]
@@ -375,11 +401,12 @@ module Openapi
           end
 
           {
+            # stay_rate: result_stay_rate,
+            stay_rate: result_retention_users,
             sign_users: result_sign_users,
             new_users: result_new_users,
             stay_users: result_stay_users,
             active_users: result_active_users,
-            stay_rate: result_stay_rate,
             transfer_rate: result_transfer_rate
           }
         end
