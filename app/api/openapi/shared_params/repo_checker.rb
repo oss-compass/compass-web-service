@@ -2,7 +2,6 @@
 module Openapi
   module SharedParams
     module RepoChecker
-      include AuthHelpers
 
       extend CompassUtils
 
