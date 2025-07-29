@@ -9,7 +9,7 @@ module Openapi
         repo_indexer, project_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepoEnrich, GithubRepoEnrich, GitcodeRepoEnrich)
         exist = repo_indexer.check_exist(project_urls)
 
-        check_flag = false
+        check_flag = true
         message = nil
 
         unless exist
