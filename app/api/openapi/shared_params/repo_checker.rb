@@ -6,13 +6,33 @@ module Openapi
       extend CompassUtils
 
       def self.check_repo!(label, level, current_user)
+        exist_flag = true
+        message = nil
+        # 检查 项目是否存在
         repo_indexer, project_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeRepoEnrich, GithubRepoEnrich, GitcodeRepoEnrich)
         exist = repo_indexer.check_exist(project_urls)
 
-        check_flag = true
-        message = nil
-
         unless exist
+          # 检查项目是否可以访问 如果不可访问或者404直接返回
+          accessible = project_urls.any? do |url|
+            begin
+              conn = Faraday.new(url: url) do |f|
+                f.options.timeout = 5
+                f.options.open_timeout = 3
+              end
+              res = conn.head
+              # 2xx 或 3xx 认为可访问
+              res.success? || res.status.to_s.start_with?('3')
+            rescue Faraday::ConnectionFailed, Faraday::TimeoutError => e
+              Rails.logger.warn "Repo access check failed for #{url}: #{e.class} #{e.message}"
+              false
+            end
+          end
+
+          unless accessible
+            return false, "项目无法访问（可能已删除或地址错误）。"
+          end
+
           # 查看缓存是否存在 不存在再进行提交pr
           cache_key = "repo_checker:pr_submitted:#{label}"
           submit_cache = Rails.cache.read(cache_key)
@@ -37,15 +57,15 @@ module Openapi
           result_message = result[:message]
 
           if result_message.present?
-            check_flag = false
+            exist_flag = false
             message = "#{result_message},请等待任务执行完毕后查询。"
           else
-            check_flag = false
+            exist_flag = false
             message = "查询项目尚未收录，已提交pr: #{pr_url} ,请等待pr合入后再查询。"
           end
 
         end
-        return check_flag, message
+        return exist_flag, message
       end
     end
   end
