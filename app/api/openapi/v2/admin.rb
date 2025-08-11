@@ -23,14 +23,17 @@ module Openapi
           handle_generic_error(e)
         end
       end
-
+      MAX_VALID_DURATION = 3_600_000
       helpers do
         # 计算总停留时长
+
         def calculate_total_duration(events)
           total = 0
           events.find_each do |event|
             data = JSON.parse(event.data || '{}')
-            total += data['stay_duration'].to_i
+            stay_duration =  data['stay_duration'].to_i
+            next if stay_duration > MAX_VALID_DURATION
+            total += stay_duration
           rescue JSON::ParserError
             next
           end
@@ -465,7 +468,7 @@ module Openapi
           stay_events.find_each do |event|
             data = JSON.parse(event.data || '{}')
             duration = data['stay_duration'].to_i
-            next if duration <= 0
+            next if duration > MAX_VALID_DURATION
 
             user_id = event.user_id
             day = event.created_at.to_date
@@ -662,6 +665,7 @@ module Openapi
           user_duration.find_each do |event|
             data = JSON.parse(event.data || '{}')
             stay_duration = data['stay_duration'].to_i # 毫秒
+            next if stay_duration >= MAX_VALID_DURATION
 
             ip = event.ip
             ua = event.device_user_agent
