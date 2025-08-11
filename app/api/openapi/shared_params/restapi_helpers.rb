@@ -7,15 +7,12 @@ module Openapi
       def save_tracking_api!
         path = request.path
         token = params[:access_token]
-        user_token = AccessToken.find_by(token: token)
-        user_id = user_token[:user_id]
-
-        data = TrackingRestapi.new(
-          user_id:,
+        data = {
+          token: token,
           api_path: path,
           domain: request.env['HTTP_HOST'],
           ip: request.ip
-        )
+        }
 
         host = request.env['HTTP_HOST']
         primary_domains = ENV.fetch('PRIMARY_DOMAINS', '').split(',')
@@ -29,7 +26,16 @@ module Openapi
       end
 
       def save_locally!(data)
-        data.save
+        token = data[:token]
+        user_token = AccessToken.find_by(token: token)
+        user_id = user_token[:user_id]
+        save_data = TrackingRestapi.new(
+          api_path: data[:api_path],
+          domain: data[:domain],
+          user_id: user_id,
+          ip: data[:ip]
+        )
+        save_data.save
       end
 
       def save_remotely!(data)

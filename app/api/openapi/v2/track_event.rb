@@ -76,10 +76,12 @@ module Openapi
           }}
         end
         post :remoteSave do
-          user_id = params[:payload][:user_id]
           api_path = params[:payload][:api_path]
           domain = params[:payload][:domain]
           ip = params[:payload][:ip]
+          token = params[:payload][:token]
+          user_token = AccessToken.find_by(token: token)
+          user_id = user_token[:user_id]
 
           data = TrackingRestapi.new(
             user_id:,
