@@ -8,7 +8,7 @@ module Openapi
       format :json
       require 'maxminddb'
 
-      # before { require_login! }
+      before { require_login! }
       helpers Openapi::SharedParams::ErrorHelpers
 
       rescue_from :all do |e|
