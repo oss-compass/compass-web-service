@@ -3,8 +3,8 @@
 # Table name: project_tasks
 #
 #  id           :bigint           not null, primary key
-#  task_id      :string(255)
-#  remote_url   :string(255)
+#  task_id      :string(255)      not null
+#  remote_url   :string(255)      not null
 #  status       :string(255)
 #  payload      :text(65535)
 #  extra        :text(65535)
@@ -24,7 +24,7 @@ class ProjectTask < ApplicationRecord
   Success = 'success'
   Error = 'error'
   Canceled = 'canceled'
-  UnSubmit = 'unsumbit'
+  UnSubmit = 'unsubmit'
   Processing = [Pending, Progress]
 
   validates :task_id, length: { maximum: 255 }
