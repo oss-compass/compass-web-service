@@ -66,6 +66,8 @@ module Mutations
               TpcSoftwareCommentState.check_compliance_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Compliance
             permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG
+            permission = TpcSoftwareMember.check_wg_permission?(current_user)
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end

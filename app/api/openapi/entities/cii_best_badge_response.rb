@@ -295,7 +295,7 @@ module Openapi
       expose :maintained_status, documentation: { type: 'String', desc: 'maintained_status / 维护状态', example: 'Met' }
       expose :maintained_justification, documentation: { type: 'String', desc: 'maintained_justification / 维护状态说明', example: 'https://github.com/ossf/scorecard/blob/main/.github/CODEOWNERS' }
       expose :badge_level, documentation: { type: 'String', desc: 'badge_level / 徽章等级', example: 'passing' }
-      expose :additional_rights, documentation: { type: 'Array', desc: 'additional_rights / 附加权限', example: [] }
+      expose :additional_rights, documentation: { type: 'String', is_array: true, desc: 'additional_rights / 附加权限', example: [] }
       expose :project_entry_attribution, documentation: { type: 'String', desc: 'project_entry_attribution / 项目条目归属', example: 'Please credit Stephen Augustus (he/him) and the CII Best Practices badge contributors.' }
       expose :project_entry_license, documentation: { type: 'String', desc: 'project_entry_license / 项目条目许可证', example: 'CC-BY-3.0+'}
     end

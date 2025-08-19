@@ -29,6 +29,7 @@ class TpcSoftwareGraduation < ApplicationRecord
   State_Awaiting_Review = 2
   State_Completed = 3
   State_Awaiting_QA = 4
+  # State_Awaiting_Community_Collaboration_WG = 5
   State_Rejected = -1
 
   Clarify_Metric_List = [
@@ -207,7 +208,9 @@ class TpcSoftwareGraduation < ApplicationRecord
 
   def self.get_current_state(tpc_software)
     report_id = tpc_software.target_software_report_id
-    risk_metric_count = get_risk_metric_list(report_id).length
+    risk_metrics = get_risk_metric_list(report_id)
+
+    risk_metric_count = risk_metrics.length
     clarified_metric_count = get_clarified_metric_list(report_id).length
     if risk_metric_count != clarified_metric_count
       return State_Awaiting_Clarification
@@ -218,12 +221,18 @@ class TpcSoftwareGraduation < ApplicationRecord
       return State_Awaiting_Confirmation
     end
 
+    required_member_types = if risk_metrics.include?("ecology_code_upstream")
+                              TpcSoftwareCommentState::Member_Types
+                            else
+                              TpcSoftwareCommentState::Member_Types - [TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG]
+                            end
+
     comment_state_list = get_comment_state_list(tpc_software.id)
     if comment_state_list.any? { |item| item.state == TpcSoftwareCommentState::State_Reject }
       return State_Rejected
-    elsif TpcSoftwareCommentState::Member_Types_QA.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+    elsif (required_member_types + [TpcSoftwareCommentState::Member_Type_QA]).all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
       return State_Completed
-    elsif TpcSoftwareCommentState::Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+    elsif required_member_types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
       return State_Awaiting_QA
     else
       return State_Awaiting_Review
