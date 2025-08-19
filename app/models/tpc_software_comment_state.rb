@@ -39,17 +39,19 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Type_Sig_Lead = 1
   Member_Type_Legal = 2
   Member_Type_Compliance = 3
+  Member_Type_Community_Collaboration_WG = 5
 
   Member_Type_QA = 4
-  Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
-  Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_QA]
+  Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
+  Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG,Member_Type_QA]
 
   Member_Type_Committer_Name = "TPC垂域Committer"
   Member_Type_Sig_Lead_Name = "TPC SIG Leader"
   Member_Type_Legal_Name = "TPC法务专家"
   Member_Type_Compliance_Name = "TPC合规专家"
   Member_Type_QA_Name = "TPC QA"
-  Member_Type_Names = [Member_Type_Committer_Name, Member_Type_Sig_Lead_Name, Member_Type_Legal_Name, Member_Type_Compliance_Name,Member_Type_QA_Name]
+  Member_Type_Community_Collaboration_WG_Name = "Community Collaboration WG"
+  Member_Type_Names = [Member_Type_Committer_Name, Member_Type_Sig_Lead_Name, Member_Type_Legal_Name, Member_Type_Compliance_Name,Member_Type_QA_Name,Member_Type_Community_Collaboration_WG_Name]
 
   Review_State_TPC_Await = "【待TPC SIG评审】"
   Review_State_TPC_Replenish = "【TPC：待补充信息】"

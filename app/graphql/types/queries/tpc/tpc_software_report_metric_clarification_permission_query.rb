@@ -35,13 +35,15 @@ module Types
             clarification_sig_lead_permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
             clarification_legal_permission = TpcSoftwareMember.check_legal_permission?(current_user)
             clarification_compliance_permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+            clarification_community_collaboration_wg_permission = TpcSoftwareMember.check_wg_permission?(current_user)
           end
           OpenStruct.new(
             {
               clarification_committer_permission: clarification_committer_permission ? 1 : 0,
               clarification_sig_lead_permission: clarification_sig_lead_permission ? 1 : 0,
               clarification_legal_permission: clarification_legal_permission ? 1 : 0,
-              clarification_compliance_permission: clarification_compliance_permission ? 1 : 0
+              clarification_compliance_permission: clarification_compliance_permission ? 1 : 0,
+              clarification_community_collaboration_wg_permission: clarification_community_collaboration_wg_permission ? 1 : 0
             }
           )
         end

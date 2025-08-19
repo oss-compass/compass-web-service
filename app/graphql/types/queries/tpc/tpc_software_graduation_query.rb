@@ -31,6 +31,7 @@ module Types
               legal_permission = TpcSoftwareMember.check_legal_permission?(current_user)
               compliance_permission = TpcSoftwareMember.check_compliance_permission?(current_user)
               qa_permission = TpcSoftwareMember.check_qa_permission?(current_user)
+              wg_permission = TpcSoftwareMember.check_wg_permission?(current_user)
             end
 
             graduation_hash['comment_committer_permission'] = committer_permission ? 1 : 0
@@ -38,6 +39,7 @@ module Types
             graduation_hash['comment_legal_permission'] = legal_permission ? 1 : 0
             graduation_hash['comment_compliance_permission'] = compliance_permission ? 1 : 0
             graduation_hash['comment_qa_permission'] = qa_permission ? 1 : 0
+            graduation_hash['comment_community_collaboration_wg_permission'] = wg_permission ? 1 : 0
             report = OpenStruct.new(graduation_hash)
           end
           report

@@ -9,7 +9,7 @@ module Mutations
 
       argument :graduation_id, Integer, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
-      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3, QA: 4', default_value: '0'
+      argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3, QA: 4,community collaboration wg: 5', default_value: '0'
 
 
       def resolve(graduation_id: nil, state: 1, member_type: 0)
@@ -45,7 +45,10 @@ module Mutations
             permission = TpcSoftwareMember.check_compliance_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_QA
             permission = TpcSoftwareMember.check_qa_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG
+            permission = TpcSoftwareMember.check_wg_permission?(current_user)
           end
+
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
 
@@ -54,6 +57,7 @@ module Mutations
             tpc_software_id: graduation.id,
             tpc_software_type: TpcSoftwareCommentState::Type_Graduation,
             metric_name: TpcSoftwareCommentState::Metric_Name_Graduation,
+            member_type: member_type,
             user_id: current_user.id)
           if state == TpcSoftwareCommentState::State_Cancel
             raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless comment_state.user_id == current_user.id

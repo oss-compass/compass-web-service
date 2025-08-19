@@ -33,6 +33,7 @@ class TpcSoftwareGraduationReport < ApplicationRecord
   belongs_to :subject
   belongs_to :user
   has_many :tpc_software_graduation_report_metrics, dependent: :destroy
+  has_many :tpc_software_graduations, foreign_key: 'target_software_report_id'
 
   has_many_base64_attached :attachments
 
