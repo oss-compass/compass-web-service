@@ -121,7 +121,7 @@ module Openapi
           }, detail: '获取 test_queue 队列消息数量'
 
           post :queue_list do
-            rabbitmq_host = "http://119.8.41.180:9673"
+            rabbitmq_host = ""
             vhost = "/"
             queue = "test_queue"
 
