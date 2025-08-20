@@ -4,6 +4,8 @@ class AnalyzeServer
   PROJECT = 'insight'
   WORKFLOW = 'ETL_V1'
   WORKFLOW_TPC = 'ETL_V1_TPC'
+  WORKFLOW_HIGH_PRIORITY = 'ETL_V1_HIGH_PRIORITY'
+  WORKFLOW_TPC_HIGH_PRIORITY = 'ETL_V1_TPC_HIGH_PRIORITY'
 
   include Common
   include CompassUtils
@@ -105,6 +107,47 @@ class AnalyzeServer
   rescue => ex
     { status: false, message: I18n.t('tpc.software_report_trigger_failed', reason: ex.message) }
   end
+
+  def execute_tpc_high_priority
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload(project: PROJECT, name: WORKFLOW_TPC_HIGH_PRIORITY).to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: ex.message }
+  end
+
+  def execute_high_priority
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload(project: PROJECT, name: WORKFLOW_HIGH_PRIORITY).to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: ex.message }
+  end
+
+  def execute_workflow
+    response =
+      Faraday.post(
+        "#{CELERY_SERVER}/api/workflows",
+        payload(project: PROJECT, name: WORKFLOW).to_json,
+        { 'Content-Type' => 'application/json' }
+      )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: ex.message }
+  end
+
+
 
   private
 

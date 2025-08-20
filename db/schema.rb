@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_18_071335) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_30_072012) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -243,6 +243,38 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_18_071335) do
     t.string "associated_id"
     t.string "associated_type"
     t.text "extra"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "server_infos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "server_id", null: false
+    t.string "hostname"
+    t.string "ip_address"
+    t.string "location"
+    t.string "status"
+    t.string "use_for"
+    t.string "belong_to"
+    t.string "cpu_info"
+    t.string "memory_info"
+    t.string "storage_info"
+    t.string "net_info"
+    t.string "system_info"
+    t.string "architecture_info"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "server_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "server_id", null: false
+    t.float "cpu_percent"
+    t.float "memory_percent"
+    t.float "disk_percent"
+    t.float "disk_io_read"
+    t.float "disk_io_write"
+    t.float "net_io_recv"
+    t.float "net_io_sent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
