@@ -13,6 +13,15 @@ module Openapi
         exist = repo_indexer.check_exist(project_urls)
 
         unless exist
+          # 地址格式校验（只允许 GitHub / Gitee / GitCode）
+          valid_urls = project_urls.any? do |url|
+            url =~ %r{\Ahttps?://(github\.com|gitee\.com|gitcode\.com)/[\w\-.]+/[\w\-.]+\z}i
+          end
+
+          unless valid_urls
+            return false, "仓库地址无效（仅支持 GitHub/Gitee/GitCode 仓库）。"
+          end
+
           # 检查项目是否可以访问 如果不可访问或者404直接返回
           accessible = project_urls.any? do |url|
             begin
