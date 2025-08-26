@@ -21,6 +21,7 @@ module Openapi
           if access_token
             {
               user_id: access_token.user_id,
+              type: access_token.type,
               valid: true,
               expires_at: access_token.expires_at
             }

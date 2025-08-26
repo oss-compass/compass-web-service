@@ -4,8 +4,9 @@ module Openapi
     module RateLimiter
       def self.check_token!(token, limit: 5000, period: 3600)
 
-        user = verify_token_is_admin!(token)
-        return if user&.role_level.to_i > 3
+        user, type = verify_token_is_unlimited!(token)
+        return if (user&.role_level.to_i > 3) || (type == 0)
+
 
         key = "rate_limit:token:#{token}:#{Time.now.to_i / period}"
 
@@ -18,11 +19,12 @@ module Openapi
         end
       end
 
-      def self.verify_token_is_admin!(token)
+      def self.verify_token_is_unlimited!(token)
 
         verify_url = ENV.fetch('REMOTE_VERIFY_URL')
         retries = 3
         wait_time = 1
+        type = nil
         begin
           response = Faraday.post(
             verify_url,
@@ -34,6 +36,7 @@ module Openapi
 
           if response.status == 201 && data['valid']
             current_user = User.find_by(id: data['user_id'])
+            type = data['type']
           else
             error!('token校验失败,无效或过期的token', 401)
           end
@@ -48,7 +51,7 @@ module Openapi
           end
         end
 
-        current_user
+        [current_user, type]
       end
 
     end
