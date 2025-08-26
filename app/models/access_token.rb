@@ -17,6 +17,7 @@ class AccessToken < ApplicationRecord
   validates :token, presence: true, uniqueness: true
   validates :user_id, presence: true
   before_validation :generate_token, on: :create
+  self.inheritance_column = :_type_disabled
 
   scope :active, -> { where("expires_at IS NULL OR expires_at > ?", Time.current) }
 
