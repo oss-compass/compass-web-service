@@ -45,6 +45,9 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
   Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG,Member_Type_QA]
 
+  Selection_Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
+  Selection_Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_QA]
+
   Member_Type_Committer_Name = "TPC垂域Committer"
   Member_Type_Sig_Lead_Name = "TPC SIG Leader"
   Member_Type_Legal_Name = "TPC法务专家"
