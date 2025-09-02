@@ -221,9 +221,9 @@ class TpcSoftwareSelection < ApplicationRecord
     comment_state_list = get_comment_state_list(tpc_software.id)
     if comment_state_list.any? { |item| item.state == TpcSoftwareCommentState::State_Reject }
       return State_Rejected
-    elsif TpcSoftwareCommentState::Member_Types_QA.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+    elsif TpcSoftwareCommentState::Selection_Member_Types_QA.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
       return State_Completed
-    elsif TpcSoftwareCommentState::Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+    elsif TpcSoftwareCommentState::Selection_Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
         return State_Awaiting_QA
     else
       return State_Awaiting_Review
