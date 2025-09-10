@@ -3,6 +3,7 @@
 class AnalyzeGroupServer
   PROJECT = 'insight'
   WORKFLOW = 'ETL_V1_GROUP'
+  WORKFLOW_HIGH_PRIORITY = 'ETL_V1_GROUP_HIGH_PRIORITY'
 
   include Common
   include CompassUtils
@@ -109,6 +110,32 @@ class AnalyzeGroupServer
 
   def repos_count
     (@software_repos + @governance_repos).uniq.length
+  end
+
+  def execute_workflow
+    response =  Faraday.post(
+      "#{CELERY_SERVER}/api/workflows",
+      payload.to_json,
+      { 'Content-Type' => 'application/json' }
+    )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: ex.message }
+  end
+
+  def execute_workflow_high_priority
+    payload_group = payload
+    payload_group[:name] = WORKFLOW_HIGH_PRIORITY
+    response = Faraday.post(
+      "#{CELERY_SERVER}/api/workflows",
+      payload_group.to_json,
+      { 'Content-Type' => 'application/json' }
+    )
+    task_resp = JSON.parse(response.body)
+    { status: true, body: task_resp }
+  rescue => ex
+    { status: false, message: ex.message }
   end
 
   private

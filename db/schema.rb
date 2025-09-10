@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_30_072012) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_22_013151) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -221,6 +221,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_30_072012) do
     t.index ["provider"], name: "index_login_binds_on_provider"
     t.index ["uid", "provider_id"], name: "index_login_binds_on_uid_and_provider_id", unique: true
     t.index ["user_id"], name: "index_login_binds_on_user_id"
+  end
+
+  create_table "mq_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "total"
+    t.integer "ready"
+    t.integer "unacknowledged"
+    t.integer "consumers"
+    t.string "queue_name"
+    t.string "queue_type"
+    t.string "belong_to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "project_tasks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
