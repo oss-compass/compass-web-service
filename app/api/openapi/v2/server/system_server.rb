@@ -9,7 +9,13 @@ module Openapi
         format :json
 
         before do
-          unless request.path.include?('/server/save_data')
+          skip_paths = [
+            '/api/v2/server/save_data',
+            '/api/v2/server/save_mq_data'
+          ]
+
+          puts request.path
+          unless skip_paths.any? { |p| request.path.start_with?(p) }
             require_login!
           end
         end
@@ -62,6 +68,39 @@ module Openapi
             }
           end
 
+          desc '保存mq信息', hidden: true, tags: ['admin'], success: {
+            code: 201
+          }, detail: '保存mq信息'
+
+          params do
+            requires :queue_name, type: String, desc: 'queue_name', documentation: { param_type: 'body' }
+            requires :queue_type, type: String, desc: 'queue_type', documentation: { param_type: 'body' }
+            requires :total, type: Integer, desc: '总数', documentation: { param_type: 'body' }
+            requires :ready, type: Integer, desc: '就绪', documentation: { param_type: 'body' }
+            requires :unacknowledged, type: Integer, desc: 'unac', documentation: { param_type: 'body' }
+            requires :consumers, type: Integer, desc: '消费者数', documentation: { param_type: 'body' }
+            optional :state, type: String, desc: 'state', documentation: { param_type: 'body' }
+            optional :belong_to, type: String, desc: 'belong_to', documentation: { param_type: 'body' }
+
+          end
+
+          post :save_mq_data do
+            MqMetric.create!(
+              queue_name: params[:queue_name],
+              queue_type: params[:queue_type],
+              total: params[:total],
+              ready: params[:ready],
+              unacknowledged: params[:unacknowledged],
+              consumers: params[:consumers],
+              belong_to: params[:belong_to],
+              # state: params[:state]
+              )
+
+            {
+              message: 'ok'
+            }
+          end
+
           desc '获取服务器列表', hidden: true, tags: ['admin'], success: {
             code: 201
           }, detail: '获取服务器列表'
@@ -107,27 +146,7 @@ module Openapi
 
           end
 
-          #
 
-
-          # desc '获取服务器图表', hidden: true, tags: ['admin'], success: {
-          #   code: 201
-          # }, detail: '获取服务器列表'
-          # params do
-          #   requires :server_id, type: String, desc: '服务器id', documentation: { param_type: 'body', example: 'worker01' }
-          #   requires :begin_time, type: DateTime, desc: 'Start time',
-          #            documentation: { param_type: 'body', example: '2025-08-01 02:24:10' }
-          #   requires :end_time, type: DateTime, desc: 'End time',
-          #            documentation: { param_type: 'body', example: '2025-08-01 03:24:10' }
-          #
-          # end
-          # post :metric_table_te do
-          #   server_id = params['server_id']
-          #   begin_time = params['begin_time']
-          #   end_time = params['end_time']
-          #   #
-          #   ServerMetric.where(server_id: server_id).where(created_at: begin_time..end_time)
-          # end
 
         end
       end

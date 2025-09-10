@@ -116,40 +116,59 @@ module Openapi
 
         resource :queue_server do
 
-          desc '队列消息数量', hidden: true, tags: ['admin'], success: {
+          desc '队列列表', hidden: true, tags: ['admin'], success: {
             code: 200
-          }, detail: '获取 test_queue 队列消息数量'
+          }, detail: '返回每个队列类型最新一条数据'
 
           post :queue_list do
-            rabbitmq_host = ""
-            vhost = "/"
-            queue = "test_queue"
 
-            conn = Faraday.new(url: rabbitmq_host) do |f|
-              f.adapter Faraday.default_adapter
-            end
+            types = ["repo", "repo_high_priority", "group", "group_high_priority"]
 
-            username = "admin"
-            password = "admin"
-            # 构建 Basic Auth Header
-            auth_token = Base64.strict_encode64("#{username}:#{password}")
-            headers = { "Authorization" => "Basic #{auth_token}" }
+            result = types.map do |type|
+              m = MqMetric.where(queue_type: type)
+                          .order(created_at: :desc)
+                          .first
+              next unless m
 
-            response = conn.get("/api/queues/#{CGI.escape(vhost)}/#{queue}", nil, headers)
-
-            if response.success?
-              body = JSON.parse(response.body)
               {
-                queue: queue,
-                total: body["messages"], # 总消息数
-                ready: body["messages_ready"], # 就绪消息数
-                unacknowledged: body["messages_unacknowledged"], # 未确认消息数
-                consumers: body["consumers"], # 消费者数量
-                state: body["state"] # 队列状态
+                queue_type: type,
+                queue: m.queue_name,
+                total: m.total,
+                ready: m.ready,
+                unacknowledged: m.unacknowledged,
+                consumers: m.consumers,
+                belong_to: m.belong_to
               }
-            else
-              error!({ error: "Failed to fetch queue info", status: response.status }, 500)
-            end
+            end.compact
+
+            result
+          end
+
+          desc 'tpc队列消息数量', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: 'pc队列消息数量'
+
+          post :tpc_queue_list do
+            types = ["tpc", "tpc_high_priority"]
+
+            result = types.map do |type|
+              m = MqMetric.where(queue_type: type)
+                          .order(created_at: :desc)
+                          .first
+              next unless m
+
+              {
+                queue_type: type,
+                queue: m.queue_name,
+                total: m.total,
+                ready: m.ready,
+                unacknowledged: m.unacknowledged,
+                consumers: m.consumers,
+                belong_to: m.belong_to
+              }
+            end.compact
+
+            result
           end
 
           desc '加入普通队列/优先队列', hidden: true, tags: ['admin'], success: {
@@ -163,6 +182,54 @@ module Openapi
             type = params[:type]
             project_url = params[:project_url]
             server = AnalyzeServer.new({ repo_url: project_url })
+            result = if type == 0
+                       server.execute_workflow
+                     else
+                       server.execute_high_priority
+                     end
+
+            result
+          end
+
+          desc '多个项目加入普通队列/优先队列', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '多个项目加入普通队列/优先队列'
+          params do
+            requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
+            requires :type, type: Integer, desc: '类型，0普通队列，1优先队列', documentation: { param_type: 'body' }
+          end
+          post :projects_add_queue do
+            type = params[:type]
+
+            project_urls = params[:project_urls]
+
+            results = project_urls.map do |project_url|
+              server = AnalyzeServer.new({ repo_url: project_url })
+              if type == 0
+                server.execute_workflow
+              else
+                server.execute_high_priority
+              end
+            end
+
+            { result: results }
+          end
+
+          desc '社区加入普通队列/优先队列', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '社区加入普通队列/优先队列'
+          params do
+            requires :community_name, type: String, desc: '社区名称', documentation: { param_type: 'body' }
+            requires :type, type: Integer, desc: '类型，0普通队列，1优先队列', documentation: { param_type: 'body' }
+          end
+          post :add_group_queue do
+            type = params[:type]
+            label = params[:community_name]
+
+            task = ProjectTask.find_by(project_name: label)
+            raise '该社区不存在' unless task
+
+            server = AnalyzeGroupServer.new(yaml_url: task.remote_url)
             result = if type == 0
                        server.execute_workflow
                      else
@@ -219,6 +286,205 @@ module Openapi
                      end
 
             result
+          end
+
+          desc '仓库、社区 队列图表', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '队列图表'
+          params do
+            requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+            requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2026-03-22' }
+            optional :queue_type, type: String, desc: '队列类型:repo,repo_high_priority,group,group_high_priority ', documentation: { param_type: 'body', example: 0 }
+            requires :is_all, type: Integer, desc: '0否 1全部队列', documentation: { param_type: 'body', example: 0 }
+          end
+          post :queue_table do
+            begin_date = params[:begin_date]
+            end_date = params[:end_date]
+            queue_type = params[:queue_type]
+
+            is_all = params[:is_all]
+
+            types =
+              if is_all == 1
+                ["repo", "repo_high_priority", "group", "group_high_priority"]
+              else
+                [queue_type]
+              end
+
+            metrics = MqMetric.where(created_at: begin_date..end_date, queue_type: types)
+                              .order(:created_at)
+
+            data =
+              if is_all == 1
+                metrics.group_by { |m| m.created_at.strftime("%Y-%m-%d %H:%M:%S") }
+                       .map do |time, records|
+                  {
+                    created_at: time,
+                    join_count: records.sum(&:ready),
+                    consume_count: records.sum(&:unacknowledged),
+                    total_count: records.sum(&:total)
+                  }
+                end
+              else
+
+                metrics.map do |m|
+                  {
+                    created_at: m.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    join_count: m.ready,
+                    consume_count: m.unacknowledged,
+                    total_count: m.total
+                  }
+                end
+              end
+
+            data
+          end
+
+          desc 'tpc 队列图表', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '队列图表'
+          params do
+            requires :begin_date, type: DateTime, desc: '开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+            requires :end_date, type: DateTime, desc: '结束日期', documentation: { param_type: 'body', example: '2026-03-22' }
+            requires :queue_type, type: String, desc: '队列类型:tpc,tpc_high_priority', documentation: { param_type: 'body', example: 0 }
+            requires :is_all, type: Integer, desc: '0否 1全部队列', documentation: { param_type: 'body', example: 0 }
+          end
+          post :tpc_queue_table do
+            begin_date = params[:begin_date]
+            end_date = params[:end_date]
+            queue_type = params[:queue_type]
+            is_all = params[:is_all]
+
+            types =
+              if is_all == 1
+                ["tpc", "tpc_high_priority"]
+              else
+                [queue_type]
+              end
+
+            metrics = MqMetric.where(created_at: begin_date..end_date, queue_type: types)
+                              .order(:created_at)
+
+            data =
+              if is_all == 1
+                metrics.group_by { |m| m.created_at.strftime("%Y-%m-%d %H:%M:%S") }
+                       .map do |time, records|
+                  {
+                    created_at: time,
+                    join_count: records.sum(&:ready),
+                    consume_count: records.sum(&:unacknowledged),
+                    total_count: records.sum(&:total)
+                  }
+                end
+              else
+                metrics.map do |m|
+                  {
+                    created_at: m.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                    join_count: m.ready,
+                    consume_count: m.unacknowledged,
+                    total_count: m.total
+                  }
+                end
+              end
+
+            data
+
+          end
+
+          desc '批量加入普通队列/优先队列', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '批量加入普通队列/优先队列'
+          params do
+            requires :time_type, type: Integer, desc: '时间类型：1，3，6，12', documentation: { param_type: 'body' }
+            requires :queue_type, type: Integer, desc: '类型，0普通队列，1优先队列', documentation: { param_type: 'body' }
+          end
+          post :batch_add_queue do
+            time_type = params[:time_type]
+            queue_type = params[:queue_type]
+
+            case time_type
+            when 0
+              start_time = Time.now - 1.month
+              end_time = Time.now
+            when 1
+              start_time = Time.now - 3.months
+              end_time = Time.now - 1.month
+            when 3
+              start_time = Time.now - 6.months
+              end_time = Time.now - 3.months
+            when 6
+              start_time = Time.now - 12.months
+              end_time = Time.now - 6.months
+            when 12
+              end_time = Time.now - 12.months
+            end
+
+            projects = Subject.where(level: 'repo', updated_at: start_time..end_time)
+
+            Thread.new do
+              projects.each do |project|
+                server = AnalyzeServer.new({ repo_url: project.label })
+                if queue_type == 0
+                  server.execute_workflow
+                else
+                  server.execute_high_priority
+                end
+                sleep(1)
+              end
+
+            end
+
+            { message: "已加入#{projects.count}个项目到#{queue_type == 0 ? '普通' : '优先'}队列" }
+
+          end
+
+          desc '社区批量加入普通队列/优先队列', hidden: true, tags: ['admin'], success: {
+            code: 200
+          }, detail: '社区批量加入普通队列/优先队列'
+          params do
+            requires :time_type, type: Integer, desc: '时间类型：1，3，6，12', documentation: { param_type: 'body' }
+            requires :queue_type, type: Integer, desc: '类型，0普通队列，1优先队列', documentation: { param_type: 'body' }
+          end
+          post :batch_add_group_queue do
+            time_type = params[:time_type]
+            queue_type = params[:queue_type]
+
+            case time_type
+            when 0
+              start_time = Time.now - 1.month
+              end_time = Time.now
+            when 1
+              start_time = Time.now - 3.months
+              end_time = Time.now - 1.month
+            when 3
+              start_time = Time.now - 6.months
+              end_time = Time.now - 3.months
+            when 6
+              start_time = Time.now - 12.months
+              end_time = Time.now - 6.months
+            when 12
+              end_time = Time.now - 12.months
+            end
+
+            projects = Subject.where(level: 'community', updated_at: start_time..end_time)
+
+            Thread.new do
+              projects.each do |project|
+
+                task = ProjectTask.find_by(project_name: project.label)
+                server = AnalyzeGroupServer.new(yaml_url: task.remote_url)
+                if type == 0
+                  server.execute_workflow
+                else
+                  server.execute_high_priority
+                end
+                sleep(1)
+              end
+
+            end
+
+            { message: "已加入#{projects.count}个社区到#{queue_type == 0 ? '普通' : '优先'}队列" }
+
           end
 
         end
