@@ -149,7 +149,7 @@ module Openapi
 
           url = ENV.fetch('THIRD_URL')
           response = Faraday.post(
-            "#{url}/vote_up",
+            "#{url}/vote_up_lib",
             payload.to_json,
             { 'Content-Type' => 'application/json' }
           )
@@ -198,7 +198,7 @@ module Openapi
 
           url = ENV.fetch('THIRD_URL')
           response = Faraday.post(
-            "#{url}/vote_down",
+            "#{url}/vote_down_lib",
             payload.to_json,
             { 'Content-Type' => 'application/json' }
           )
