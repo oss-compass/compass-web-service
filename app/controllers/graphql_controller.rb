@@ -24,13 +24,7 @@ class GraphqlController < ApplicationController
       logger: Rails.logger
     )
 
-    real_ip =
-      case request.host
-      when 'compass.gitee.com'
-        request.env['HTTP_X_FORWARDED_FOR']&.split(',')&.first
-      else
-        request.remote_ip
-      end
+    real_ip = request.env['HTTP_X_FORWARDED_FOR']&.split(',')&.first || request.remote_ip
 
     t << real_ip
 
