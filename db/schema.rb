@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_22_013151) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -687,6 +687,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_22_013151) do
     t.text "security_history_vulnerability_raw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "tpc_software_report_metric_raw"
+    t.string "upstream_collaboration_strategy_raw"
     t.index ["tpc_software_report_metric_id"], name: "idx_on_tpc_software_report_metric_id_9ede761b2c", unique: true
   end
 
@@ -744,6 +746,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_22_013151) do
     t.string "security_vulnerability_response_detail", limit: 500
     t.string "security_vulnerability_disclosure_detail", limit: 500
     t.string "security_history_vulnerability_detail", limit: 5000
+    t.bigint "upstream_collaboration_strategy"
+    t.string "upstream_collaboration_strategy_detail"
   end
 
   create_table "tpc_software_selection_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -768,6 +772,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_22_013151) do
     t.string "adaptation_method"
     t.string "oh_commit_sha"
     t.integer "report_category"
+    t.integer "upstream_collaboration_strategy"
+    t.string "upstream_communication_link"
     t.index ["short_code"], name: "index_tpc_software_selection_reports_on_short_code", unique: true
   end
 

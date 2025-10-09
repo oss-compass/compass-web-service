@@ -28,6 +28,7 @@ module Types
       field :security_vulnerability_response_raw, String
       field :security_vulnerability_disclosure_raw, String
       field :security_history_vulnerability_raw, String
+      field :upstream_collaboration_strategy_raw, String
 
       def ecology_adaptation_method_raw
         nil

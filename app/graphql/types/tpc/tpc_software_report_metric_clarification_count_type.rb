@@ -26,6 +26,7 @@ module Types
       field :security_vulnerability_response, Integer
       field :security_vulnerability_disclosure, Integer
       field :security_history_vulnerability, Integer
+      field :upstream_collaboration_strategy, Integer
 
     end
   end

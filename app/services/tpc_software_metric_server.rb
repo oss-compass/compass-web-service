@@ -176,6 +176,7 @@ class TpcSoftwareMetricServer
     # commands = ["osv-scanner", "scancode", "binary-checker", "sonar-scanner", "dependency-checker", "compass"]
     tpc_software_selection_report = TpcSoftwareSelectionReport.find_by(id: report_id)
     oh_commit_sha = tpc_software_selection_report.oh_commit_sha
+    upstream_collaboration_strategy = tpc_software_selection_report.upstream_collaboration_strategy
 
     metric_hash = Hash.new
     command_list.each do |command|
@@ -203,6 +204,7 @@ class TpcSoftwareMetricServer
 
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_community_support(@project_url))
+        metric_hash.merge!(TpcSoftwareReportMetric.get_upstream_collaboration_strategy(upstream_collaboration_strategy))
 
         begin
           metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))

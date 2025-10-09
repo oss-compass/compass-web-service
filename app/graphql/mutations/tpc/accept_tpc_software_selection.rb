@@ -47,6 +47,8 @@ module Mutations
             permission = TpcSoftwareMember.check_compliance_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_QA
             permission = TpcSoftwareMember.check_qa_permission?(current_user)
+          when TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG
+            permission = TpcSoftwareMember.check_wg_permission?(current_user)
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.forbidden') unless permission
         end
@@ -56,7 +58,9 @@ module Mutations
             tpc_software_id: selection.id,
             tpc_software_type: TpcSoftwareCommentState::Type_Selection,
             metric_name: TpcSoftwareCommentState::Metric_Name_Selection,
-            user_id: current_user.id)
+            member_type: member_type,
+            user_id: current_user.id
+          )
           if state == TpcSoftwareCommentState::State_Cancel
             comment_state.destroy
           else

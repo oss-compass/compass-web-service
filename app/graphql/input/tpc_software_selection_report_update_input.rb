@@ -8,5 +8,7 @@ module Input
     argument :vulnerability_response, String, required: true
     argument :adaptation_method, String, required: true
     argument :architecture_diagrams, [Input::Base64ImageInput], required: false
+    argument :upstream_collaboration_strategy, Integer, required: true
+    argument :upstream_communication_link, String, required: true
   end
 end

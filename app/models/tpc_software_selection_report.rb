@@ -2,28 +2,30 @@
 #
 # Table name: tpc_software_selection_reports
 #
-#  id                       :bigint           not null, primary key
-#  report_type              :integer          not null
-#  name                     :string(255)      not null
-#  tpc_software_sig_id      :integer          not null
-#  release                  :string(255)
-#  release_time             :datetime
-#  manufacturer             :string(255)      not null
-#  website_url              :string(255)      not null
-#  code_url                 :string(255)      not null
-#  programming_language     :string(255)      not null
-#  code_count               :integer
-#  license                  :string(255)
-#  vulnerability_disclosure :string(255)
-#  vulnerability_response   :string(255)
-#  short_code               :string(255)      not null
-#  subject_id               :integer          not null
-#  user_id                  :integer          not null
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
-#  adaptation_method        :string(255)
-#  oh_commit_sha            :string(255)
-#  report_category          :integer
+#  id                              :bigint           not null, primary key
+#  report_type                     :integer          not null
+#  name                            :string(255)      not null
+#  tpc_software_sig_id             :integer          not null
+#  release                         :string(255)
+#  release_time                    :datetime
+#  manufacturer                    :string(255)      not null
+#  website_url                     :string(255)      not null
+#  code_url                        :string(255)      not null
+#  programming_language            :string(255)      not null
+#  code_count                      :integer
+#  license                         :string(255)
+#  vulnerability_disclosure        :string(255)
+#  vulnerability_response          :string(255)
+#  short_code                      :string(255)      not null
+#  subject_id                      :integer          not null
+#  user_id                         :integer          not null
+#  created_at                      :datetime         not null
+#  updated_at                      :datetime         not null
+#  adaptation_method               :string(255)
+#  oh_commit_sha                   :string(255)
+#  report_category                 :integer
+#  upstream_collaboration_strategy :integer
+#  upstream_communication_link     :string(255)
 #
 # Indexes
 #
