@@ -56,6 +56,8 @@
 #  security_vulnerability_response_detail   :string(500)
 #  security_vulnerability_disclosure_detail :string(500)
 #  security_history_vulnerability_detail    :string(5000)
+#  upstream_collaboration_strategy          :bigint
+#  upstream_collaboration_strategy_detail   :string(255)
 #
 class TpcSoftwareReportMetric < ApplicationRecord
 
@@ -549,6 +551,11 @@ class TpcSoftwareReportMetric < ApplicationRecord
       score = (CommunityMetric.scaled_value(nil, target_value: score) / 10).ceil
     end
     { ecology_community_support: score, ecology_community_support_detail: nil }
+    end
+
+  def self.get_upstream_collaboration_strategy(upstream_collaboration_strategy)
+    score = upstream_collaboration_strategy == 1 ? 10 : 0
+    { upstream_collaboration_strategy: score }
   end
 
   def self.get_security_history_vulnerability(project_url)

@@ -26,6 +26,8 @@
 #  security_history_vulnerability_raw    :text(65535)
 #  created_at                            :datetime         not null
 #  updated_at                            :datetime         not null
+#  tpc_software_report_metric_raw        :string(255)
+#  upstream_collaboration_strategy_raw   :string(255)
 #
 # Indexes
 #

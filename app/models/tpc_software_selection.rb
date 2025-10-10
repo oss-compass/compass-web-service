@@ -51,7 +51,8 @@ class TpcSoftwareSelection < ApplicationRecord
     "lifecycle_version_normalization",
     "lifecycle_version_lifecycle",
     "security_binary_artifact",
-    "security_vulnerability"
+    "security_vulnerability",
+    "upstream_collaboration_strategy"
   ]
 
   def self.get_review_permission(selection, member_type)
@@ -95,6 +96,7 @@ class TpcSoftwareSelection < ApplicationRecord
       legal_state = legal_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
       compliance_state = compliance_state_hash.dig(lower_clarify_metric)&.all? { |item| item == TpcSoftwareCommentState::State_Accept } || false
 
+
       if score.present? && (0 <= score) && (score < 10)
         case member_type
         when TpcSoftwareCommentState::Member_Type_Committer
@@ -110,8 +112,10 @@ class TpcSoftwareSelection < ApplicationRecord
             return false
           end
         when TpcSoftwareCommentState::Member_Type_Compliance
-          if !compliance_state
-            return false
+          if clarify_metric != "upstream_collaboration_strategy"
+            if !compliance_state
+              return false
+            end
           end
         end
       end
@@ -168,6 +172,13 @@ class TpcSoftwareSelection < ApplicationRecord
     risk_metric_list.each do |risk_metric|
       if member_type_hash.key?(risk_metric)
         member_type_list = member_type_hash[risk_metric]
+
+
+        if risk_metric == "upstreamCollaborationStrategy" && member_type_list.include?(TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG)
+          confirmed_metrics << risk_metric
+          next
+        end
+
         if TpcSoftwareCommentState.check_compliance_metric(risk_metric)
           if [TpcSoftwareCommentState::Member_Type_Compliance,
               TpcSoftwareCommentState::Member_Type_Legal].all? { |element| member_type_list.include?(element) }
@@ -205,6 +216,12 @@ class TpcSoftwareSelection < ApplicationRecord
     State_Awaiting_Review
   end
 
+  def self.get_upstream_collaboration_strategy_score(report_id)
+    # code here
+    report_metric = TpcSoftwareReportMetric.where(tpc_software_report_id: report_id)
+    return report_metric.take.upstream_collaboration_strategy if report_metric.present?
+  end
+
   def self.get_current_state(tpc_software)
     report_id = tpc_software.target_software_report_id
     risk_metric_count = get_risk_metric_list(report_id).length
@@ -219,12 +236,20 @@ class TpcSoftwareSelection < ApplicationRecord
     end
 
     comment_state_list = get_comment_state_list(tpc_software.id)
+    upstream_collaboration_strategy_score = get_upstream_collaboration_strategy_score(report_id)
+
+    required_member_types = if upstream_collaboration_strategy_score == 10
+                              TpcSoftwareCommentState::Selection_Member_Types - [TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG]
+                            else
+                              TpcSoftwareCommentState::Selection_Member_Types
+                            end
+
     if comment_state_list.any? { |item| item.state == TpcSoftwareCommentState::State_Reject }
       return State_Rejected
-    elsif TpcSoftwareCommentState::Selection_Member_Types_QA.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+    elsif (required_member_types + [TpcSoftwareCommentState::Member_Type_QA]).all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
       return State_Completed
-    elsif TpcSoftwareCommentState::Selection_Member_Types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
-        return State_Awaiting_QA
+    elsif required_member_types.all? { |member_type| comment_state_list.any? { |item| item[:member_type] == member_type && item[:state] == TpcSoftwareCommentState::State_Accept } }
+      return State_Awaiting_QA
     else
       return State_Awaiting_Review
     end

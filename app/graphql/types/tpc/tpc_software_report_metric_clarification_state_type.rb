@@ -26,6 +26,7 @@ module Types
       field :security_vulnerability_response, [Types::Tpc::TpcSoftwareCommentStateType]
       field :security_vulnerability_disclosure, [Types::Tpc::TpcSoftwareCommentStateType]
       field :security_history_vulnerability, [Types::Tpc::TpcSoftwareCommentStateType]
+      field :upstream_collaboration_strategy, [Types::Tpc::TpcSoftwareCommentStateType]
 
     end
   end

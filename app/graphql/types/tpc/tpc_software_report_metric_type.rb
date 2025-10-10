@@ -58,6 +58,9 @@ module Types
       field :security_history_vulnerability, Integer
       field :security_history_vulnerability_detail, [Types::Tpc::TpcSoftwareReportMetricSecurityHistoryVulnerabilityType]
 
+      field :upstream_collaboration_strategy, Integer
+      field :upstream_collaboration_strategy_detail, String
+
       field :created_at, GraphQL::Types::ISO8601DateTime
       field :updated_at, GraphQL::Types::ISO8601DateTime
 

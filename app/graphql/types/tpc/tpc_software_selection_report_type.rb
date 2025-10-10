@@ -26,6 +26,8 @@ module Types
       field :user_id, Integer, null: false
       field :user, Types::UserType
       field :report_category, Integer
+      field :upstream_collaboration_strategy, Integer
+      field :upstream_communication_link, String
 
       def user
         User.find_by(id: object.user_id)
