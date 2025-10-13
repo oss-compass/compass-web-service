@@ -471,37 +471,55 @@ module Openapi
             level = params['level']
             res = nil
 
-            if level == 'repo'
-              github = project_update_distribution(GithubRepo, 'origin')
-              gitee = project_update_distribution(GiteeRepo, 'origin')
-              gitcode = project_update_distribution(GitcodeRepo, 'origin')
 
-              res = {
-                within_1m: github[:within_1m].to_i + gitee[:within_1m].to_i + gitcode[:within_1m].to_i,
-                over_1m: github[:over_1m].to_i + gitee[:over_1m].to_i + gitcode[:over_1m].to_i,
-                over_3m: github[:over_3m].to_i + gitee[:over_3m].to_i + gitcode[:over_3m].to_i,
-                over_6m: github[:over_6m].to_i + gitee[:over_6m].to_i + gitcode[:over_6m].to_i,
-                over_12m: github[:over_12m].to_i + gitee[:over_12m].to_i + gitcode[:over_12m].to_i
-              }
+            result = Subject.where(level: level)
+                            .pluck(
+                              Arel.sql("SUM(CASE WHEN updated_at >= NOW() - INTERVAL 1 MONTH THEN 1 ELSE 0 END) AS within_1m"),
+                              Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 1 MONTH AND updated_at >= NOW() - INTERVAL 3 MONTH THEN 1 ELSE 0 END) AS over_1m"),
+                              Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 3 MONTH AND updated_at >= NOW() - INTERVAL 6 MONTH THEN 1 ELSE 0 END) AS over_3m"),
+                              Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 6 MONTH AND updated_at >= NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_6m"),
+                              Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_12m")
+                            ).first
 
-            elsif level == 'community'
-              result = Subject.where(level: 'community')
-                              .pluck(
-                                Arel.sql("SUM(CASE WHEN updated_at >= NOW() - INTERVAL 1 MONTH THEN 1 ELSE 0 END) AS within_1m"),
-                                Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 1 MONTH AND updated_at >= NOW() - INTERVAL 3 MONTH THEN 1 ELSE 0 END) AS over_1m"),
-                                Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 3 MONTH AND updated_at >= NOW() - INTERVAL 6 MONTH THEN 1 ELSE 0 END) AS over_3m"),
-                                Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 6 MONTH AND updated_at >= NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_6m"),
-                                Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_12m")
-                              ).first
+            res = {
+              within_1m: result[0],
+              over_1m: result[1],
+              over_3m: result[2],
+              over_6m: result[3],
+              over_12m: result[4]
+            }
 
-              res = {
-                within_1m: result[0],
-                over_1m: result[1],
-                over_3m: result[2],
-                over_6m: result[3],
-                over_12m: result[4]
-              }
-            end
+            # if level == 'repo'
+            #   github = project_update_distribution(GithubRepo, 'origin')
+            #   gitee = project_update_distribution(GiteeRepo, 'origin')
+            #   gitcode = project_update_distribution(GitcodeRepo, 'origin')
+            #
+            #   res = {
+            #     within_1m: github[:within_1m].to_i + gitee[:within_1m].to_i + gitcode[:within_1m].to_i,
+            #     over_1m: github[:over_1m].to_i + gitee[:over_1m].to_i + gitcode[:over_1m].to_i,
+            #     over_3m: github[:over_3m].to_i + gitee[:over_3m].to_i + gitcode[:over_3m].to_i,
+            #     over_6m: github[:over_6m].to_i + gitee[:over_6m].to_i + gitcode[:over_6m].to_i,
+            #     over_12m: github[:over_12m].to_i + gitee[:over_12m].to_i + gitcode[:over_12m].to_i
+            #   }
+            #
+            # elsif level == 'community'
+            #   result = Subject.where(level: 'community')
+            #                   .pluck(
+            #                     Arel.sql("SUM(CASE WHEN updated_at >= NOW() - INTERVAL 1 MONTH THEN 1 ELSE 0 END) AS within_1m"),
+            #                     Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 1 MONTH AND updated_at >= NOW() - INTERVAL 3 MONTH THEN 1 ELSE 0 END) AS over_1m"),
+            #                     Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 3 MONTH AND updated_at >= NOW() - INTERVAL 6 MONTH THEN 1 ELSE 0 END) AS over_3m"),
+            #                     Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 6 MONTH AND updated_at >= NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_6m"),
+            #                     Arel.sql("SUM(CASE WHEN updated_at < NOW() - INTERVAL 12 MONTH THEN 1 ELSE 0 END) AS over_12m")
+            #                   ).first
+            #
+            #   res = {
+            #     within_1m: result[0],
+            #     over_1m: result[1],
+            #     over_3m: result[2],
+            #     over_6m: result[3],
+            #     over_12m: result[4]
+            #   }
+            # end
 
             res
 
