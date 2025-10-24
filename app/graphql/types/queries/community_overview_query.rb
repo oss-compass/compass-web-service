@@ -40,10 +40,13 @@ module Types
               repos = repos.compact.map { |row| row[:repo] }
               gitee_repos = filter_by_origin(repos, /gitee\.com/)
               github_repos = filter_by_origin(repos, /github\.com/)
-              resp = GithubRepo.only(github_repos)
-              resp2 = GiteeRepo.only(gitee_repos)
-              skeleton['trends'] += build_github_repo(resp).map { |repo| repo_extander.(repo, type) }
-              skeleton['trends'] += build_gitee_repo(resp2).map { |repo| repo_extander.(repo, type) }
+              gitcode_repos = filter_by_origin(repos, /gitcode\.com/)
+              resp_github = GithubRepo.only(github_repos)
+              resp_gitee = GiteeRepo.only(gitee_repos)
+              resp_gitcode = GitcodeRepo.only(gitcode_repos)
+              skeleton['trends'] += build_github_repo(resp_github).map { |repo| repo_extander.(repo, type) }
+              skeleton['trends'] += build_gitee_repo(resp_gitee).map { |repo| repo_extander.(repo, type) }
+              skeleton['trends'] += build_gitcode_repo(resp_gitcode).map { |repo| repo_extander.(repo, type) }
             end
             skeleton['projects_count'] = repo_list.length
             skeleton['community_org_url'] = community_org_url
