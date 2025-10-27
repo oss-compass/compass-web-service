@@ -64,10 +64,6 @@ module Openapi
           optional :label_token, type: String, desc: 'GitCode access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
         }
         post :analyze_scorecard do
-          unless params[:label].include?("gitcode.com")
-            return { code: 400, message: 'only supports the gitCode repo' }
-          end
-
           opts = {
             repo_url: params[:label],
             opencheck_raw: true,

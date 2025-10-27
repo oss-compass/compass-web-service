@@ -64,9 +64,6 @@ module Openapi
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :analyze_criticality_score do
-          unless params[:label].include?("gitcode.com")
-            return { code: 400, message: 'only supports the gitCode repo' }
-          end
 
           opts = {
             repo_url: params[:label],
