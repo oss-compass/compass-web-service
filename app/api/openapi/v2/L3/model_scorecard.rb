@@ -43,12 +43,15 @@ module Openapi
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :scorecard do
-
+          opencheckRawIndexer = OpencheckRawMetric
           indexer = ScorecardMetric
           repo_urls = [params[:label]]
 
-          resp = indexer.one_by_metric_repo_urls(repo_urls)
+          opencheckRawResp = opencheckRawIndexer.one_by_metric_repo_urls(repo_urls, target: 'label')
+          opencheckRawHits = opencheckRawResp&.[]('hits')&.[]('hits') || []
+          return {} if opencheckRawHits.empty?
 
+          resp = indexer.one_by_metric_repo_urls(repo_urls)
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data['_source'].symbolize_keys }
