@@ -43,7 +43,7 @@ module Openapi
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :scorecard do
-          opencheckRawIndexer = OpencheckRawMetric
+          opencheckRawIndexer = OpencheckRaw
           indexer = ScorecardMetric
           repo_urls = [params[:label]]
 
