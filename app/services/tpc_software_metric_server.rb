@@ -466,7 +466,8 @@ class TpcSoftwareMetricServer
         group_activity: false,
         domain_persona: false,
         milestone_persona: false,
-        role_persona: false
+        role_persona: false,
+        custom_metrics: false
       }
       metrics_model.each do |key|
         opts[key.to_sym] = true

@@ -64,7 +64,7 @@ module Openapi
         params {
           requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
-          optional :label_token, type: String, desc: 'GitCode access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
+          optional :label_token, type: String, desc: 'GitCode/Gitee access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode/Gitee 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
         }
         post :analyze_scorecard do
           opts = {
@@ -86,7 +86,8 @@ module Openapi
             milestone_persona: false,
             role_persona: false,
             criticality_score: false,
-            scorecard: true
+            scorecard: true,
+            custom_metrics: false
           }
           result = AnalyzeServer.new(opts).execute_tpc
           Rails.logger.info("analyze scorecard info: #{result}")
