@@ -55,7 +55,12 @@ module Openapi
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data['_source'].symbolize_keys }
-          items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
+          result = items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
+
+          # 将所有数值类型的指标分数保留2位小数
+          result.transform_values do |value|
+            value.is_a?(Numeric) ? value.round(2) : value
+          end
         end
 
         desc 'Analyze Project Scorecard / 分析项目 Scorecard', detail: 'Analyze Project Scorecard / 分析项目 Scorecard', tags: ['Metrics Model Data / 模型数据'], success: {
