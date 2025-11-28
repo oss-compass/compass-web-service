@@ -36,6 +36,9 @@ module Types
         when 1
           ids = JSON.parse(object.tpc_software_graduation_report_ids)
           report_list = TpcSoftwareGraduationReport.where(id: ids)
+        when 3
+          ids = JSON.parse(object.tpc_software_sandbox_report_ids)
+          report_list = TpcSoftwareSandboxReport.where(id: ids)
         else
           ids = JSON.parse(object.tpc_software_selection_report_ids)
           report_list = TpcSoftwareSelectionReport.where(id: ids)
@@ -57,6 +60,8 @@ module Types
           report = TpcSoftwareSelectionReport.find_by(id: object.target_software_report_id)
         when 1
           report = TpcSoftwareGraduationReport.find_by(id: object.target_software_report_id)
+        when 3
+          report = TpcSoftwareSandboxReport.find_by(id: object.target_software_report_id)
         else
           report = TpcSoftwareSelectionReport.find_by(id: object.target_software_report_id)
         end
@@ -73,6 +78,8 @@ module Types
           risk_metric_list = TpcSoftwareSelection.get_risk_metric_list(object.target_software_report_id)
         when 1
           risk_metric_list = TpcSoftwareGraduation.get_risk_metric_list(object.target_software_report_id)
+        when 3
+          risk_metric_list = TpcSoftwareSandbox.get_risk_metric_list(object.target_software_report_id)
         else
           risk_metric_list = TpcSoftwareSelection.get_risk_metric_list(object.target_software_report_id)
         end
@@ -91,6 +98,8 @@ module Types
           clarified_metric_list = TpcSoftwareSelection.get_clarified_metric_list(object.target_software_report_id)
         when 1
           clarified_metric_list = TpcSoftwareGraduation.get_clarified_metric_list(object.target_software_report_id)
+        when 3
+          clarified_metric_list = TpcSoftwareSandbox.get_clarified_metric_list(object.target_software_report_id)
         else
           clarified_metric_list = TpcSoftwareSelection.get_clarified_metric_list(object.target_software_report_id)
         end
@@ -107,6 +116,8 @@ module Types
           confirmed_metric_list = TpcSoftwareSelection.get_confirmed_metric_list(object.target_software_report_id)
         when 1
           confirmed_metric_list = TpcSoftwareGraduation.get_confirmed_metric_list(object.target_software_report_id)
+        when 3
+          confirmed_metric_list = TpcSoftwareSandbox.get_confirmed_metric_list(object.target_software_report_id)
         else
           confirmed_metric_list = TpcSoftwareSelection.get_confirmed_metric_list(object.target_software_report_id)
         end
@@ -136,6 +147,8 @@ module Types
           tpc_software = TpcSoftwareSelection
         when 1
           tpc_software = TpcSoftwareGraduation
+        when 3
+          tpc_software = TpcSoftwareSandbox
         else
           tpc_software = TpcSoftwareSelection
         end

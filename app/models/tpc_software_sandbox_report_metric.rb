@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: tpc_software_report_metrics
+# Table name: tpc_software_sandbox_report_metrics
 #
 #  id                                       :bigint           not null, primary key
 #  code_url                                 :string(255)      not null
@@ -8,23 +8,19 @@
 #  status_compass_callback                  :integer          not null
 #  status_tpc_service_callback              :integer          not null
 #  version                                  :integer          not null
-#  tpc_software_report_id                   :integer          not null
-#  tpc_software_report_type                 :string(255)      not null
+#  tpc_software_sandbox_report_id           :integer          not null
+#  tpc_software_sandbox_report_type         :string(255)      not null
 #  subject_id                               :integer          not null
 #  user_id                                  :integer          not null
 #  base_repo_name                           :integer
 #  base_website_url                         :integer
 #  base_code_url                            :integer
 #  compliance_license                       :integer
-#  compliance_dco                           :integer
 #  compliance_package_sig                   :integer
 #  compliance_license_compatibility         :integer
 #  ecology_dependency_acquisition           :integer
 #  ecology_code_maintenance                 :integer
-#  ecology_community_support                :integer
-#  ecology_adoption_analysis                :integer
 #  ecology_software_quality                 :integer
-#  ecology_patent_risk                      :integer
 #  lifecycle_version_normalization          :integer
 #  lifecycle_version_number                 :integer
 #  lifecycle_version_lifecycle              :integer
@@ -33,21 +29,15 @@
 #  security_vulnerability_response          :integer
 #  security_vulnerability_disclosure        :integer
 #  security_history_vulnerability           :integer
-#  created_at                               :datetime         not null
-#  updated_at                               :datetime         not null
 #  base_repo_name_detail                    :string(500)
 #  base_website_url_detail                  :string(500)
 #  base_code_url_detail                     :string(500)
 #  compliance_license_detail                :string(500)
-#  compliance_dco_detail                    :string(500)
 #  compliance_package_sig_detail            :string(500)
 #  compliance_license_compatibility_detail  :string(500)
 #  ecology_dependency_acquisition_detail    :string(500)
 #  ecology_code_maintenance_detail          :string(500)
-#  ecology_community_support_detail         :string(500)
-#  ecology_adoption_analysis_detail         :string(500)
 #  ecology_software_quality_detail          :string(500)
-#  ecology_patent_risk_detail               :string(500)
 #  lifecycle_version_normalization_detail   :string(500)
 #  lifecycle_version_number_detail          :string(500)
 #  lifecycle_version_lifecycle_detail       :string(500)
@@ -56,28 +46,43 @@
 #  security_vulnerability_response_detail   :string(500)
 #  security_vulnerability_disclosure_detail :string(500)
 #  security_history_vulnerability_detail    :string(5000)
-#  upstream_collaboration_strategy          :bigint
-#  upstream_collaboration_strategy_detail   :string(255)
+#  created_at                               :datetime         not null
+#  updated_at                               :datetime         not null
 #
-class TpcSoftwareReportMetric < ApplicationRecord
-
+class TpcSoftwareSandboxReportMetric < ApplicationRecord
   include Common
   extend CompassUtils
 
-  belongs_to :tpc_software_report, polymorphic: true
+  belongs_to :tpc_software_sandbox_report, polymorphic: true
   belongs_to :subject
   belongs_to :user
-  has_one :tpc_software_report_metric_raw
+  has_one :tpc_software_sandbox_report_metric_raw
   has_many :tpc_software_comments, as: :tpc_software, dependent: :destroy
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
+  def self.check_url(url)
+    #   if url.nil?
+    #     false
+    #   end
+    #   proxy_options = url.include?('github.com') ? { proxy: PROXY } : {}
+    #   resp = RestClient::Request.new(
+    #     method: :get,
+    #     url: url,
+    #     **proxy_options
+    #   ).execute
+    #   resp.code == 200 ? true : false
+    # rescue => ex
+    #   false
+    true
+  end
+
+  Status_Progress = 'progress'
+  Status_Again_Progress = 'again_progress'
+  Status_Success = 'success'
 
   Report_Type_Selection = 'TpcSoftwareSelectionReport'
   Report_Type_Lectotype = 'TpcSoftwareLectotypeReport'
   Report_Type_Sandbox = 'TpcSoftwareSandboxReport'
 
-  Status_Progress = 'progress'
-  Status_Again_Progress = 'again_progress'
-  Status_Success = 'success'
 
   Version_History = 0
   Version_Default = 1
@@ -92,7 +97,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
     compliance_score = compliance_metric_score_filter.sum(0) * 10 / compliance_metric_score_filter.size
 
     ecology_metric_score = [ecology_dependency_acquisition, ecology_code_maintenance, ecology_community_support,
-                               ecology_adoption_analysis, get_ecology_software_quality, get_ecology_adaptation_method]
+                            ecology_adoption_analysis, get_ecology_software_quality, get_ecology_adaptation_method]
     ecology_metric_score_filter = ecology_metric_score.compact.reject { |element| element == -1 }
     ecology_score = ecology_metric_score_filter.sum(0) * 10 / ecology_metric_score_filter.size
 
@@ -552,7 +557,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
       score = (CommunityMetric.scaled_value(nil, target_value: score) / 10).ceil
     end
     { ecology_community_support: score, ecology_community_support_detail: nil }
-    end
+  end
 
   def self.get_upstream_collaboration_strategy(upstream_collaboration_strategy)
     score = upstream_collaboration_strategy == 1 ? 10 : 0
@@ -723,7 +728,9 @@ class TpcSoftwareReportMetric < ApplicationRecord
   end
 
   def get_ecology_adaptation_method_detail
-    query_data = TpcSoftwareSelectionReport.find_by(id: tpc_software_report_id)
+    # puts tpc_software_sandbox_report_id
+    # puts "-------"
+    query_data = TpcSoftwareSandboxReport.find_by(id: tpc_software_sandbox_report_id)
     if query_data.present?
       return query_data.adaptation_method
     end
@@ -758,5 +765,4 @@ class TpcSoftwareReportMetric < ApplicationRecord
       ecology_software_quality
     end
   end
-
 end

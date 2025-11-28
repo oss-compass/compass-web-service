@@ -8,7 +8,7 @@ module Mutations
       field :status, String, null: false
 
       argument :short_code, String, required: true
-      argument :report_type, Integer, required: false, description: '0: selection 1:graduation', default_value: '0'
+      argument :report_type, Integer, required: false, description: '0: selection 1:graduation 3sandbox', default_value: '0'
       argument :metric_name, String, required: true
       argument :state, Integer, required: true, description: 'reject: -1, cancel: 0, accept: 1', default_value: '1'
       argument :member_type, Integer, required: true, description: 'committer: 0, sig lead: 1, legal: 2, compliance: 3', default_value: '0'
@@ -47,6 +47,19 @@ module Mutations
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
           tpc_software_type = TpcSoftwareCommentState::Type_Graduation_Report_Metric
           tpc_software_list = TpcSoftwareGraduation.where(target_software_report_id: report.id)
+          tpc_software_list.each do |tpc_software|
+            tpc_software_id_list << tpc_software.id
+          end
+          tpc_software_id_list.uniq
+        when TpcSoftwareMetricServer::Report_Type_Sandbox
+          report = TpcSoftwareSandboxReport.find_by(short_code: short_code)
+          raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
+          report_metric = TpcSoftwareSandboxReportMetric.find_by(
+            tpc_software_sandbox_report_id: report.id,
+            version: TpcSoftwareReportMetric::Version_Default)
+          raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
+          tpc_software_type = TpcSoftwareCommentState::Type_Sandbox_Report_Metric
+          tpc_software_list = TpcSoftwareSandbox.where(target_software_report_id: report.id)
           tpc_software_list.each do |tpc_software|
             tpc_software_id_list << tpc_software.id
           end
@@ -98,6 +111,8 @@ module Mutations
             tpc_software = TpcSoftwareSelection
           when TpcSoftwareMetricServer::Report_Type_Graduation
             tpc_software = TpcSoftwareGraduation
+          when TpcSoftwareMetricServer::Report_Type_Sandbox
+            tpc_software = TpcSoftwareSandbox
           end
           tpc_software_id_list.each do |tpc_software_id|
             tpc_software.update_state(tpc_software_id)

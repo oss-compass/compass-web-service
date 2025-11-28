@@ -34,6 +34,14 @@ module Types
               version: TpcSoftwareGraduationReportMetric::Version_Default)
             raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
             tpc_software_type = TpcSoftwareComment::Type_Graduation_Report_Metric
+          when TpcSoftwareMetricServer::Report_Type_Sandbox
+            report = TpcSoftwareSandboxReport.find_by(short_code: short_code)
+            raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?
+            report_metric = TpcSoftwareSandboxReportMetric.find_by(
+              tpc_software_sandbox_report_id: report.id,
+              version: TpcSoftwareSandboxReportMetric::Version_Default)
+            raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report_metric.nil?
+            tpc_software_type = TpcSoftwareComment::Type_Sandbox_Report_Metric
           end
 
           items = TpcSoftwareComment.where("metric_name = ?", metric_name)

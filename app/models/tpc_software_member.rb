@@ -16,6 +16,7 @@
 #  subject_id          :integer          not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  gitcode_account     :string(255)
 #
 class TpcSoftwareMember < ApplicationRecord
 

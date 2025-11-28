@@ -30,13 +30,13 @@ module Mutations
 
         if state != TpcSoftwareCommentState::State_Cancel
           case member_type
-          when TpcSoftwareCommentState::Member_Type_Committer
-            graduation_report_list = TpcSoftwareGraduationReport.where("id IN (?)", JSON.parse(graduation.tpc_software_graduation_report_ids))
-
-            committer_permission_list = graduation_report_list.map do |graduation_report|
-              TpcSoftwareMember.check_committer_permission?(graduation_report.tpc_software_sig_id, current_user)
-            end
-            permission = committer_permission_list.include?(true)
+          # when TpcSoftwareCommentState::Member_Type_Committer
+          #   graduation_report_list = TpcSoftwareGraduationReport.where("id IN (?)", JSON.parse(graduation.tpc_software_graduation_report_ids))
+          #
+          #   committer_permission_list = graduation_report_list.map do |graduation_report|
+          #     TpcSoftwareMember.check_committer_permission?(graduation_report.tpc_software_sig_id, current_user)
+          #   end
+          #   permission = committer_permission_list.include?(true)
           when TpcSoftwareCommentState::Member_Type_Sig_Lead
             permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_Legal

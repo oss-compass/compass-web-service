@@ -22,6 +22,9 @@ class TpcSoftwareComment < ApplicationRecord
   Type_Graduation = 'TpcSoftwareGraduation'
   Type_Graduation_Report_Metric = 'TpcSoftwareGraduationReportMetric'
 
+  Type_Sandbox = 'TpcSoftwareSandbox'
+  Type_Sandbox_Report_Metric = 'TpcSoftwareSandboxReportMetric'
+
   Metric_Name_Selection = 'selection'
   Metric_Name_Graduation = 'graduation'
 

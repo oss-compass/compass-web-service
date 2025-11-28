@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_28_072207) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -85,6 +85,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
+  end
+
+  create_table "feedbacks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "module", null: false
+    t.string "content", null: false
+    t.string "page"
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "lab_algorithms", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -299,6 +308,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.datetime "updated_at", null: false
     t.index ["label", "level"], name: "index_shortened_labels_on_label_and_level", unique: true
     t.index ["short_code"], name: "index_shortened_labels_on_short_code", unique: true
+  end
+
+  create_table "star_project_participants", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "star_project_id", null: false
+    t.string "product_line", comment: "产品线"
+    t.string "participant_account_name", comment: "参与人的代码托管平台账号名称"
+    t.string "participant_company_id", comment: "参与人的公司ID"
+    t.string "related_email", comment: "关联邮箱"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "star_projects", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "project_name", comment: "项目名称"
+    t.string "repo_url", comment: "代码托管网址"
+    t.string "main_osdt", comment: "主导OSDT"
+    t.text "remarks", comment: "备注"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "subject_access_levels", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -655,6 +683,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.string "email"
     t.string "github_account"
     t.string "gitee_account"
+    t.string "gitcode_account"
     t.integer "tpc_software_sig_id"
     t.string "description"
     t.integer "role_level", default: 0
@@ -687,7 +716,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.text "security_history_vulnerability_raw"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "tpc_software_report_metric_raw"
     t.string "upstream_collaboration_strategy_raw"
     t.index ["tpc_software_report_metric_id"], name: "idx_on_tpc_software_report_metric_id_9ede761b2c", unique: true
   end
@@ -750,6 +778,120 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.string "upstream_collaboration_strategy_detail"
   end
 
+  create_table "tpc_software_sandbox_report_metric_raws", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "tpc_software_report_metric_id", null: false
+    t.string "code_url", null: false
+    t.integer "subject_id", null: false
+    t.text "compliance_license_raw"
+    t.text "compliance_package_sig_raw"
+    t.text "compliance_license_compatibility_raw"
+    t.text "ecology_dependency_acquisition_raw"
+    t.text "ecology_code_maintenance_raw"
+    t.text "ecology_software_quality_raw"
+    t.text "lifecycle_version_normalization_raw"
+    t.text "lifecycle_version_number_raw"
+    t.text "lifecycle_version_lifecycle_raw"
+    t.text "security_binary_artifact_raw"
+    t.text "security_vulnerability_raw"
+    t.text "security_vulnerability_response_raw"
+    t.text "security_vulnerability_disclosure_raw"
+    t.text "security_history_vulnerability_raw"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_sandbox_report_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "code_url", null: false
+    t.string "status", null: false
+    t.integer "status_compass_callback", null: false
+    t.integer "status_tpc_service_callback", null: false
+    t.integer "version", null: false
+    t.integer "tpc_software_sandbox_report_id", null: false
+    t.string "tpc_software_sandbox_report_type", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.integer "base_repo_name"
+    t.integer "base_website_url"
+    t.integer "base_code_url"
+    t.integer "compliance_license"
+    t.integer "compliance_package_sig"
+    t.integer "compliance_license_compatibility"
+    t.integer "ecology_dependency_acquisition"
+    t.integer "ecology_code_maintenance"
+    t.integer "ecology_software_quality"
+    t.integer "lifecycle_version_normalization"
+    t.integer "lifecycle_version_number"
+    t.integer "lifecycle_version_lifecycle"
+    t.integer "security_binary_artifact"
+    t.integer "security_vulnerability"
+    t.integer "security_vulnerability_response"
+    t.integer "security_vulnerability_disclosure"
+    t.integer "security_history_vulnerability"
+    t.string "base_repo_name_detail", limit: 500
+    t.string "base_website_url_detail", limit: 500
+    t.string "base_code_url_detail", limit: 500
+    t.string "compliance_license_detail", limit: 500
+    t.string "compliance_package_sig_detail", limit: 500
+    t.string "compliance_license_compatibility_detail", limit: 500
+    t.string "ecology_dependency_acquisition_detail", limit: 500
+    t.string "ecology_code_maintenance_detail", limit: 500
+    t.string "ecology_software_quality_detail", limit: 500
+    t.string "lifecycle_version_normalization_detail", limit: 500
+    t.string "lifecycle_version_number_detail", limit: 500
+    t.string "lifecycle_version_lifecycle_detail", limit: 500
+    t.string "security_binary_artifact_detail", limit: 500
+    t.string "security_vulnerability_detail", limit: 500
+    t.string "security_vulnerability_response_detail", limit: 500
+    t.string "security_vulnerability_disclosure_detail", limit: 500
+    t.string "security_history_vulnerability_detail", limit: 5000
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_sandbox_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "report_type", null: false
+    t.string "name", null: false
+    t.integer "tpc_software_sig_id", null: false
+    t.string "release"
+    t.datetime "release_time"
+    t.string "manufacturer", null: false
+    t.string "website_url", null: false
+    t.string "code_url", null: false
+    t.string "programming_language", null: false
+    t.integer "code_count"
+    t.string "license"
+    t.string "vulnerability_disclosure"
+    t.string "vulnerability_response"
+    t.string "short_code", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.string "adaptation_method"
+    t.string "oh_commit_sha"
+    t.integer "report_category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_software_sandboxes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "tpc_software_sandbox_report_ids", null: false
+    t.string "repo_url"
+    t.string "committers", null: false
+    t.string "adaptation_committers"
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.string "adaptation_method"
+    t.string "functional_description", limit: 2000
+    t.string "target_software"
+    t.integer "is_same_type_check", default: 0
+    t.string "same_type_software_name"
+    t.integer "state"
+    t.integer "target_software_report_id"
+    t.integer "report_category"
+    t.string "remark"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tpc_software_selection_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "report_type", null: false
     t.string "name", null: false
@@ -798,6 +940,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_29_115459) do
     t.integer "state"
     t.integer "target_software_report_id"
     t.integer "report_category"
+    t.string "remark"
   end
 
   create_table "tpc_software_sigs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
