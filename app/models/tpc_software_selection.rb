@@ -243,7 +243,7 @@ class TpcSoftwareSelection < ApplicationRecord
     comment_state_list = get_comment_state_list(tpc_software.id)
     upstream_collaboration_strategy_score = get_upstream_collaboration_strategy_score(report_id)
 
-    required_member_types = if upstream_collaboration_strategy_score == 10  || upstream_collaboration_strategy_score < 0
+    required_member_types = if upstream_collaboration_strategy_score == 10  || upstream_collaboration_strategy_score < 0 || upstream_collaboration_strategy_score.nil?
                               TpcSoftwareCommentState::Selection_Member_Types - [TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG]
                             else
                               TpcSoftwareCommentState::Selection_Member_Types
