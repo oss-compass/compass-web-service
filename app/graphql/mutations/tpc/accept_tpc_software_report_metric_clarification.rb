@@ -70,15 +70,15 @@ module Mutations
           case member_type
           when TpcSoftwareCommentState::Member_Type_Committer
             permission = TpcSoftwareMember.check_committer_permission?(report.tpc_software_sig_id, current_user) &&
-              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name) && !TpcSoftwareCommentState.check_wg_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Sig_Lead
             permission = TpcSoftwareMember.check_sig_lead_permission?(current_user) &&
-              !TpcSoftwareCommentState.check_compliance_metric(metric_name)
+              !TpcSoftwareCommentState.check_compliance_metric(metric_name) && !TpcSoftwareCommentState.check_wg_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Legal
             permission = TpcSoftwareMember.check_legal_permission?(current_user) &&
-              TpcSoftwareCommentState.check_compliance_metric(metric_name)
+              TpcSoftwareCommentState.check_compliance_metric(metric_name) && !TpcSoftwareCommentState.check_wg_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Compliance
-            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+            permission = TpcSoftwareMember.check_compliance_permission?(current_user) && !TpcSoftwareCommentState.check_wg_metric(metric_name)
           when TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG
             permission = TpcSoftwareMember.check_wg_permission?(current_user)
           end
