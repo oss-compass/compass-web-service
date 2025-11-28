@@ -104,6 +104,10 @@ class TpcSoftwareCommentState < ApplicationRecord
     metric_name.start_with?("compliance") || metric_name == "ecologyPatentRisk"
   end
 
+  def self.check_wg_metric(metric_name)
+    metric_name == "upstreamCollaborationStrategy"
+  end
+
 
   def self.get_member_name(member_type)
     case member_type
