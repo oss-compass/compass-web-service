@@ -47,8 +47,6 @@ module Openapi
 
             Feedback.create!(user_id: user.id, module: module_name, content: content, page: page)
 
-            # 发送通知邮件给管理员
-            # 我可以很久不和你联络 让日子就这样 逃避想你的种种软弱
 
             {
               message: 'ok'
