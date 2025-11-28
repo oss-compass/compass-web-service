@@ -9,6 +9,7 @@ module Types
       field :company, String
       field :github_account, String
       field :gitee_account, String
+      field :gitcode_account, String
     end
   end
 end

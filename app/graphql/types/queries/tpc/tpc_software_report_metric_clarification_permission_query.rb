@@ -10,7 +10,7 @@ module Types
         description 'Get tpc software report metric clarification permission'
 
         argument :short_code, String, required: true
-        argument :report_type, Integer, required: false, description: '0: selection 1:graduation', default_value: '0'
+        argument :report_type, Integer, required: false, description: '0: selection 1:graduation 3:sandbox', default_value: '0'
 
         def resolve(short_code: nil, report_type: 0)
           current_user = context[:current_user]
@@ -22,6 +22,9 @@ module Types
                                                .first
           when TpcSoftwareMetricServer::Report_Type_Graduation
             report = TpcSoftwareGraduationReport.where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
+                                                .first
+          when TpcSoftwareMetricServer::Report_Type_Sandbox
+            report = TpcSoftwareSandboxReport.where("short_code = :code OR code_url = :url", code: short_code, url: short_code)
                                                 .first
           end
           raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if report.nil?

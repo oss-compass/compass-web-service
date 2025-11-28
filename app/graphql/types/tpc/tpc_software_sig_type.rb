@@ -7,6 +7,7 @@ module Types
       field :name, String, null: false
       field :description, String, null: false
       field :sig_committer, [Types::Tpc::TpcSoftwareMemberType]
+      field :adaptation_committer, [Types::Tpc::TpcSoftwareMemberType]
     end
   end
 end

@@ -25,4 +25,11 @@ class TpcSoftwareSig < ApplicationRecord
 
   end
 
+  def adaptation_committer
+    TpcSoftwareMember.where(tpc_software_sig_id: id)
+                     .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
+                     .where.not(gitcode_account: nil)
+
+  end
+
 end

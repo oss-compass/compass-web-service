@@ -28,14 +28,16 @@ module Types
                 tpc_software = TpcSoftwareSelection
               when 1
                 tpc_software = TpcSoftwareGraduation
+              when 3
+              tpc_software = TpcSoftwareSandbox
               else
                 tpc_software = TpcSoftwareSelection
             end
             items = tpc_software.joins(:user, :tpc_software_report)
                                 .where(subject_id: subject.id)
                                 .where(user_id: current_user.id)
-                                .where.not(issue_url: nil)
                                 .where.not(state: nil)
+            items = tpc_software.where.not(issue_url: nil) unless application_type == 3
 
             if items.is_a?(ActiveRecord::Relation)
               if filter_opts.present?

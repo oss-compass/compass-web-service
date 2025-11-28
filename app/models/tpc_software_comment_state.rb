@@ -24,11 +24,14 @@ class TpcSoftwareCommentState < ApplicationRecord
   Type_Graduation_Report_Metric = 'TpcSoftwareGraduationReportMetric'
   Type_Lectotype = 'TpcSoftwareLectotype'
   Type_Lectotype_Report_Metric = 'TpcSoftwareLectotypeReportMetric'
+  Type_Sandbox = 'TpcSoftwareSandbox'
+  Type_Sandbox_Report_Metric = 'TpcSoftwareSandboxReportMetric'
 
 
   Metric_Name_Selection = 'selection'
   Metric_Name_Graduation = 'graduation'
   Metric_Name_Lectotype = 'lectotype'
+  Metric_Name_Sandbox = 'sandbox'
 
   State_Accept = 1
   State_Cancel = 0
@@ -42,11 +45,13 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Type_Community_Collaboration_WG = 5
 
   Member_Type_QA = 4
-  Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
-  Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG,Member_Type_QA]
+  Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
+  Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG,Member_Type_QA]
 
-  Selection_Member_Types = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
-  Selection_Member_Types_QA = [Member_Type_Committer, Member_Type_Sig_Lead, Member_Type_Legal,Member_Type_Community_Collaboration_WG, Member_Type_Compliance,Member_Type_QA]
+  Selection_Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
+  Selection_Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal,Member_Type_Community_Collaboration_WG, Member_Type_Compliance,Member_Type_QA]
+
+  Sandbox_Member_Types = [Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
 
   Member_Type_Committer_Name = "TPC垂域Committer"
   Member_Type_Sig_Lead_Name = "TPC SIG Leader"

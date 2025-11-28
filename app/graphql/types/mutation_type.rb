@@ -57,9 +57,18 @@ module Types
     field :update_tpc_software_selection_report, mutation: Mutations::Tpc::UpdateTpcSoftwareSelectionReport, description: 'Update a tpc software selection report'
     field :trigger_tpc_software_selection_report, mutation: Mutations::Tpc::TriggerTpcSoftwareSelectionReport, description: 'Trigger a tpc software selection report'
 
+
+
     field :create_tpc_software_selection, mutation: Mutations::Tpc::CreateTpcSoftwareSelection, description: 'Create a tpc software selection'
     field :update_tpc_software_selection, mutation: Mutations::Tpc::UpdateTpcSoftwareSelection, description: 'Update a tpc software selection'
     field :accept_tpc_software_selection, mutation: Mutations::Tpc::AcceptTpcSoftwareSelection, description: 'Accept a tpc software selection'
+
+    field :create_tpc_software_sandbox_report, mutation: Mutations::Tpc::CreateTpcSoftwareSandboxReport, description: 'Create a tpc software sandbox report'
+    field :update_tpc_software_sandbox_report, mutation: Mutations::Tpc::UpdateTpcSoftwareSandboxReport, description: 'Update a tpc software sandbox report'
+    field :trigger_tpc_software_sandbox_report, mutation: Mutations::Tpc::TriggerTpcSoftwareSandboxReport, description: 'Trigger a tpc software sandbox report'
+    field :create_tpc_software_sandbox, mutation: Mutations::Tpc::CreateTpcSoftwareSandbox, description: 'Create a tpc software sandbox'
+    field :update_tpc_software_sandbox, mutation: Mutations::Tpc::UpdateTpcSoftwareSandbox, description: 'Update a tpc software sandbox'
+    field :accept_tpc_software_sandbox, mutation: Mutations::Tpc::AcceptTpcSoftwareSandbox, description: 'Accept a tpc software sandbox'
 
 
     field :create_tpc_software_lectotype_report, mutation: Mutations::Tpc::CreateTpcSoftwareLectotypeReport, description: 'Create a tpc software lectotype report'

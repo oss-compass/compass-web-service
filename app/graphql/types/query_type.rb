@@ -143,6 +143,14 @@ module Types
     field :tpc_software_graduation_page, resolver: Queries::Tpc::TpcSoftwareGraduationPageQuery
     field :tpc_software_graduation, resolver: Queries::Tpc::TpcSoftwareGraduationQuery
 
+    field :tpc_software_sandbox_report_page, resolver: Queries::Tpc::TpcSoftwareSandboxReportPageQuery
+    field :tpc_software_sandbox_report, resolver: Queries::Tpc::TpcSoftwareSandboxReportQuery
+    field :tpc_software_sandbox_page, resolver: Queries::Tpc::TpcSoftwareSandboxPageQuery
+    field :tpc_software_sandbox_search, resolver: Queries::Tpc::TpcSoftwareSandboxSearchQuery
+    field :tpc_software_sandbox, resolver: Queries::Tpc::TpcSoftwareSandboxQuery
+
+    field :tpc_software_check_committers, resolver: Queries::Tpc::TpcSoftwareCheckCommitterQuery
+
     field :tpc_software_my_creation_overview, resolver: Queries::Tpc::TpcSoftwareMyCreationOverviewQuery
     field :tpc_software_my_creation_page, resolver: Queries::Tpc::TpcSoftwareMyCreationPageQuery
     field :tpc_software_my_review_overview, resolver: Queries::Tpc::TpcSoftwareMyReviewOverviewQuery

@@ -10,7 +10,7 @@ module Types
         description 'Get tpc software my review page'
         argument :label, String, required: true, description: 'repo or project label'
         argument :level, String, required: true, description: 'repo or project level(repo/community)'
-        argument :application_type, Integer, required: true, description: '0: incubation 1: graduation'
+        argument :application_type, Integer, required: true, description: '0: incubation 1: graduation 3:sandbox'
         argument :page, Integer, required: false, description: 'page number'
         argument :per, Integer, required: false, description: 'per page number'
         argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'
@@ -28,6 +28,8 @@ module Types
               tpc_software = TpcSoftwareSelection
             when 1
               tpc_software = TpcSoftwareGraduation
+            when 3
+              tpc_software = TpcSoftwareSandbox
             else
               tpc_software = TpcSoftwareSelection
             end
@@ -35,11 +37,19 @@ module Types
             if TpcSoftwareMember.check_sig_lead_permission?(current_user) ||
               TpcSoftwareMember.check_legal_permission?(current_user) ||
               TpcSoftwareMember.check_compliance_permission?(current_user)
+
               items = tpc_software.joins(:user, :tpc_software_report)
                                   .where(subject_id: subject.id)
-                                  .where.not(issue_url: nil)
                                   .where.not(state: nil)
-                                  .where.not(tpc_software_report: { tpc_software_sig_id: nil })
+                        .where.not(tpc_software_report: { tpc_software_sig_id: nil })
+              items = items.where.not(issue_url: nil) unless application_type == 3
+
+              # items = tpc_software.joins(:user, :tpc_software_report)
+              #                     .where(subject_id: subject.id)
+              #                     .where.not(issue_url: nil)
+              #                     .where.not(state: nil)
+              #                     .where.not(tpc_software_report: { tpc_software_sig_id: nil })
+
             else
               committer_list = TpcSoftwareMember.get_committer_list(current_user, subject.id)
               if committer_list.present?
@@ -47,8 +57,9 @@ module Types
                 items = tpc_software.joins(:user, :tpc_software_report)
                                     .where(subject_id: subject.id)
                                     .where.not(state: nil)
-                                    .where.not(issue_url: nil)
                                     .where(tpc_software_report: { tpc_software_sig_id: sig_id_list })
+
+                items = items.where.not(issue_url: nil) unless application_type == 3
               end
             end
 
