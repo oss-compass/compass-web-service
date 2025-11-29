@@ -149,7 +149,6 @@ module Types
     field :tpc_software_sandbox_search, resolver: Queries::Tpc::TpcSoftwareSandboxSearchQuery
     field :tpc_software_sandbox, resolver: Queries::Tpc::TpcSoftwareSandboxQuery
 
-    field :tpc_software_check_committers, resolver: Queries::Tpc::TpcSoftwareCheckCommitterQuery
 
     field :tpc_software_my_creation_overview, resolver: Queries::Tpc::TpcSoftwareMyCreationOverviewQuery
     field :tpc_software_my_creation_page, resolver: Queries::Tpc::TpcSoftwareMyCreationPageQuery
