@@ -103,6 +103,8 @@ class ApplicationController < ActionController::Base
       metric_server.tpc_software_license_callback(command_list, scan_results, version_number)
     elsif report_type == TpcSoftwareMetricServer::Report_Type_Metrics_Model
       metric_server.tpc_software_metrics_model_callback(metrics_model)
+    elsif report_type == TpcSoftwareMetricServer::Report_Type_Sandbox
+      metric_server.tpc_software_sandbox_callback(command_list, scan_results, report_id, report_metric_id)
     end
 
     render json: { status: true, message: 'ok' }
