@@ -274,7 +274,7 @@ class TpcSoftwareSandbox < ApplicationRecord
     Rails.logger.info "[AutoRepo] 开始处理 Sandbox ID: #{sandbox.id}"
     sandbox_report = sandbox.tpc_software_sandbox_report
     unless sandbox_report.tpc_software_sig_id == 3
-      return
+      return true
     end
 
     repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
