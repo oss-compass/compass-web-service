@@ -283,7 +283,7 @@ class TpcSoftwareSelection < ApplicationRecord
     Rails.logger.info "[AutoRepo] 开始处理 selection ID: #{selection.id}"
     selection_report = selection.tpc_software_report
     unless selection_report.tpc_software_sig_id == 3
-      return
+      return true
     end
     # # 目标组织
     repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
