@@ -101,6 +101,9 @@ class TpcSoftwareSelection < ApplicationRecord
 
 
       if score.present? && (0 <= score) && (score < 10)
+        if clarify_metric == "upstream_collaboration_strategy"
+          return true
+        end
         case member_type
         when TpcSoftwareCommentState::Member_Type_Committer
           if !TpcSoftwareCommentState.check_compliance_metric(lower_clarify_metric) && !committer_state
