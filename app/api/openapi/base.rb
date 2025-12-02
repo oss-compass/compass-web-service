@@ -63,6 +63,8 @@ module Openapi
     mount Openapi::V2::Server::SystemServer
     mount Openapi::V2::Server::ProjectServer
     mount Openapi::V2::Server::QueueServer
+    mount Openapi::V2::FeedbackModule
+    mount Openapi::V2::Star::StarProjectServer
 
     add_swagger_documentation \
       doc_version: '2.0.0',
