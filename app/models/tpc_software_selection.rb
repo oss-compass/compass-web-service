@@ -267,6 +267,10 @@ class TpcSoftwareSelection < ApplicationRecord
     selection = TpcSoftwareSelection.find_by(id: id)
     state = get_current_state(selection)
     selection.update!(state: state)
+    selection_report = selection.tpc_software_report
+    if selection_report.tpc_software_sig_id != 3
+      return
+    end
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(selection)
@@ -282,14 +286,12 @@ class TpcSoftwareSelection < ApplicationRecord
   def self.perform_gitcode_automation(selection)
     Rails.logger.info "[AutoRepo] 开始处理 selection ID: #{selection.id}"
     selection_report = selection.tpc_software_report
-    unless selection_report.tpc_software_sig_id == 3
-      return true
-    end
     # # 目标组织
     repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
     # 是否是组织仓库
     is_org_repo = true
-    repo_name = selection_report.name
+    repo_name = selection.repo_url.split('/').last
+
     source_url = selection_report.code_url
 
     gitcode_server = GitcodeServer.new
@@ -301,7 +303,7 @@ class TpcSoftwareSelection < ApplicationRecord
       name: repo_name,
       description: selection.functional_description,
       #导入链接
-      # import_url: source_url.presence,
+      import_url: source_url.presence,
       auto_init: source_url.blank?,
       default_branch: 'main'
     }
@@ -343,11 +345,13 @@ class TpcSoftwareSelection < ApplicationRecord
     # end
 
     # 创建初始标签 (Selection)
-    gitcode_server.create_tag(repo_owner, repo_name, {
-      tag_name: '孵化',
-      refs: 'main',
-      tag_message: '该项目处于孵化阶段'
-    })
+    # gitcode_server.create_tag(repo_owner, repo_name, {
+    #   tag_name: '孵化',
+    #   refs: 'main',
+    #   tag_message: '该项目处于孵化阶段'
+    # })
+    gitcode_server.create_label(repo_owner, repo_name, '孵化')
+
 
     Rails.logger.info "[AutoRepo] selection ##{selection.id} 自动化流程全部完成。"
   end

@@ -258,6 +258,10 @@ class TpcSoftwareSandbox < ApplicationRecord
     Rails.logger.info("state: #{state}")
 
     sandbox.update!(state: state)
+    sandbox_report = sandbox.tpc_software_sandbox_report
+    if sandbox_report.tpc_software_sig_id != 3
+      return
+    end
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(sandbox)
@@ -273,13 +277,13 @@ class TpcSoftwareSandbox < ApplicationRecord
   def self.perform_gitcode_automation(sandbox)
     Rails.logger.info "[AutoRepo] 开始处理 Sandbox ID: #{sandbox.id}"
     sandbox_report = sandbox.tpc_software_sandbox_report
-    unless sandbox_report.tpc_software_sig_id == 3
-      return true
-    end
+    # unless sandbox_report.tpc_software_sig_id == 3
+    #   return true
+    # end
 
     repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
-    is_org_repo = true # 是否是组织仓库
-    repo_name = sandbox_report.name
+    is_org_repo = true
+    repo_name = sandbox.repo_url.split('/').last
     source_url = sandbox_report.code_url
     gitcode_server = GitcodeServer.new
 
@@ -290,7 +294,7 @@ class TpcSoftwareSandbox < ApplicationRecord
       name: repo_name,
       description:  sandbox.functional_description,
       # 如果有 repo_url 则作为导入链接，否则为空
-      # import_url: nil,
+      import_url: source_url.presence,
       auto_init: source_url.blank?,
       default_branch: 'main'
     }
@@ -331,11 +335,12 @@ class TpcSoftwareSandbox < ApplicationRecord
     # end
 
     # 创建初始标签 (Sandbox)
-    gitcode_server.create_tag(repo_owner, repo_name, {
-      tag_name: '沙箱',
-      refs: 'main',
-      tag_message: '该项目处于沙箱阶段'
-    })
+    # gitcode_server.create_tag(repo_owner, repo_name, {
+    #   tag_name: '沙箱',
+    #   refs: 'main',
+    #   tag_message: '该项目处于沙箱阶段'
+    # })
+    gitcode_server.create_label(repo_owner, repo_name, '沙箱')
 
     Rails.logger.info "[AutoRepo] Sandbox ##{sandbox.id} 自动化流程全部完成。"
   end
