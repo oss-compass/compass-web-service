@@ -258,6 +258,10 @@ class TpcSoftwareSandbox < ApplicationRecord
     Rails.logger.info("state: #{state}")
 
     sandbox.update!(state: state)
+    sandbox_report = sandbox.tpc_software_sandbox_report
+    if sandbox_report.tpc_software_sig_id != 3
+      return
+    end
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(sandbox)
