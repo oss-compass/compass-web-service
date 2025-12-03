@@ -348,7 +348,7 @@ module Openapi
             ].each do |group|
               next if group[:urls].empty?
 
-              target = 'tag.keyword'
+              target = 'tag'
 
               res = group[:index]
                       .must(terms: { target => group[:urls] })
