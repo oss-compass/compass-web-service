@@ -97,7 +97,68 @@ module Openapi
             latest_hits
           end
 
-          def get_community_name(keyword)
+          def get_index_last_data_agg(base_indexer, urls, field, begin_date, end_date)
+            safe_urls = Array(urls).flatten.compact.uniq.reject(&:blank?)
+            if safe_urls.empty?
+              Rails.logger.info("【Skip ES】get_index_last_data_agg skipped because urls is empty.")
+              return []
+            end
+
+            source_fields = field.is_a?(Array) ? field : [field]
+
+            criteria = base_indexer
+                         .must(terms: { 'label.keyword' => safe_urls })
+                         .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                         .per(0) # 不返回 hits，只取聚合
+
+            criteria = criteria.aggregate(
+              projects_group: {
+                terms: {
+                  field: 'label.keyword',
+                  size: safe_urls.length + 20 # 保证 bucket 够大
+                },
+                aggs: {
+                  latest_record: {
+                    top_hits: {
+                      size: 1,
+                      sort: [{ grimoire_creation_date: { order: 'desc' } }],
+                      _source: { includes: source_fields }
+                    }
+                  }
+                }
+              }
+            )
+
+            begin
+              raw_aggs = criteria.aggregations
+              buckets = raw_aggs.dig('projects_group', 'buckets') || []
+
+              latest_hits = buckets.map do |bucket|
+                hits_container = bucket.dig('latest_record', 'hits', 'hits')
+                next unless hits_container && hits_container.first
+
+                hit_source = hits_container.first['_source']
+
+                entry = { label: bucket['key'] }
+                source_fields.each do |f|
+                  next if f.to_s == 'label'
+                  entry[f.to_sym] = hit_source[f.to_s]
+                end
+
+                entry
+              end.compact
+
+              latest_hits
+
+            rescue SearchFlip::ResponseError => e
+
+              Rails.logger.error("【ES Error】get_index_last_data_agg failed: #{e.message}")
+              return []
+            end
+
+          end
+
+          def get_community(keyword)
             fields = ['label', 'level']
             level = nil
             es_filters = { level: level }
@@ -165,6 +226,12 @@ module Openapi
             end
 
             candidates
+          end
+
+          def get_community_name(keyword)
+            # 根据 keyword 获取社区名称
+            project = StarProject.find_by(repo_url: keyword)
+            project&.project_name
           end
 
         end
@@ -488,12 +555,11 @@ module Openapi
             top_num = params[:top_num]
 
             # 处理社区 URL → 社区名称 label 查询
-            query_labels_map = {} # { 原始URL => 查询用label }
+            #  { 原始URL => 查询用label }
+            query_labels_map = {}
 
             unique_urls.each do |url|
               # 提取 path 最后部分（去掉域名）
-              # 例如 https://gitee.com/openeuler → ["openeuler"]
-              #     https://gitee.com/openeuler/kernel → ["openeuler", "kernel"]
               path_parts = URI(url).path.split('/').reject(&:empty?)
 
               # 默认查询用 label = 原始 URL
@@ -501,24 +567,25 @@ module Openapi
 
               # 只有 owner 层，才调用 get_community_name
               if path_parts.length == 1
-                owner = path_parts.last
+                community_name = get_community_name(url)
+                query_labels_map[url] = community_name
 
-                community_info = get_community_name(owner)
-
-                if community_info.is_a?(Array) && community_info.first && community_info.first[:level] == "community"
-                  community_label = community_info.first[:label]
-                  query_labels_map[url] = community_label
-                end
+                # owner = path_parts.last
+                # community_info = get_community(owner)
+                # if community_info.is_a?(Array) && community_info.first && community_info.first[:level] == "community"
+                #   community_label = community_info.first[:label]
+                #   query_labels_map[url] = community_label
+                # end
 
               end
             end
 
             query_labels = query_labels_map.values.uniq
 
-            activities = get_index_last_data_scroll(ActivityMetric, query_labels, ['label', 'activity_score', 'grimoire_creation_date'], begin_date, end_date)
-            community_activities = get_index_last_data_scroll(CommunityMetric, query_labels, ['label', 'community_support_score', 'grimoire_creation_date'], begin_date, end_date)
-            codequality_activities = get_index_last_data_scroll(CodequalityMetric, query_labels, ['label', 'code_quality_guarantee', 'grimoire_creation_date'], begin_date, end_date)
-            group_activities = get_index_last_data_scroll(GroupActivityMetric, query_labels, ['label', 'organizations_activity', 'grimoire_creation_date'], begin_date, end_date)
+            activities = get_index_last_data_agg(ActivityMetric, query_labels, ['label', 'activity_score', 'grimoire_creation_date'], begin_date, end_date)
+            community_activities = get_index_last_data_agg(CommunityMetric, query_labels, ['label', 'community_support_score', 'grimoire_creation_date'], begin_date, end_date)
+            codequality_activities = get_index_last_data_agg(CodequalityMetric, query_labels, ['label', 'code_quality_guarantee', 'grimoire_creation_date'], begin_date, end_date)
+            group_activities = get_index_last_data_agg(GroupActivityMetric, query_labels, ['label', 'organizations_activity', 'grimoire_creation_date'], begin_date, end_date)
 
             # 合并结果到按 label 的哈希
             merged = {}
@@ -618,18 +685,20 @@ module Openapi
 
                 # owner /org
                 if parts.length == 1
-                  owner = parts.first.downcase
+                  # owner = parts.first.downcase
+                  #
+                  # unless owner_cache.key?(owner)
+                  #   info = get_community_name(owner)
+                  #   if info.any? && info.first[:level] == "community"
+                  #     owner_cache[owner] = info.first[:label]
+                  #   else
+                  #     owner_cache[owner] = nil
+                  #   end
+                  # end
+                  # query_label_for_url[url] = owner_cache[owner] if owner_cache[owner]
+                  community_name = get_community_name(url)
+                  query_label_for_url[url] = community_name
 
-                  unless owner_cache.key?(owner)
-                    info = get_community_name(owner) # 你已重构为 Hash 返回
-                    if info.any? && info.first[:level] == "community"
-                      owner_cache[owner] = info.first[:label]
-                    else
-                      owner_cache[owner] = nil
-                    end
-                  end
-
-                  query_label_for_url[url] = owner_cache[owner] if owner_cache[owner]
                 end
               end
             end
@@ -774,31 +843,45 @@ module Openapi
                 if path_parts.length == 1
                   owner = path_parts.first.downcase
 
-                  unless owner_cache.key?(owner)
-                    info = get_community_name(owner)
-                    if info.any? && info.first[:level] == "community"
-                      owner_cache[owner] = info.first[:label]
-                    else
-                      owner_cache[owner] = nil
-                    end
-                  end
+                  # unless owner_cache.key?(owner)
+                  #   info = get_community_name(owner)
+                  #   if info.any? && info.first[:level] == "community"
+                  #     owner_cache[owner] = info.first[:label]
+                  #   else
+                  #     owner_cache[owner] = nil
+                  #   end
+                  # end
+                  #
+                  # if owner_cache[owner]
+                  #   query_label_for_url[url] = owner_cache[owner]
+                  # end
+                  community_name = get_community_name(url)
+                  puts community_name
 
-                  if owner_cache[owner]
-                    query_label_for_url[url] = owner_cache[owner]
+                  if community_name.nil? || community_name.strip.empty?
+                    puts url
                   end
+                  query_label_for_url[url] = community_name
+
                 end
               end
             end
 
             query_labels = query_label_for_url.values.uniq
 
-            activities = get_index_data_scroll(
-              CodequalityMetric,
-              query_labels,
-              ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date'],
-              begin_date,
-              end_date
-            )
+            begin
+
+              activities = get_index_data_scroll(
+                CodequalityMetric,
+                query_labels,
+                ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date'],
+                begin_date,
+                end_date
+              )
+
+            rescue => e
+              puts e.message
+            end
 
             label_to_internal = {}
 

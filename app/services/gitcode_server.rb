@@ -79,6 +79,22 @@ class GitcodeServer
     success
   end
 
+
+    # 新增: 创建项目标签 (Label)
+  def create_label(owner, repo, label_name)
+    endpoint = "/api/v5/repos/#{owner}/#{repo}/project_labels"
+    # 对应 Python: payload = json.dumps([label_name])
+    # 注意：GitCode 这个接口要求 payload 是一个字符串数组
+    payload = [label_name]
+
+    response = @conn.put(endpoint) do |req|
+      req.body = payload.to_json
+    end
+
+    handle_response(response, "创建项目标签 [#{label_name}]")
+  end
+
+
   private
 
   def handle_response(response, action_name)

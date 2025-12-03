@@ -259,9 +259,7 @@ class TpcSoftwareSandbox < ApplicationRecord
 
     sandbox.update!(state: state)
     sandbox_report = sandbox.tpc_software_sandbox_report
-    if sandbox_report.tpc_software_sig_id != 3
-      return
-    end
+    return unless [2, 3].include?(sandbox_report.tpc_software_sig_id)
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(sandbox)
@@ -277,11 +275,14 @@ class TpcSoftwareSandbox < ApplicationRecord
   def self.perform_gitcode_automation(sandbox)
     Rails.logger.info "[AutoRepo] 开始处理 Sandbox ID: #{sandbox.id}"
     sandbox_report = sandbox.tpc_software_sandbox_report
-    # unless sandbox_report.tpc_software_sig_id == 3
-    #   return true
-    # end
 
-    repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
+    sig = sandbox_report.tpc_software_sig_id
+    repo_owner_map = {
+      2 => ENV["ORG_REPO_OWNER_SIG2"],
+      3 => ENV["ORG_REPO_OWNER_SIG3"]
+    }
+
+    repo_owner = repo_owner_map[sig] || ""
     is_org_repo = true
     repo_name = sandbox.repo_url.split('/').last
     source_url = sandbox_report.code_url

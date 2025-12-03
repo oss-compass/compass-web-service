@@ -268,9 +268,7 @@ class TpcSoftwareSelection < ApplicationRecord
     state = get_current_state(selection)
     selection.update!(state: state)
     selection_report = selection.tpc_software_report
-    if selection_report.tpc_software_sig_id != 3
-      return
-    end
+    return unless [2, 3].include?(selection_report.tpc_software_sig_id)
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(selection)
@@ -286,8 +284,13 @@ class TpcSoftwareSelection < ApplicationRecord
   def self.perform_gitcode_automation(selection)
     Rails.logger.info "[AutoRepo] 开始处理 selection ID: #{selection.id}"
     selection_report = selection.tpc_software_report
-    # # 目标组织
-    repo_owner = ENV.fetch("ORG_REPO_OWNER") || ""
+    sig = selection_report.tpc_software_sig_id
+    repo_owner_map = {
+      2 => ENV["ORG_REPO_OWNER_SIG2"],
+      3 => ENV["ORG_REPO_OWNER_SIG3"]
+    }
+
+    repo_owner = repo_owner_map[sig] || ""
     # 是否是组织仓库
     is_org_repo = true
     repo_name = selection.repo_url.split('/').last
