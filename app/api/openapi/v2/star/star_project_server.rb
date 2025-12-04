@@ -334,17 +334,12 @@ module Openapi
             # 去除空项
             input_items = params[:project_urls].uniq.reject(&:blank?)
 
-            # ======================================================
-            # 步骤 1: 解析输入，建立 "原始输入串" -> "待查询原子URL列表" 的映射
-            # ======================================================
-            # 结构: { "gitee/oh,gitcode/oh" => ["gitee/oh", "gitcode/oh"] }
             input_to_sub_urls_map = {}
 
             # 所有需要去数据库查的 URL (去重后)
             all_atomic_urls_to_query = []
 
-            # 辅助映射：{ "openharmony" => "https://gitee.com/openharmony" }
-            # 用于处理短名的情况
+
             short_name_map = {}
 
             input_items.each do |raw_item|
@@ -374,10 +369,6 @@ module Openapi
 
             all_atomic_urls_to_query.uniq!
 
-            # ======================================================
-            # 步骤 2: 数据库层级展开 (Community -> Children)
-            # ======================================================
-            # 这一步我们只关心 "原子URL" 到底包含哪些子项目
 
             # 查 Subject 表
             subjects_info = Subject.where(label: all_atomic_urls_to_query).pluck(:id, :label, :level)
@@ -420,9 +411,7 @@ module Openapi
               end
             end
 
-            # ======================================================
-            # 步骤 3: 构建 "原始输入串" -> "所有底层 Repo URL" 的最终映射
-            # ======================================================
+
             final_expansion_map = {} # { "gitee/oh,gitcode/oh" => ["repo_A", "repo_B", "repo_C"] }
 
             input_to_sub_urls_map.each do |raw_item, sub_urls|
@@ -442,9 +431,6 @@ module Openapi
               final_expansion_map[raw_item] = resolved_repos.uniq
             end
 
-            # ======================================================
-            # 步骤 4: ES 查询 (查询所有底层 Repo)
-            # ======================================================
             all_target_urls = final_expansion_map.values.flatten.uniq
             repo_star_data = {}
 
@@ -493,15 +479,13 @@ module Openapi
               end
             end
 
-            # ======================================================
-            # 步骤 5: 汇总输出
-            # ======================================================
+
+            # 汇总输出
             final_results = input_items.map do |raw_item|
               # 找到该项对应的所有底层项目
               child_repos = final_expansion_map[raw_item]
 
               total_stars = 0
-              # 只要有一个子项目能查到 Star，结果就算有效；如果全是 nil，结果可能要看业务需求(这里视为0)
 
               child_repos.each do |repo_url|
                 count = repo_star_data[repo_url]
