@@ -47,8 +47,7 @@ class GitcodeServer
   end
 
   # 添加协作者
-  def add_collaborator(owner, repo, username, permission = 'push')
-    # 注意：根据你的Python脚本，这里的path结构是 /repos/:owner/:repo/collaborators/:username
+  def add_collaborator(owner, repo, username, permission)
     endpoint = "/api/v5/repos/#{owner}/#{repo}/collaborators/#{username}"
     payload = { permission: permission }
 
@@ -60,6 +59,54 @@ class GitcodeServer
     log_result(success, "添加协作者 [#{username}] 到 #{owner}/#{repo}", response.body)
     success
   end
+
+
+  # 1 (继承模式) -> 改为 2 (独立模式)
+  def update_repo_model(owner, repo)
+    endpoint = "/api/v5/repos/#{owner}/#{repo}/transition"
+
+    # 1. 获取当前模式
+    response = @conn.get(endpoint)
+
+    if [200, 201, 204].include?(response.status)
+      begin
+        data = JSON.parse(response.body)
+        # 默认认为是 2 (独立模式)，防止字段缺失
+        current_mode = data['memberMgntMode'] || 2
+
+        mode_name = (current_mode == 1 ? '继承模式' : '独立模式')
+        Rails.logger.info "[GitCode] 获取权限模式: #{current_mode} (#{mode_name})"
+
+        # 2. 如果是继承模式(1)，则修改为独立模式(2)
+        if current_mode == 1
+          payload = { mode: 2 }
+
+          put_response = @conn.put(endpoint) do |req|
+            req.body = payload.to_json
+          end
+
+          # 复用 handle_response 处理结果 (会自动记录日志或抛出异常)
+          handle_response(put_response, "将权限模式从继承改为独立")
+        else
+          Rails.logger.info "[GitCode] ✓ 当前已是独立模式，无需修改"
+          true
+        end
+      rescue JSON::ParserError
+        error_msg = "解析权限模式响应失败: #{response.body}"
+        Rails.logger.error "[GitCode] ✗ #{error_msg}"
+        raise error_msg
+      end
+    else
+      # 获取失败，抛出异常
+      body_str = response.body.to_s.force_encoding('UTF-8')
+      body_str = body_str.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?') unless body_str.valid_encoding?
+
+      error_msg = "获取权限模式失败 (Status: #{response.status}): #{body_str}"
+      Rails.logger.error "[GitCode] ✗ #{error_msg}"
+      raise error_msg
+    end
+  end
+
 
   #  创建标签
   def create_tag(owner, repo, tag_info)

@@ -314,33 +314,37 @@ class TpcSoftwareSandbox < ApplicationRecord
       sleep(5)
     end
 
-    # 添加协作者 (Committers)
-    #
-    # if sandbox.committers.present?
-    #   begin
-    #     # 尝试解析 JSON，如果数据库里存的是逗号分隔字符串，请改用 .split(',')
-    #     committer_list = JSON.parse(sandbox.committers)
-    #
-    #     # 兼容处理
-    #     committer_list = [committer_list] unless committer_list.is_a?(Array)
-    #
-    #     committer_list.each do |username|
-    #       next if username.blank?
-    #       # 添加协作者，默认权限 push
-    #       gitcode_server.add_collaborator(repo_owner, repo_name, username, 'push')
-    #       sleep(0.5) # 防止触发速率限制
-    #     end
-    #   rescue JSON::ParserError => e
-    #     Rails.logger.error "[AutoRepo] 解析 committers 失败: #{e.message} (Value: #{sandbox.committers})"
-    #   end
-    # end
+    begin
+      gitcode_server.update_repo_model(repo_owner, repo_name)
+    rescue StandardError => e
+      Rails.logger.error "[AutoRepo] 设置权限模式失败，终止后续流程: #{e.message}"
+      return created_repo
+    end
 
-    # 创建初始标签 (Sandbox)
-    # gitcode_server.create_tag(repo_owner, repo_name, {
-    #   tag_name: '沙箱',
-    #   refs: 'main',
-    #   tag_message: '该项目处于沙箱阶段'
-    # })
+    # 添加协作者 (Committers)
+    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig)
+                                  .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
+                                  .where.not(gitcode_account: nil)
+
+    if committers.present?
+      Rails.logger.info "[AutoRepo] 找到 #{committers.count} 个协作者，开始添加..."
+
+      committers.each do |member|
+        username = member.gitcode_account
+        next if username.blank?
+        permission = member.role_level.to_i > 2 ? 'admin' : 'push'
+
+        begin
+          gitcode_server.add_collaborator(repo_owner, repo_name, username, permission)
+          sleep(0.2)
+        rescue StandardError => e
+          Rails.logger.error "[AutoRepo] 添加协作者 [#{username}] (Role: #{permission}) 失败: #{e.message}"
+        end
+      end
+    else
+      Rails.logger.info "[AutoRepo] 未找到符合条件的协作者，跳过此步骤。"
+    end
+
     gitcode_server.create_label(repo_owner, repo_name, '沙箱')
 
     Rails.logger.info "[AutoRepo] Sandbox ##{sandbox.id} 自动化流程全部完成。"

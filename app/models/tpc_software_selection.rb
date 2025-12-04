@@ -320,39 +320,44 @@ class TpcSoftwareSelection < ApplicationRecord
       return created_repo
     end
 
-    # 如果提供了导入URL，等待一会确保后台导入任务完成
+
     if source_url.present?
       Rails.logger.info "[AutoRepo] 正在等待仓库初始化/导入..."
-      sleep(5)
+      # sleep(5)
+    end
+
+    begin
+      gitcode_server.update_repo_model(repo_owner, repo_name)
+    rescue StandardError => e
+      Rails.logger.error "[AutoRepo] 设置权限模式失败，终止后续流程: #{e.message}"
+      return created_repo
     end
 
     # 添加协作者 (Committers)
-    #
-    # if selection.committers.present?
-    #   begin
-    #     # 尝试解析 JSON，如果数据库里存的是逗号分隔字符串，请改用 .split(',')
-    #     committer_list = JSON.parse(selection.committers)
-    #
-    #     # 兼容处理
-    #     committer_list = [committer_list] unless committer_list.is_a?(Array)
-    #
-    #     committer_list.each do |username|
-    #       next if username.blank?
-    #       # 添加协作者，默认权限 push
-    #       gitcode_server.add_collaborator(repo_owner, repo_name, username, 'push')
-    #       sleep(0.5) # 防止触发速率限制
-    #     end
-    #   rescue JSON::ParserError => e
-    #     Rails.logger.error "[AutoRepo] 解析 committers 失败: #{e.message} (Value: #{selection.committers})"
-    #   end
-    # end
+    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig)
+                                  .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
+                                  .where.not(gitcode_account: nil)
 
-    # 创建初始标签 (Selection)
-    # gitcode_server.create_tag(repo_owner, repo_name, {
-    #   tag_name: '孵化',
-    #   refs: 'main',
-    #   tag_message: '该项目处于孵化阶段'
-    # })
+    if committers.present?
+      Rails.logger.info "[AutoRepo] 找到 #{committers.count} 个协作者，开始添加..."
+
+      committers.each do |member|
+        username = member.gitcode_account
+        next if username.blank?
+        permission = member.role_level.to_i > 2 ? 'admin' : 'push'
+
+        begin
+          gitcode_server.add_collaborator(repo_owner, repo_name, username, permission)
+          sleep(0.2)
+        rescue StandardError => e
+          error_msg = e.message.to_s.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+          Rails.logger.error "[AutoRepo] 添加协作者 [#{username}] (Role: #{permission}) 失败: #{error_msg}"
+        end
+      end
+    else
+      Rails.logger.info "[AutoRepo] 未找到符合条件的协作者，跳过此步骤。"
+    end
+
     gitcode_server.create_label(repo_owner, repo_name, '孵化')
 
 
