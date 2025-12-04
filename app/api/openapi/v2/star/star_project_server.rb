@@ -323,23 +323,134 @@ module Openapi
 
           end
 
+
           desc '获取star数', hidden: true, tags: ['starProject'], success: {
             code: 201
           }, detail: ''
           params do
             requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
-
           end
           post :star_count do
+            # 去除空项
+            input_items = params[:project_urls].uniq.reject(&:blank?)
 
-            #  如果是社区的 需要去查询 出来 项目地址
+            # ======================================================
+            # 步骤 1: 解析输入，建立 "原始输入串" -> "待查询原子URL列表" 的映射
+            # ======================================================
+            # 结构: { "gitee/oh,gitcode/oh" => ["gitee/oh", "gitcode/oh"] }
+            input_to_sub_urls_map = {}
 
-            # 获取star数
-            github_urls = params[:project_urls].select { |u| u.include?('github.com') }
-            gitee_urls = params[:project_urls].select { |u| u.include?('gitee.com') }
-            gitcode_urls = params[:project_urls].select { |u| u.include?('gitcode.com') }
-            unique_urls = params[:project_urls].uniq
-            results = []
+            # 所有需要去数据库查的 URL (去重后)
+            all_atomic_urls_to_query = []
+
+            # 辅助映射：{ "openharmony" => "https://gitee.com/openharmony" }
+            # 用于处理短名的情况
+            short_name_map = {}
+
+            input_items.each do |raw_item|
+              # 1. 拆分逗号 (处理 "url1,url2" 的情况)
+              sub_urls = raw_item.split(',').map do |u|
+                u.strip.chomp('/') # 去除首尾空格，并去除末尾的一个 '/'
+              end.reject(&:empty?)
+
+              input_to_sub_urls_map[raw_item] = sub_urls
+
+              sub_urls.each do |url|
+                all_atomic_urls_to_query << url
+
+                # 尝试提取短名 (处理社区名称)
+                begin
+                  path_parts = URI(url).path.split('/').reject(&:empty?)
+                  if path_parts.length == 1
+                    short_name = path_parts.last
+                    short_name_map[short_name] = url
+                    all_atomic_urls_to_query << short_name
+                  end
+                rescue URI::InvalidURIError
+                  next
+                end
+              end
+            end
+
+            all_atomic_urls_to_query.uniq!
+
+            # ======================================================
+            # 步骤 2: 数据库层级展开 (Community -> Children)
+            # ======================================================
+            # 这一步我们只关心 "原子URL" 到底包含哪些子项目
+
+            # 查 Subject 表
+            subjects_info = Subject.where(label: all_atomic_urls_to_query).pluck(:id, :label, :level)
+
+            # 建立映射: { "https://gitee.com/oh" => ["repo_1", "repo_2"] }
+            atomic_url_expansion_map = {}
+
+            # 待查子项目的社区 ID
+            community_ids = []
+            community_id_to_url = {}
+
+            subjects_info.each do |s_id, s_label, s_level|
+              # 找到这个 label 对应的 完整URL (如果是短名查出来的，要映射回 URL)
+              # 如果 s_label 本身就是完整 URL，short_name_map[s_label] 为 nil，取 s_label 自身
+              original_atomic_url = short_name_map[s_label] || s_label
+
+              if s_level == 'community'
+                community_ids << s_id
+                community_id_to_url[s_id] = original_atomic_url
+                atomic_url_expansion_map[original_atomic_url] ||= [] # 初始化
+              else
+                # 是普通项目
+                atomic_url_expansion_map[original_atomic_url] ||= []
+                atomic_url_expansion_map[original_atomic_url] << s_label
+              end
+            end
+
+            # 查 SubjectRefs 展开社区
+            if community_ids.present?
+              refs = SubjectRef.where(parent_id: community_ids).pluck(:parent_id, :child_id)
+              all_child_ids = refs.map { |_, c_id| c_id }
+              child_id_to_label = Subject.where(id: all_child_ids).pluck(:id, :label).to_h
+
+              refs.each do |p_id, c_id|
+                parent_url = community_id_to_url[p_id]
+                child_label = child_id_to_label[c_id]
+                if parent_url && child_label
+                  atomic_url_expansion_map[parent_url] << child_label
+                end
+              end
+            end
+
+            # ======================================================
+            # 步骤 3: 构建 "原始输入串" -> "所有底层 Repo URL" 的最终映射
+            # ======================================================
+            final_expansion_map = {} # { "gitee/oh,gitcode/oh" => ["repo_A", "repo_B", "repo_C"] }
+
+            input_to_sub_urls_map.each do |raw_item, sub_urls|
+              resolved_repos = []
+
+              sub_urls.each do |sub_url|
+                # 获取该原子 URL 展开后的列表
+                # 如果 map 里没有(数据库没查到)，就认为它本身是个项目
+                expanded = atomic_url_expansion_map[sub_url]
+                if expanded.present?
+                  resolved_repos.concat(expanded)
+                else
+                  resolved_repos << sub_url
+                end
+              end
+
+              final_expansion_map[raw_item] = resolved_repos.uniq
+            end
+
+            # ======================================================
+            # 步骤 4: ES 查询 (查询所有底层 Repo)
+            # ======================================================
+            all_target_urls = final_expansion_map.values.flatten.uniq
+            repo_star_data = {}
+
+            github_urls = all_target_urls.select { |u| u.include?('github.com') }
+            gitee_urls = all_target_urls.select { |u| u.include?('gitee.com') }
+            gitcode_urls = all_target_urls.select { |u| u.include?('gitcode.com') }
 
             [
               { index: GithubRepoEnrich, urls: github_urls },
@@ -347,39 +458,65 @@ module Openapi
               { index: GiteeRepoEnrich, urls: gitee_urls }
             ].each do |group|
               next if group[:urls].empty?
+              safe_urls = group[:urls]
+              target_field = 'tag'
 
-              target = 'tag'
+              # ES 聚合查询 (同之前逻辑)
+              criteria = group[:index]
+                           .must(terms: { target_field => safe_urls })
+                           .per(0)
+                           .aggregate(
+                             by_project_url: {
+                               terms: { field: "#{target_field}", size: safe_urls.length + 100 },
+                               aggs: {
+                                 latest_data: {
+                                   top_hits: {
+                                     size: 1,
+                                     sort: [{ grimoire_creation_date: { order: 'desc' } }],
+                                     _source: { includes: ['stargazers_count'] }
+                                   }
+                                 }
+                               }
+                             }
+                           )
 
-              res = group[:index]
-                      .must(terms: { target => group[:urls] })
-                      .sort(grimoire_creation_date: :desc)
-                      .source(['tag', 'stargazers_count'])
-                      .execute
-                      .raw_response
-
-              hits = res.dig('hits', 'hits')&.map do |hit|
-                src = hit['_source']
-                {
-                  repo_url: src['tag'],
-                  star_count: src['stargazers_count']
-                }
-              end || []
-
-              # 同一个项目只保留最新一条
-              latest_hits = hits.uniq { |h| h[:repo_url] }
-
-              results.concat(latest_hits)
+              begin
+                raw_aggs = criteria.aggregations
+                buckets = raw_aggs.dig('by_project_url', 'buckets') || []
+                buckets.each do |bucket|
+                  url = bucket['key']
+                  hit = bucket.dig('latest_data', 'hits', 'hits', 0, '_source')
+                  repo_star_data[url] = hit['stargazers_count'].to_i if hit
+                end
+              rescue SearchFlip::ResponseError => e
+                Rails.logger.error "StarCount Logic Error: #{e.message}"
+              end
             end
 
-            # 没找到的补上
-            existing_urls = results.map { |r| r[:repo_url] }
-            missing_urls = unique_urls - existing_urls
-            missing_urls.each do |url|
-              results << { repo_url: url, star_count: nil }
+            # ======================================================
+            # 步骤 5: 汇总输出
+            # ======================================================
+            final_results = input_items.map do |raw_item|
+              # 找到该项对应的所有底层项目
+              child_repos = final_expansion_map[raw_item]
+
+              total_stars = 0
+              # 只要有一个子项目能查到 Star，结果就算有效；如果全是 nil，结果可能要看业务需求(这里视为0)
+
+              child_repos.each do |repo_url|
+                count = repo_star_data[repo_url]
+                total_stars += count if count
+              end
+
+              {
+                repo_url: raw_item, # 这里的 repo_url 就是传入的 "https://... , https://..."
+                star_count: total_stars
+              }
             end
 
-            { code: 201, data: results }
+            { code: 201, data: final_results }
           end
+
 
           desc '企业排名指标', hidden: true, tags: ['starProject'], success: {
             code: 201
@@ -856,11 +993,6 @@ module Openapi
                   #   query_label_for_url[url] = owner_cache[owner]
                   # end
                   community_name = get_community_name(url)
-                  puts community_name
-
-                  if community_name.nil? || community_name.strip.empty?
-                    puts url
-                  end
                   query_label_for_url[url] = community_name
 
                 end
@@ -880,7 +1012,8 @@ module Openapi
               )
 
             rescue => e
-              puts e.message
+              Rails.logger.info( "【Error】code_line_count ES 查询失败: #{e.message} " )
+
             end
 
             label_to_internal = {}
