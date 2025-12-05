@@ -104,6 +104,7 @@ gem 'devise-jwt'
 
 # https://github.com/omniauth/omniauth
 gem 'omniauth'
+gem 'omniauth-oauth2'
 gem 'omniauth-gitee', gitee: 'oss-compass/omniauth-gitee', branch: 'master'
 # https://github.com/omniauth/omniauth-github
 gem 'omniauth-github'

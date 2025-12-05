@@ -365,6 +365,7 @@ GEM
       net-smtp
     marcel (1.0.4)
     matrix (0.4.2)
+    maxminddb (0.1.22)
     method_source (1.0.0)
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
@@ -979,11 +980,13 @@ DEPENDENCIES
   jsonapi.rb
   license_finder
   lograge
+  maxminddb
   mysql2
   nanoid
   omniauth
   omniauth-gitee!
   omniauth-github
+  omniauth-oauth2
   omniauth-rails_csrf_protection
   omniauth-wechat-oauth2
   omniauth_openid_connect

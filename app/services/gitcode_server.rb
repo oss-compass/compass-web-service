@@ -4,8 +4,8 @@ require 'json'
 class GitcodeServer
 
   include Common
-  BASE_URL = ENV.fetch("GITCODE_BASE_URL")
-  TOKEN = ENV.fetch("GITCODE_API_TOKEN")
+  BASE_URL = ENV.fetch("GITCODE_BASE_URL", "https://gitcode.com")
+  TOKEN = ENV.fetch("GITCODE_API_TOKEN", "")
 
   def initialize
     @conn = Faraday.new(url: BASE_URL) do |f|

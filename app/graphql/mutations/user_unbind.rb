@@ -10,7 +10,7 @@ module Mutations
 
       login_required!(current_user)
 
-      providers = current_user.login_binds.where(provider: [:gitee, :github]).distinct.pluck(:provider)
+      providers = current_user.login_binds.where(provider: [:gitee, :github, :gitcode]).distinct.pluck(:provider)
       raise GraphQL::ExecutionError.new I18n.t('users.keep_one_login_bind') if (providers - [provider]).blank?
 
       if provider == 'wechat'
