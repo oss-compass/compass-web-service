@@ -896,31 +896,27 @@ module Openapi
             # 所有需要查询的 label
             query_labels = query_label_for_url.values.uniq
 
-            # =======================================================
-            # (3) 调用 ES
-            # =======================================================
+
             activities = get_index_data_scroll(
               ActivityMetric,
               query_labels,
-              ['label', 'contributor_count', 'grimoire_creation_date'],
+              ['label', 'contributor_count','type', 'grimoire_creation_date'],
               begin_date,
               end_date
             )
 
-            # =======================================================
-            # (4) 修复数据翻倍！
-            # label → internal_url 强制一对一
-            # =======================================================
+            activities = Array(activities).reject do |item|
+              t = item[:type] || item['type']
+              t.to_s == 'governance'
+            end
             label_to_internal = {}
 
             query_label_for_url.each do |internal_url, label|
               label_to_internal[label] ||= internal_url
             end
 
-            # =======================================================
-            # (5) 归类 OS 数据（不会翻倍）
-            # =======================================================
-            grouped_internal = {} # { internal_url => [records] }
+
+            grouped_internal = {}
 
             activities.each do |item|
               label = item[:label] || item['label']
@@ -934,18 +930,14 @@ module Openapi
               }
             end
 
-            # =======================================================
-            # (6) 原始输入 URL 多内部 URL 合并
-            # =======================================================
+
             final_grouped = {}
 
             expanded_map.each do |raw, urls|
               final_grouped[raw] = urls.flat_map { |u| grouped_internal[u] || [] }
             end
 
-            # =======================================================
-            # (7) 时间聚合
-            # =======================================================
+
             aggregated = {}
 
             final_grouped.each do |raw, records|
@@ -1059,10 +1051,15 @@ module Openapi
               activities = get_index_data_scroll(
                 CodequalityMetric,
                 query_labels,
-                ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date'],
+                ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date','type'],
                 begin_date,
                 end_date
               )
+
+              activities = Array(activities).reject do |item|
+                t = item[:type] || item['type']
+                t.to_s == 'governance'
+              end
 
             rescue => e
               Rails.logger.info("【Error】code_line_count ES 查询失败: #{e.message} ")
