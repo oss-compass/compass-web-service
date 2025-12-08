@@ -5,9 +5,8 @@ require gitcode_strategy_path.to_s if File.exist?(gitcode_strategy_path)
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :github, ENV['GITHUB_CLIENT_ID'], ENV['GITHUB_CLIENT_SECRET'],
-           client_options: { connection_opts: { request: { timeout: 10 } } },
-           scope: ENV['GITHUB_SCOPE'],
-           provider_ignores_state: true
+           client_options: { connection_opts: { request: { timeout: 10 }, proxy: ENV['PROXY'] } },
+           scope: ENV['GITHUB_SCOPE']
 
   provider :gitee, ENV['GITEE_CLIENT_ID'], ENV['GITEE_CLIENT_SECRET'],
            client_options: { connection_opts: { request: { timeout: 10 } } },
@@ -20,9 +19,15 @@ Rails.application.config.middleware.use OmniAuth::Builder do
              authorize_url: 'https://gitcode.com/oauth/authorize',
              token_url: 'https://gitcode.com/oauth/token'
            },
+           authorize_params: {
+             client_id: ENV['GITCODE_CLIENT_ID']
+           },
+           token_params: {
+             client_id: ENV['GITCODE_CLIENT_ID'],
+             client_secret: ENV['GITCODE_CLIENT_SECRET']
+           },
            scope: ENV['GITCODE_SCOPE'] || 'read_user',
-           callback_url: "#{ENV['DEFAULT_HOST']}/users/auth/gitcode/callback",
-           provider_ignores_state: true
+           callback_url: "#{ENV['DEFAULT_HOST']}/users/auth/gitcode/callback"
 
   provider :openid_connect, {
     name: :slack,
