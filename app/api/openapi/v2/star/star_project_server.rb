@@ -158,6 +158,64 @@ module Openapi
 
           end
 
+          def to_hundred_mark(one_mark)
+            hundred_mark_list = [
+              [0, 60],
+              [60, 65],
+              [65, 75],
+              [75, 80],
+              [80, 85],
+              [85, 90],
+              [90, 95],
+              [95, 100]
+            ].freeze
+
+            one_mark_list = [
+              [0, 0.1],
+              [0.1, 0.2],
+              [0.2, 0.3],
+              [0.3, 0.5],
+              [0.5, 0.6],
+              [0.6, 0.7],
+              [0.7, 0.8],
+              [0.8, 1]
+            ].freeze
+
+            return one_mark if one_mark == '-'
+
+            # 处理 nil 或空字符串
+            return '-' if one_mark.nil? || one_mark.to_s.strip.empty?
+
+            # 转换为浮点数
+            val = one_mark.to_f
+
+            # 范围检查
+            return '-' if val < 0 || val > 1
+
+            index = 0
+            if val == 1
+              index = one_mark_list.length - 1
+            else
+              # 查找索引: val >= start && val < end
+              found_index = one_mark_list.find_index { |range| val >= range[0] && val < range[1] }
+              # 如果找不到索引（虽然逻辑上val在0-1之间应该能找到），为了安全处理
+              return '-' if found_index.nil?
+              index = found_index
+            end
+
+            one_mark_arr = one_mark_list[index]
+            hundred_mark_arr = hundred_mark_list[index]
+
+            # 线性插值计算
+            # 公式: ((y2 - y1) * (x - x1)) / (x2 - x1) + y1
+            numerator = (hundred_mark_arr[1] - hundred_mark_arr[0]) * (val - one_mark_arr[0])
+            denominator = one_mark_arr[1] - one_mark_arr[0]
+
+            hundred_mark = (numerator / denominator) + hundred_mark_arr[0]
+
+            hundred_mark.round(2)
+          end
+
           def get_community(keyword)
             fields = ['label', 'level']
             level = nil
@@ -323,7 +381,6 @@ module Openapi
 
           end
 
-
           desc '获取star数', hidden: true, tags: ['starProject'], success: {
             code: 201
           }, detail: ''
@@ -338,7 +395,6 @@ module Openapi
 
             # 所有需要去数据库查的 URL (去重后)
             all_atomic_urls_to_query = []
-
 
             short_name_map = {}
 
@@ -368,7 +424,6 @@ module Openapi
             end
 
             all_atomic_urls_to_query.uniq!
-
 
             # 查 Subject 表
             subjects_info = Subject.where(label: all_atomic_urls_to_query).pluck(:id, :label, :level)
@@ -410,7 +465,6 @@ module Openapi
                 end
               end
             end
-
 
             final_expansion_map = {} # { "gitee/oh,gitcode/oh" => ["repo_A", "repo_B", "repo_C"] }
 
@@ -479,7 +533,6 @@ module Openapi
               end
             end
 
-
             # 汇总输出
             final_results = input_items.map do |raw_item|
               # 找到该项对应的所有底层项目
@@ -500,7 +553,6 @@ module Openapi
 
             { code: 201, data: final_results }
           end
-
 
           desc '企业排名指标', hidden: true, tags: ['starProject'], success: {
             code: 201
@@ -758,6 +810,23 @@ module Openapi
               top_num = top_num.to_i
               results = results.first(top_num) if top_num > 0
             end
+
+            score_fields = [
+              :activity_score,
+              :community_support_score,
+              :code_quality_guarantee,
+              :organizations_activity
+            ]
+
+            results.each do |item|
+              score_fields.each do |field|
+                # 如果 item 中包含这个字段，则进行转换
+                if item.key?(field)
+                  # 调用 Helper 进行转换
+                  item[field] = to_hundred_mark(item[field])
+                end
+              end
+            end
             #
             { code: 201, data: results }
           end
@@ -996,7 +1065,7 @@ module Openapi
               )
 
             rescue => e
-              Rails.logger.info( "【Error】code_line_count ES 查询失败: #{e.message} " )
+              Rails.logger.info("【Error】code_line_count ES 查询失败: #{e.message} ")
 
             end
 
