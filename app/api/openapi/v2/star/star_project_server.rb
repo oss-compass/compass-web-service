@@ -159,6 +159,7 @@ module Openapi
           end
 
           def to_hundred_mark(one_mark)
+            return one_mark
             hundred_mark_list = [
               [0, 60],
               [60, 65],
