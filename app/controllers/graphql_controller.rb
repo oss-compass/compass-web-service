@@ -85,9 +85,19 @@ class GraphqlController < ApplicationController
     warden.logout(scope)
     token = request.cookies['auth.token']
     Rails.logger.info(token) ## logging token for temporary debug
-    if token.present?
+    return unless token.present?
+
+    # if token.present?
+    #   payload = Warden::JWTAuth::TokenDecoder.new.call(token)
+    #   User.revoke_jwt(payload, user)
+    #   cookies.delete('auth.token')
+    # end
+    begin
       payload = Warden::JWTAuth::TokenDecoder.new.call(token)
       User.revoke_jwt(payload, user)
+    rescue JWT::DecodeError => e
+      Rails.logger.warn("JWT decode failed during sign_out: #{e.class} - #{e.message}")
+    ensure
       cookies.delete('auth.token')
     end
   end
