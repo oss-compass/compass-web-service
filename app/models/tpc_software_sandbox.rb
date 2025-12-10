@@ -185,7 +185,7 @@ class TpcSoftwareSandbox < ApplicationRecord
           end
         else
           if [TpcSoftwareCommentState::Member_Type_Compliance,
-              TpcSoftwareCommentState::Member_Type_Committer,
+              # TpcSoftwareCommentState::Member_Type_Committer,
               TpcSoftwareCommentState::Member_Type_Sig_Lead].all? { |element| member_type_list.include?(element) }
             confirmed_metrics << risk_metric
           end
@@ -228,13 +228,13 @@ class TpcSoftwareSandbox < ApplicationRecord
     clarified_metric_count = get_clarified_metric_list(report_id).length
     if risk_metric_count != clarified_metric_count
       Rails.logger.info("risk_metric_count != clarified_metric_count")
-      # return State_Awaiting_Clarification
+      return State_Awaiting_Clarification
     end
 
     confirmed_metric_count = get_confirmed_metric_list(report_id).length
     if risk_metric_count != confirmed_metric_count
       Rails.logger.info("risk_metric_count != confirmed_metric_count")
-      # return State_Awaiting_Confirmation
+      return State_Awaiting_Confirmation
     end
 
     comment_state_list = get_comment_state_list(tpc_software.id)
