@@ -192,7 +192,7 @@ class TpcSoftwareSelection < ApplicationRecord
           end
         else
           if [TpcSoftwareCommentState::Member_Type_Compliance,
-              TpcSoftwareCommentState::Member_Type_Committer,
+              # TpcSoftwareCommentState::Member_Type_Committer,
               TpcSoftwareCommentState::Member_Type_Sig_Lead].all? { |element| member_type_list.include?(element) }
             confirmed_metrics << risk_metric
           end
