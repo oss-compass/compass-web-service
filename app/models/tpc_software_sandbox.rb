@@ -259,7 +259,13 @@ class TpcSoftwareSandbox < ApplicationRecord
 
     sandbox.update!(state: state)
     sandbox_report = sandbox.tpc_software_sandbox_report
-    return unless [2, 3].include?(sandbox_report.tpc_software_sig_id)
+    repo_url = sandbox.repo_url
+    need_autocreate =
+      [2, 3].include?(sandbox_report.tpc_software_sig_id) ||
+        repo_url.to_s.include?("https://gitcode.com/openharmony-ApplicationTPC")
+
+    return unless need_autocreate
+
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(sandbox)
@@ -279,10 +285,19 @@ class TpcSoftwareSandbox < ApplicationRecord
     sig = sandbox_report.tpc_software_sig_id
     repo_owner_map = {
       2 => ENV["ORG_REPO_OWNER_SIG2"],
-      3 => ENV["ORG_REPO_OWNER_SIG3"]
+      3 => ENV["ORG_REPO_OWNER_SIG3"],
+      20 => ENV["ORG_REPO_OWNER_SIG20"]
     }
 
-    repo_owner = repo_owner_map[sig] || ""
+    sig_id_for_repo =
+      if sandbox.repo_url.include?("https://gitcode.com/openharmony-ApplicationTPC")
+        # 通用三方库
+        20
+      else
+        sig
+      end
+
+    repo_owner = repo_owner_map[sig_id_for_repo] || ""
     is_org_repo = true
     repo_name = sandbox.repo_url.split('/').last
     source_url = sandbox_report.code_url
@@ -322,7 +337,7 @@ class TpcSoftwareSandbox < ApplicationRecord
     end
 
     # 添加协作者 (Committers)
-    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig)
+    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig_id_for_repo)
                                   .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
                                   .where.not(gitcode_account: nil)
 

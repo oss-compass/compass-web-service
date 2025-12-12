@@ -159,7 +159,7 @@ module Openapi
           end
 
           def to_hundred_mark(one_mark)
-            return one_mark
+            # return one_mark
             hundred_mark_list = [
               [0, 60],
               [60, 65],
@@ -313,74 +313,112 @@ module Openapi
 
           end
 
+
           desc '获取开源参与人数', hidden: true, tags: ['starProject'], success: {
             code: 201
           }, detail: ''
           params do
             requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
             requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
-
           end
+
           post :participant_count do
 
-            urls = params[:project_urls]
-            company = params[:company]
+            raw_urls_list = params[:project_urls]
+            company = params[:company].downcase
+            begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
+            end_date = params[:end_date] || Time.now.utc.iso8601
 
-            per_project_results = []
-            all_company_ids = []
+            input_to_clean_urls = raw_urls_list.index_with do |multi_url|
+              multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
+            end
+            all_flat_urls = input_to_clean_urls.values.flatten.uniq
 
-            urls.each do |multi_url|
-              #   拆分用户传来的多 URL ---
-              split_urls = multi_url.split(/,|;|\s+/)
-                                    .map(&:strip)
-                                    .reject(&:empty?)
 
-              #   找到所有匹配的 star_project ---
-              project_ids = StarProject.where(repo_url: split_urls).pluck(:id)
+            url_to_pid_map = StarProject.where(repo_url: all_flat_urls).pluck(:repo_url, :id).to_h
+            all_project_ids = url_to_pid_map.values
 
-              # 如果一个都找不到，项目贡献人数为 0
-              if project_ids.empty?
-                per_project_results << {
-                  project_url: multi_url,
-                  participant_company_count: 0
-                }
-                next
-              end
+            raw_participants = StarProjectParticipant
+                                 .where(star_project_id: all_project_ids)
+                                 .pluck(:star_project_id, :participant_account_name)
 
-              #  查询所有 project_id 的参与者 ---
-              raw_company_ids = StarProjectParticipant
-                                  .where(star_project_id: project_ids)
-                                  .pluck(:participant_company_id)
-
-              #   处理参与者公司 ID ---
-              project_company_ids = raw_company_ids.flat_map do |cid|
-                next [] if cid.nil? || cid.strip.empty?
-
-                cid.split(/;|,|\s+/)
-                   .map(&:strip)
-                   .reject(&:empty?)
-              end
-
-              unique_company_ids = project_company_ids.uniq
-
-              #  按“用户传入的合并 URL”输出 ---
-              per_project_results << {
-                project_url: multi_url, # 保持原始形式
-                participant_company_count: unique_company_ids.size
-              }
-
-              all_company_ids.concat(unique_company_ids)
+            pid_to_cids_map = Hash.new { |h, k| h[k] = [] }
+            raw_participants.each do |pid, raw_cid_str|
+              next if raw_cid_str.blank?
+              clean_cids = raw_cid_str.split(/;|,|\s+/).map(&:strip).reject(&:empty?)
+              pid_to_cids_map[pid].concat(clean_cids)
             end
 
-            total_unique_company = all_company_ids.uniq.size
+            # 初始化结果集
+            results = raw_urls_list.map do |original_input|
+              target_urls = input_to_clean_urls[original_input] || []
+              relevant_pids = target_urls.map { |u| url_to_pid_map[u] }.compact
+              company_ids = relevant_pids.flat_map { |pid| pid_to_cids_map[pid] }.uniq
+
+              {
+                project_url: original_input,
+                clean_urls: target_urls,
+                company_ids: company_ids,
+                count: company_ids.size
+              }
+            end
+
+            results.each do |item|
+              next if item[:count] > 0
+
+              origin_url = item[:clean_urls].first
+              next unless origin_url
+
+              begin
+                # 解析 URL 获得 label 和 level
+                uri = URI.parse(origin_url)
+                path_parts = uri.path.split('/').reject(&:empty?)
+                level = path_parts.size == 1 ? 'community' : 'repo'
+                if level == 'repo'
+                  label = origin_url
+                else
+                  label = get_community_name(origin_url)
+                end
+
+                indexer, target_repo_urls, _origin = select_idx_repos_by_lablel_and_level(
+                  label,
+                  level,
+                  GiteeContributorEnrich,
+                  GithubContributorEnrich,
+                  GitcodeContributorEnrich
+                )
+
+                if indexer && target_repo_urls.present?
+                  contributors = indexer.fetch_contributors_name_list(target_repo_urls, begin_date, end_date)
+                  # contributors = indexer.fetch_contributors_list(target_repo_urls, begin_date, end_date)
+
+                  contributor_ids = contributors.select { |c|
+                    org = c.respond_to?(:organization) ? c.organization : c['organization']
+                    org.to_s.downcase.include?(company)
+                  }.map { |c| c.respond_to?(:contributor) ? c.contributor : c['contributor'] }
+
+                  if contributor_ids.any?
+                    item[:company_ids] = contributor_ids.uniq
+                    item[:count] = item[:company_ids].size
+                  end
+                end
+              # rescue => e
+              #   Rails.logger.error("Supplement query failed for #{origin_url}: #{e.message}")
+              end
+            end
+
+
+            global_unique_companies = Set.new
+            results.each { |item| global_unique_companies.merge(item[:company_ids]) }
 
             {
               code: 201,
-              project_stats: per_project_results,
-              total_unique_participants_by_company: total_unique_company
+              project_stats: results.map { |r| { project_url: r[:project_url], participant_company_count: r[:count] } },
+              total_unique_participants_by_company: global_unique_companies.size
             }
-
           end
+
+
 
           desc '获取star数', hidden: true, tags: ['starProject'], success: {
             code: 201
@@ -897,11 +935,10 @@ module Openapi
             # 所有需要查询的 label
             query_labels = query_label_for_url.values.uniq
 
-
             activities = get_index_data_scroll(
               ActivityMetric,
               query_labels,
-              ['label', 'contributor_count','type', 'grimoire_creation_date'],
+              ['label', 'contributor_count', 'type', 'grimoire_creation_date'],
               begin_date,
               end_date
             )
@@ -915,7 +952,6 @@ module Openapi
             query_label_for_url.each do |internal_url, label|
               label_to_internal[label] ||= internal_url
             end
-
 
             grouped_internal = {}
 
@@ -931,13 +967,11 @@ module Openapi
               }
             end
 
-
             final_grouped = {}
 
             expanded_map.each do |raw, urls|
               final_grouped[raw] = urls.flat_map { |u| grouped_internal[u] || [] }
             end
-
 
             aggregated = {}
 
@@ -1052,7 +1086,7 @@ module Openapi
               activities = get_index_data_scroll(
                 CodequalityMetric,
                 query_labels,
-                ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date','type'],
+                ['label', 'lines_added_frequency', 'lines_removed_frequency', 'grimoire_creation_date', 'type'],
                 begin_date,
                 end_date
               )
