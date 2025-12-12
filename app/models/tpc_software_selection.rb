@@ -268,7 +268,13 @@ class TpcSoftwareSelection < ApplicationRecord
     state = get_current_state(selection)
     selection.update!(state: state)
     selection_report = selection.tpc_software_report
-    return unless [2, 3].include?(selection_report.tpc_software_sig_id)
+    repo_url = selection.repo_url
+    need_autocreate =
+      [2, 3].include?(selection_report.tpc_software_sig_id) ||
+        repo_url.to_s.include?("https://gitcode.com/openharmony-ApplicationTPC")
+
+    return unless need_autocreate
+
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(selection)
@@ -287,10 +293,19 @@ class TpcSoftwareSelection < ApplicationRecord
     sig = selection_report.tpc_software_sig_id
     repo_owner_map = {
       2 => ENV["ORG_REPO_OWNER_SIG2"],
-      3 => ENV["ORG_REPO_OWNER_SIG3"]
+      3 => ENV["ORG_REPO_OWNER_SIG3"],
+      20 => ENV["ORG_REPO_OWNER_SIG20"],
     }
 
-    repo_owner = repo_owner_map[sig] || ""
+    sig_id_for_repo =
+      if selection.repo_url.include?("https://gitcode.com/openharmony-ApplicationTPC")
+        # 通用三方库
+        20
+      else
+        sig
+      end
+
+    repo_owner = repo_owner_map[sig_id_for_repo] || ""
     # 是否是组织仓库
     is_org_repo = true
     repo_name = selection.repo_url.split('/').last
@@ -334,7 +349,7 @@ class TpcSoftwareSelection < ApplicationRecord
     end
 
     # 添加协作者 (Committers)
-    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig)
+    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig_id_for_repo)
                                   .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
                                   .where.not(gitcode_account: nil)
 
