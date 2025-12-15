@@ -254,7 +254,7 @@ module ContributorEnrich
               top_hits: {
                 size: 1,
                 sort: [{ grimoire_creation_date: { order: 'desc' } }],
-                _source: { includes: ['organization'] }
+                _source: {includes: ['organization', 'ecological_type']}
               }
             }
           }
@@ -267,7 +267,8 @@ module ContributorEnrich
         latest_hit = bucket.dig('latest_info', 'hits', 'hits', 0, '_source')
         {
           'contributor' => name,
-          'organization' => latest_hit ? latest_hit['organization'] : nil
+          'organization' => latest_hit ? latest_hit['organization'] : nil,
+          'ecological_type' => latest_hit&.dig('ecological_type') || 'individual'
         }
         end
 
