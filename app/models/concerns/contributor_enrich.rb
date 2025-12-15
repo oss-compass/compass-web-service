@@ -235,5 +235,42 @@ module ContributorEnrich
       source['contribution_type_list'] = source['contribution_type_list'].map{ |c| c['contribution_type'] }.join('|')
       source
     end
+
+    def fetch_contributors_name_list(repo_urls, begin_date, end_date, label: nil, level: nil)
+      query = self
+                .must(terms: { 'repo_name.keyword' => repo_urls })
+                .range(:contribution, gt: 0)
+                .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                .per(0)
+
+      response = query.aggregate(
+        unique_contributors: {
+          terms: {
+            field: 'contributor.keyword',
+            size: MAX_PER_PAGE
+          },
+          aggs: {
+            latest_info: {
+              top_hits: {
+                size: 1,
+                sort: [{ grimoire_creation_date: { order: 'desc' } }],
+                _source: { includes: ['organization'] }
+              }
+            }
+          }
+        }
+      ).execute
+
+      buckets = response.aggregations['unique_contributors']['buckets'] || []
+      buckets.map do |bucket|
+        name = bucket['key']
+        latest_hit = bucket.dig('latest_info', 'hits', 'hits', 0, '_source')
+        {
+          'contributor' => name,
+          'organization' => latest_hit ? latest_hit['organization'] : nil
+        }
+        end
+
+    end
   end
 end
