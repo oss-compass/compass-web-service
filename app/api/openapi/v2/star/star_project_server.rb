@@ -159,7 +159,7 @@ module Openapi
           end
 
           def to_hundred_mark(one_mark)
-            # return one_mark
+            return one_mark
             hundred_mark_list = [
               [0, 60],
               [60, 65],
@@ -415,6 +415,101 @@ module Openapi
               code: 201,
               project_stats: results.map { |r| { project_url: r[:project_url], participant_company_count: r[:count] } },
               total_unique_participants_by_company: global_unique_companies.size
+            }
+          end
+
+          desc '获取技术席位', hidden: true, tags: ['starProject'], success: {
+            code: 201
+          }, detail: ''
+          params do
+            requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
+            requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
+            optional :begin_date, type: String, desc: '开始时间'
+            optional :end_date, type: String, desc: '结束时间'
+          end
+
+          post :tec_seats_detail do
+            raw_urls_list = params[:project_urls]
+            company_query = params[:company].to_s.downcase.strip
+            begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
+            end_date = params[:end_date] || Time.now.utc.iso8601
+
+            input_to_clean_urls = raw_urls_list.index_with do |multi_url|
+              multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
+            end
+
+            results = []
+            global_unique_people = Set.new
+
+            input_to_clean_urls.each do |original_input, target_urls|
+              current_item_people = Set.new
+
+              if target_urls.empty?
+                results << { project_url: original_input, people: [], count: 0 }
+                next
+              end
+
+              origin_url = target_urls.first
+
+              begin
+                uri = URI.parse(origin_url)
+                path_parts = uri.path.split('/').reject(&:empty?)
+                level = path_parts.size == 1 ? 'community' : 'repo'
+
+                if level == 'repo'
+                  label = origin_url
+                else
+                  # 如果是 community，需要获取社区名称
+                  label = get_community_name(origin_url)
+                end
+
+                indexer, resolved_repo_urls, _origin = select_idx_repos_by_lablel_and_level(
+                  label,
+                  level,
+                  GiteeContributorEnrich,
+                  GithubContributorEnrich,
+                  GitcodeContributorEnrich
+                )
+
+                urls_to_fetch = level == 'repo' ? target_urls : resolved_repo_urls
+
+                if indexer && urls_to_fetch.present?
+                  contributors = indexer.fetch_contributors_name_list(urls_to_fetch, begin_date, end_date)
+
+                  matched_contributors = contributors.select do |c|
+                    org = (c.respond_to?(:organization) ? c.organization : c['organization']).to_s.downcase
+                    eco_type = (c.respond_to?(:ecological_type) ? c.ecological_type : c['ecological_type']).to_s.downcase
+
+                    is_company_match = org.include?(company_query)
+                    is_manager_match = eco_type.include?('manager')
+
+                    is_company_match && is_manager_match
+                  end
+
+                  matched_names = matched_contributors.map { |c| c.respond_to?(:contributor) ? c.contributor : c['contributor'] }
+                  current_item_people.merge(matched_names)
+                end
+
+              rescue => e
+                Rails.logger.error("Tec seats query failed for #{origin_url}: #{e.message}")
+              end
+
+              results << {
+                project_url: original_input,
+                people: current_item_people.to_a,
+                count: current_item_people.size
+              }
+
+              global_unique_people.merge(current_item_people)
+            end
+
+            {
+              code: 201,
+              data: {
+                project_stats: results,
+                # total_unique_participants: global_unique_people.to_a,
+                total_unique_count: global_unique_people.size
+              }
             }
           end
 
