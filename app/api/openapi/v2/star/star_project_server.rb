@@ -313,6 +313,111 @@ module Openapi
 
           end
 
+         desc '获取开源参与人数 ', hidden: true, tags: ['starProject'], success: {
+            code: 201
+          }, detail: ''
+          params do
+            requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
+            requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
+          end
+
+          post :participant_count2 do
+            raw_urls_list = params[:project_urls]
+
+            company = params[:company].to_s.downcase.strip
+            begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
+            end_date = params[:end_date] || Time.now.utc.iso8601
+
+            # 使用多线程并行处理每个输入项
+            threads = raw_urls_list.map do |original_input|
+              Thread.new do
+                # 生成缓存 Key：包含项目URL、公司、时间范围
+                # 使用 MD5 避免 key 过长
+                cache_key_str = "#{original_input}_#{company}"
+                cache_key = "participant_count:#{Digest::MD5.hexdigest(cache_key_str)}"
+
+                Rails.cache.fetch(cache_key, expires_in: 7.days) do
+                  target_urls = original_input.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
+                  unique_participants = Set.new
+                  unless target_urls.empty?
+                    begin
+
+                      pids = StarProject.where(repo_url: target_urls).pluck(:id)
+                      if pids.present?
+
+                        raw_participants_data = StarProjectParticipant
+                                                  .where(star_project_id: pids)
+                                                  .pluck(:participant_account_name)
+
+                        raw_participants_data.each do |raw_str|
+                          next if raw_str.blank?
+                          names = raw_str.split(/;|,|\s+/).map(&:strip).reject(&:empty?)
+                          unique_participants.merge(names)
+                        end
+                      end
+                    rescue => e
+                      Rails.logger.error("DB query failed for #{original_input}: #{e.message}")
+                    end
+
+                    begin
+                      origin_url = target_urls.first
+
+                      uri = URI.parse(origin_url)
+                      path_parts = uri.path.split('/').reject(&:empty?)
+                      level = path_parts.size == 1 ? 'community' : 'repo'
+
+                      label = (level == 'repo') ? origin_url : get_community_name(origin_url)
+
+                      # 选择 Indexer
+                      indexer, resolved_repo_urls, _origin = select_idx_repos_by_lablel_and_level(
+                        label,
+                        level,
+                        GiteeContributorEnrich,
+                        GithubContributorEnrich,
+                        GitcodeContributorEnrich
+                      )
+
+                      urls_to_fetch = level == 'repo' ? target_urls : resolved_repo_urls
+
+                      if indexer && urls_to_fetch.present?
+
+                        contributors = indexer.fetch_contributors_name_list(urls_to_fetch, begin_date, end_date)
+
+                        matched_names = contributors.select { |c|
+
+                          org = (c['organization'] || c[:organization]).to_s.downcase
+                          org.include?(company)
+                        }.map { |c| c['contributor'] || c[:contributor] }
+
+                        unique_participants.merge(matched_names)
+                      end
+                    rescue => e
+                      Rails.logger.error("ES query failed for #{original_input}: #{e.message}")
+                    end
+                  end
+
+                  {
+                    project_url: original_input,
+
+                    company_ids: unique_participants.to_a,
+                    count: unique_participants.size
+                  }
+                end
+              end
+            end
+
+            results = threads.map(&:value)
+
+            # 计算全局去重总数
+            global_unique_companies = Set.new
+            results.each { |item| global_unique_companies.merge(item[:company_ids]) }
+
+            {
+              code: 201,
+              project_stats: results.map { |r| { project_url: r[:project_url], participant_company_count: r[:count] } },
+              total_unique_participants_by_company: global_unique_companies.size
+            }
+          end
 
           desc '获取开源参与人数', hidden: true, tags: ['starProject'], success: {
             code: 201
