@@ -321,7 +321,7 @@ module Openapi
             requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
           end
 
-          post :participant_count2 do
+          post :participant_count do
             raw_urls_list = params[:project_urls]
 
             company = params[:company].to_s.downcase.strip
@@ -419,109 +419,109 @@ module Openapi
             }
           end
 
-          desc '获取开源参与人数', hidden: true, tags: ['starProject'], success: {
-            code: 201
-          }, detail: ''
-          params do
-            requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
-            requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
-          end
-
-          post :participant_count do
-
-            raw_urls_list = params[:project_urls]
-            company = params[:company].downcase
-            begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
-            end_date = params[:end_date] || Time.now.utc.iso8601
-
-            input_to_clean_urls = raw_urls_list.index_with do |multi_url|
-              multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
-            end
-            all_flat_urls = input_to_clean_urls.values.flatten.uniq
-
-
-            url_to_pid_map = StarProject.where(repo_url: all_flat_urls).pluck(:repo_url, :id).to_h
-            all_project_ids = url_to_pid_map.values
-
-            raw_participants = StarProjectParticipant
-                                 .where(star_project_id: all_project_ids)
-                                 .pluck(:star_project_id, :participant_account_name)
-
-            pid_to_cids_map = Hash.new { |h, k| h[k] = [] }
-            raw_participants.each do |pid, raw_cid_str|
-              next if raw_cid_str.blank?
-              clean_cids = raw_cid_str.split(/;|,|\s+/).map(&:strip).reject(&:empty?)
-              pid_to_cids_map[pid].concat(clean_cids)
-            end
-
-            # 初始化结果集
-            results = raw_urls_list.map do |original_input|
-              target_urls = input_to_clean_urls[original_input] || []
-              relevant_pids = target_urls.map { |u| url_to_pid_map[u] }.compact
-              company_ids = relevant_pids.flat_map { |pid| pid_to_cids_map[pid] }.uniq
-
-              {
-                project_url: original_input,
-                clean_urls: target_urls,
-                company_ids: company_ids,
-                count: company_ids.size
-              }
-            end
-
-            results.each do |item|
-              next if item[:count] > 0
-
-              origin_url = item[:clean_urls].first
-              next unless origin_url
-
-              begin
-                # 解析 URL 获得 label 和 level
-                uri = URI.parse(origin_url)
-                path_parts = uri.path.split('/').reject(&:empty?)
-                level = path_parts.size == 1 ? 'community' : 'repo'
-                if level == 'repo'
-                  label = origin_url
-                else
-                  label = get_community_name(origin_url)
-                end
-
-                indexer, target_repo_urls, _origin = select_idx_repos_by_lablel_and_level(
-                  label,
-                  level,
-                  GiteeContributorEnrich,
-                  GithubContributorEnrich,
-                  GitcodeContributorEnrich
-                )
-
-                if indexer && target_repo_urls.present?
-                  contributors = indexer.fetch_contributors_name_list(target_repo_urls, begin_date, end_date)
-                  # contributors = indexer.fetch_contributors_list(target_repo_urls, begin_date, end_date)
-
-                  contributor_ids = contributors.select { |c|
-                    org = c.respond_to?(:organization) ? c.organization : c['organization']
-                    org.to_s.downcase.include?(company)
-                  }.map { |c| c.respond_to?(:contributor) ? c.contributor : c['contributor'] }
-
-                  if contributor_ids.any?
-                    item[:company_ids] = contributor_ids.uniq
-                    item[:count] = item[:company_ids].size
-                  end
-                end
-              # rescue => e
-              #   Rails.logger.error("Supplement query failed for #{origin_url}: #{e.message}")
-              end
-            end
-
-
-            global_unique_companies = Set.new
-            results.each { |item| global_unique_companies.merge(item[:company_ids]) }
-
-            {
-              code: 201,
-              project_stats: results.map { |r| { project_url: r[:project_url], participant_company_count: r[:count] } },
-              total_unique_participants_by_company: global_unique_companies.size
-            }
-          end
+#           desc '获取开源参与人数', hidden: true, tags: ['starProject'], success: {
+#             code: 201
+#           }, detail: ''
+#           params do
+#             requires :project_urls, type: Array[String], desc: '项目地址', documentation: { param_type: 'body' }
+#             requires :company, type: String, desc: '公司名称', documentation: { param_type: 'body' }
+#           end
+#
+#           post :participant_count do
+#
+#             raw_urls_list = params[:project_urls]
+#             company = params[:company].downcase
+#             begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
+#             end_date = params[:end_date] || Time.now.utc.iso8601
+#
+#             input_to_clean_urls = raw_urls_list.index_with do |multi_url|
+#               multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
+#             end
+#             all_flat_urls = input_to_clean_urls.values.flatten.uniq
+#
+#
+#             url_to_pid_map = StarProject.where(repo_url: all_flat_urls).pluck(:repo_url, :id).to_h
+#             all_project_ids = url_to_pid_map.values
+#
+#             raw_participants = StarProjectParticipant
+#                                  .where(star_project_id: all_project_ids)
+#                                  .pluck(:star_project_id, :participant_account_name)
+#
+#             pid_to_cids_map = Hash.new { |h, k| h[k] = [] }
+#             raw_participants.each do |pid, raw_cid_str|
+#               next if raw_cid_str.blank?
+#               clean_cids = raw_cid_str.split(/;|,|\s+/).map(&:strip).reject(&:empty?)
+#               pid_to_cids_map[pid].concat(clean_cids)
+#             end
+#
+#             # 初始化结果集
+#             results = raw_urls_list.map do |original_input|
+#               target_urls = input_to_clean_urls[original_input] || []
+#               relevant_pids = target_urls.map { |u| url_to_pid_map[u] }.compact
+#               company_ids = relevant_pids.flat_map { |pid| pid_to_cids_map[pid] }.uniq
+#
+#               {
+#                 project_url: original_input,
+#                 clean_urls: target_urls,
+#                 company_ids: company_ids,
+#                 count: company_ids.size
+#               }
+#             end
+#
+#             results.each do |item|
+#               next if item[:count] > 0
+#
+#               origin_url = item[:clean_urls].first
+#               next unless origin_url
+#
+#               begin
+#                 # 解析 URL 获得 label 和 level
+#                 uri = URI.parse(origin_url)
+#                 path_parts = uri.path.split('/').reject(&:empty?)
+#                 level = path_parts.size == 1 ? 'community' : 'repo'
+#                 if level == 'repo'
+#                   label = origin_url
+#                 else
+#                   label = get_community_name(origin_url)
+#                 end
+#
+#                 indexer, target_repo_urls, _origin = select_idx_repos_by_lablel_and_level(
+#                   label,
+#                   level,
+#                   GiteeContributorEnrich,
+#                   GithubContributorEnrich,
+#                   GitcodeContributorEnrich
+#                 )
+#
+#                 if indexer && target_repo_urls.present?
+#                   contributors = indexer.fetch_contributors_name_list(target_repo_urls, begin_date, end_date)
+#                   # contributors = indexer.fetch_contributors_list(target_repo_urls, begin_date, end_date)
+#
+#                   contributor_ids = contributors.select { |c|
+#                     org = c.respond_to?(:organization) ? c.organization : c['organization']
+#                     org.to_s.downcase.include?(company)
+#                   }.map { |c| c.respond_to?(:contributor) ? c.contributor : c['contributor'] }
+#
+#                   if contributor_ids.any?
+#                     item[:company_ids] = contributor_ids.uniq
+#                     item[:count] = item[:company_ids].size
+#                   end
+#                 end
+#               # rescue => e
+#               #   Rails.logger.error("Supplement query failed for #{origin_url}: #{e.message}")
+#               end
+#             end
+#
+#
+#             global_unique_companies = Set.new
+#             results.each { |item| global_unique_companies.merge(item[:company_ids]) }
+#
+#             {
+#               code: 201,
+#               project_stats: results.map { |r| { project_url: r[:project_url], participant_company_count: r[:count] } },
+#               total_unique_participants_by_company: global_unique_companies.size
+#             }
+#           end
 
           desc '获取技术席位', hidden: true, tags: ['starProject'], success: {
             code: 201
