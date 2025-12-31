@@ -43,6 +43,17 @@ class GitcodeServer
       req.body = payload.to_json
     end
 
+    if response.status == 400 || response.status == 422
+      body_json = JSON.parse(response.body) rescue {}
+      error_msg = body_json['error_message'] || body_json['message'] || ""
+
+      # 如果错误包含 "exists"，认为它是成功的
+      if error_msg.include?("already exists")
+        Rails.logger.warn "[GitCode] 仓库 #{repo_info[:name]} 已存在，跳过创建步骤，继续后续流程。"
+        return true
+      end
+    end
+
     handle_response(response, "创建仓库 [#{repo_info[:name]}]")
   end
 
