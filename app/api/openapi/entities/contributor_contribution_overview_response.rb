@@ -13,13 +13,13 @@ module Openapi
 
       expose :pr_count, documentation: {
         type: Integer,
-        desc: 'Total number of pull requests created / 创建的拉取请求总数',
+        desc: 'Total number of pull requests created / 创建的PR总数',
         example: 24
       }
 
       expose :issue_count, documentation: {
         type: Integer,
-        desc: 'Total number of issues created or participated / 创建或参与的问题总数',
+        desc: 'Total number of issues created or participated / 创建issue总数',
         example: 18
       }
 
