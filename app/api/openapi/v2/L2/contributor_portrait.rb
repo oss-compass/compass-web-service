@@ -191,7 +191,7 @@ module Openapi
                detail: '开发者贡献概览',
                tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
-                 code: 201, model: Openapi::Entities::ContributorOverviewResponse
+                 code: 201, model: Openapi::Entities::ContributorContributionOverviewResponse
                }
           params {
             use :contributor_portrait_search
