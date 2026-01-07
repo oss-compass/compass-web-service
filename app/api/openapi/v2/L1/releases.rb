@@ -37,7 +37,7 @@ module Openapi
 
       resource :metadata do
         desc 'List project release metadata / 获取项目release元数据', detail: 'List project release metadata / 获取项目release元数据', tags: ['Metadata / 元数据'], success: {
-          code: 201, model: Openapi::Entities::PullResponse
+          code: 201, model: Openapi::Entities::ReleaseResponse
         }
 
         params { use :search }
