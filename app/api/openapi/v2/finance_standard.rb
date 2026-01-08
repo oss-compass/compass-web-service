@@ -110,6 +110,43 @@ module Openapi
             f.adapter Faraday.default_adapter
           end
         end
+
+        # 判断是否为主站
+        def is_primary_domain?
+          host = request.env['HTTP_HOST']
+
+          primary_domains = ENV.fetch('PRIMARY_DOMAINS', '').split(',')
+          primary_domains.include?(host)
+        end
+
+        # 转发逻辑
+        def forward_request_to_main_site!(api_path)
+          main_site_url = ENV.fetch('MAIN_SITE_URL')
+
+          clean_params = declared(params, include_missing: false)
+
+          begin
+            conn = Faraday.new(url: main_site_url)
+            response = conn.post(api_path) do |req|
+              req.headers['Content-Type'] = 'application/json'
+              req.body = clean_params.to_json
+            end
+
+            # 解析主站返回的结果
+            result = JSON.parse(response.body) rescue { message: response.body }
+
+            # 如果主站返回错误状态码，镜像站也返回同样的状态码
+            unless response.success?
+              error!(result, response.status)
+            end
+
+            # 返回主站的数据
+            return result
+          rescue Faraday::Error => e
+            error!({ message: "Request forwarding failed: #{e.message}" }, 503)
+          end
+        end
+
       end
 
       rescue_from :all do |e|
@@ -182,6 +219,13 @@ module Openapi
           datasets = params[:datasets]
           projects = get_projects(datasets)
 
+          unless is_primary_domain?
+            # 镜像站：转发请求到主站对应的 trigger 接口
+            result = forward_request_to_main_site!('/api/v2/financeStandardProjectVersion/trigger')
+            present result
+            next # 结束当前请求，不执行后面代码
+          end
+
           model = LabModel.find_by(id: 298)
           version = LabModelVersion.find_by(id: 358)
 
@@ -238,6 +282,13 @@ module Openapi
         post :statusQuery do
           label = ShortenedLabel.normalize_label(params[:label])
           version_number = params[:versionNumber]
+          unless is_primary_domain?
+            # 镜像站：转发请求到主站对应的 statusQuery 接口
+            result = forward_request_to_main_site!('/api/v2/financeStandardProjectVersion/statusQuery')
+            present result
+            next # 结束当前请求
+          end
+
           model = LabModel.find_by(id: 298)
           version = LabModelVersion.find_by(id: 358)
           status = CustomAnalyzeProjectVersionServer.new(user: nil, model: model, version: version, project: label,
