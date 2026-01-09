@@ -303,6 +303,16 @@ class TpcSoftwareSandbox < ApplicationRecord
     source_url = sandbox_report.code_url
     gitcode_server = GitcodeServer.new
 
+    method = sandbox_report.adaptation_method
+    # 如果 method 时 Java库重写 创建空白库
+    import_url = if method == "Java库重写"
+                   nil
+                 else
+                   source_url.presence
+                 end
+    #
+    #
+
     # 创建仓库
     repo_info = {
       owner: repo_owner,
@@ -310,7 +320,7 @@ class TpcSoftwareSandbox < ApplicationRecord
       name: repo_name,
       description:  sandbox.functional_description,
       # 如果有 repo_url 则作为导入链接，否则为空
-      import_url: source_url.presence,
+      import_url: import_url,
       auto_init: source_url.blank?,
       default_branch: 'main'
     }

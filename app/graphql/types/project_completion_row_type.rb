@@ -8,5 +8,6 @@ module Types
     field :status, String, description: 'metric task status (pending/progress/success/error/canceled/unsumbit)'
     field :collections, [String], description: 'second collections of this label'
     field :updated_at, GraphQL::Types::ISO8601DateTime, description: 'metric model last update time'
+    field :type, String, description: 'type'
   end
 end

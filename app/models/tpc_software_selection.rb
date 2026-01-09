@@ -314,6 +314,14 @@ class TpcSoftwareSelection < ApplicationRecord
 
     gitcode_server = GitcodeServer.new
 
+    method = selection_report.adaptation_method
+    # 如果 method 时 Java库重写 创建空白库
+    import_url = if method == "Java库重写"
+                   nil
+                 else
+                   source_url.presence
+                 end
+
     # 创建仓库
     repo_info = {
       owner: repo_owner,
@@ -321,7 +329,7 @@ class TpcSoftwareSelection < ApplicationRecord
       name: repo_name,
       description: selection.functional_description,
       #导入链接
-      import_url: source_url.presence,
+      import_url: import_url,
       auto_init: source_url.blank?,
       default_branch: 'main'
     }
