@@ -96,7 +96,8 @@ module Types
                         status: ProjectTask::Success,
                         updated_at: updated_at,
                         short_code: ShortenedLabel.convert(item['_source']['label'], item['_source']['level']),
-                        collections: BaseCollection.collections_of(item['_source']['label'], level: item['_source']['level'])
+                        collections: BaseCollection.collections_of(item['_source']['label'], level: item['_source']['level']),
+                        type: 'repo'
                       }
                     )
                 )
