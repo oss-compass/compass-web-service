@@ -7,7 +7,7 @@ module Types
       description 'Fuzzy search project by keyword'
       argument :keyword, String, required: true, description: 'repo or project keyword'
       argument :level, String, required: false, description: 'filter by level (repo/project)'
-      argument :type, Integer, required: false, description: '1 developer, 2 repo'
+      argument :type, Integer, required: false, description: '1 developer, 2 repo , 3 both'
 
       def resolve(keyword: nil, level: nil, type: nil)
         fields = ['label', 'level']
@@ -21,6 +21,12 @@ module Types
           return search_developers(prefix)
         elsif type == 2 # repo
           return search_repos(keyword, level, fields, prefix)
+        elsif type ==3
+          # 分别获取最多8个仓库和8个开发者
+          repos = search_repos(keyword, level, fields, prefix)
+          devs = search_developers(prefix)
+          # 合并结果
+          repos + devs
         else
           # developers = search_developers(keyword, level)
           # repos = search_repos(keyword, level, fields, prefix)
@@ -44,12 +50,13 @@ module Types
             level: source['html_url'],
             status: '',
             short_code:'',
-            collections:[]
+            collections:[],
+            type: 'developer'
             )
           candidates << developer
         end
 
-        candidates
+        candidates.take(8)
       end
 
       def search_repos(keyword, level, fields, prefix)
@@ -113,12 +120,13 @@ module Types
               status: item.status,
               updated_at: item.updated_at,
               short_code: ShortenedLabel.convert(item.project_name, item.level),
-              collections: BaseCollection.collections_of(item.project_name, level: item.level)
+              collections: BaseCollection.collections_of(item.project_name, level: item.level),
+              type: 'repo'
             }
           end
         end
 
-        candidates
+        candidates.take(8)
       end
     end
   end
