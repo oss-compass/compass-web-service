@@ -67,7 +67,9 @@ class GitcodeServer
     end
 
     success = [200, 201, 204].include?(response.status)
-    log_result(success, "添加协作者 [#{username}] 到 #{owner}/#{repo}", response.body)
+    safe_body = response.body.to_s.force_encoding('UTF-8').encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+
+    log_result(success, "添加协作者 [#{username}] 到 #{owner}/#{repo}", safe_body)
     success
   end
 
