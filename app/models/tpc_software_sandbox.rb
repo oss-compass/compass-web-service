@@ -258,14 +258,17 @@ class TpcSoftwareSandbox < ApplicationRecord
     Rails.logger.info("state: #{state}")
 
     sandbox.update!(state: state)
-    sandbox_report = sandbox.tpc_software_sandbox_report
-    repo_url = sandbox.repo_url
-    need_autocreate =
-      [2, 3].include?(sandbox_report.tpc_software_sig_id) ||
-        repo_url.to_s.include?("https://gitcode.com/openharmony-ApplicationTPC")
 
+    # sandbox_report = sandbox.tpc_software_sandbox_report
+    # repo_url = sandbox.repo_url
+    # need_autocreate =
+    #   [2, 3].include?(sandbox_report.tpc_software_sig_id) ||
+    #     repo_url.to_s.include?("https://gitcode.com/openharmony-ApplicationTPC")
+    #
+    # return unless need_autocreate
+
+    need_autocreate = check_auto_create_permission(selection)
     return unless need_autocreate
-
 
     if state == State_Completed
       create_msg = perform_gitcode_automation(sandbox)
@@ -278,26 +281,56 @@ class TpcSoftwareSandbox < ApplicationRecord
 
   end
 
+  def self.check_auto_create_permission(selection)
+    repo_url = selection.repo_url
+    return false if repo_url.blank?
+
+    keywords = TpcAutoCreateOrg.enabled.pluck(:org_url)
+    repo_url_down = repo_url.downcase
+    matched = keywords.any? { |keyword| keyword.present? && repo_url_down.include?(keyword.downcase) }
+    if matched
+      Rails.logger.info "[AutoRepo] Selection ##{selection.id} 匹配到自动建仓组织 (URL: #{repo_url})"
+    end
+    matched
+  end
   def self.perform_gitcode_automation(sandbox)
     Rails.logger.info "[AutoRepo] 开始处理 Sandbox ID: #{sandbox.id}"
     sandbox_report = sandbox.tpc_software_sandbox_report
 
-    sig = sandbox_report.tpc_software_sig_id
-    repo_owner_map = {
-      2 => ENV["ORG_REPO_OWNER_SIG2"],
-      3 => ENV["ORG_REPO_OWNER_SIG3"],
-      20 => ENV["ORG_REPO_OWNER_SIG20"]
-    }
+    # sig = sandbox_report.tpc_software_sig_id
+    # repo_owner_map = {
+    #   2 => ENV["ORG_REPO_OWNER_SIG2"],
+    #   3 => ENV["ORG_REPO_OWNER_SIG3"],
+    #   20 => ENV["ORG_REPO_OWNER_SIG20"]
+    # }
+    #
+    # sig_id_for_repo =
+    #   if sandbox.repo_url.include?("https://gitcode.com/openharmony-ApplicationTPC")
+    #     # 通用三方库
+    #     20
+    #   else
+    #     sig
+    #   end
+    #
+    # repo_owner = repo_owner_map[sig_id_for_repo] || ""
 
-    sig_id_for_repo =
-      if sandbox.repo_url.include?("https://gitcode.com/openharmony-ApplicationTPC")
-        # 通用三方库
-        20
-      else
-        sig
-      end
+    # 去掉首尾空格和末尾斜杠
+    full_repo_url = selection.repo_url.to_s.strip.chomp('/')
+    # 找到最后一个 '/' 的位置，截取它之前的所有内容
+    last_slash_index = full_repo_url.rindex('/')
+    if last_slash_index
+      target_org_url = full_repo_url[0...last_slash_index]
+    else
+      target_org_url = full_repo_url
+    end
 
-    repo_owner = repo_owner_map[sig_id_for_repo] || ""
+    matched_org = TpcAutoCreateOrg.enabled
+                                  .where("LOWER(org_url) = ?", target_org_url.downcase)
+                                  .first
+
+
+    repo_owner = matched_org.name
+
     is_org_repo = true
     repo_name = sandbox.repo_url.split('/').last
     source_url = sandbox_report.code_url
@@ -310,8 +343,6 @@ class TpcSoftwareSandbox < ApplicationRecord
                  else
                    source_url.presence
                  end
-    #
-    #
 
     # 创建仓库
     repo_info = {
@@ -347,9 +378,10 @@ class TpcSoftwareSandbox < ApplicationRecord
     end
 
     # 添加协作者 (Committers)
-    committers = TpcSoftwareMember.where(tpc_software_sig_id: sig_id_for_repo)
-                                  .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
-                                  .where.not(gitcode_account: nil)
+    # committers = TpcSoftwareMember.where(tpc_software_sig_id: sig_id_for_repo)
+    #                               .where(member_type: TpcSoftwareMember::Member_Type_Sig_Committer)
+    #                               .where.not(gitcode_account: nil)
+    committers = matched_org.tpc_auto_create_committers
 
     if committers.present?
       Rails.logger.info "[AutoRepo] 找到 #{committers.count} 个协作者，开始添加..."
@@ -357,7 +389,8 @@ class TpcSoftwareSandbox < ApplicationRecord
       committers.each do |member|
         username = member.gitcode_account
         next if username.blank?
-        permission = member.role_level.to_i > 2 ? 'admin' : 'push'
+        # permission = member.role_level.to_i > 2 ? 'admin' : 'push'
+        permission = member.role
 
         begin
           gitcode_server.add_collaborator(repo_owner, repo_name, username, permission)

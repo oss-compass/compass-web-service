@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_28_072207) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_12_035651) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -394,6 +394,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_28_072207) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "subject_id"], name: "index_subscriptions_on_user_id_and_subject_id", unique: true
+  end
+
+  create_table "tpc_auto_create_committers", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "tpc_auto_create_org_id", null: false
+    t.string "gitcode_account", null: false, comment: "GitCode 用户名"
+    t.string "role", default: "push", comment: "权限级别: push, admin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tpc_auto_create_orgs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "org_url", null: false
+    t.string "name"
+    t.boolean "enabled", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tpc_software_comment_states", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
