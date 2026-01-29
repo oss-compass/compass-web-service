@@ -360,7 +360,7 @@ class TpcSoftwareSelection < ApplicationRecord
       description: selection.functional_description,
       #导入链接
       import_url: import_url,
-      auto_init: source_url.blank?,
+      auto_init: import_url.blank?,
       default_branch: 'main'
     }
 
