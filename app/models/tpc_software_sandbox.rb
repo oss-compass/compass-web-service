@@ -352,7 +352,7 @@ class TpcSoftwareSandbox < ApplicationRecord
       description:  sandbox.functional_description,
       # 如果有 repo_url 则作为导入链接，否则为空
       import_url: import_url,
-      auto_init: source_url.blank?,
+      auto_init: import_url.blank?,
       default_branch: 'main'
     }
 
