@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_12_035651) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_30_080249) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -85,6 +85,61 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_12_035651) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
+  end
+
+  create_table "dashboard_metric_infos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "ident", null: false
+    t.string "category", null: false
+    t.string "from"
+    t.float "default_weight"
+    t.float "default_threshold"
+    t.integer "dashboard_model_info_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "dashboard_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "from_model", default: false
+    t.boolean "hidden", default: false
+    t.integer "dashboard_model_id"
+    t.integer "dashboard_id"
+    t.integer "dashboard_metric_info_id"
+    t.string "dashboard_metric_info_ident"
+    t.string "dashboard_model_info_ident"
+    t.integer "sort"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "dashboard_model_infos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description", null: false
+    t.string "ident"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "dashboard_models", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.integer "dashboard_id"
+    t.integer "dashboard_model_info_id"
+    t.string "dashboard_model_info_ident"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "dashboards", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "dashboard_type"
+    t.string "repo_urls"
+    t.string "competitor_urls"
+    t.integer "user_id", null: false
+    t.string "identifier"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "feedbacks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
