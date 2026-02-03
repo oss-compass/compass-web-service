@@ -220,11 +220,37 @@ module Openapi
           optional :per_page, type: Integer, default: 10
         end
         post :list do
-          dashboards_scope = current_user.dashboards
-                                         .includes(:dashboard_models, :dashboard_metrics)
-                                         .order(created_at: :desc)
+
+          # puts current_user.to_json
+          # # if current_user.role_level>4
+          # dashboards_scope = current_user.dashboards
+          #                                .includes(:dashboard_models, :dashboard_metrics)
+          #                                .order(created_at: :desc)
+          # pages, records = paginate_fun(dashboards_scope)
+          #
+          # present({
+          #           items: records.as_json(include: [:dashboard_models, :dashboard_metrics]),
+          #           total_count: pages.count,
+          #           current_page: pages.page,
+          #           per_page: pages.items,
+          #           total_pages: pages.pages
+          #         })
+
+          base_scope = if current_user.role_level > 4
+                         Dashboard.all
+                       else
+                         current_user.dashboards
+                       end
+
+          # 2. 统一进行预加载 (Includes) 和 排序 (Order)
+          # 这样写可以避免代码重复，无论上面选了哪个范围，下面都统一处理
+          dashboards_scope = base_scope.includes(:dashboard_models, :dashboard_metrics)
+                                       .order(created_at: :desc)
+
+          # 3. 分页处理
           pages, records = paginate_fun(dashboards_scope)
 
+          # 4. 返回结果
           present({
                     items: records.as_json(include: [:dashboard_models, :dashboard_metrics]),
                     total_count: pages.count,
@@ -264,7 +290,7 @@ module Openapi
         end
 
         post :get_by_identifier do
-          dashboard = current_user.dashboards.includes(:dashboard_models, :dashboard_metrics)
+          dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
                                .find_by!(identifier: params[:identifier])
 
           present dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
