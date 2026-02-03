@@ -67,6 +67,9 @@ module Openapi
     mount Openapi::V2::FeedbackModule
     mount Openapi::V2::Star::StarProjectServer
 
+
+    mount Openapi::CompassController::DashboardController
+
     add_swagger_documentation \
       doc_version: '2.0.0',
       mount_path: '/api/v2/docs',
