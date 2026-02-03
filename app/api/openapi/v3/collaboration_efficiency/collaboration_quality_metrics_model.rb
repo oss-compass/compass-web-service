@@ -9,7 +9,7 @@ module Openapi
         prefix :api
         format :json
 
-        helpers Openapi::SharedParams::Search
+        helpers Openapi::SharedParams::CustomMetricSearch
         helpers Openapi::SharedParams::AuthHelpers
         helpers Openapi::SharedParams::ErrorHelpers
         helpers Openapi::SharedParams::RestapiHelpers
