@@ -1,0 +1,92 @@
+# frozen_string_literal: true
+
+module Openapi
+  module V3
+    module CommunityVitality
+      class ContributionActivity < Grape::API
+        version 'v3', using: :path
+        prefix :api
+        format :json
+
+        helpers Openapi::SharedParams::CustomMetricSearch
+        helpers Openapi::SharedParams::AuthHelpers
+        helpers Openapi::SharedParams::ErrorHelpers
+        helpers Openapi::SharedParams::RestapiHelpers
+
+        rescue_from :all do |e|
+          case e
+          when Grape::Exceptions::ValidationErrors
+            handle_validation_error(e)
+          when SearchFlip::ResponseError
+            handle_open_search_error(e)
+          else
+            handle_generic_error(e)
+          end
+        end
+
+        before { require_token! }
+        before do
+          token = params[:access_token]
+          Openapi::SharedParams::RateLimiter.check_token!(token)
+        end
+
+        resource :contribution_activity do
+          desc '代码提交次数 / Commit Count',
+               detail: '定义：周期内新增的Commit总数。输入：周期内新增的Commit详情。输出：次数（次）。',
+               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+               success: { code: 201, model: Openapi::Entities::CommitCountMetricResponse }
+          params { use :metric_search }
+          post :commit_count do
+            fetch_metric_data_v2(ContributionActivityMetric, 'commit_count')
+          end
+
+          desc '新增代码行数 / Lines of Code Change',
+               detail: '定义：周期内代码行变动总量。输入：周期内新增的Commit详情。输出：新增代码行数，删除代码行数（Line）。',
+               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+               success: { code: 201, model: Openapi::Entities::LinesOfCodeChangeResponse }
+          params { use :metric_search }
+          post :lines_of_code_change do
+            fields = %w[lines_added lines_removed]
+            fetch_metric_data_v2(ContributionActivityMetric, fields)
+          end
+
+          desc 'PR 评论数量 / PR Comment Count',
+               detail: '定义：周期内产生的所有Issue和PR下的评论总和。输入：周期内新增的PR评论详情。输出：次数（次）。',
+               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+               success: { code: 201, model: Openapi::Entities::PrCommentCountResponse }
+          params { use :metric_search }
+          post :pr_comment_count do
+            fetch_metric_data_v2(ContributionActivityMetric, 'pr_comment_count')
+          end
+
+          desc 'Issue 建立数量 / New Issue Count',
+               detail: '定义：周期内创建的Issue总数。输入：周期内新建的Issue详情。输出：个数（个）。',
+               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+               success: { code: 201, model: Openapi::Entities::NewIssueCountResponse }
+          params { use :metric_search }
+          post :new_issue_count do
+            fetch_metric_data_v2(ContributionActivityMetric, 'issue_new_count')
+          end
+
+          desc 'Issue 评论数量 / Issue Comment Count',
+               detail: '定义：周期内Issue下的评论总数。输入：周期内新增的Issue评论详情。输出：次数（次）。',
+               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+               success: { code: 201, model: Openapi::Entities::IssueCommentCountResponse }
+          params { use :metric_search }
+          post :issue_comment_count do
+            fetch_metric_data_v2(ContributionActivityMetric, 'issue_comment_activity')
+          end
+
+          # desc '版本迭代次数 / Release Count',
+          #      detail: '定义：周期内发布的Release数量。输入：周期内发布的Release详情。输出：次数（次）。',
+          #      tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Contribution Activity / 贡献活跃度'],
+          #      success: { code: 201, model: Openapi::Entities::ReleaseCountResponse }
+          # params { use :metric_search }
+          # post :release_count do
+          #   fetch_metric_data(metric_name: 'recent_releases_count')
+          # end
+        end
+      end
+    end
+  end
+end
