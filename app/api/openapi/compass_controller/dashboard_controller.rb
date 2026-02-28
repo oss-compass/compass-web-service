@@ -290,7 +290,7 @@ module Openapi
         end
 
         post :get_by_identifier do
-          dashboard = current_user.dashboards.includes(:dashboard_models, :dashboard_metrics)
+          dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
                                .find_by!(identifier: params[:identifier])
 
           present dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])

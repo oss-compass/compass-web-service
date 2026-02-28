@@ -114,6 +114,35 @@ module Types
         skeletons
       end
 
+      def build_gitcode_repo(resp)
+        hits = resp&.[]('hits')&.[]('hits')
+        skeletons = []
+        if hits.present?
+          hits.map do |data|
+            data = data['_source']
+            skeleton = Hash[Types::RepoType.fields.keys.zip([])].symbolize_keys
+            if data.present?
+              skeleton['origin'] = data['origin']
+              skeleton['name'] = data['data']['name']
+              skeleton['short_code'] = ShortenedLabel.convert(data['origin'], 'repo')
+              skeleton['language'] = data['data']['language']
+              skeleton['path'] = data['data']['full_name']
+              skeleton['backend'] = data['backend_name']
+              skeleton['forks_count'] = data['data']['forks_count']
+              skeleton['watchers_count'] = data['data']['watchers_count']
+              skeleton['stargazers_count'] = data['data']['stargazers_count']
+              skeleton['open_issues_count'] = data['data']['open_issues_count']
+              skeleton['created_at'] = data['data']['created_at']
+              skeleton['updated_at'] = data['data']['updated_at']
+              skeleton['metric_activity'] = build_repo_activity(data['origin'])
+            end
+            skeletons << skeleton
+          end
+        end
+        skeletons
+      end
+
+
       def validate_by_label!(current_user, label)
         return if current_user&.is_admin?
         if RESTRICTED_LABEL_LIST.include?(label) && !RESTRICTED_LABEL_VIEWERS.include?(current_user&.id.to_s)

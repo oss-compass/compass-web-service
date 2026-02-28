@@ -1,3 +1,8 @@
+# 加载自定义 GitCode OmniAuth Strategy
+# lib/omniauth 已从 autoload 中排除，需要手动加载
+gitcode_strategy_path = Rails.root.join('lib/omniauth/strategies/gitcode.rb')
+require gitcode_strategy_path.to_s if File.exist?(gitcode_strategy_path)
+
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :github, ENV['GITHUB_CLIENT_ID'], ENV['GITHUB_CLIENT_SECRET'],
            client_options: { connection_opts: { request: { timeout: 10 }, proxy: ENV['PROXY'] } },
@@ -6,6 +11,23 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :gitee, ENV['GITEE_CLIENT_ID'], ENV['GITEE_CLIENT_SECRET'],
            client_options: { connection_opts: { request: { timeout: 10 } } },
            scope: ENV['GITEE_SCOPE']
+
+  provider :gitcode, ENV['GITCODE_CLIENT_ID'], ENV['GITCODE_CLIENT_SECRET'],
+           client_options: { 
+             connection_opts: { request: { timeout: 10 } },
+             site: 'https://gitcode.com',
+             authorize_url: 'https://gitcode.com/oauth/authorize',
+             token_url: 'https://gitcode.com/oauth/token'
+           },
+           authorize_params: {
+             client_id: ENV['GITCODE_CLIENT_ID']
+           },
+           token_params: {
+             client_id: ENV['GITCODE_CLIENT_ID'],
+             client_secret: ENV['GITCODE_CLIENT_SECRET']
+           },
+           scope: ENV['GITCODE_SCOPE'] || 'read_user',
+           callback_url: "#{ENV['DEFAULT_HOST']}/users/auth/gitcode/callback"
 
   provider :openid_connect, {
     name: :slack,
@@ -34,6 +56,20 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   #          client_options: { connection_opts: { request: { timeout: 10 } } },
   #          authorize_params: { scope: ENV['WECHAT_SCOPE'] }
 end
+
+# OmniAuth 配置
 OmniAuth.config.allowed_request_methods = [:post, :get]
 OmniAuth.config.silence_get_warning = true
 OmniAuth.config.full_host = ENV['DEFAULT_HOST']
+
+# 处理 CSRF 错误的回调
+# OmniAuth.config.on_failure = Proc.new { |env|
+#   message_key = env['omniauth.error.type']
+#   error_message = env['omniauth.error']
+  
+#   Rails.logger.error "OmniAuth failure: #{message_key} - #{error_message}"
+#   Rails.logger.error "Session: #{env['rack.session'].inspect}"
+#   Rails.logger.error "Request params: #{env['rack.request.query_hash'].inspect}"
+  
+#   OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+# }

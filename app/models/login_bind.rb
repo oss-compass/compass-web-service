@@ -27,17 +27,18 @@ class LoginBind < ApplicationRecord
   validates :account, presence: true
   validates :provider, presence: true
 
-  scope :current_host, -> { where(provider_id: [ENV['GITHUB_CLIENT_ID'], ENV['GITEE_CLIENT_ID']]) }
+  scope :current_host, -> { where(provider_id: [ENV['GITHUB_CLIENT_ID'], ENV['GITEE_CLIENT_ID'], ENV['GITCODE_CLIENT_ID']]) }
 
   include Censoring
 
   censoring only: [:nickname], img: [:avatar_url], attrs: [:nickname, :avatar_url]
 
-  LOGIN_PROVIDER = [:github, :gitee]
+  LOGIN_PROVIDER = [:github, :gitee, :gitcode]
 
   PROVIDER_ID_MAP = {
     'github' => ENV['GITHUB_CLIENT_ID'],
     'gitee' => ENV['GITEE_CLIENT_ID'],
+    'gitcode' => ENV['GITCODE_CLIENT_ID'],
     'wechat' => ENV['WECHAT_CLIENT_ID'],
     'slack' => ENV['SLACK_CLIENT_ID']
   }

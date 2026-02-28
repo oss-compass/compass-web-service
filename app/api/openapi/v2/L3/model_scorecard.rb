@@ -43,16 +43,24 @@ module Openapi
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :scorecard do
-
+          opencheckRawIndexer = OpencheckRaw
           indexer = ScorecardMetric
           repo_urls = [params[:label]]
 
-          resp = indexer.one_by_metric_repo_urls(repo_urls)
+          opencheckRawResp = opencheckRawIndexer.one_by_metric_repo_urls(repo_urls, target: 'label')
+          opencheckRawHits = opencheckRawResp&.[]('hits')&.[]('hits') || []
+          return {} if opencheckRawHits.empty?
 
+          resp = indexer.one_by_metric_repo_urls(repo_urls)
 
           hits = resp&.[]('hits')&.[]('hits') || []
           items = hits.map { |data| data['_source'].symbolize_keys }
-          items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
+          result = items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
+
+          # 将所有数值类型的指标分数保留2位小数
+          result.transform_values do |value|
+            value.is_a?(Numeric) ? value.round(2) : value
+          end
         end
 
         desc 'Analyze Project Scorecard / 分析项目 Scorecard', detail: 'Analyze Project Scorecard / 分析项目 Scorecard', tags: ['Metrics Model Data / 模型数据'], success: {
@@ -61,13 +69,9 @@ module Openapi
         params {
           requires :access_token, type: String, desc: 'access token / 访问令牌', documentation: { param_type: 'body' }
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
-          optional :label_token, type: String, desc: 'GitCode access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
+          optional :label_token, type: String, desc: 'GitCode/Gitee access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode/Gitee 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
         }
         post :analyze_scorecard do
-          unless params[:label].include?("gitcode.com")
-            return { code: 400, message: 'only supports the gitCode repo' }
-          end
-
           opts = {
             repo_url: params[:label],
             opencheck_raw: true,
@@ -87,7 +91,8 @@ module Openapi
             milestone_persona: false,
             role_persona: false,
             criticality_score: false,
-            scorecard: true
+            scorecard: true,
+            custom_metrics: false
           }
           result = AnalyzeServer.new(opts).execute_tpc
           Rails.logger.info("analyze scorecard info: #{result}")

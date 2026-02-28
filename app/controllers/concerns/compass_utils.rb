@@ -91,12 +91,10 @@ module CompassUtils
       github_count += 1 if url =~ /github\.com/
       gticode_count += 1 if url =~ /gitcode\.com/
     end
-    if github_count > 0 && gitee_count == 0
-      'github'
-    elsif gitee_count > 0 && github_count == 0
-      'gitee'
-    elsif gticode_count > 0 && gticode_count == 0
-      'gitcode'
+    counts = { 'github' => github_count, 'gitee' => gitee_count, 'gitcode' => gticode_count }
+    max_pair = counts.max_by { |_, v| v }
+    if max_pair[1] > 0 && counts.values.count(max_pair[1]) == 1
+      max_pair[0]
     else
       'combine'
     end

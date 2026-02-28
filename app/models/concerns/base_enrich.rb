@@ -63,6 +63,28 @@ module BaseEnrich
       base.total_entries
     end
 
+
+    def count_contributor_by_repo_urls(repo_urls, begin_date, end_date, contributor_type: ["code_author"])
+      resp = self.must(terms: { 'repo_name.keyword': repo_urls })
+                 .must(match_phrase: { is_bot: "false" })
+                 .range(:grimoire_creation_date, gte: begin_date, lt: end_date)
+                 .must(terms: { 'contribution_type_list.contribution_type.keyword': contributor_type })
+                 .aggregate(
+                    count: {
+                      cardinality: {
+                        field: "contributor.keyword"
+                      }
+                    }
+                 )
+                 .per(0)
+                 .execute
+                 .raw_response
+
+      resp.dig('aggregations', 'count', 'value') || 0
+
+    end
+
+
     def check_exist(repo_url)
       resp = self.must(terms: { "tag" => repo_url })
                  .page(1)

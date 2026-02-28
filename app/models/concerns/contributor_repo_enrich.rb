@@ -12,15 +12,18 @@ module ContributorRepoEnrich
           .raw_response
     end
 
-    def sum_contribution(contributor, begin_date, end_date, field = "push_contribution")
-
-      resp_count = self.aggregate(count: { sum: { field: field } })
-                       .must(match_phrase: { 'contributor.keyword': contributor })
-                       .range('created_at', gte: begin_date, lte: end_date)
-                       .per(0)
-                       .execute
-                       .raw_response
-      resp_count&.[]('aggregations')&.[]('count')&.[]('value') || 0
+    def sum_contribution(contributor, begin_date, end_date, field_list = ["push_contribution"])
+      total = 0
+      field_list.each do |field|
+        resp_count = self.aggregate(count: { sum: { field: field } })
+                         .must(match_phrase: { 'contributor.keyword': contributor })
+                         .range('created_at', gte: begin_date, lte: end_date)
+                         .per(0)
+                         .execute
+                         .raw_response
+        total += resp_count&.[]('aggregations')&.[]('count')&.[]('value') || 0
+      end
+      total
     end
 
     def push_contribution_rank(contributor, begin_date, end_date)
@@ -46,7 +49,7 @@ module ContributorRepoEnrich
         '10%': [2 * 188, 2 * 296],
         '5%': [2 * 296, 2 * 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field = "push_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field_list = ["push_contribution"])
       found_percentage = push_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max
@@ -78,7 +81,8 @@ module ContributorRepoEnrich
         '10%': [72, 102],
         '5%': [102, 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field = "issues_opened_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field_list = ["issues_opened_contribution", 
+        "issues_reopened_contribution", "issue_comment_created_contribution", "issues_closed_contribution"])
       found_percentage = issue_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max
@@ -111,7 +115,8 @@ module ContributorRepoEnrich
         '10%': [2 * 72, 2 * 102],
         '5%': [2 * 102, 2 * 99_999_999]
       }
-      contribution = sum_contribution(contributor, begin_date, end_date, field = "pull_request_opened_contribution")
+      contribution = sum_contribution(contributor, begin_date, end_date, field_list = ["pull_request_opened_contribution", 
+        "pull_request_reopened_contribution", "pull_request_closed_contribution", "pull_request_merged_contribution"])
       found_percentage = pull_contribution_top_rank_definition.find do |percentage, range|
         min, max = range
         min <= contribution && contribution < max

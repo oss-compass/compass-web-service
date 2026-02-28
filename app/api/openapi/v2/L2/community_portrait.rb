@@ -228,7 +228,7 @@ module Openapi
 
           end
 
-          desc 'Number of code committers / 代码提交者数量',
+          desc 'Number of code committers  / 过去90天代码提交者数量',
                detail: 'The number of active code committers in the last 90 days / 过去 90 天中活跃的代码提交者的数量',
                tags: ['Metrics Data / 指标数据', 'Community Persona / 社区画像'],
                success: {
@@ -239,6 +239,34 @@ module Openapi
             fetch_metric_data(metric_name: 'commit_contributor_count')
           end
 
+          desc 'Number of code committers in time range / 指定时间段内代码提交者数量',
+               detail: 'The number of active code committers in the specified time range / 在指定时间段内活跃的代码提交者的数量',
+               tags: ['Metrics Data / 指标数据', 'Community Persona / 社区画像'],
+               success: {
+                 code: 201, model: Openapi::Entities::ContributorCountInRangeResponse
+               }
+          params {
+            requires :access_token, type: String, desc: 'Access token / 访问令牌', documentation: { param_type: 'body' }
+            requires :label, type: String, desc: 'Repository or community URL / 仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
+            requires :begin_date, type: DateTime, desc: 'Start date / 开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
+            requires :end_date, type: DateTime, desc: 'End date / 结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+          }
+          post :commit_contributor_count_in_range do
+            label = params[:label]
+            level = params[:level] || 'repo'
+            begin_date = params[:begin_date]
+            end_date = params[:end_date]
+            begin_date, end_date = extract_search_date(begin_date, end_date)
+            indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
+
+            count = indexer.count_contributor_by_repo_urls(repo_urls, begin_date, end_date, contributor_type: ["code_author"])
+
+            {
+              count: count
+            }
+          end
+
+
           # Issue
           desc 'Issue first response time / Issue 首次响应时间',
                detail: 'Mean and median (days) time to first response to a new issue over the last 90 days. This does not include bot responses, the creator own comments, or the assignment of actions to issues. If an issue has not been answered, it will not be counted. / 过去 90 天新建 Issue 首次响应时间的均值和中位数（天）。这不包括机器人响应、创建者自己的评论或 Issue 的分配动作（action）。如果 Issue 一直未被响应，该 Issue 不被算入统计。',
@@ -248,8 +276,8 @@ module Openapi
                }
 
           params { use :community_portrait_search }
-          post :commit_contributor_count do
-            fetch_metric_data(metric_name: "commit_contributor_count")
+          post :issue_first_reponse do
+            fetch_metric_data(metric_name: "issue_first_reponse")
           end
 
 
