@@ -31,27 +31,40 @@ module Openapi
         end
 
         resource :developer_base do
-          desc '社区贡献者数量 / Community Contributor Count',
-               detail: '定义：周期内有任何贡献行为的去重用户数。输入：周期内贡献者列表。Count(Distinct contributor) from [Commits, Issues, Comments, Reviews]。输出：人数（个）。',
-               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Developer Base / 开发者基数'],
+          desc 'Community Contributor Count / 社区贡献者数量',
+               detail: 'Number of unique users with any contribution behavior during the period / 周期内有任何贡献行为的去重用户数 ',
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Community Vitality / 社区活力',
+                 'Developer Base / 开发者基数'
+               ],
+
                success: { code: 201, model: Openapi::Entities::CommunityContributorCountResponse }
           params { use :metric_search }
           post :contributor_count do
             fetch_metric_data_v2(DeveloperBaseMetric, 'total_active_contributors')
           end
 
-          desc '代码贡献者数量 / Active Code Contributor Count',
-               detail: '定义：周期内有代码提交或PR合并或PR评论的去重用户数。输入：周期内贡献者列表。Count(Distinct contributor) from [Commits, Merged PRs]。输出：人数（个）。',
-               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Developer Base / 开发者基数'],
+          desc 'Active Code Contributor Count / 代码贡献者数量',
+               detail: 'Number of unique users with code commits, PR merges, or PR comments during the period / 周期内有代码提交或PR合并或PR评论的去重用户数',
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Community Vitality / 社区活力',
+                 'Developer Base / 开发者基数'
+               ],
                success: { code: 201, model: Openapi::Entities::ActiveCodeContributorCountResponse }
           params { use :metric_search }
           post :code_contributor_count do
             fetch_metric_data_v2(DeveloperBaseMetric, 'code_contributors')
           end
 
-          desc '非代码贡献者数量 / Active Non-code Contributor Count',
-               detail: '定义：周期内仅参与讨论但未提交代码的用户数。输入：[总活跃贡献者ID集合] - [代码贡献者ID集合]。输出：人数（个）。',
-               tags: ['Metrics Data / 指标数据', 'Community Vitality / 社区活力', 'Developer Base / 开发者基数'],
+          desc 'Active Non-code Contributor Count / 非代码贡献者数量',
+               detail: 'Number of users who only participated in discussions but did not submit code during the period / 周期内仅参与讨论但未提交代码的用户数',
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Community Vitality / 社区活力',
+                 'Developer Base / 开发者基数'
+               ],
                success: { code: 201, model: Openapi::Entities::NonCodeContributorCountResponse }
           params { use :metric_search }
           post :non_code_contributor_count do

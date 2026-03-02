@@ -35,7 +35,11 @@ module Openapi
 
           desc 'PR Merge Rate / PR 合并率',
                detail: 'Definition: ratio of PRs created in cycle-2 that are ultimately merged / 定义：周期内新建并最终被合并的PR占比。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrMergeRateResponse }
           params { use :metric_search }
           post :pr_merge_rate do
@@ -45,7 +49,11 @@ module Openapi
 
           desc 'PR/Issue Link Rate / PR/Issue 关联率',
                detail: 'Definition: ratio of PRs linked to an Issue in cycle-2 / 定义：周期内 PR关联Issue的占比。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrIssueLinkRateResponse }
           params { use :metric_search }
           post :pr_issue_link_rate do
@@ -55,7 +63,11 @@ module Openapi
 
           desc 'PR Review Participation Rate / PR 评审参与率',
                detail: 'Definition: ratio of PRs that have at least one non-author review comment or approval in cycle-2 / 定义：周期内至少有一条非作者Review评论或Approval记录的PR占比。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrReviewParticipationRateResponse }
           params { use :metric_search }
           post :pr_review_participation_rate do
@@ -65,7 +77,11 @@ module Openapi
 
           desc 'Non-author Merge Rate / Merge协作比率',
                detail: 'Definition: ratio of merged PRs whose merger is not the author in cycle-2 / 定义：周期内PR的合并操作者与PR提交者不是同一人的比例。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrNonAuthorMergeRateResponse }
           params { use :metric_search }
           post :pr_non_author_merge_rate do
@@ -75,7 +91,11 @@ module Openapi
 
           desc 'PR Average Interactions / PR 平均交互数',
                detail: 'Definition: average number of conversation/comments per PR (excluding bot comments) / 定义：平均每个PR下的对话/评论数量。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrAverageInteractionsResponse }
           params { use :metric_search }
           post :pr_average_interactions do
@@ -85,7 +105,11 @@ module Openapi
 
           desc 'Review Time by Pull Request Size / 分级代码审查时长',
                detail: 'Definition: average review time grouped by PR size (XS/S/M/L/XL) / 定义：按代码变更行数分组统计的平均审查时间。',
-               tags: ['Metrics Data / 指标数据', 'Collaboration Quality Metrics / 协作质量指标'],
+               tags: [
+                 'Community Ecosystem Health / 社区生态健康评估',
+                 'Collaboration Efficiency / 协作效率',
+                 'Collaboration Quality / 协作开发质量'
+               ],
                success: { code: 201, model: Openapi::Entities::PrReviewTimeBySizeResponse }
           params { use :metric_search }
           post :pr_review_time_by_size do

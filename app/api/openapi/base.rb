@@ -100,8 +100,15 @@ module Openapi
           name: 'Scene Invocation / 场景调用', description: 'Operations about Scene Invocation',
           second_names: []
         },
-        { name: 'Test / 社区生态健康评估', description: 'Operations about Metadata',
-          second_names: [] },
+        {
+          name: 'Community Ecosystem Health / 社区生态健康评估',
+          second_names: [
+            'Collaboration Efficiency / 协作效率',
+            'Community Vitality / 社区活力',
+            'Ecosystem Impact / 生态影响力',
+            'Development Governance / 开发治理'
+          ]
+        }
       ],
       array_use_braces: true
   end

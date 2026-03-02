@@ -21,15 +21,15 @@ module Openapi
       expose :uuid, documentation: { type: 'String', desc: 'uuid', example: 'b2495fcb8eac6407bb802a568b55cfcfd9d27f55' }
       expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/oss-compass/compass-web-service' }
-      expose :metric_type, documentation: { type: 'String', desc: 'metric_type', example: 'community_portrait' }
-      expose :metric_name, documentation: { type: 'String', desc: 'metric_name', example: 'pr_issue_link_rate' }
-      expose :metric_detail, using: Entities::PrIssueLinkRateMetricDetail,
-             documentation: { type: 'PrIssueLinkRateMetricDetail', desc: 'metric_detail' }
-      expose :version_number, documentation: { type: 'NilClass', desc: 'version_number', example: nil }
       expose :grimoire_creation_date,
              documentation: { type: 'String', desc: 'grimoire_creation_date', example: '2024-11-04T00:00:00+00:00' }
       expose :metadata__enriched_on,
              documentation: { type: 'String', desc: 'metadata__enriched_on', example: '2025-05-14T07:28:30.512875+00:00' }
+
+
+      expose :pr_issue_linked_ratio, documentation: { type: 'Float', desc: 'pr_issue_linked_ratio', example: 0.5 }
+      expose :pr_issue_linked_count, documentation: { type: 'int', desc: 'pr_issue_linked_count', example: 10 }
+      expose :pr_total_count, documentation: { type: 'int', desc: 'pr_total_count', example: 10 }
     end
 
     class PrIssueLinkRateResponse < Grape::Entity
