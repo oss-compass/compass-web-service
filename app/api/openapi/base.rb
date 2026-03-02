@@ -68,7 +68,17 @@ module Openapi
     mount Openapi::V2::Star::StarProjectServer
 
 
+    mount Openapi::V3::CollaborationEfficiency::ResponseTimeliness
+    mount Openapi::V3::CollaborationEfficiency::CollaborationQuality
+    mount Openapi::V3::CommunityVitality::CommunityPopularity
+    mount Openapi::V3::CommunityVitality::ContributionActivity
+    mount Openapi::V3::CommunityVitality::DeveloperBase
+    mount Openapi::V3::DevelopmentGovernance::OrganizationalGovernance
+    mount Openapi::V3::DevelopmentGovernance::PersonalGovernance
+
+
     mount Openapi::CompassController::DashboardController
+    mount Openapi::CompassController::MetricsModelController
 
     add_swagger_documentation \
       doc_version: '2.0.0',
@@ -89,6 +99,15 @@ module Openapi
         {
           name: 'Scene Invocation / 场景调用', description: 'Operations about Scene Invocation',
           second_names: []
+        },
+        {
+          name: 'Community Ecosystem Health / 社区生态健康评估',
+          second_names: [
+            'Collaboration Efficiency / 协作效率',
+            'Community Vitality / 社区活力',
+            'Ecosystem Impact / 生态影响力',
+            'Development Governance / 开发治理'
+          ]
         }
       ],
       array_use_braces: true
