@@ -12,7 +12,13 @@
 #  dashboard_model_info_id :integer
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
+#  metric_index            :string(255)
+#  mapping_settings        :string(255)
+#  mapping_description     :string(255)
 #
 class DashboardMetricInfo < ApplicationRecord
 
+  def main_field
+    mapping_settings&.dig('main')
+  end
 end

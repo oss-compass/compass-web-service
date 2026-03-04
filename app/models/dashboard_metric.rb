@@ -16,4 +16,12 @@
 #  updated_at                  :datetime         not null
 #
 class DashboardMetric < ApplicationRecord
+
+
+  belongs_to :dashboard_metric_info,
+             foreign_key: :dashboard_metric_info_ident, # 本表的字段
+             primary_key: :ident,                       # 对方表的字段
+             optional: true                             # 允许为空（防止数据不一致报错）
+
+  # validates :dashboard_metric_info_ident, presence: true
 end
