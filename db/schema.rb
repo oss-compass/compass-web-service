@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_30_080249) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_09_072430) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -97,6 +97,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_30_080249) do
     t.integer "dashboard_model_info_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "metric_index"
+    t.string "mapping_settings"
+    t.string "mapping_description"
   end
 
   create_table "dashboard_metrics", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
