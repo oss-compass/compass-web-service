@@ -359,12 +359,49 @@ module Openapi
           end_date = params[:endDate]
 
           os_data_store = {}
+          index_scores = {}
+          model_scores = []
           involved_indices = metrics.map { |m| m.dashboard_metric_info.metric_index }.uniq.compact
 
           involved_indices.each do |index_name|
-            # 这里调用上面定义的 range 查询方法
-            # 结果是一个数组: [ {Month1 Data}, {Month2 Data}, ... ]
-            os_data_store[index_name] = fetch_metrics_by_range(index_name, target_label, start_date, end_date)
+
+
+            docs = fetch_metrics_by_range(index_name, target_label, start_date, end_date)
+            os_data_store[index_name] = docs
+
+            matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
+
+            model_ident = matched_metric&.dashboard_model_info_ident
+
+            if model_ident.present?
+              score_data = docs.map do |doc|
+                {
+                  date: doc['grimoire_creation_date'],
+                  value: doc['score'] || 0,
+                  # extra: {}
+                }
+              end
+
+
+              model_scores << {
+                id: matched_metric.dashboard_model_id,
+                # name: matched_metric.name,
+                ident: model_ident,
+                data: score_data
+              }
+            end
+
+            docs = fetch_metrics_by_range(index_name, target_label, start_date, end_date)
+            os_data_store[index_name] = docs
+            index_scores[model_ident] = docs.map do |doc|
+              {
+                date: doc['grimoire_creation_date'],
+                score: doc['score'] || 0,
+                ident: model_ident
+
+              }
+
+            end
           end
 
 
@@ -393,11 +430,11 @@ module Openapi
                 value = den.zero? ? 0 : (num / den).round(4)
               end
 
-              # --- 格式化 ---
-              display_value = value.to_s
-              if settings['unit'] == '%'
-                display_value = "#{(value.to_f * 100).round(2)}%"
-              end
+              # # --- 格式化 ---
+              # display_value = value.to_s
+              # if settings['unit'] == '%'
+              #   display_value = "#{(value.to_f * 100).round(2)}%"
+              # end
 
               # --- 额外信息 ---
               extra = {}
@@ -425,7 +462,12 @@ module Openapi
             }
           end
 
-          present result_list
+          # present result_list
+
+          present({
+                    metrics: result_list,
+                    model_scores: model_scores
+                  })
 
         end
 
