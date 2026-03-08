@@ -441,6 +441,7 @@ module Openapi
               extra[:total] = doc[settings['total_field']] if settings['total_field']
               extra[:avg] = doc[settings['avg']] if settings['avg']
               extra[:added] = doc[settings['added']] if settings['added']
+              extra[:unit] = settings['unit'] if settings['unit']
 
               # 单条记录结构
               {
