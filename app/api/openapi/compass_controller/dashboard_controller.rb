@@ -51,7 +51,7 @@ module Openapi
 
           begin
             response = metric_class
-                         .must(term: { "label.keyword" => label })
+                         .must(terms: { "label.keyword" => label })
                          .range(:grimoire_creation_date, gte: start_date, lte: end_date)
                          .sort(grimoire_creation_date: :asc)
                          .limit(100)
@@ -332,6 +332,7 @@ module Openapi
         params do
           requires :identifier, type: String, desc: '看板唯一编码'
           requires :repo, type: String, desc: '仓库地址'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
           requires :period, type: String, desc: '周期'
           requires :beginDate, type: String, desc: '开始时间'
           requires :endDate, type: String, desc: '结束时间'
@@ -348,7 +349,7 @@ module Openapi
             present []
             return
           end
-
+          level = params[:level]
 
           metrics = dashboard.dashboard_metrics
                              .includes(:dashboard_metric_info)
@@ -358,6 +359,14 @@ module Openapi
           start_date = params[:beginDate]
           end_date = params[:endDate]
 
+          indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+            target_label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
           os_data_store = {}
           index_scores = {}
           model_scores = []
@@ -366,7 +375,7 @@ module Openapi
           involved_indices.each do |index_name|
 
 
-            docs = fetch_metrics_by_range(index_name, target_label, start_date, end_date)
+            docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date)
             os_data_store[index_name] = docs
 
             matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
@@ -391,8 +400,8 @@ module Openapi
               }
             end
 
-            docs = fetch_metrics_by_range(index_name, target_label, start_date, end_date)
-            os_data_store[index_name] = docs
+            # docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date)
+            # os_data_store[index_name] = docs
             index_scores[model_ident] = docs.map do |doc|
               {
                 date: doc['grimoire_creation_date'],
