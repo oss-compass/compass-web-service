@@ -359,13 +359,14 @@ module Openapi
           start_date = params[:beginDate]
           end_date = params[:endDate]
 
-          indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
-            target_label,
-            level,
-            GiteeContributorEnrich,
-            GithubContributorEnrich,
-            GitcodeContributorEnrich
-          )
+          # indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+          #   target_label,
+          #   level,
+          #   GiteeContributorEnrich,
+          #   GithubContributorEnrich,
+          #   GitcodeContributorEnrich
+          # )
+          repo_urls = [target_label]
 
           os_data_store = {}
           index_scores = {}
