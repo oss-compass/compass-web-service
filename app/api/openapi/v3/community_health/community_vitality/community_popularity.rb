@@ -1,0 +1,67 @@
+# frozen_string_literal: true
+
+module Openapi
+  module V3
+    module CommunityHealth
+      module CommunityVitality
+        class CommunityPopularity < Grape::API
+          version 'v3', using: :path
+          prefix :api
+          format :json
+
+          helpers Openapi::SharedParams::CustomMetricSearch
+          helpers Openapi::SharedParams::AuthHelpers
+          helpers Openapi::SharedParams::ErrorHelpers
+          helpers Openapi::SharedParams::RestapiHelpers
+
+          rescue_from :all do |e|
+            case e
+            when Grape::Exceptions::ValidationErrors
+              handle_validation_error(e)
+            when SearchFlip::ResponseError
+              handle_open_search_error(e)
+            else
+              handle_generic_error(e)
+            end
+          end
+
+          before { require_token! }
+          before do
+            token = params[:access_token]
+            Openapi::SharedParams::RateLimiter.check_token!(token)
+          end
+
+          resource :community_popularity do
+            desc 'Stars Growth / 项目Stars新增',
+                 detail: 'The number of new Stars followed during the period / 周期内新增的Star关注数',
+                 tags: [
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Community Vitality / 社区活力',
+                   'Community Popularity / 社区流行度'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::StarsResponse }
+            params { use :metric_search }
+            post :stars do
+              fields = %w[stars_added stars_total]
+              fetch_metric_data_v2(CommunityPopularityMetric, fields)
+            end
+
+            desc 'Forks / 项目Forks新增',
+                 detail: 'The number of new Forks during the period / 周期内新增的Forks数',
+                 tags: [
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Community Vitality / 社区活力',
+                   'Community Popularity / 社区流行度'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::ForksResponse }
+            params { use :metric_search }
+            post :forks do
+              fields = %w[forks_added forks_total]
+              fetch_metric_data_v2(CommunityPopularityMetric, fields)
+            end
+          end
+        end
+      end
+    end
+  end
+end
