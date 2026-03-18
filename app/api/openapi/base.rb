@@ -96,54 +96,54 @@ module Openapi
         description: 'The API is still in frequent development stage, the interface parameters are not stabilized, please use with caution!',
         contact_url: ENV.fetch('DEFAULT_HOST')
       },
-      # tags: [
-      #   { name: 'Metadata / 元数据', description: 'Operations about Metadata',
-      #     second_names: [] },
-      #   { name: 'Metrics Data / 指标数据', description: 'Operations about Metrics Data',
-      #     second_names: ['Contributor Persona / 开发者画像', 'Community Persona / 社区画像', 'Software Artifact Persona / 软件制品画像'] },
-      #   { name: 'Metrics Model Data / 模型数据', description: 'Operations about Metrics Model Data',
-      #     second_names: [] },
-      #   {
-      #     name: 'Scene Invocation / 场景调用', description: 'Operations about Scene Invocation',
-      #     second_names: []
-      #   },
-      #   {
-      #     name: 'Community Ecosystem Health / 社区生态健康评估',
-      #     second_names: [
-      #       'Collaboration Efficiency / 协作效率',
-      #       'Community Vitality / 社区活力',
-      #       'Ecosystem Impact / 生态影响力',
-      #       'Development Governance / 开发治理'
-      #     ]
-      #   }
-      # ],
 
-      #
       tags: [
-        { 
-          name: 'V2 API', 
-          description: 'Version 2 Endpoints',
-          second_names: [
-            'Metadata / 元数据', 
-            'Metrics Data / 指标数据', 
-            'Metrics Model Data / 模型数据', 
-            'Scene Invocation / 场景调用'
-          ] 
+        { name: 'Metadata / 元数据', description: 'Operations about Metadata',
+          second_names: [] },
+        { name: 'Metrics Data / 指标数据', description: 'Operations about Metrics Data',
+          second_names: ['Contributor Persona / 开发者画像', 'Community Persona / 社区画像', 'Software Artifact Persona / 软件制品画像'] },
+        { name: 'Metrics Model Data / 模型数据', description: 'Operations about Metrics Model Data',
+          second_names: [] },
+        {
+          name: 'Scene Invocation / 场景调用', description: 'Operations about Scene Invocation',
+          second_names: []
         },
-        { 
-          name: 'V3 API', 
-          description: 'Version 3 Endpoints',
+        {
+          name: 'Community Ecosystem Health / 社区生态健康评估',
           second_names: [
-            'Community Ecosystem Health / 社区生态健康评估',
-             
-          ],
-          third_names: [
             'Collaboration Efficiency / 协作效率',
             'Community Vitality / 社区活力',
-            'Development Governance / 开放治理'
+            'Ecosystem Impact / 生态影响力',
+            'Development Governance / 开发治理'
           ]
         }
       ],
+
+      # tags: [
+      #   {
+      #     name: 'V2 API',
+      #     description: 'Version 2 Endpoints',
+      #     second_names: [
+      #       'Metadata / 元数据',
+      #       'Metrics Data / 指标数据',
+      #       'Metrics Model Data / 模型数据',
+      #       'Scene Invocation / 场景调用'
+      #     ]
+      #   },
+      #   {
+      #     name: 'V3 API',
+      #     description: 'Version 3 Endpoints',
+      #     second_names: [
+      #       'Community Ecosystem Health / 社区生态健康评估',
+      #
+      #     ],
+      #     third_names: [
+      #       'Collaboration Efficiency / 协作效率',
+      #       'Community Vitality / 社区活力',
+      #       'Development Governance / 开放治理'
+      #     ]
+      #   }
+      # ],
 
 
 
