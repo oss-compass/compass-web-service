@@ -68,13 +68,20 @@ module Openapi
     mount Openapi::V2::Star::StarProjectServer
 
 
-    mount Openapi::V3::CollaborationEfficiency::ResponseTimeliness
-    mount Openapi::V3::CollaborationEfficiency::CollaborationQuality
-    mount Openapi::V3::CommunityVitality::CommunityPopularity
-    mount Openapi::V3::CommunityVitality::ContributionActivity
-    mount Openapi::V3::CommunityVitality::DeveloperBase
-    mount Openapi::V3::DevelopmentGovernance::OrganizationalGovernance
-    mount Openapi::V3::DevelopmentGovernance::PersonalGovernance
+    mount Openapi::V3::CommunityHealth::CollaborationEfficiency::ResponseTimeliness
+    mount Openapi::V3::CommunityHealth::CollaborationEfficiency::CollaborationQuality
+    mount Openapi::V3::CommunityHealth::CommunityVitality::CommunityPopularity
+    mount Openapi::V3::CommunityHealth::CommunityVitality::ContributionActivity
+    mount Openapi::V3::CommunityHealth::CommunityVitality::DeveloperBase
+    mount Openapi::V3::CommunityHealth::DevelopmentGovernance::OrganizationalGovernance
+    mount Openapi::V3::CommunityHealth::DevelopmentGovernance::PersonalGovernance
+
+    mount Openapi::V3::DeveloperJourney::DeveloperAttraction::DeveloperAttraction
+    mount Openapi::V3::DeveloperJourney::DeveloperGrowth::ParticipationTier
+    mount Openapi::V3::DeveloperJourney::DeveloperGrowth::DeveloperPromotion
+    mount Openapi::V3::DeveloperJourney::DeveloperRetention::CoreRetention
+    mount Openapi::V3::DeveloperJourney::DeveloperRetention::CoreChurn
+    mount Openapi::V3::DeveloperJourney::DeveloperRetention::CoreLoss
 
 
     mount Openapi::CompassController::DashboardController
@@ -89,6 +96,7 @@ module Openapi
         description: 'The API is still in frequent development stage, the interface parameters are not stabilized, please use with caution!',
         contact_url: ENV.fetch('DEFAULT_HOST')
       },
+
       tags: [
         { name: 'Metadata / 元数据', description: 'Operations about Metadata',
           second_names: [] },
@@ -110,6 +118,38 @@ module Openapi
           ]
         }
       ],
+
+      # tags: [
+      #   {
+      #     name: 'V2 API',
+      #     description: 'Version 2 Endpoints',
+      #     second_names: [
+      #       'Metadata / 元数据',
+      #       'Metrics Data / 指标数据',
+      #       'Metrics Model Data / 模型数据',
+      #       'Scene Invocation / 场景调用'
+      #     ]
+      #   },
+      #   {
+      #     name: 'V3 API',
+      #     description: 'Version 3 Endpoints',
+      #     second_names: [
+      #       'Community Ecosystem Health / 社区生态健康评估',
+      #
+      #     ],
+      #     third_names: [
+      #       'Collaboration Efficiency / 协作效率',
+      #       'Community Vitality / 社区活力',
+      #       'Development Governance / 开放治理'
+      #     ]
+      #   }
+      # ],
+
+
+
+      
+
+      
       array_use_braces: true
   end
 end

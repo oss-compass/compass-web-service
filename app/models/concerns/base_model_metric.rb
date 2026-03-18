@@ -28,8 +28,8 @@ module BaseModelMetric
         base = base.sort(sort => direction)
       end
 
-      puts base.to_json
-      puts base.to_query
+      # puts base.to_json
+      # puts base.to_query
       base
     end
 
