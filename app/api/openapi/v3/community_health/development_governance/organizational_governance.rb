@@ -37,7 +37,7 @@ module Openapi
                  detail: 'Number of organizations contributing during the period / 周期内参与贡献的组织个数',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::ParticipatingOrgsResponse }
@@ -50,7 +50,7 @@ module Openapi
                  detail: 'Number of org contributors with code contributions during the period / 周期内参与代码贡献的组织贡献者个数',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgCodeContributorsResponse }
@@ -63,7 +63,7 @@ module Openapi
                  detail: 'Ratio of org code contributors to total code contributors in the period / 周期内组织代码贡献者数量占总代码贡献者数量比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgCodeContributorsRatioResponse }
@@ -77,7 +77,7 @@ module Openapi
                  detail: 'Lines of code contributed by organizations during the period / 周期内组织贡献的代码量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgCodeContributionResponse }
@@ -90,7 +90,7 @@ module Openapi
                  detail: 'Ratio of org code contribution to total code contribution in the period / 周期内组织贡献的代码占总代码量的比值',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgCodeContributionRatioResponse }
@@ -104,7 +104,7 @@ module Openapi
                  detail: 'Number of org contributors with non-code contributions during the period / 周期内参与非代码贡献的组织贡献者个数',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgNonCodeContributorsResponse }
@@ -117,7 +117,7 @@ module Openapi
                  detail: 'Ratio of org non-code contributors to total non-code contributors in the period / 周期内组织非代码贡献者占总非代码贡献者数量比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgNonCodeContributorsRatioResponse }
@@ -131,7 +131,7 @@ module Openapi
                  detail: 'Non-code contribution count by organizations during the period / 周期内组织非代码贡献量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgNonCodeContributionResponse }
@@ -144,7 +144,7 @@ module Openapi
                  detail: 'Ratio of org non-code contribution to total non-code contribution in the period / 周期内组织非代码贡献量占总非代码贡献量比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgNonCodeContributionRatioResponse }
@@ -158,7 +158,7 @@ module Openapi
                  detail: 'Number of distinct organizations in governance roles (excluding community-initiated orgs) during the period / 周期内参与治理的去重组织数量（不含社区发起组织）',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::GovernanceOrgsResponse }
@@ -171,7 +171,7 @@ module Openapi
                  detail: 'Number of distinct managers from organizations (excluding community-initiated orgs) in governance roles during the period / 周期内来自非社区发起组织的去重管理者数量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgManagersResponse }
@@ -184,7 +184,7 @@ module Openapi
                  detail: 'Ratio of org managers to total managers in the period / 周期内组织管理者数量占总管理者数量的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Organizational Governance / 组织开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::OrgManagersRatioResponse }

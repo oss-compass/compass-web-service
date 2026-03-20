@@ -8,11 +8,25 @@ class OrganizationalGovernanceMetric < BaseMetric
   end
 
 
+  def self.dimension
+    'development governance'
+  end
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.scope
+    'community health'
+  end
 
+  def self.ident
+    'organizational_governance'
+  end
+
+  def self.text_ident
+    'organizational_governance'
+  end
+
+  def self.main_score
+    'score'
+  end
 
   # def self.mapping
   #   {"properties"=>

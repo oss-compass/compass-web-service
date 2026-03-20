@@ -4,14 +4,25 @@ class CollaborationQualityMetric < BaseMetric
   
   def self.index_name
     "#{MetricsIndexPrefix}_v2_collaboration_quality"
-    # "v2_metric_model_test"
   end
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'collaboration efficiency'
+  end
+
+  def self.scope
+    'community health'
+  end
+
+  def self.ident
+    'collaboration_quality'
+  end
+
+  def self.text_ident
+    'collaboration_quality'
+  end
 
 
   # def self.mapping

@@ -9,9 +9,25 @@ class ResponseTimelinessMetric < BaseMetric
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'collaboration efficiency'
+  end
+
+  def self.scope
+    'community_health'
+  end
+
+  def self.ident
+    'response_timeliness'
+  end
+
+  def self.text_ident
+    'response_timeliness'
+  end
+
+  def self.main_score
+    'score'
+  end
 
 
   # def self.mapping

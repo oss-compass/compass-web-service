@@ -7,10 +7,25 @@ class CommunityPopularityMetric < BaseMetric
   end
 
 
+  def self.dimension
+    'producommunity vitality'
+  end
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.scope
+    'community health'
+  end
+
+  def self.ident
+    'community_popularity'
+  end
+
+  def self.text_ident
+    'community_popularity'
+  end
+
+  def self.main_score
+    'score'
+  end
 
 
   # def self.mapping

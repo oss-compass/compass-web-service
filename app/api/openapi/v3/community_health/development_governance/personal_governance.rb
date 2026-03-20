@@ -37,7 +37,7 @@ module Openapi
                  detail: 'Number of individual (non-org) contributors with code contributions during the period / 周期内有代码贡献行为的个人贡献者数量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributorsResponse }
@@ -50,7 +50,7 @@ module Openapi
                  detail: 'Ratio of individual code contributors to total code contributors in the period / 周期内个人代码贡献者数量占总代码贡献者数量的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributorsRatioResponse }
@@ -64,7 +64,7 @@ module Openapi
                  detail: 'Lines of code contributed by individuals during the period / 周期内个人贡献者提交的代码行数',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributionResponse }
@@ -77,7 +77,7 @@ module Openapi
                  detail: 'Ratio of individual code contribution to total code contribution in the period / 周期内个人贡献的代码行数占总代码贡献行数的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributionRatioResponse }
@@ -91,7 +91,7 @@ module Openapi
                  detail: 'Number of individual contributors with non-code contributions only during the period / 周期内仅参与非代码贡献的个人贡献者数量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributorsResponse }
@@ -104,7 +104,7 @@ module Openapi
                  detail: 'Ratio of individual non-code contributors to total non-code contributors in the period / 周期内个人非代码贡献者数量占总非代码贡献者数量的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributorsRatioResponse }
@@ -118,7 +118,7 @@ module Openapi
                  detail: 'Total non-code contribution count by individuals (e.g. Issue/PR comments) during the period / 周期内个人贡献者提交的非代码贡献总次数（如 Issue/PR 评论数）',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributionResponse }
@@ -131,7 +131,7 @@ module Openapi
                  detail: 'Ratio of individual non-code contribution to total non-code contribution in the period / 周期内个人非代码贡献量占非代码总贡献量的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributionRatioResponse }
@@ -145,7 +145,7 @@ module Openapi
                  detail: 'Number of distinct individual managers in governance roles during the period / 周期内来自个人的去重管理者数量',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualManagersResponse }
@@ -158,7 +158,7 @@ module Openapi
                  detail: 'Ratio of individual managers to total managers in the period / 周期内个人管理者数量占总管理者数量的比例',
                  tags: [
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开发治理',
+                   'Development Governance / 开放治理',
                    'Personal Governance / 个人开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualManagersRatioResponse }

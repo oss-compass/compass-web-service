@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-DeveloperPromotionMetric = CustomV2Metric unless defined?(DeveloperPromotionMetric)
-
 module Openapi
   module V3
     module DeveloperJourney
@@ -38,8 +36,8 @@ module Openapi
             desc 'Org Code Core Promotion Count / 组织代码核心晋升数量',
                  detail: 'Count of org members promoted to code core tier in the period / 本周期内晋升为代码核心层级的组织成员数量',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionOrgCodeCorePromotionCountResponse }
@@ -51,8 +49,8 @@ module Openapi
             desc 'Org Issue Core Promotion Count / 组织Issue核心晋升数量',
                  detail: 'Count of org members promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的组织成员数量',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionOrgIssueCorePromotionCountResponse }
@@ -64,8 +62,8 @@ module Openapi
             desc 'Individual Code Core Promotion Count / 个人代码核心晋升数量',
                  detail: 'Count of individual developers promoted to code core tier in the period / 本周期内晋升为代码核心层级的个人开发者数量',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionIndividualCodeCorePromotionCountResponse }
@@ -77,8 +75,8 @@ module Openapi
             desc 'Individual Issue Core Promotion Count / 个人Issue核心晋升数量',
                  detail: 'Count of individual developers promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的个人开发者数量',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionIndividualIssueCorePromotionCountResponse }

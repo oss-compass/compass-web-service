@@ -38,10 +38,7 @@ module Openapi
             desc 'PR Merge Rate / PR 合并率',
                  detail: 'Ratio of PRs created in cycle-2 that are ultimately merged / 周期内新建并最终被合并的PR占比。',
                  tags: [
-                   'V3 API',
-
                    'Community Ecosystem Health / 社区生态健康评估',
-                   '指标数据',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
                  ],

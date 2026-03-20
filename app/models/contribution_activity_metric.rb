@@ -9,10 +9,25 @@ class ContributionActivityMetric < BaseMetric
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'community vitality'
+  end
 
+  def self.scope
+    'community health'
+  end
+
+  def self.ident
+    'contribution_activity'
+  end
+
+  def self.text_ident
+    'contribution_activity'
+  end
+
+  def self.main_score
+    'score'
+  end
 
   # def self.mapping
   #   {"properties"=>

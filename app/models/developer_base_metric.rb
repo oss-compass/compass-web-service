@@ -8,11 +8,25 @@ class DeveloperBaseMetric < BaseMetric
   end
 
 
+  def self.dimension
+    'community vitality'
+  end
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.scope
+    'community_health'
+  end
 
+  def self.ident
+    'developer_base'
+  end
+
+  def self.text_ident
+    'developer_base'
+  end
+
+  def self.main_score
+    'score'
+  end
 
   # def self.mapping
   #   {"properties"=>

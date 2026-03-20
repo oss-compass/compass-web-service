@@ -8,8 +8,23 @@ class CoreLossMetric < BaseMetric
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'developer retention'
+  end
 
+  def self.scope
+    'developer journey'
+  end
+
+  def self.ident
+    'core_loss'
+  end
+
+  def self.text_ident
+    'core_loss'
+  end
+
+  def self.main_score
+    'score'
+  end
 end

@@ -8,10 +8,25 @@ class PersonalGovernanceMetric < BaseMetric
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'development governance'
+  end
 
+  def self.scope
+    'community health'
+  end
+
+  def self.ident
+    'personal_governance'
+  end
+
+  def self.text_ident
+    'personal_governance'
+  end
+
+  def self.main_score
+    'score'
+  end
 
   # def self.mapping
   #   {"properties"=>
