@@ -8,8 +8,24 @@ class ParticipationTierMetric < BaseMetric
 
 
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.dimension
+    'developer growth'
+  end
+
+  def self.scope
+    'developer journey'
+  end
+
+  def self.ident
+    'participation_tier'
+  end
+
+  def self.text_ident
+    'participation_tier'
+  end
+
+  def self.main_score
+    'score'
+  end
 
 end

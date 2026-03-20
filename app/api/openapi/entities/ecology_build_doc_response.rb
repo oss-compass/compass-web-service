@@ -1,0 +1,54 @@
+# frozen_string_literal: true
+
+module Openapi
+  module Entities
+    class EcologyBuildDocItem < Grape::Entity
+      expose :uuid, documentation: { type: 'String', desc: 'uuid', example: 'e820aba0c5f29c1aac691cf75426bb4c87480b98' }
+      expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
+      expose :type, documentation: { type: 'NilClass', desc: 'type', example: nil }
+      expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/ddragula/webgpu-ts-tests' }
+      expose :model_name, documentation: { type: 'String', desc: 'model_name', example: 'Development Document Quality' }
+      expose :period, documentation: { type: 'String', desc: 'period', example: 'month' }
+      expose :grimoire_creation_date,
+             documentation: { type: 'String', desc: 'grimoire_creation_date', example: '2024-04-01T00:00:00+00:00' }
+
+      expose :ecology_build_doc,
+             documentation: {
+               type: 'Integer',
+               desc: 'Build doc score / 构建文档分数',
+               example: 0
+             }
+
+      expose :ecology_build_doc_detail,
+             documentation: {
+               type: 'String',
+               desc: 'Build doc detail (nullable) / 构建文档详情（可为空）',
+               example: nil,
+               nullable: true
+             }
+
+      expose :has_build_install_docs,
+             documentation: {
+               type: 'Boolean',
+               desc: 'Whether build/install docs exist / 是否存在构建安装文档',
+               example: false
+             }
+
+      expose :ecology_build_doc_raw,
+             documentation: {
+               type: 'String',
+               desc: 'Raw build doc check result (JSON string) / 构建文档检查原始结果（JSON字符串）',
+               example: '[]'
+             }
+    end
+
+    class EcologyBuildDocResponse < Grape::Entity
+      expose :count, documentation: { type: 'Integer', desc: 'Total Count / 总数', example: 100 }
+      expose :total_page, documentation: { type: 'Integer', desc: 'Total Pages / 总页数', example: 2 }
+      expose :page, documentation: { type: 'Integer', desc: 'Current Page / 当前页', example: 1 }
+      expose :items, using: Entities::EcologyBuildDocItem,
+             documentation: { type: 'Entities::EcologyBuildDocItem', desc: 'response', param_type: 'body', is_array: true }
+    end
+  end
+end
+

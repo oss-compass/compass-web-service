@@ -1,31 +1,32 @@
-class CoreRetentionMetric < BaseMetric
+class SecurityManagementMetric < BaseMetric
   include BaseModelMetric
 
   
   def self.index_name
-    "#{MetricsIndexPrefix}_v2_core_retention"
+    "#{MetricsIndexPrefix}_v2_security_management"
   end
-
 
 
   def self.dimension
-    'developer retention'
+    'source management'
   end
 
   def self.scope
-    'developer journey'
+    'supply chain security'
   end
 
   def self.ident
-    'core_retention'
+    'security_management'
   end
 
   def self.text_ident
-    'core_retention'
+    'security_management'
   end
 
   def self.main_score
     'score'
   end
+
+
 
 end

@@ -1,31 +1,32 @@
-class CoreRetentionMetric < BaseMetric
+class LegalComplianceMetric < BaseMetric
   include BaseModelMetric
 
   
   def self.index_name
-    "#{MetricsIndexPrefix}_v2_core_retention"
+    "#{MetricsIndexPrefix}_v2_legal_compliance"
   end
-
 
 
   def self.dimension
-    'developer retention'
+    'source management'
   end
 
   def self.scope
-    'developer journey'
+    'supply chain security'
   end
 
   def self.ident
-    'core_retention'
+    'legal_compliance'
   end
 
   def self.text_ident
-    'core_retention'
+    'legal_compliance'
   end
 
   def self.main_score
     'score'
   end
+
+
 
 end

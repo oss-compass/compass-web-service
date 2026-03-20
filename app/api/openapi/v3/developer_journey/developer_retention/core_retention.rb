@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-CoreRetentionMetric = CustomV2Metric unless defined?(CoreRetentionMetric)
 
 module Openapi
   module V3
@@ -38,8 +37,8 @@ module Openapi
             desc 'Org Code Core Retention / 组织代码核心开发者（含管理者）留存率',
                  detail: 'Ratio of last-period code core contributors who remain core in current period / 上个周期的代码核心开发者在本周期依然保持为核心的比例',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
                    'Core Retention / 核心开发者留存率'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionOrgCodeCoreRetentionResponse }
@@ -51,8 +50,8 @@ module Openapi
             desc 'Org Issue Core Retention / 组织Issue核心开发者（含管理者）留存率',
                  detail: 'Ratio of last-period Issue core contributors who remain core in current period / 上个周期的Issue核心开发者在本周期依然保持为Issue核心的比例',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
                    'Core Retention / 核心开发者留存率'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionOrgIssueCoreRetentionResponse }
@@ -64,8 +63,8 @@ module Openapi
             desc 'Individual Code Core Retention / 个人代码核心开发者（含管理者）留存率',
                  detail: 'Ratio of last-period individual code core who remain core in current period / 上个周期的个人代码核心在本周期依然保持为核心的比例',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
                    'Core Retention / 核心开发者留存率'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionIndividualCodeCoreRetentionResponse }
@@ -77,8 +76,8 @@ module Openapi
             desc 'Individual Issue Core Retention / 个人Issue核心开发者（含管理者）留存率',
                  detail: 'Ratio of last-period individual Issue core who remain core in current period / 上个周期的个人Issue核心在本周期依然保持为Issue核心的比例',
                  tags: [
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Developer Journey / 开发者旅程',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
                    'Core Retention / 核心开发者留存率'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionIndividualIssueCoreRetentionResponse }

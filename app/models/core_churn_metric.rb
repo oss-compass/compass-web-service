@@ -7,9 +7,24 @@ class CoreChurnMetric < BaseMetric
   end
 
 
+  def self.dimension
+    'developer retention'
+  end
 
-  # def self.main_score
-  #   'activity_score'
-  # end
+  def self.scope
+    'developer journey'
+  end
+
+  def self.ident
+    'core_churn'
+  end
+
+  def self.text_ident
+    'core_churn'
+  end
+
+  def self.main_score
+    'score'
+  end
 
 end

@@ -33,6 +33,43 @@ module Openapi
           end
           before { save_tracking_api! }
 
+          resource :maintenance_management do
+            desc 'Lifecycle Statement / 生命周期申明',
+                 detail: 'Check whether maintenance lifecycle/EOL policy is explicitly stated (EOL, Support Policy) / 检查是否明确声明了软件版本的维护周期及停止支持（EOL）策略。',
+                 tags: [
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Release and Maintenance / 发布与维护',
+                   'Maintenance Management / 维护管理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::LifecycleStatementResponse }
+            params { use :metric_search }
+            post :lifecycle_statement do
+              fields = %w[
+                lifecycle_statement
+                lifecycle_statement_exists
+                lifecycle_statement_detail
+              ]
+              fetch_metric_data_v2(MaintenanceManagementMetric, fields)
+            end
+
+            desc 'Average Vulnerability Fix Time / 安全漏洞平均修复时间',
+                 detail: 'Average time from vulnerability report to fix merged / 统计从漏洞被报告到修复代码合入的平均耗时。',
+                 tags: [
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Release and Maintenance / 发布与维护',
+                   'Maintenance Management / 维护管理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::AvgVulnerabilityFixTimeResponse }
+            params { use :metric_search }
+            post :avg_vulnerability_fix_time do
+              fields = %w[
+                avg_vulnerability_fix_days
+                avg_vulnerability_fix_unavailable
+              ]
+              fetch_metric_data_v2(MaintenanceManagementMetric, fields)
+            end
+          end
+
 
         end
       end

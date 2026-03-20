@@ -1,31 +1,32 @@
-class CoreRetentionMetric < BaseMetric
+class ReleaseQualityMetric < BaseMetric
   include BaseModelMetric
 
   
   def self.index_name
-    "#{MetricsIndexPrefix}_v2_core_retention"
+    "#{MetricsIndexPrefix}_v2_release_quality"
   end
-
 
 
   def self.dimension
-    'developer retention'
+    'release and maintenance'
   end
 
   def self.scope
-    'developer journey'
+    'supply chain security'
   end
 
   def self.ident
-    'core_retention'
+    'release_quality'
   end
 
   def self.text_ident
-    'core_retention'
+    'release_quality'
   end
 
   def self.main_score
     'score'
   end
+
+
 
 end

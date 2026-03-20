@@ -1,31 +1,32 @@
-class CoreRetentionMetric < BaseMetric
+class CodeReviewQualityMetric < BaseMetric
   include BaseModelMetric
 
   
   def self.index_name
-    "#{MetricsIndexPrefix}_v2_core_retention"
+    "#{MetricsIndexPrefix}_v2_code_review_quality"
   end
-
 
 
   def self.dimension
-    'developer retention'
+    'dev and build'
   end
 
   def self.scope
-    'developer journey'
+    'supply chain security'
   end
 
   def self.ident
-    'core_retention'
+    'code_review_quality'
   end
 
   def self.text_ident
-    'core_retention'
+    'code_review_quality'
   end
 
   def self.main_score
     'score'
   end
+
+
 
 end

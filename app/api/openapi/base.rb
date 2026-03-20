@@ -83,6 +83,16 @@ module Openapi
     mount Openapi::V3::DeveloperJourney::DeveloperRetention::CoreChurn
     mount Openapi::V3::DeveloperJourney::DeveloperRetention::CoreLoss
 
+    mount Openapi::V3::SupplyChainSecurity::SourceManagement::LegalCompliance
+    mount Openapi::V3::SupplyChainSecurity::SourceManagement::SecurityManagement
+    mount Openapi::V3::SupplyChainSecurity::ReleaseAndMaintenance::ReleaseQuality
+    mount Openapi::V3::SupplyChainSecurity::ReleaseAndMaintenance::MaintenanceManagement
+    mount Openapi::V3::SupplyChainSecurity::DevAndBuild::CodeReviewQuality
+    mount Openapi::V3::SupplyChainSecurity::DevAndBuild::DevelopmentDocumentQuality
+    mount Openapi::V3::SupplyChainSecurity::DevAndBuild::TrustedBuild
+
+    mount Openapi::V3::ModelScore
+
 
     mount Openapi::CompassController::DashboardController
     mount Openapi::CompassController::MetricsModelController
@@ -115,6 +125,22 @@ module Openapi
             'Community Vitality / 社区活力',
             'Ecosystem Impact / 生态影响力',
             'Development Governance / 开发治理'
+          ]
+        },
+        {
+          name: 'Developer Journey / 开发者旅程评估',
+          second_names: [
+            'Developer Attraction / 开发者吸引',
+            'Developer Growth / 开发者成长',
+            'Developer Retention / 开发者留存',
+          ]
+        },
+        {
+          name: 'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+          second_names: [
+            'Source Management / 源码管理',
+            'Dev and Build / 开发与构建',
+            'Release and Maintenance / 发布与维护',
           ]
         }
       ],
