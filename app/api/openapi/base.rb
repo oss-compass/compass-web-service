@@ -124,7 +124,7 @@ module Openapi
             'Collaboration Efficiency / 协作效率',
             'Community Vitality / 社区活力',
             'Ecosystem Impact / 生态影响力',
-            'Development Governance / 开发治理'
+            'Development Governance / 开放治理'
           ]
         },
         {
