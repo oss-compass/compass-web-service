@@ -33,8 +33,15 @@ class MetricModelsV2Server
       ParticipationTierMetric,
       CoreChurnMetric,
       CoreLossMetric,
-      CoreRetentionMetric
+      CoreRetentionMetric,
 
+      CodeReviewQualityMetric,
+      DevelopmentDocumentQualityMetric,
+      TrustedBuildMetric,
+      MaintenanceManagementMetric,
+      ReleaseQualityMetric,
+      LegalComplianceMetric,
+      SecurityManagementMetric,
 
 
     ].map do |metric|
