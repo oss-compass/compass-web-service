@@ -42,7 +42,7 @@ module Openapi
           pagy(scope, page: params[:page], items: params[:per_page])
         end
 
-        def fetch_metrics_by_range(db_index_key, label, start_date, end_date)
+        def fetch_metrics_by_range(db_index_key, label, start_date, end_date,level)
 
           return {} if db_index_key.blank? || label.blank?
           metric_class = INDEX_CLASS_MAPPING[db_index_key]
@@ -50,14 +50,26 @@ module Openapi
           real_index_name = metric_class ? metric_class.index_name : db_index_key
 
           begin
-            response = metric_class
-                         .must(terms: { "label.keyword" => label })
-                         .range(:grimoire_creation_date, gte: start_date, lte: end_date)
-                         .sort(grimoire_creation_date: :asc)
-                         .limit(100)
-                         .execute
-                         .raw_response
+            # response = metric_class
+            #              .must(terms: { "label.keyword" => label })
+            #              .range(:grimoire_creation_date, gte: start_date, lte: end_date)
+            #              .sort(grimoire_creation_date: :asc)
+            #              .limit(100)
+            #              .execute
+            #              .raw_response
+            #
+            # hits = response&.[]('hits')&.[]('hits') || []
 
+            query = metric_class
+                      .must(terms: { "label.keyword" => label })
+                      .range(:grimoire_creation_date, gte: start_date, lte: end_date)
+                      .sort(grimoire_creation_date: :asc)
+                      .limit(100)
+
+            if level == 'community'
+              query = query.must(term: { "type.keyword"=> "software-artifact" })
+            end
+            response = query.execute.raw_response
             hits = response&.[]('hits')&.[]('hits') || []
             hits.map { |data| data["_source"] }
           rescue => e
@@ -376,7 +388,7 @@ module Openapi
           involved_indices.each do |index_name|
 
 
-            docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date)
+            docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date,level)
             os_data_store[index_name] = docs
 
             matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
