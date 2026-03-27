@@ -8,6 +8,7 @@
 #  ident       :string(255)
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  dimension   :string(255)
 #
 class DashboardModelInfo < ApplicationRecord
 
