@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_26_121143) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -123,6 +123,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_26_121143) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "dimension"
+    t.string "second_dimension"
   end
 
   create_table "dashboard_models", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -467,8 +468,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_26_121143) do
     t.string "org_url", null: false
     t.string "name"
     t.boolean "enabled", default: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "current_timestamp(6)" }, null: false
+    t.datetime "updated_at", default: -> { "current_timestamp(6) ON UPDATE current_timestamp(6)" }, null: false
   end
 
   create_table "tpc_software_comment_states", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
