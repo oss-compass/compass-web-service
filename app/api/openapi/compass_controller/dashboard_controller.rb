@@ -334,8 +334,19 @@ module Openapi
         post :get_by_identifier do
           dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
                                   .find_by!(identifier: params[:identifier])
+          level = dashboard.dashboard_type
+          label = dashboard.repo_urls.first
+          response_data = dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
+          if level == 'community'
+            origin = extract_repos_source(
+              label,
+              level
+            )
+            response_data['origin'] = origin
+          end
 
-          present dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
+          # present dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
+          present response_data
         end
 
         desc '通过编码获取看板指标列表',
