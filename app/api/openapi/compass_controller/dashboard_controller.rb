@@ -335,7 +335,8 @@ module Openapi
           dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
                                   .find_by!(identifier: params[:identifier])
           level = dashboard.dashboard_type
-          label = dashboard.repo_urls.first
+          parsed_urls = dashboard.repo_urls.present? ? JSON.parse(dashboard.repo_urls) : []
+          label = parsed_urls.first
           response_data = dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
           if level == 'community'
             origin = extract_repos_source(
