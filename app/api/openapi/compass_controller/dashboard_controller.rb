@@ -531,6 +531,7 @@ module Openapi
           # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
+          filter_opts << OpenStruct.new(type: "is_bot", values: ["false"])
           # # validate_by_label!(current_user, label)
           #
           # begin_date, end_date, interval = extract_date(params[:beginDate], params[:endDate])
@@ -602,16 +603,11 @@ module Openapi
             GithubContributorEnrich,
             GitcodeContributorEnrich
           )
-
+          filter_opts = []
           # 获取全量贡献者列表 (不分页)
-          # 注意：这里获取的是经过基础处理的列表，通常是一个 Hash 数组
-          full_contributors_list = indexer.fetch_contributors_list(
-            repo_urls,
-            begin_date,
-            end_date,
-            label: label,
-            level: level
-          )
+          filter_opts << OpenStruct.new(type: "is_bot", values: ["false"])
+          full_contributors_list = indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+                                          .then { |list| indexer.filter_contributors(list, filter_opts) }
 
           # 1. 贡献者数量
           contributors_count = full_contributors_list.length
