@@ -529,7 +529,7 @@ module Openapi
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
-          sort_opts = [OpenStruct.new(params[:sortOpts])]
+          sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
           # # validate_by_label!(current_user, label)
           #
@@ -695,7 +695,7 @@ module Openapi
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           # sort_opts = (params[:sortOpts] || []).map { |opt| OpenStruct.new(opt) }
-          sort_opts = [OpenStruct.new(params[:sortOpts])]
+          sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
           # validate_by_label!(current_user, label)
           #
@@ -1003,7 +1003,7 @@ module Openapi
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
-          sort_opts = [OpenStruct.new(params[:sortOpts])]
+          sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
           # validate_by_label!(current_user, label)
           # begin_date, end_date, _ = extract_date(params[:beginDate], params[:endDate])
