@@ -18,6 +18,7 @@ module Openapi
         requires :contributor, type: String, desc: 'Contributor name / 开发者名称', documentation: { param_type: 'body', example: 'Github username / Github 用户名称' }
         requires :begin_date, type: DateTime, desc: 'Start date / 开始日期', documentation: { param_type: 'body', example: '2010-02-22' }
         requires :end_date, type: DateTime, desc: 'End date / 结束日期', documentation: { param_type: 'body', example: '2024-03-22' }
+        optional :platform, type: String, desc: 'Platform type(github/gitee/atomgit) / 平台类型(github/gitee/atomgit)', documentation: { param_type: 'body', example: 'github' }
       end
 
       params :software_artifact_portrait_search do

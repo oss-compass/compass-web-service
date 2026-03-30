@@ -52,6 +52,35 @@ module Openapi
               { date: date, value: count }
             end.sort_by { |item| item[:date] }
           end
+
+          # 根据平台选择对应的 indexer 类
+          # 注意：gitcode 和 atomgit 是同一平台，使用相同的 indexer
+          def select_indexers_by_platform(platform)
+            normalized_platform = platform.to_s.downcase.strip
+            case normalized_platform
+            # when 'gitee'
+            #   {
+            #     contributor_repo_enrich: GiteeEventContributorRepoEnrich,
+            #     contributor: GiteeEventContributor,
+            #     repository_enrich: GiteeEventRepositoryEnrich,
+            #     contributor_contributor_enrich: GiteeEventContributorContributorEnrich
+            #   }
+            when 'gitcode', 'atomgit'
+              {
+                contributor_repo_enrich: GitcodeEventContributorRepoEnrich,
+                contributor: GitcodeEventContributor,
+                repository_enrich: GitcodeEventRepositoryEnrich,
+                contributor_contributor_enrich: GitcodeEventContributorContributorEnrich
+              }
+            else # github (default)
+              {
+                contributor_repo_enrich: GithubEventContributorRepoEnrich,
+                contributor: GithubEventContributor,
+                repository_enrich: GithubEventRepositoryEnrich,
+                contributor_contributor_enrich: GithubEventContributorContributorEnrich
+              }
+            end
+          end
         end
 
         # before { require_token! }
@@ -73,7 +102,8 @@ module Openapi
             begin_date = Date.new(params[:begin_date].year, 1, 1)
             end_date = Date.new(params[:begin_date].year + 1, 1, 1)
 
-            indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            indexer = indexers[:contributor_repo_enrich]
             push_rank, push_contribution = indexer.push_contribution_rank(params[:contributor], begin_date, end_date)
             issue_rank, issue_contribution = indexer.issue_contribution_rank(params[:contributor], begin_date, end_date)
             pull_rank, pull_contribution = indexer.pull_contribution_rank(params[:contributor], begin_date, end_date)
@@ -103,9 +133,10 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
-            event_indexer = GithubEventContributor
-            event_repo_indexer = GithubEventRepositoryEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
+            event_indexer = indexers[:contributor]
+            event_repo_indexer = indexers[:repository_enrich]
 
             event_data = event_indexer.query_name(contributor)
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
@@ -148,7 +179,7 @@ module Openapi
 
             all_repos_contribution = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             # 构建角色映射
-            org =  event_data['company'] || fallback_org
+            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org 
             repo_roles = all_repos_contribution.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
@@ -175,11 +206,11 @@ module Openapi
             {
               avatar_url: event_data['avatar_url'],
               html_url: event_data['html_url'],
-              country: event_data['country'] || fallback_country,
+              country: event_data['country'].presence || fallback_country,
               country_raw: country_raw,
-              city: event_data['city'] || fallback_city,
+              city: event_data['city'].presence || fallback_city,
               city_raw: city_raw,
-              company: event_data['company'] || fallback_org,
+              company: event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org,
               main_language: main_language,
               repo_roles: repo_roles,
               topics: topic_contributions_array
@@ -200,7 +231,8 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
             contributor = params[:contributor]
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -270,7 +302,8 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -310,9 +343,10 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
-            event_repo_indexer = GithubEventRepositoryEnrich
-            event_indexer = GithubEventContributor
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
+            event_repo_indexer = indexers[:repository_enrich]
+            event_indexer = indexers[:contributor]
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -325,7 +359,7 @@ module Openapi
 
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
             event_data = event_indexer.query_name(contributor)
-            org =  event_data['company'] || fallback_org
+            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org
 
             res =  repo_contributions.map do |repos|
               repo = repos[:repo_url]
@@ -365,7 +399,8 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -441,7 +476,8 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -466,7 +502,8 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -490,7 +527,8 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            enrich_indexer = GithubEventContributorRepoEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            enrich_indexer = indexers[:contributor_repo_enrich]
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -509,9 +547,10 @@ module Openapi
             use :contributor_portrait_search
           }
           post :repo_collaboration do
-            indexer = GithubEventContributorRepoEnrich
-            event_repo_indexer = GithubEventRepositoryEnrich
-            event_indexer = GithubEventContributor
+            indexers = select_indexers_by_platform(params[:platform])
+            indexer = indexers[:contributor_repo_enrich]
+            event_repo_indexer = indexers[:repository_enrich]
+            event_indexer = indexers[:contributor]
             contributor = params[:contributor]
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
@@ -523,7 +562,7 @@ module Openapi
 
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
             event_data = event_indexer.query_name(contributor)
-            org =  event_data['company'] || fallback_org
+            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org
 
             repo_contribution_list = hits.each_with_object({}) do |hit, result|
               data = hit['_source']
@@ -594,7 +633,8 @@ module Openapi
             use :contributor_portrait_search
           }
           post :contributor_collaboration do
-            indexer = GithubEventContributorContributorEnrich
+            indexers = select_indexers_by_platform(params[:platform])
+            indexer = indexers[:contributor_contributor_enrich]
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
 

@@ -1124,7 +1124,7 @@ module Openapi
           )
 
           {
-            items: repo_urls
+            items: repo_urls.sort_by { |url| url.to_s.downcase }
           }
 
           end
