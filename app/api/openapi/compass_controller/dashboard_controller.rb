@@ -745,9 +745,20 @@ module Openapi
           items = hits.map do |hit|
             source = hit['_source'] || {}
 
-            ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+            # ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+            #   hash[field] = source[field]
+            # end
+
+            item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
               hash[field] = source[field]
             end
+
+            if item_hash['state'] == 'closed' && item_hash['time_to_first_attention_without_bot'].nil?
+              item_hash['time_to_first_attention_without_bot'] = 0
+            end
+
+            item_hash
+
           end
 
           {
@@ -1052,13 +1063,21 @@ module Openapi
         ].freeze
 
           items = hits.map do |hit|
-            # 如果不需要白名单过滤，直接返回 _source 即可
             hit['_source']
 
-            # 如果需要像 Issue 那样严格过滤，请取消下面代码的注释并定义 ALLOWED_FIELDS
-            ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+            # ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+            #   hash[field] = hit['_source'][field]
+            # end
+
+            item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
               hash[field] = hit['_source'][field]
             end
+
+            if item_hash['state'] == 'closed' && item_hash['time_to_first_attention_without_bot'].nil?
+              item_hash['time_to_first_attention_without_bot'] = 0
+            end
+
+            item_hash
           end
 
           {
@@ -1068,6 +1087,37 @@ module Openapi
             items: items
           }
         end
+
+
+
+
+        desc '获取社区仓库列表',
+             tags: ['CompassService / compass服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+
+        end
+
+        post :repository_list do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteePullEnrich,
+            GithubPullEnrich,
+            GitcodePullEnrich
+          )
+
+          {
+            items: repo_urls
+          }
+
+          end
+
+
 
       end
     end
