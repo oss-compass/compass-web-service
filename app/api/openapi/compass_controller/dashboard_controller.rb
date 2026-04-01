@@ -926,7 +926,8 @@ module Openapi
             label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich
           )
 
-          commit_count = commit_indexer.count_by_repo_urls(repo_urls, begin_date, end_date)
+          commit_repo_urls = repo_urls.map { |url| "#{url}.git" }
+          commit_count = commit_indexer.count_by_repo_urls(commit_repo_urls, begin_date, end_date, filter: :grimoire_creation_date)
 
           {
             new_pr_count: new_pr_count, # 新建 PR 数量
