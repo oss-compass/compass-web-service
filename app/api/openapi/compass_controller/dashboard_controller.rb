@@ -716,7 +716,14 @@ module Openapi
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
-                        [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
+                        raw_opts = [params[:sortOpts]].flatten.compact
+                        parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+                        has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+                        unless has_created_at
+                          parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+                        end
+
+                        parsed_opts
                       end
 
           # validate_by_label!(current_user, label)
@@ -732,10 +739,9 @@ module Openapi
             GitcodeIssueEnrich
           )
 
-          # GitHub 的 issue 接口同时也包含 PR，需要通过 type: pull_request, values: ['false'] 来只获取 Issue
-          if indexer == GithubIssueEnrich
-            filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
-          end
+          filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
+
+
 
           resp = indexer.terms_by_repo_urls(
             repo_urls,
@@ -998,7 +1004,14 @@ module Openapi
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
-                        [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
+                        raw_opts = [params[:sortOpts]].flatten.compact
+                        parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+                        has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+                        unless has_created_at
+                          parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+                        end
+
+                        parsed_opts
                       end
           # validate_by_label!(current_user, label)
           # begin_date, end_date, _ = extract_date(params[:beginDate], params[:endDate])
