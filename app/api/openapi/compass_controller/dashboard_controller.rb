@@ -262,14 +262,22 @@ module Openapi
         params do
           optional :page, type: Integer, default: 1
           optional :per_page, type: Integer, default: 10
+          optional :keyword, type: String, desc: '名称搜索关键词'
+          optional :dashboard_type, type: String, values: %w[community repo], desc: '看板类型筛选: community, repo '
+          optional :sort_by, type: String, default: 'created_at', values: %w[created_at updated_at name], desc: '排序字段'
+          optional :sort_direction, type: String, default: 'desc', values: %w[asc desc], desc: '排序方向'
         end
         post :list do
 
-          # puts current_user.to_json
-          # # if current_user.role_level>4
-          # dashboards_scope = current_user.dashboards
-          #                                .includes(:dashboard_models, :dashboard_metrics)
-          #                                .order(created_at: :desc)
+          base_scope = if current_user.role_level > 4
+                         Dashboard.all
+                       else
+                         current_user.dashboards
+                       end
+
+
+          # dashboards_scope = base_scope.includes(:dashboard_models, :dashboard_metrics)
+          #                              .order(created_at: :desc)
           # pages, records = paginate_fun(dashboards_scope)
           #
           # present({
@@ -280,21 +288,31 @@ module Openapi
           #           total_pages: pages.pages
           #         })
 
-          base_scope = if current_user.role_level > 4
-                         Dashboard.all
-                       else
-                         current_user.dashboards
-                       end
+          dashboards_scope = base_scope
 
-          # 2. 统一进行预加载 (Includes) 和 排序 (Order)
-          # 这样写可以避免代码重复，无论上面选了哪个范围，下面都统一处理
-          dashboards_scope = base_scope.includes(:dashboard_models, :dashboard_metrics)
-                                       .order(created_at: :desc)
+          if params[:keyword].present?
+            dashboards_scope = dashboards_scope.where('name LIKE ?', "%#{params[:keyword]}%")
+          end
 
-          # 3. 分页处理
+          if params[:dashboard_type].present?
+            dashboards_scope = dashboards_scope.where(dashboard_type: params[:dashboard_type])
+          end
+
+          sort_column = params[:sort_by]
+          sort_order = params[:sort_direction] == 'asc' ? :asc : :desc
+
+          # 处理可能的安全问题，只允许指定字段排序
+          allowed_columns = %w[created_at updated_at name]
+          if allowed_columns.include?(sort_column)
+            dashboards_scope = dashboards_scope.order("#{sort_column} #{sort_order}")
+          else
+            dashboards_scope = dashboards_scope.order(created_at: :desc)
+          end
+
+          # 预加载关联数据并分页
+          dashboards_scope = dashboards_scope.includes(:dashboard_models, :dashboard_metrics)
           pages, records = paginate_fun(dashboards_scope)
 
-          # 4. 返回结果
           present({
                     items: records.as_json(include: [:dashboard_models, :dashboard_metrics]),
                     total_count: pages.count,
