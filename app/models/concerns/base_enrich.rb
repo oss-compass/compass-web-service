@@ -63,6 +63,33 @@ module BaseEnrich
       base.total_entries
     end
 
+    def count_should_by_repo_urls(
+      repo_urls, begin_date, end_date,
+      target: 'tag', filter: :created_at, filter_opts: []
+    )
+      base =
+        self
+          .must(terms: { target => repo_urls })
+          .range(filter, gte: begin_date, lt: end_date)
+
+      if filter_opts.present?
+        filter_opts.each do |filter_opt|
+          case filter_opt.query_type
+          when :should
+            # OR 条件
+            base = base.must(bool: { should: filter_opt.conditions, minimum_should_match: 1 })
+          when :must_not_exists
+            # 字段不存在
+            base = base.must_not(exists: { field: filter_opt.field })
+          else
+            # 默认：简单的 where 条件
+            base = base.where(filter_opt.type => filter_opt.values)
+          end
+        end
+      end
+
+      base.total_entries
+    end
 
     def count_contributor_by_repo_urls(repo_urls, begin_date, end_date, contributor_type: ["code_author"])
       resp = self.must(terms: { 'repo_name.keyword': repo_urls })

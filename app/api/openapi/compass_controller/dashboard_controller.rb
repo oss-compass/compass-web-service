@@ -333,7 +333,7 @@ module Openapi
 
         post :get_by_identifier do
           dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
-                                  .find_by!(identifier: params[:identifier])
+                               .find_by!(identifier: params[:identifier])
           level = dashboard.dashboard_type
           parsed_urls = dashboard.repo_urls.present? ? JSON.parse(dashboard.repo_urls) : []
           label = parsed_urls.first
@@ -379,7 +379,6 @@ module Openapi
                              .includes(:dashboard_metric_info)
                              .order(sort: :asc)
 
-
           start_date = params[:beginDate]
           end_date = params[:endDate]
 
@@ -399,8 +398,7 @@ module Openapi
 
           involved_indices.each do |index_name|
 
-
-            docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date,level)
+            docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date, level)
             os_data_store[index_name] = docs
 
             matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
@@ -415,7 +413,6 @@ module Openapi
                   # extra: {}
                 }
               end
-
 
               model_scores << {
                 id: matched_metric.dashboard_model_id,
@@ -438,17 +435,14 @@ module Openapi
             end
           end
 
-
           result_list = metrics.map do |metric|
             info = metric.dashboard_metric_info
-
 
             settings = if info.mapping_settings.is_a?(String)
                          JSON.parse(info.mapping_settings) rescue {}
                        else
                          info.mapping_settings || {}
                        end
-
 
             source_docs = os_data_store[info.metric_index] || []
 
@@ -584,7 +578,6 @@ module Openapi
           }
         end
 
-
         desc '获取贡献者总览数据 (Overview): 人数统计与组织统计',
              tags: ['CompassService / compass服务']
 
@@ -662,13 +655,12 @@ module Openapi
 
           # 返回结果
           {
-            contributors_count: contributors_count,    # 贡献者总数
-            top_contributors: top_contributors,        # Top 贡献者列表
-            organizations_count: organizations_count,  # 贡献组织总数
-            top_organizations: top_organizations       # Top 贡献组织列表
+            contributors_count: contributors_count, # 贡献者总数
+            top_contributors: top_contributors, # Top 贡献者列表
+            organizations_count: organizations_count, # 贡献组织总数
+            top_organizations: top_organizations # Top 贡献组织列表
           }
         end
-
 
         desc '获取 Issue 详情列表',
              tags: ['CompassService / compass服务']
@@ -792,19 +784,12 @@ module Openapi
         end
 
         post :issues_overview do
-          # 基础校验
-          # validate_by_label!(current_user, label)
 
           label = ShortenedLabel.normalize_label(params[:label])
           level = params[:level]
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          # 日期提取与校验
-          # begin_date, end_date, _ = extract_date(begin_date, end_date)
-          # validate_date!(current_user, label, level, begin_date, end_date)
-
-          # 选择索引器
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
             label,
             level,
@@ -813,12 +798,8 @@ module Openapi
             GitcodeIssueEnrich
           )
 
-          # 定义基础过滤器
-          # 针对 GitHub，Issue 接口包含 PR，必须全局排除 pull_request=true 的数据
           base_filter_opts = []
-          if indexer == GithubIssueEnrich
-            base_filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
-          end
+          base_filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
 
           # 新建 Issue 数量
           # 直接使用基础过滤器查询时间范围内的总数
@@ -832,7 +813,6 @@ module Openapi
           # Issue 解决百分比
           # 逻辑：(Closed Issue / New Issue) * 100
           # 需要在基础过滤器上叠加 state=closed
-          # 注意：这里我们clone一下数组，避免污染 base_filter_opts
           closed_filter = base_filter_opts + [OpenStruct.new(type: 'state', values: ['closed'])]
 
           resolved_issue_count = indexer.count_by_repo_urls(
@@ -849,70 +829,53 @@ module Openapi
 
           # 未响应 Issue 数量
           # 逻辑：state=open 且 评论数=0
-          # 字段名通常为 num_of_comments_without_bot 或 num_comments，根据你的索引定义调整
           unresponsive_filter = base_filter_opts + [
             OpenStruct.new(type: 'state', values: ['open']),
-            OpenStruct.new(type: 'num_of_comments_without_bot', values: [0])
+            OpenStruct.new(
+              query_type: :should,
+              conditions: [
+                { term: { 'num_of_comments_without_bot' => 0 } },
+                { bool: { must_not: { exists: { field: 'num_of_comments_without_bot' } } } }
+              ]
+            )
           ]
 
-          unresponsive_issue_count = indexer.count_by_repo_urls(
+          unresponsive_issue_count = indexer.count_should_by_repo_urls(
             repo_urls,
             begin_date,
             end_date,
             filter_opts: unresponsive_filter
           )
 
-          # 平均评论数量
-          # 逻辑：需要对 num_of_comments_without_bot 字段进行 avg 聚合
-          # 由于 count_by_repo_urls 仅返回数量，这里需要单独构建聚合查询
-          # 如果你的 Indexer 没有封装 aggs 方法，可以使用底层的 client 或 SearchFlip
-
-          avg_comments = 0
+          # 平均响应时间：与 count 同属时间范围与 filter，对 time_to_first_attention_without_bot 做 avg（单位与天数字段一致）
+          avg_response_time = nil
           begin
-            # 使用 SearchFlip 或 Indexer 封装的聚合查询示例
-            # 假设 indexer 有一个方法可以处理聚合，或者直接构造 DSL
-            # 这里模拟一个 DSL 查询结构
-
-            query_body = {
-              query: {
-                bool: {
-                  must: [
-                    { terms: { "label.keyword": repo_urls } },
-                    { range: { "created_at": { gte: begin_date, lte: end_date } } }
-                  ]
-                }
-              },
-              aggs: {
-                avg_val: { avg: { field: "num_of_comments_without_bot" } }
-              },
-              size: 0
-            }
-
-            # 将 GitHub 的 PR 过滤条件加入查询
-            if indexer == GithubIssueEnrich
-              query_body[:query][:bool][:must] << { term: { "pull_request": false } }
-            end
-
-            # 执行查询 (使用 indexer 关联的 client)
-            # 注意：请根据实际的 indexer 实现调整 client 调用方式
-            # client = OpenSearch::Client.new(url: ENV['OPENSEARCH_URL'])
-            # response = client.search(index: indexer.index_name, body: query_body)
-            # avg_comments = response.dig('aggregations', 'avg_val', 'value').to_f.round(2)
-
-            # 临时占位，待你确认 indexer 是否有聚合方法后放开上述逻辑
-            # 目前暂存为 0 或你需要实现 indexer.aggs_by_repo_urls(...)
-            avg_comments = 0
+            val = indexer
+                    .base_terms_by_repo_urls(
+                      repo_urls, begin_date, end_date,
+                      filter_opts: base_filter_opts
+                    )
+                    .per(0)
+                    .aggregate(
+                      { issue_avg_first_attention: { avg: { field: 'time_to_first_attention_without_bot' } } }
+                    )
+                    .execute
+                    .aggregations
+                    .dig('issue_avg_first_attention', 'value')
+            avg_response_time = val.present? ? val.round(2) : nil
           rescue => e
-            # 异常处理，避免聚合失败导致整个接口报错
-            Rails.logger.error "Avg comments calc error: #{e.message}"
+            Rails.logger.error "issues_overview avg_response_time: #{e.message}"
           end
 
           # 返回结果
           {
-            new_issue_count: new_issue_count,               # 新建 Issue 数
-            issue_resolution_percentage: "#{resolution_percentage}%", # 解决率
-            unresponsive_issue_count: unresponsive_issue_count, # 未响应数 (Open且0评论)
-            avg_comments: avg_comments                      # 平均评论数
+            new_issue_count: new_issue_count,
+            issue_resolution_percentage: "#{resolution_percentage}%",
+
+            issue_resolution_numerator: resolved_issue_count,
+            issue_resolution_denominator: new_issue_count,
+            avg_response_time: avg_response_time,
+            unresponsive_issue_count: unresponsive_issue_count
           }
         end
 
@@ -937,9 +900,7 @@ module Openapi
             label, level, GiteePullEnrich, GithubPullEnrich, GitcodePullEnrich
           )
 
-
           new_pr_count = pull_indexer.count_by_repo_urls(repo_urls, begin_date, end_date)
-
 
           closed_filter = [OpenStruct.new(type: 'state', values: ['closed', 'merged'])]
 
@@ -952,40 +913,29 @@ module Openapi
             resolution_percentage = (resolved_pr_count.to_f / new_pr_count * 100).round(2)
           end
 
-
           unresponsive_filter = [
             OpenStruct.new(type: 'state', values: ['open']),
-            OpenStruct.new(type: 'num_review_comments_without_bot', values: [0])  # 代码 Review 评论数为 0
+            OpenStruct.new(type: 'num_review_comments_without_bot', values: [0]) # 代码 Review 评论数为 0
           ]
 
           unresponsive_pr_count = pull_indexer.count_by_repo_urls(
             repo_urls, begin_date, end_date, filter_opts: unresponsive_filter
           )
 
-
-
-
-
           commit_indexer, _ = select_idx_repos_by_lablel_and_level(
             label, level, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich
           )
 
-
           commit_count = commit_indexer.count_by_repo_urls(repo_urls, begin_date, end_date)
 
-
           {
-            new_pr_count: new_pr_count,                   # 新建 PR 数量
+            new_pr_count: new_pr_count, # 新建 PR 数量
             pr_resolution_percentage: "#{resolution_percentage}%", # PR 解决百分比
             unresponsive_pr_count: unresponsive_pr_count, # 未响应 PR 数量
-            commit_count: commit_count,                   # 代码提交数量
-
+            commit_count: commit_count, # 代码提交数量
 
           }
         end
-
-
-
 
         desc '获取 PR (Pull Request) 详情列表',
              tags: ['CompassService / compass服务']
@@ -1100,9 +1050,6 @@ module Openapi
           }
         end
 
-
-
-
         desc '获取社区仓库列表',
              tags: ['CompassService / compass服务']
 
@@ -1129,7 +1076,355 @@ module Openapi
 
           end
 
+        desc '获取社区 Issue 汇总列表（按仓库分组）',
+             tags: ['CompassService / compass服务']
 
+        params do
+          requires :label, type: String, desc: '社区或仓库 label'
+          optional :level, type: String, default: 'community', desc: '级别: community 或 repo'
+          optional :page, type: Integer, default: 1, desc: '页码'
+          optional :per, type: Integer, default: 20, desc: '每页数量'
+          optional :beginDate, type: String, desc: '开始日期  '
+          optional :endDate, type: String, desc: '结束日期 '
+          # 筛选参数
+          optional :filterOpts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
+
+          # 排序参数
+          optional :sortOpts, type: Hash do
+            optional :type, type: String
+            optional :direction, type: String
+          end
+        end
+        post :community_issue_summary_list do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+          page = [params[:page].to_i, 1].max
+          per = [params[:per].to_i, 1].max
+
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          sort_opts = params[:sortOpts]
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeIssueEnrich,
+            GithubIssueEnrich,
+            GitcodeIssueEnrich
+          )
+
+
+
+          filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
+
+          total_issue_count = indexer.count_by_repo_urls(
+            repo_urls,
+            begin_date,
+            end_date,
+            filter_opts: filter_opts
+          )
+
+          batch_size = 1000
+          total_fetch_pages = (total_issue_count.to_f / batch_size).ceil
+          grouped = Hash.new do |h, k|
+            h[k] = {
+              issue_total_count: 0,
+              issue_open_count: 0,
+              issue_closed_count: 0,
+              close_time_sum: 0.0,
+              close_time_count: 0,
+              first_response_sum: 0.0,
+              first_response_count: 0,
+              open_unresponsive_count: 0
+            }
+          end
+
+          1.upto(total_fetch_pages) do |fetch_page|
+            resp = indexer.terms_by_repo_urls(
+              repo_urls,
+              begin_date,
+              end_date,
+              per: batch_size,
+              page: fetch_page,
+              filter_opts: filter_opts,
+              sort_opts: []
+            )
+
+            hits = resp&.dig('hits', 'hits') || []
+            break if hits.empty?
+
+            hits.each do |hit|
+              source = hit['_source'] || {}
+              repo = source['repository'].presence || source['tag'].presence || 'unknown'
+              state = source['state'].to_s.downcase
+              comments_without_bot = source['num_of_comments_without_bot'].to_i
+
+              row = grouped[repo]
+              row[:issue_total_count] += 1
+              row[:issue_open_count] += 1 if state == 'open'
+              row[:issue_closed_count] += 1 if state == 'closed'
+
+              close_time = source['time_to_close_days']
+              if !close_time.nil?
+                row[:close_time_sum] += close_time.to_f
+                row[:close_time_count] += 1
+              end
+
+              first_response_time = source['time_to_first_attention']
+              if !first_response_time.nil?
+                row[:first_response_sum] += first_response_time.to_f
+                row[:first_response_count] += 1
+              end
+
+              if state == 'open' && comments_without_bot == 0
+                row[:open_unresponsive_count] += 1
+              end
+            end
+          end
+
+          repo_url_to_identifier =
+            Dashboard.all.each_with_object({}) do |d, h|
+              # 先解析 JSON 字符串为数组
+              urls = JSON.parse(d.repo_urls) rescue []
+
+              first_url = urls.first.to_s.strip
+              next if first_url.blank?
+
+              h[first_url] = d.identifier
+            end
+
+          items = grouped.map do |repo, stat|
+            issue_total = stat[:issue_total_count]
+            closed_loop_rate = issue_total.positive? ? (stat[:issue_closed_count].to_f / issue_total * 100).round(2) : 0.0
+            avg_close_time = stat[:close_time_count].positive? ? (stat[:close_time_sum] / stat[:close_time_count]).round(2) : nil
+            avg_first_response = stat[:first_response_count].positive? ? (stat[:first_response_sum] / stat[:first_response_count]).round(2) : nil
+
+            {
+              identifier: repo_url_to_identifier[repo.to_s],
+              repo_url: repo,
+              issue_total_count: issue_total,
+              issue_open_count: stat[:issue_open_count],
+              closed_loop_rate: closed_loop_rate,
+              avg_closed_loop_time: avg_close_time,
+              avg_first_response_time: avg_first_response,
+              open_unresponsive_count: stat[:open_unresponsive_count]
+            }
+          end.sort_by { |row| -row[:issue_total_count] }
+
+          sort_key_map = {
+            'issue_total_count' => :issue_total_count,
+            'issue_open_count' => :issue_open_count,
+            'closed_loop_rate' => :closed_loop_rate,
+            'avg_closed_loop_time' => :avg_closed_loop_time,
+            'avg_first_response_time' => :avg_first_response_time,
+            'open_unresponsive_count' => :open_unresponsive_count
+          }
+          sort_opts = {} unless sort_opts.is_a?(Hash)
+          sort_key = sort_key_map[sort_opts&.dig(:type).to_s] || :issue_total_count
+          sort_direction = sort_opts&.dig(:direction).to_s.downcase == 'asc' ? :asc : :desc
+
+          items = items.sort do |a, b|
+            av = a[sort_key]
+            bv = b[sort_key]
+
+            if av.nil? && bv.nil?
+              0
+            elsif av.nil?
+              1
+            elsif bv.nil?
+              -1
+            else
+              cmp = av.is_a?(String) && bv.is_a?(String) ? (av <=> bv) : (av.to_f <=> bv.to_f)
+              sort_direction == :desc ? -cmp : cmp
+            end
+          end
+
+          total_repo_count = items.size
+          paged_items = items[((page - 1) * per), per] || []
+
+          {
+            count: total_repo_count,
+            total_page: (total_repo_count.to_f / per).ceil,
+            page: page,
+            items: paged_items
+          }
+        end
+
+        desc '获取社区 pull 汇总列表（按仓库分组）',
+             tags: ['CompassService / compass服务']
+
+        params do
+          requires :label, type: String, desc: '社区或仓库 label'
+          optional :level, type: String, default: 'community', desc: '级别: community 或 repo'
+          optional :page, type: Integer, default: 1, desc: '页码'
+          optional :per, type: Integer, default: 20, desc: '每页数量'
+          optional :beginDate, type: String, desc: '开始日期  '
+          optional :endDate, type: String, desc: '结束日期 '
+          # 筛选参数
+          optional :filterOpts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
+
+          # 排序参数
+          optional :sortOpts, type: Hash do
+            optional :key, type: String
+            optional :direction, type: String
+          end
+        end
+        post :community_pull_summary_list do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+          page = [params[:page].to_i, 1].max
+          per = [params[:per].to_i, 1].max
+
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          sort_opts = params[:sortOpts]
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteePullEnrich,
+            GithubPullEnrich,
+            GitcodePullEnrich
+          )
+
+          total_pull_count = indexer.count_by_repo_urls(
+            repo_urls,
+            begin_date,
+            end_date,
+            filter_opts: filter_opts
+          )
+
+          batch_size = 1000
+          total_fetch_pages = (total_pull_count.to_f / batch_size).ceil
+          grouped = Hash.new do |h, k|
+            h[k] = {
+              pull_total_count: 0,
+              pull_open_count: 0,
+              pull_closed_count: 0,
+              close_time_sum: 0.0,
+              close_time_count: 0,
+              first_response_sum: 0.0,
+              first_response_count: 0,
+              open_unresponsive_count: 0
+            }
+          end
+
+          1.upto(total_fetch_pages) do |fetch_page|
+            resp = indexer.terms_by_repo_urls(
+              repo_urls,
+              begin_date,
+              end_date,
+              per: batch_size,
+              page: fetch_page,
+              filter_opts: filter_opts,
+              sort_opts: []
+            )
+
+            hits = resp&.dig('hits', 'hits') || []
+            break if hits.empty?
+
+            hits.each do |hit|
+              source = hit['_source'] || {}
+              repo = source['repository'].presence || source['tag'].presence || 'unknown'
+              state = source['state'].to_s.downcase
+              comments_without_bot = source['num_of_comments_without_bot'].to_i
+
+              row = grouped[repo]
+              row[:pull_total_count] += 1
+              row[:pull_open_count] += 1 if state == 'open'
+              row[:pull_closed_count] += 1 if state == 'closed'
+
+              close_time = source['time_to_close_days']
+              if !close_time.nil?
+                row[:close_time_sum] += close_time.to_f
+                row[:close_time_count] += 1
+              end
+
+              first_response_time = source['time_to_first_attention_without_bot']
+              if !first_response_time.nil?
+                row[:first_response_sum] += first_response_time.to_f
+                row[:first_response_count] += 1
+              end
+
+              if state == 'open' && comments_without_bot == 0
+                row[:open_unresponsive_count] += 1
+              end
+            end
+          end
+
+          repo_url_to_identifier =
+            Dashboard.all.each_with_object({}) do |d, h|
+              # 先解析 JSON 字符串为数组
+              urls = JSON.parse(d.repo_urls) rescue []
+
+              first_url = urls.first.to_s.strip
+              next if first_url.blank?
+
+              h[first_url] = d.identifier
+            end
+          items = grouped.map do |repo, stat|
+            pull_total = stat[:pull_total_count]
+            closed_loop_rate = pull_total.positive? ? (stat[:pull_closed_count].to_f / pull_total * 100).round(2) : 0.0
+            avg_close_time = stat[:close_time_count].positive? ? (stat[:close_time_sum] / stat[:close_time_count]).round(2) : nil
+            avg_first_response = stat[:first_response_count].positive? ? (stat[:first_response_sum] / stat[:first_response_count]).round(2) : nil
+
+            {
+              identifier: repo_url_to_identifier[repo.to_s],
+              repo_url: repo,
+              pull_total_count: pull_total,
+              pull_open_count: stat[:pull_open_count],
+              closed_loop_rate: closed_loop_rate,
+              avg_closed_loop_time: avg_close_time,
+              avg_first_response_time: avg_first_response,
+              open_unresponsive_count: stat[:open_unresponsive_count]
+            }
+          end.sort_by { |row| -row[:pull_total_count] }
+
+          sort_key_map = {
+            'pull_total_count' => :pull_total_count,
+            'pull_open_count' => :pull_open_count,
+            'closed_loop_rate' => :closed_loop_rate,
+            'avg_closed_loop_time' => :avg_closed_loop_time,
+            'avg_first_response_time' => :avg_first_response_time,
+            'open_unresponsive_count' => :open_unresponsive_count
+          }
+          sort_key = sort_key_map[sort_opts&.dig(:type).to_s] || :pull_total_count
+          sort_direction = sort_opts&.dig(:direction).to_s.downcase == 'asc' ? :asc : :desc
+
+          items = items.sort do |a, b|
+            av = a[sort_key]
+            bv = b[sort_key]
+
+            if av.nil? && bv.nil?
+              0
+            elsif av.nil?
+              1
+            elsif bv.nil?
+              -1
+            else
+              cmp = av.is_a?(String) && bv.is_a?(String) ? (av <=> bv) : (av.to_f <=> bv.to_f)
+              sort_direction == :desc ? -cmp : cmp
+            end
+          end
+
+          total_repo_count = items.size
+          paged_items = items[((page - 1) * per), per] || []
+
+          {
+            count: total_repo_count,
+            total_page: (total_repo_count.to_f / per).ceil,
+            page: page,
+            items: paged_items
+          }
+        end
 
       end
     end
