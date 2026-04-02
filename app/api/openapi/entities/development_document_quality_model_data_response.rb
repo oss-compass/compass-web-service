@@ -9,7 +9,7 @@ module Openapi
       expose :ecology_readme, documentation: { type: 'String', desc: 'Ecology readme / README文档质量', nullable: true }
       expose :ecology_readme_detail, documentation: { type: 'String', desc: 'Ecology readme detail / README文档质量详情', nullable: true }
       expose :readme_completeness_score, documentation: { type: 'Float', desc: 'Readme completeness score / README完整性得分', nullable: true }
-      expose :ecology_readme_raw, documentation: { type: 'Object', desc: 'Ecology readme raw / README原始数据', nullable: true }
+      expose :ecology_readme_raw, documentation: { type: 'String', desc: 'Ecology readme raw / README原始数据', nullable: true }
       expose :ecology_build_doc, documentation: { type: 'String', desc: 'Ecology build doc / 构建文档质量', nullable: true }
       expose :ecology_build_doc_detail, documentation: { type: 'String', desc: 'Ecology build doc detail / 构建文档质量详情', nullable: true }
       expose :has_build_install_docs, documentation: { type: 'Boolean', desc: 'Has build install docs / 是否有构建安装文档', nullable: true }

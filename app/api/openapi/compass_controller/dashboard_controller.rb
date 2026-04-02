@@ -381,6 +381,137 @@ module Openapi
 
         end
 
+        # post :get_metrics_by_identifier do
+        #
+        #   dashboard = Dashboard.find_by(identifier: params[:identifier])
+        #   error!({ error: '找不到该看板或无权访问' }, 403) if dashboard.blank?
+        #
+        #   target_label = params[:repo].presence
+        #   if target_label.blank?
+        #     present []
+        #     return
+        #   end
+        #   level = params[:level]
+        #
+        #   metrics = dashboard.dashboard_metrics
+        #                      .includes(:dashboard_metric_info)
+        #                      .order(sort: :asc)
+        #
+        #   start_date = params[:beginDate]
+        #   end_date = params[:endDate]
+        #
+        #
+        #   repo_urls = [target_label]
+        #
+        #   os_data_store = {}
+        #   index_scores = {}
+        #   model_scores = []
+        #   involved_indices = metrics.map { |m| m.dashboard_metric_info.metric_index }.uniq.compact
+        #
+        #   involved_indices.each do |index_name|
+        #
+        #     docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date, level)
+        #     os_data_store[index_name] = docs
+        #
+        #     matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
+        #
+        #     model_ident = matched_metric&.dashboard_model_info_ident
+        #
+        #     if model_ident.present?
+        #       score_data = docs.map do |doc|
+        #         {
+        #           date: doc['grimoire_creation_date'],
+        #           value: doc['score'] || 0,
+        #           # extra: {}
+        #         }
+        #       end
+        #
+        #       model_scores << {
+        #         id: matched_metric.dashboard_model_id,
+        #         # name: matched_metric.name,
+        #         ident: model_ident,
+        #         data: score_data
+        #       }
+        #     end
+        #
+        #     # docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date)
+        #     # os_data_store[index_name] = docs
+        #     index_scores[model_ident] = docs.map do |doc|
+        #       {
+        #         date: doc['grimoire_creation_date'],
+        #         score: doc['score'] || 0,
+        #         ident: model_ident
+        #
+        #       }
+        #
+        #     end
+        #   end
+        #
+        #   result_list = metrics.map do |metric|
+        #     info = metric.dashboard_metric_info
+        #
+        #     settings = if info.mapping_settings.is_a?(String)
+        #                  JSON.parse(info.mapping_settings) rescue {}
+        #                else
+        #                  info.mapping_settings || {}
+        #                end
+        #
+        #     source_docs = os_data_store[info.metric_index] || []
+        #
+        #     # 从每一个时间点的数据中提取值
+        #     series_data = source_docs.map do |doc|
+        #       # --- 数值计算逻辑 (复用之前的逻辑，但针对单个 doc) ---
+        #       value = 0
+        #       if settings['main']
+        #         value = doc[settings['main']] || 0
+        #       elsif settings['numerator'] && settings['denominator']
+        #         num = doc[settings['numerator']].to_f
+        #         den = doc[settings['denominator']].to_f
+        #         value = den.zero? ? 0 : (num / den).round(4)
+        #       end
+        #
+        #       # # --- 格式化 ---
+        #       # display_value = value.to_s
+        #       # if settings['unit'] == '%'
+        #       #   display_value = "#{(value.to_f * 100).round(2)}%"
+        #       # end
+        #
+        #       # --- 额外信息 ---
+        #       extra = {}
+        #       extra[:total] = doc[settings['total_field']] if settings['total_field']
+        #       extra[:avg] = doc[settings['avg']] if settings['avg']
+        #       extra[:added] = doc[settings['added']] if settings['added']
+        #       extra[:unit] = settings['unit'] if settings['unit']
+        #
+        #       # 单条记录结构
+        #       {
+        #         date: doc['grimoire_creation_date'], # 数据对应的日期 (如 2025-01-01)
+        #         value: value,
+        #         # display_value: display_value,
+        #         extra: extra
+        #       }
+        #     end
+        #
+        #     # 返回结构：包含元数据和 data 数组
+        #     {
+        #       id: metric.id,
+        #       name: info.name,
+        #       ident: info.ident,
+        #       # unit: settings['unit'],
+        #       #
+        #       data: series_data
+        #     }
+        #   end
+        #
+        #   # present result_list
+        #
+        #   present({
+        #             metrics: result_list,
+        #             model_scores: model_scores
+        #           })
+        #
+        # end
+
         post :get_metrics_by_identifier do
 
           dashboard = Dashboard.find_by(identifier: params[:identifier])
@@ -400,13 +531,16 @@ module Openapi
           start_date = params[:beginDate]
           end_date = params[:endDate]
 
-          # indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
-          #   target_label,
-          #   level,
-          #   GiteeContributorEnrich,
-          #   GithubContributorEnrich,
-          #   GitcodeContributorEnrich
-          # )
+          # 检查是否是最近3个月的查询
+          begin_date_obj = Date.parse(start_date) rescue nil
+          end_date_obj = Date.parse(end_date) rescue nil
+          is_recent_3_months = false
+
+          if begin_date_obj && end_date_obj
+            months_diff = (end_date_obj.year - begin_date_obj.year) * 12 + (end_date_obj.month - begin_date_obj.month)
+            is_recent_3_months = months_diff == 3 || (end_date_obj - begin_date_obj).to_i <= 95
+          end
+
           repo_urls = [target_label]
 
           os_data_store = {}
@@ -414,10 +548,29 @@ module Openapi
           model_scores = []
           involved_indices = metrics.map { |m| m.dashboard_metric_info.metric_index }.uniq.compact
 
+          # 第一次查询
           involved_indices.each do |index_name|
-
             docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date, level)
             os_data_store[index_name] = docs
+          end
+
+          # 检查是否需要重新查询：最近3个月且每个指标数据只有2个
+          need_refetch = is_recent_3_months && os_data_store.values.all? { |docs| docs.size == 2 }
+
+          if need_refetch
+            # 开始时间往前推1个月
+            new_start_date = (begin_date_obj << 1).strftime('%Y-%m-%d')
+
+            os_data_store = {}  # 重置数据存储
+
+            involved_indices.each do |index_name|
+              docs = fetch_metrics_by_range(index_name, repo_urls, new_start_date, end_date, level)
+              os_data_store[index_name] = docs
+            end
+          end
+
+          involved_indices.each do |index_name|
+            docs = os_data_store[index_name]
 
             matched_metric = metrics.find { |m| m.dashboard_metric_info.metric_index == index_name }
 
@@ -440,8 +593,6 @@ module Openapi
               }
             end
 
-            # docs = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date)
-            # os_data_store[index_name] = docs
             index_scores[model_ident] = docs.map do |doc|
               {
                 date: doc['grimoire_creation_date'],

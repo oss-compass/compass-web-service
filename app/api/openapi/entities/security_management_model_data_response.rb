@@ -12,8 +12,8 @@ module Openapi
       expose :vulnerability_disclosure_detail, documentation: { type: 'String', desc: 'Vulnerability disclosure detail / 漏洞响应与披露详情', nullable: true }
       expose :security_vulnerability, documentation: { type: 'String', desc: 'Security vulnerability / 公开未修复漏洞', nullable: true }
       expose :security_vulnerability_detail, documentation: { type: 'String', desc: 'Security vulnerability detail / 公开未修复漏洞详情', nullable: true }
-      expose :vuln_counts, documentation: { type: 'Object', desc: 'Vuln counts / 漏洞计数', nullable: true }
-      expose :security_vulnerability_raw, documentation: { type: 'Object', desc: 'Security vulnerability raw / 漏洞原始数据', nullable: true }
+      expose :vuln_counts, documentation: { type: 'String', desc: 'Vuln counts / 漏洞计数', nullable: true }
+      expose :security_vulnerability_raw, documentation: { type: 'String', desc: 'Security vulnerability raw / 漏洞原始数据', nullable: true }
       expose :score, documentation: { type: 'Float', desc: 'Score / 得分', nullable: true }
       expose :grimoire_creation_date, documentation: { type: 'String', desc: 'grimoire_creation_date' }
       expose :metadata__enriched_on, documentation: { type: 'String', desc: 'metadata__enriched_on' }

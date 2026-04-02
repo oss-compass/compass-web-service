@@ -18,7 +18,7 @@ module Openapi
       expose :pr_merged_total_count, documentation: { type: 'Integer', desc: 'PR merged total count / PR 合并总数量', nullable: true }
       expose :pr_avg_interactions, documentation: { type: 'Float', desc: 'PR average interactions / PR 平均交互数', nullable: true }
       expose :pr_comments_total, documentation: { type: 'Integer', desc: 'PR comments total / PR 评论总数', nullable: true }
-      expose :pr_review_time_by_size, documentation: { type: 'Object', desc: 'Review Time by Pull Request Size / 分级代码审查时长', nullable: true }
+      expose :pr_review_time_by_size, documentation: { type: 'String', desc: 'Review Time by Pull Request Size / 分级代码审查时长', nullable: true }
       expose :score, documentation: { type: 'Float', desc: 'Score / 得分', nullable: true }
       expose :grimoire_creation_date, documentation: { type: 'String', desc: 'grimoire_creation_date' }
       expose :metadata__enriched_on, documentation: { type: 'String', desc: 'metadata__enriched_on' }

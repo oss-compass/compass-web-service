@@ -10,8 +10,8 @@ module Openapi
       expose :detail, documentation: { type: 'String', desc: 'Detail / 详细信息', nullable: true }
       expose :security_binary_artifact, documentation: { type: 'String', desc: 'Security binary artifact / 二进制制品包含', nullable: true }
       expose :security_binary_artifact_detail, documentation: { type: 'String', desc: 'Security binary artifact detail / 二进制制品包含详情', nullable: true }
-      expose :binary_violation_files, documentation: { type: 'Array', desc: 'Binary violation files / 二进制违规文件', nullable: true }
-      expose :binary_archive_list, documentation: { type: 'Array', desc: 'Binary archive list / 二进制归档列表', nullable: true }
+      expose :binary_violation_files, documentation: { type: 'String', desc: 'Binary violation files / 二进制违规文件', nullable: true }
+      expose :binary_archive_list, documentation: { type: 'String', desc: 'Binary archive list / 二进制归档列表', nullable: true }
       expose :security_binary_artifact_raw, documentation: { type: 'Object', desc: 'Security binary artifact raw / 二进制制品原始数据', nullable: true }
       expose :security_package_sig, documentation: { type: 'Boolean', desc: 'Security package sig / 软件包签名', nullable: true }
       expose :lifecycle_release_note, documentation: { type: 'Boolean', desc: 'Lifecycle release note / Release Notes', nullable: true }

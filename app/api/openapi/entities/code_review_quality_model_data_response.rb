@@ -7,7 +7,7 @@ module Openapi
       expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'label' }
       expose :dependency_reachable_ok, documentation: { type: 'Boolean', desc: 'Dependency reachable ok / 依赖可获得状态', nullable: true }
-      expose :dependency_unreachable_list, documentation: { type: 'Array', desc: 'Dependency unreachable list / 不可获得的依赖列表', nullable: true }
+      expose :dependency_unreachable_list, documentation: { type: 'String', desc: 'Dependency unreachable list / 不可获得的依赖列表', nullable: true }
       expose :detail, documentation: { type: 'String', desc: 'Detail / 详细信息', nullable: true }
       expose :compliance_snippet_reference, documentation: { type: 'String', desc: 'Compliance snippet reference / 片段引用合规性', nullable: true }
       expose :compliance_snippet_reference_detail, documentation: { type: 'String', desc: 'Compliance snippet reference detail / 片段引用合规性详情', nullable: true }
@@ -18,7 +18,7 @@ module Openapi
       expose :ecology_test_coverage, documentation: { type: 'String', desc: 'Ecology test coverage / 测试覆盖度', nullable: true }
       expose :ecology_test_coverage_detail, documentation: { type: 'String', desc: 'Ecology test coverage detail / 测试覆盖度详情', nullable: true }
       expose :test_coverage_percent, documentation: { type: 'Float', desc: 'Test coverage percent / 测试覆盖率百分比', nullable: true }
-      expose :ecology_test_coverage_raw, documentation: { type: 'Object', desc: 'Ecology test coverage raw / 测试覆盖度原始数据', nullable: true }
+      expose :ecology_test_coverage_raw, documentation: { type: 'String', desc: 'Ecology test coverage raw / 测试覆盖度原始数据', nullable: true }
       expose :score, documentation: { type: 'Float', desc: 'Score / 得分', nullable: true }
       expose :grimoire_creation_date, documentation: { type: 'String', desc: 'grimoire_creation_date' }
       expose :metadata__enriched_on, documentation: { type: 'String', desc: 'metadata__enriched_on' }
