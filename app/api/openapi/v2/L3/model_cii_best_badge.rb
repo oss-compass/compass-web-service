@@ -33,7 +33,7 @@ module Openapi
       end
 
       resource :metricModel do
-        desc 'Get Project CII Best Badge / 获取项目 CII Best Badge', detail: 'Get Project CII Best Badge / 获取项目 CII Best Badge', tags: ['Metrics Model Data / 模型数据'], success: {
+        desc 'Get Project CII Best Badge / 获取项目 CII Best Badge', detail: 'Get Project CII Best Badge / 获取项目 CII Best Badge', tags: ['V2 API', 'Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CiiBestBadgeResponse
         }
 

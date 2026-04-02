@@ -34,7 +34,7 @@ module Openapi
       end
       before { save_tracking_api! }
       resource :metricModel do
-        desc 'Get Project Criticality Score /  获取项目 Criticality Score', detail: 'Get Project Criticality Score /  获取项目 Criticality Score', tags: ['Metrics Model Data / 模型数据'], success: {
+        desc 'Get Project Criticality Score /  获取项目 Criticality Score', detail: 'Get Project Criticality Score /  获取项目 Criticality Score', tags: ['V2 API', 'Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CriticalityScoreResponse
         }
 

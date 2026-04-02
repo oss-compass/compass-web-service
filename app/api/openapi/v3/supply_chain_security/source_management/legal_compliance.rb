@@ -36,6 +36,8 @@ module Openapi
             desc 'Legal Compliance: Copyright Statement Check / 许可头与版权声明',
                  detail: 'Software source files must include license headers and copyright statements / 软件源文件许可头与版权声明检查：项目的所有源码必须包含许可头与版权声明。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Source Management / 源码管理',
                    'Legal Compliance / 合法合规'
@@ -53,6 +55,8 @@ module Openapi
             desc 'Legal Compliance: OSI License Check / 许可证包含（OSI）',
                  detail: 'Check OSI-approved license presence in the standard location / 软件许可证合规性检查：仓库标准位置包含许可证且许可证为OSI批准的开源许可证。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Source Management / 源码管理',
                    'Legal Compliance / 合法合规'
@@ -69,6 +73,8 @@ module Openapi
             desc 'Legal Compliance: License Compatibility / 许可证兼容性',
                  detail: 'Check whether upstream licenses allow open-source contribution of derivative code / 软件许可证兼容性检查：针对衍生作品代码，检查上游软件的许可证是否允许贡献者将本衍生作品代码进行开源贡献。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Source Management / 源码管理',
                    'Legal Compliance / 合法合规'
@@ -87,6 +93,8 @@ module Openapi
             desc 'Legal Compliance: Anti-tamper for License & Copyright / 许可证与版权声明防篡改',
                  detail: 'Ensure upstream-derived license & copyright information is not tampered with / 软件涉及第三方开源软件的许可证和版权声明篡改检查：通过上游软件衍生的作品应当完整保留原上游软件的License及Copyright信息，项目中不能篡改第三方开源软件的许可证和版权声明。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Source Management / 源码管理',
                    'Legal Compliance / 合法合规'

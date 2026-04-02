@@ -37,6 +37,8 @@ module Openapi
             desc 'Dependency Reachable / 依赖可获得',
                  detail: 'Verify third-party dependencies are publicly reachable and downloadable / 验证项目依赖的所有第三方库是否均可公开访问和下载。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Code Review Quality / 代码审查质量'
@@ -55,6 +57,8 @@ module Openapi
             desc 'Snippet Reference Compliance / 片段引用',
                  detail: 'Detect external code snippets and validate license/copyright source statement compliance / 识别引用的外部代码片段，并验证其来源声明的合规性。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Code Review Quality / 代码审查质量'
@@ -73,6 +77,8 @@ module Openapi
             desc 'Patent Risk (OIN) / 专利风险',
                  detail: 'Analyze patent infringement risk based on OIN list / 基于OIN列表分析引入依赖的专利风险。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Code Review Quality / 代码审查质量'
@@ -91,6 +97,8 @@ module Openapi
             desc 'Test Coverage / 测试覆盖度',
                  detail: 'Measure automated test coverage ratio based on CI coverage report / 衡量自动化测试覆盖率。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Code Review Quality / 代码审查质量'

@@ -37,6 +37,8 @@ module Openapi
             desc 'Build Success / 可构建',
                  detail: 'Verify the project can be built from source using publicly available tools / 验证项目能否使用公开工具从源码成功构建出可工作的系统。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Trusted Build / 可信构建'
@@ -54,6 +56,8 @@ module Openapi
             desc 'CI Integration / CI集成',
                  detail: 'Check whether CI pipeline is configured and enabled / 检查项目是否配置并启用了自动化的持续集成流水线。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Trusted Build / 可信构建'
@@ -71,6 +75,8 @@ module Openapi
             desc 'Build Metadata Available / 构建元数据可获取',
                  detail: 'Check whether input metadata required for build is provided / 检查是否保存并提供了构建过程的输入元数据（环境、版本等）。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Trusted Build / 可信构建'
@@ -88,6 +94,8 @@ module Openapi
             desc 'Reproducible Build / 一致性构建',
                  detail: 'Verify the same source produces identical artifact checksum in the same environment / 验证在相同环境下，同一源码是否能产出Hash值完全一致的二进制包。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Trusted Build / 可信构建'

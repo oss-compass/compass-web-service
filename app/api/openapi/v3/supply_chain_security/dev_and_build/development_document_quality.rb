@@ -37,6 +37,8 @@ module Openapi
             desc 'README Document Quality / README',
                  detail: 'Check repository has README and clearly describes project functionality / 检查仓库是否包含README文档，且清晰描述了项目功能。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Development Document Quality / 开发文档质量'
@@ -56,6 +58,8 @@ module Openapi
             desc 'Build Document / 构建文档',
                  detail: 'Check build/install instructions exist (keywords: Build, Install) / 检查是否提供指导用户从源码编译/安装项目的文档说明。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Development Document Quality / 开发文档质量'
@@ -75,6 +79,8 @@ module Openapi
             desc 'Interface Document / 接口文档',
                  detail: 'Check API docs exist (docs directory or swagger/openapi files) / 检查是否提供清晰的API接口定义文档或规范文件。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Development Document Quality / 开发文档质量'
@@ -94,6 +100,8 @@ module Openapi
             desc 'Committers File / Committers文件',
                  detail: 'Check OWNERS/MAINTAINERS file exists to list decision-makers / 检查是否公开维护具备决策权的核心贡献者名单（OWNERS/MAINTAINERS）。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Dev and Build / 开发与构建',
                    'Development Document Quality / 开发文档质量'

@@ -31,7 +31,7 @@ module Openapi
 
       resource :softwareSelection do
 
-        desc 'Recommend Software by Function Description / 通过功能描述推荐软件', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Recommend Software by Function Description / 通过功能描述推荐软件', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::RecommendTxtResponse, is_array: true
         }, detail: <<~DETAIL
           Describe your needs and the system will recommend suitable software. / 描述你的需求，系统将推荐合适的软件。
@@ -73,7 +73,7 @@ module Openapi
           { items: data }
         end
 
-        desc 'Find Similar Function Software / 查找相似功能软件', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Find Similar Function Software / 查找相似功能软件', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::RecommendTplResponse
         }, detail: <<~DETAIL
           Enter the name of known software to find alternative software with similar functions. / 输入已知软件名称，查找功能相似的替代软件。
@@ -117,7 +117,7 @@ module Openapi
           { items: data }
         end
 
-        desc 'Vote up / 点赞', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Vote up / 点赞', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::RecommendVoteUpResponse
         }, detail: <<~DETAIL
           Vote up. / 点赞。
@@ -165,7 +165,7 @@ module Openapi
           { status: true, message: res }
         end
 
-        desc 'Vote down / 点踩', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Vote down / 点踩', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::RecommendVoteUpResponse
         }, detail: <<~DETAIL
           Vote down. / 点踩。

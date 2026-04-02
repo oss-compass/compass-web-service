@@ -35,7 +35,7 @@ module Openapi
           # 代码
           desc 'Obtain the distribution of organizations to which the top 10 contributors belong / 获取TOP10贡献者所属组织分布',
                detail: 'Obtain the distribution of organizations to which the top 10 contributors belong / 获取TOP10贡献者所属组织分布',
-               tags: ['Metrics Data / 指标数据', 'Community Persona / 社区画像'], success: {
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Community Persona / 社区画像'], success: {
               code: 201, model: Openapi::Entities::TopOrgContributorsResponse
             }
 

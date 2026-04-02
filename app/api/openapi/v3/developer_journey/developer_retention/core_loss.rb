@@ -37,6 +37,8 @@ module Openapi
             desc 'Org Code Core Loss / 组织代码核心开发者（含管理者）流失率',
                  detail: 'Ratio of last-period code core with no contribution in current period / 上个周期的代码核心在本周期没有任何贡献行为的比例',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Retention / 开发者留存',
                    'Core Loss / 核心开发者流失率'
@@ -50,6 +52,8 @@ module Openapi
             desc 'Org Issue Core Loss / 组织Issue核心开发者（含管理者）流失率',
                  detail: 'Ratio of last-period Issue core with no activity in current period / 上个周期的Issue核心在本周期无任何互动的比例',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Retention / 开发者留存',
                    'Core Loss / 核心开发者流失率'
@@ -63,6 +67,8 @@ module Openapi
             desc 'Individual Code Core Loss / 个人代码核心开发者（含管理者）流失率',
                  detail: 'Ratio of last-period individual code core with no contribution in current period / 上个周期的个人代码核心在本周期无任何贡献的比例',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Retention / 开发者留存',
                    'Core Loss / 核心开发者流失率'
@@ -76,6 +82,8 @@ module Openapi
             desc 'Individual Issue Core Loss / 个人Issue核心开发者（含管理者）流失率',
                  detail: 'Ratio of last-period individual Issue core with no activity in current period / 上个周期的个人Issue核心在本周期无任何互动的比例',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Retention / 开发者留存',
                    'Core Loss / 核心开发者流失率'

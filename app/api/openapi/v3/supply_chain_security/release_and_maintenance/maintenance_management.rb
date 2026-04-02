@@ -37,6 +37,8 @@ module Openapi
             desc 'Lifecycle Statement / 生命周期申明',
                  detail: 'Check whether maintenance lifecycle/EOL policy is explicitly stated (EOL, Support Policy) / 检查是否明确声明了软件版本的维护周期及停止支持（EOL）策略。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Maintenance Management / 维护管理'
@@ -55,6 +57,8 @@ module Openapi
             desc 'Average Vulnerability Fix Time / 安全漏洞平均修复时间',
                  detail: 'Average time from vulnerability report to fix merged / 统计从漏洞被报告到修复代码合入的平均耗时。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Maintenance Management / 维护管理'

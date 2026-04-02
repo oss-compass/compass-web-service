@@ -35,7 +35,7 @@ module Openapi
       resource :opencheck do
         desc 'List openchecker check Data of the project / 获取项目openchecker检查数据', detail: '
         List openchecker check Data of the project,including license compatibility analysis and known vulnerabilities. / 获取项目openchecker检查数据,包括开源许可证信息和漏洞信息',
-             tags: ['Metrics Model Data / 模型数据'],
+             tags: ['V2 API', 'Metrics Model Data / 模型数据'],
              success: {
                code: 201, model: Openapi::Entities::OpencheckResponse
         }
