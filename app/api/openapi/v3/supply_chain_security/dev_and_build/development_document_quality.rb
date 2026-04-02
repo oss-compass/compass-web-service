@@ -114,6 +114,35 @@ module Openapi
               ]
               fetch_metric_data_v2(DevelopmentDocumentQualityMetric, fields)
             end
+
+            desc 'Development Document Quality Model Data / 开发文档质量模型数据',
+                 detail: 'Development Document Quality Model Data / 开发文档质量模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Dev and Build / 开发与构建',
+                   'Development Document Quality / 开发文档质量'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::DevelopmentDocumentQualityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                ecology_readme
+                ecology_readme_detail
+                readme_completeness_score
+                ecology_readme_raw
+                ecology_build_doc
+                ecology_build_doc_detail
+                has_build_install_docs
+                ecology_interface_doc
+                ecology_interface_doc_detail
+                has_api_docs
+                committers_file_exists
+                score
+              ]
+              fetch_metric_data_v2(DevelopmentDocumentQualityMetric, fields)
+            end
           end
 
 

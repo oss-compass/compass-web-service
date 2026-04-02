@@ -77,6 +77,22 @@ module Openapi
             post :non_code_contributor_count do
               fetch_metric_data_v2(DeveloperBaseMetric, 'non_code_contributors')
             end
+
+            desc 'Developer Base Model Data / 开发者基数模型数据',
+                 detail: 'Developer Base Model Data / 开发者基数模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Community Vitality / 社区活力',
+                   'Developer Base / 开发者基数'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::DeveloperBaseModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[total_active_contributors code_contributors non_code_contributors score]
+              fetch_metric_data_v2(DeveloperBaseMetric, fields)
+            end
           end
         end
       end

@@ -93,6 +93,22 @@ module Openapi
             post :individual_issue_core_retention do
               fetch_metric_data_v2(CoreRetentionMetric, 'individual_issue_core_retention')
             end
+
+            desc 'Core Retention Model Data / 核心开发者留存模型数据',
+                 detail: 'Core Retention Model Data / 核心开发者留存模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
+                   'Core Retention / 核心开发者留存'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CoreRetentionModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[org_code_core_retention_rate org_issue_core_retention_rate individual_code_core_retention_rate individual_issue_core_retention_rate score]
+              fetch_metric_data_v2(CoreRetentionMetric, fields)
+            end
           end
         end
       end

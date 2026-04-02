@@ -103,6 +103,33 @@ module Openapi
               fields = %w[lifecycle_release_note]
               fetch_metric_data_v2(ReleaseQualityMetric, fields)
             end
+
+            desc 'Release Quality Model Data / 发布质量模型数据',
+                 detail: 'Release Quality Model Data / 发布质量模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Release and Maintenance / 发布与维护',
+                   'Release Quality / 发布质量'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::ReleaseQualityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                sbom_in_release
+                detail
+                security_binary_artifact
+                security_binary_artifact_detail
+                binary_violation_files
+                binary_archive_list
+                security_binary_artifact_raw
+                security_package_sig
+                lifecycle_release_note
+                score
+              ]
+              fetch_metric_data_v2(ReleaseQualityMetric, fields)
+            end
           end
 
 

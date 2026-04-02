@@ -129,6 +129,22 @@ module Openapi
             post :pr_review_time_by_size do
               fetch_metric_data_v2(CollaborationQualityMetric, 'pr_review_time_by_size')
             end
+
+            desc 'Collaboration Quality Model Data / 协作开发质量模型数据',
+                 detail: 'Collaboration Quality Model Data / 协作开发质量模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Collaboration Efficiency / 协作效率',
+                   'Collaboration Quality / 协作开发质量'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CollaborationQualityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[pr_merge_ratio pr_merged_count pr_total_count pr_issue_linked_ratio pr_issue_linked_count pr_review_participation_ratio pr_with_review_count pr_non_author_merge_ratio pr_non_author_merged_count pr_merged_total_count pr_avg_interactions pr_comments_total pr_review_time_by_size score]
+              fetch_metric_data_v2(CollaborationQualityMetric, fields)
+            end
           end
         end
       end

@@ -140,6 +140,22 @@ module Openapi
               fields = %w[pr_new_handle_time_avg pr_new_handle_time_mid]
               fetch_metric_data_v2(ResponseTimelinessMetric, fields)
             end
+
+            desc 'Response Timeliness Model Data / 响应及时性模型数据',
+                 detail: 'Response Timeliness Model Data / 响应及时性模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Collaboration Efficiency / 协作效率',
+                   'Response Timeliness / 响应及时性'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::ResponseTimelinessModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[issue_new_unresponsive_ratio issue_new_first_response_avg issue_new_first_response_mid issue_new_handle_time_avg issue_new_handle_time_mid pr_unresponsive_rate pr_new_first_response_avg pr_new_first_response_mid pr_new_handle_time_avg pr_new_handle_time_mid score]
+              fetch_metric_data_v2(ResponseTimelinessMetric, fields)
+            end
           end
 
         end

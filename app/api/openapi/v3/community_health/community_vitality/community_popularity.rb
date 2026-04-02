@@ -63,6 +63,22 @@ module Openapi
               fields = %w[forks_added forks_total]
               fetch_metric_data_v2(CommunityPopularityMetric, fields)
             end
+
+            desc 'Community Popularity Model Data / 社区流行度模型数据',
+                 detail: 'Community Popularity Model Data / 社区流行度模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Community Vitality / 社区活力',
+                   'Community Popularity / 社区流行度'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CommunityPopularityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[stars_added stars_total forks_added forks_total score]
+              fetch_metric_data_v2(CommunityPopularityMetric, fields)
+            end
           end
         end
       end

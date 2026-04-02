@@ -213,6 +213,22 @@ module Openapi
             post :individual_issue_visitor_contributors do
               fetch_metric_data_v2(ParticipationTierMetric, 'individual_issue_visitor_contributors')
             end
+
+            desc 'Participation Tier Model Data / 开发者参与度分层模型数据',
+                 detail: 'Participation Tier Model Data / 开发者参与度分层模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
+                   'Participation Tier / 开发者参与度分层'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::ParticipationTierModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[org_code_core_contributors org_issue_core_contributors org_code_regular_contributors org_issue_regular_contributors org_code_visitor_contributors org_issue_visitor_contributors individual_code_core_contributors individual_issue_core_contributors individual_code_regular_contributors individual_issue_regular_contributors individual_code_visitor_contributors individual_issue_visitor_contributors score]
+              fetch_metric_data_v2(ParticipationTierMetric, fields)
+            end
           end
         end
       end

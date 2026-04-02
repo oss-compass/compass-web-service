@@ -108,6 +108,31 @@ module Openapi
               ]
               fetch_metric_data_v2(TrustedBuildMetric, fields)
             end
+
+            desc 'Trusted Build Model Data / 可信构建模型数据',
+                 detail: 'Trusted Build Model Data / 可信构建模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Dev and Build / 开发与构建',
+                   'Trusted Build / 可信构建'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::TrustedBuildModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                ecology_build_success_rate
+                build_checker_present
+                ecology_ci
+                ci_integration
+                build_metadata_available
+                detail
+                reproducible_build
+                score
+              ]
+              fetch_metric_data_v2(TrustedBuildMetric, fields)
+            end
           end
 
 

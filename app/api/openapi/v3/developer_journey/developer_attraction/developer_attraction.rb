@@ -108,6 +108,22 @@ module Openapi
               fetch_metric_data_v2(DeveloperAttractionMetric, 'new_individual_non_code_contributors')
             end
 
+            desc 'Developer Attraction Model Data / 开发者吸引模型数据',
+                 detail: 'Developer Attraction Model Data / 开发者吸引模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Attraction / 开发者吸引',
+                   'Developer Attraction / 开发者吸引'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::DeveloperAttractionModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[new_org_count new_org_code_contributors new_org_non_code_contributors new_individual_code_contributors new_individual_non_code_contributors score]
+              fetch_metric_data_v2(DeveloperAttractionMetric, fields)
+            end
+
           end
         end
       end
