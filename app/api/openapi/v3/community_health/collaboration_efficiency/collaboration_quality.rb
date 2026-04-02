@@ -126,8 +126,8 @@ module Openapi
 | PR/Issue Link Rate / PR/Issue 关联率 | /api/v3/collaboration_quality/pr_issue_link_rate | 1 | 0.17 |
 | PR Review Participation Rate / PR 评审参与率 | /api/v3/collaboration_quality/pr_review_participation_rate | 1 | 0.17 |
 | Non-author Merge Rate / Merge协作比率 | /api/v3/collaboration_quality/pr_non_author_merge_rate | 1 | 0.17 |
-| PR Average Interactions / PR 平均交互数 | /api/v3/collaboration_quality/pr_average_interactions | 1 | 0.16 |
-| Review Time by Pull Request Size / 分级代码审查时长 | /api/v3/collaboration_quality/pr_review_time_by_size | 10 | 0.16 |
+| PR Average Interactions / PR 平均交互数 | /api/v3/collaboration_quality/pr_average_interactions | 1 | 0.17 |
+| Review Time by Pull Request Size / 分级代码审查时长 | /api/v3/collaboration_quality/pr_review_time_by_size | 10 | 0.17 |
 ",
                  tags: [
                    'V3 API',

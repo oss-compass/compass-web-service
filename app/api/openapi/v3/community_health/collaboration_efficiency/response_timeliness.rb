@@ -137,8 +137,8 @@ module Openapi
 | Issue First Response Time / Issue 首次响应时间 | /api/v3/response_timeliness/issue_first_reponse | 15 | 0.17 |
 | Issue Processing Time / Issue 处理时长 | /api/v3/response_timeliness/issue_open_time | 60 | 0.17 |
 | PR Unresponsive Rate / PR 未响应占比 | /api/v3/response_timeliness/pr_unresponsive_rate | 1 | 0.17 |
-| PR First Response Time / PR 首次响应时间 | /api/v3/response_timeliness/pr_time_to_first_response | 15 | 0.16 |
-| PR Processing Time / PR 处理时长 | /api/v3/response_timeliness/pr_open_time | 30 | 0.16 |
+| PR First Response Time / PR 首次响应时间 | /api/v3/response_timeliness/pr_time_to_first_response | 15 | 0.17 |
+| PR Processing Time / PR 处理时长 | /api/v3/response_timeliness/pr_open_time | 30 | 0.17 |
 ",
                  tags: [
                    'V3 API',
