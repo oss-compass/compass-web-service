@@ -789,6 +789,10 @@ module Openapi
               item_hash['time_to_first_attention_without_bot'] = 0
             end
 
+            if item_hash['num_of_comments_without_bot'].nil?
+              item_hash['num_of_comments_without_bot'] = 0
+            end
+
             item_hash
 
           end
