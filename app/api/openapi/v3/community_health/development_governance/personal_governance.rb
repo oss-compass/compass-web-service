@@ -37,10 +37,8 @@ module Openapi
                  detail: 'Number of individual (non-org) contributors with code contributions during the period / 周期内有代码贡献行为的个人贡献者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributorsResponse }
             params { use :metric_search }
@@ -52,10 +50,8 @@ module Openapi
                  detail: 'Ratio of individual code contributors to total code contributors in the period / 周期内个人代码贡献者数量占总代码贡献者数量的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributorsRatioResponse }
             params { use :metric_search }
@@ -68,10 +64,8 @@ module Openapi
                  detail: 'Lines of code contributed by individuals during the period / 周期内个人贡献者提交的代码行数',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributionResponse }
             params { use :metric_search }
@@ -83,10 +77,8 @@ module Openapi
                  detail: 'Ratio of individual code contribution to total code contribution in the period / 周期内个人贡献的代码行数占总代码贡献行数的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualCodeContributionRatioResponse }
             params { use :metric_search }
@@ -99,10 +91,8 @@ module Openapi
                  detail: 'Number of individual contributors with non-code contributions only during the period / 周期内仅参与非代码贡献的个人贡献者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributorsResponse }
             params { use :metric_search }
@@ -114,10 +104,8 @@ module Openapi
                  detail: 'Ratio of individual non-code contributors to total non-code contributors in the period / 周期内个人非代码贡献者数量占总非代码贡献者数量的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributorsRatioResponse }
             params { use :metric_search }
@@ -130,10 +118,8 @@ module Openapi
                  detail: 'Total non-code contribution count by individuals (e.g. Issue/PR comments) during the period / 周期内个人贡献者提交的非代码贡献总次数（如 Issue/PR 评论数）',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributionResponse }
             params { use :metric_search }
@@ -145,10 +131,8 @@ module Openapi
                  detail: 'Ratio of individual non-code contribution to total non-code contribution in the period / 周期内个人非代码贡献量占非代码总贡献量的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualNonCodeContributionRatioResponse }
             params { use :metric_search }
@@ -161,10 +145,8 @@ module Openapi
                  detail: 'Number of distinct individual managers in governance roles during the period / 周期内来自个人的去重管理者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualManagersResponse }
             params { use :metric_search }
@@ -176,10 +158,8 @@ module Openapi
                  detail: 'Ratio of individual managers to total managers in the period / 周期内个人管理者数量占总管理者数量的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IndividualManagersRatioResponse }
             params { use :metric_search }
@@ -189,13 +169,25 @@ module Openapi
             end
 
             desc 'Personal Governance Model Data / 个人开放治理模型数据',
-                 detail: 'Personal Governance Model Data / 个人开放治理模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| Individual Code Contributors by Period / 个人代码贡献者数量 | /api/v3/personal_governance/individual_code_contributors_by_period | 300 | 0 |
+| Individual Code Contributors Ratio by Period / 个人代码贡献者占比 | /api/v3/personal_governance/individual_code_contributors_ratio_by_period | 1 | 0 |
+| Individual Code Contribution by Period / 个人代码贡献量 | /api/v3/personal_governance/individual_code_contribution_by_period | 1000 | 0 |
+| Individual Code Contribution Ratio by Period / 个人代码贡献量占比 | /api/v3/personal_governance/individual_code_contribution_ratio_by_period | 1 | 0 |
+| Individual Non-code Contributors by Period / 个人非代码贡献者数量 | /api/v3/personal_governance/individual_non_code_contributors_by_period | 300 | 0 |
+| Individual Non-code Contributors Ratio by Period / 个人非代码贡献者占比 | /api/v3/personal_governance/individual_non_code_contributors_ratio_by_period | 1 | 0 |
+| Individual Non-code Contribution by Period / 个人非代码贡献量 | /api/v3/personal_governance/individual_non_code_contribution_by_period | 300 | 0 |
+| Individual Non-code Contribution Ratio by Period / 个人非代码贡献量占比 | /api/v3/personal_governance/individual_non_code_contribution_ratio_by_period | 1 | 0 |
+| Individual Managers by Period / 个人管理者数量 | /api/v3/personal_governance/individual_managers_by_period | 10 | 0.5 |
+| Individual Managers Ratio by Period / 个人管理者数量占比 | /api/v3/personal_governance/individual_managers_ratio_by_period | 1 | 0.5 |
+",
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Development Governance / 开放治理',
-                   'Personal Governance / 个人开放治理'
+                   'Development Governance / 开放治理'
                  ],
                  success: { code: 201, model: Openapi::Entities::PersonalGovernanceModelDataResponse }
             params { use :metric_search }

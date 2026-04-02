@@ -39,10 +39,8 @@ module Openapi
                  detail: 'Ratio of PRs created in cycle-2 that are ultimately merged / 周期内新建并最终被合并的PR占比。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrMergeRateResponse }
             params { use :metric_search }
@@ -55,10 +53,8 @@ module Openapi
                  detail: 'Ratio of PRs linked to an Issue in cycle-2 / 周期内 PR关联Issue的占比。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrIssueLinkRateResponse }
             params { use :metric_search }
@@ -71,10 +67,8 @@ module Openapi
                  detail: 'Ratio of PRs that have at least one non-author review comment or approval in cycle-2 / 周期内至少有一条非作者Review评论或Approval记录的PR占比。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrReviewParticipationRateResponse }
             params { use :metric_search }
@@ -87,10 +81,8 @@ module Openapi
                  detail: 'Ratio of merged PRs whose merger is not the author in cycle-2 / 周期内PR的合并操作者与PR提交者不是同一人的比例。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrNonAuthorMergeRateResponse }
             params { use :metric_search }
@@ -103,10 +95,8 @@ module Openapi
                  detail: 'Average number of conversation/comments per PR (excluding bot comments) / 平均每个PR下的对话/评论数量。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrAverageInteractionsResponse }
             params { use :metric_search }
@@ -119,10 +109,8 @@ module Openapi
                  detail: 'average review time grouped by PR size (XS/S/M/L/XL) / 按代码变更行数分组统计的平均审查时间。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrReviewTimeBySizeResponse }
             params { use :metric_search }
@@ -131,13 +119,21 @@ module Openapi
             end
 
             desc 'Collaboration Quality Model Data / 协作开发质量模型数据',
-                 detail: 'Collaboration Quality Model Data / 协作开发质量模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| PR Merge Rate / PR 合并率 | /api/v3/collaboration_quality/pr_merge_rate | 1 | 0.17 |
+| PR/Issue Link Rate / PR/Issue 关联率 | /api/v3/collaboration_quality/pr_issue_link_rate | 1 | 0.17 |
+| PR Review Participation Rate / PR 评审参与率 | /api/v3/collaboration_quality/pr_review_participation_rate | 1 | 0.17 |
+| Non-author Merge Rate / Merge协作比率 | /api/v3/collaboration_quality/pr_non_author_merge_rate | 1 | 0.17 |
+| PR Average Interactions / PR 平均交互数 | /api/v3/collaboration_quality/pr_average_interactions | 1 | 0.16 |
+| Review Time by Pull Request Size / 分级代码审查时长 | /api/v3/collaboration_quality/pr_review_time_by_size | 10 | 0.16 |
+",
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Collaboration Quality / 协作开发质量'
+                   'Collaboration Efficiency / 协作效率'
                  ],
                  success: { code: 201, model: Openapi::Entities::CollaborationQualityModelDataResponse }
             params { use :metric_search }

@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Verify SBOM file exists in release assets (SPDX/CycloneDX) / 验证发布的软件版本中是否包含标准的软件物料清单（SPDX/CycloneDX格式）。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Release Quality / 发布质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::SbomInReleaseResponse }
             params { use :metric_search }
@@ -54,10 +52,8 @@ module Openapi
                  detail: 'Check whether repository contains prohibited compiled binary artifacts / 检查源码仓库中是否违规包含了编译后的二进制文件。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Release Quality / 发布质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::SecurityBinaryArtifactResponse }
             params { use :metric_search }
@@ -76,10 +72,8 @@ module Openapi
                  detail: 'Verify released package is digitally signed to ensure integrity / 验证发布的软件包是否经过数字签名以确保完整性和防篡改。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Release Quality / 发布质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::SecurityPackageSigResponse }
             params { use :metric_search }
@@ -92,10 +86,8 @@ module Openapi
                  detail: 'Check release notes are provided with clear change descriptions / 检查版本发布时是否提供了清晰的变更说明文档。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Release Quality / 发布质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::LifecycleReleaseNoteResponse }
             params { use :metric_search }
@@ -105,13 +97,20 @@ module Openapi
             end
 
             desc 'Release Quality Model Data / 发布质量模型数据',
-                 detail: 'Release Quality Model Data / 发布质量模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| SBOM in Release / SBOM检查 | /api/v3/release_quality/sbom_in_release | 1 | 0.25 |
+| Binary Artifacts in Repo / 二进制制品包含 | /api/v3/release_quality/security_binary_artifact | 1 | 0.25 |
+| Package Signature / 软件包签名 | /api/v3/release_quality/security_package_sig | 1 | 0.25 |
+| Release Notes / Release Notes | /api/v3/release_quality/lifecycle_release_note | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Release Quality / 发布质量'
+                   'Release and Maintenance / 发布与维护'
                  ],
                  success: { code: 201, model: Openapi::Entities::ReleaseQualityModelDataResponse }
             params { use :metric_search }

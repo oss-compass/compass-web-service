@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Verify third-party dependencies are publicly reachable and downloadable / 验证项目依赖的所有第三方库是否均可公开访问和下载。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Code Review Quality / 代码审查质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DependencyReachableResponse }
             params { use :metric_search }
@@ -58,10 +56,8 @@ module Openapi
                  detail: 'Detect external code snippets and validate license/copyright source statement compliance / 识别引用的外部代码片段，并验证其来源声明的合规性。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Code Review Quality / 代码审查质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::ComplianceSnippetReferenceResponse }
             params { use :metric_search }
@@ -78,10 +74,8 @@ module Openapi
                  detail: 'Analyze patent infringement risk based on OIN list / 基于OIN列表分析引入依赖的专利风险。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Code Review Quality / 代码审查质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PatentRiskOinResponse }
             params { use :metric_search }
@@ -98,10 +92,8 @@ module Openapi
                  detail: 'Measure automated test coverage ratio based on CI coverage report / 衡量自动化测试覆盖率。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Code Review Quality / 代码审查质量'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::EcologyTestCoverageResponse }
             params { use :metric_search }
@@ -116,13 +108,20 @@ module Openapi
             end
 
             desc 'Code Review Quality Model Data / 代码审查质量模型数据',
-                 detail: 'Code Review Quality Model Data / 代码审查质量模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| Dependency Reachable / 依赖可获得 | /api/v3/code_review_quality/dependency_reachable | 1 | 0.25 |
+| Snippet Reference Compliance / 片段引用 | /api/v3/code_review_quality/compliance_snippet_reference | 1 | 0.25 |
+| Patent Risk (OIN) / 专利风险 | /api/v3/code_review_quality/patent_risk_oin | 1 | 0.25 |
+| Test Coverage / 测试覆盖度 | /api/v3/code_review_quality/ecology_test_coverage | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Code Review Quality / 代码审查质量'
+                   'Dev and Build / 开发与构建'
                  ],
                  success: { code: 201, model: Openapi::Entities::CodeReviewQualityModelDataResponse }
             params { use :metric_search }

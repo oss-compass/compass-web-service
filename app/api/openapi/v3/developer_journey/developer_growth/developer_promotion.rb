@@ -37,10 +37,8 @@ module Openapi
                  detail: 'Count of org members promoted to code core tier in the period / 本周期内晋升为代码核心层级的组织成员数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Growth / 开发者成长',
-                   'Developer Promotion / 开发者晋升'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionOrgCodeCorePromotionCountResponse }
             params { use :metric_search }
@@ -52,10 +50,8 @@ module Openapi
                  detail: 'Count of org members promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的组织成员数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Growth / 开发者成长',
-                   'Developer Promotion / 开发者晋升'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionOrgIssueCorePromotionCountResponse }
             params { use :metric_search }
@@ -67,10 +63,8 @@ module Openapi
                  detail: 'Count of individual developers promoted to code core tier in the period / 本周期内晋升为代码核心层级的个人开发者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Growth / 开发者成长',
-                   'Developer Promotion / 开发者晋升'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionIndividualCodeCorePromotionCountResponse }
             params { use :metric_search }
@@ -78,14 +72,12 @@ module Openapi
               fetch_metric_data_v2(DeveloperPromotionMetric, 'individual_code_core_promotion_count')
             end
 
-            desc 'Individual Issue Core Promotion Count / 个人Issue核心晋升数量',
-                 detail: 'Count of individual developers promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的个人开发者数量',
+            desc 'Individual Issue Core Promotion Count / 个人Issue核心开发者晋升数量',
+                 detail: 'Count of individual developers promoted from non-core to core in Issue contributions / 本周期内Issue贡献从非核心晋升为核心的个人开发者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Growth / 开发者成长',
-                   'Developer Promotion / 开发者晋升'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionIndividualIssueCorePromotionCountResponse }
             params { use :metric_search }
@@ -94,13 +86,20 @@ module Openapi
             end
 
             desc 'Developer Promotion Model Data / 开发者晋升模型数据',
-                 detail: 'Developer Promotion Model Data / 开发者晋升模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| Org Code Core Promotion Count / 组织代码核心晋升数量 | /api/v3/developer_promotion/org_code_core_promotion_count | 10 | 0.25 |
+| Org Issue Core Promotion Count / 组织Issue核心晋升数量 | /api/v3/developer_promotion/org_issue_core_promotion_count | 10 | 0.25 |
+| Individual Code Core Promotion Count / 个人代码核心晋升数量 | /api/v3/developer_promotion/individual_code_core_promotion_count | 10 | 0.25 |
+| Individual Issue Core Promotion Count / 个人Issue核心开发者晋升数量 | /api/v3/developer_promotion/individual_issue_core_promotion_count | 10 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Developer Journey / 开发者旅程评估',
-                   'Developer Growth / 开发者成长',
-                   'Developer Promotion / 开发者晋升'
+                   'Developer Growth / 开发者成长'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperPromotionModelDataResponse }
             params { use :metric_search }

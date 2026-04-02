@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Percentage of new issues created in the target cycle that still have no human response after > 1 cycle (excluding bot and issue author comments) / 当前周期新建Issue超过一个周期未响应的占比，不包括机器人、创建者评论。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::IssueUnresponsiveRateResponse
@@ -55,10 +53,8 @@ module Openapi
                  detail: 'Time interval from issue creation to first human response within the cycle (excluding bot and issue author comments). Output: avg/median / 新建Issue周期内首次响应时间，不包括机器人、创建者评论，输出平均/中位数。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::IssueFirstResponseTimeResponse
@@ -73,10 +69,8 @@ module Openapi
                  detail: 'Average/median time (days) from issue creation to close, or to cycle start time if still open / Issue处理时长均值（天），包含已关闭与未解决：关闭时间-创建时间；未关闭：周期开始时间-创建时间。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::IssueOpenTimeResponse
@@ -92,10 +86,8 @@ module Openapi
                  detail: 'Percentage of new PRs created in the target cycle that still have no response after > 1 cycle / 当前周期新建PR超过一个周期未响应的占比。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::PrUnresponsiveRateResponse
@@ -109,10 +101,8 @@ module Openapi
                  detail: 'Time interval from PR creation to first human response within the cycle (excluding bot and PR author comments). Output: avg/median / 新建PR周期内首次响应时间，不包括机器人、创建者评论，输出平均/中位数。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::PrFirstResponseTimeResponse
@@ -127,10 +117,8 @@ module Openapi
                  detail: 'Average/median time (days) from PR creation to merge/close, or to cycle start time if still open / PR从创建到合并或关闭的时长（天）：关闭时间-创建时间；未关闭：周期开始时间-创建时间。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: {
                    code: 201, model: Openapi::Entities::PrHandleTimeResponse
@@ -142,13 +130,21 @@ module Openapi
             end
 
             desc 'Response Timeliness Model Data / 响应及时性模型数据',
-                 detail: 'Response Timeliness Model Data / 响应及时性模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| Issue Unresponsive Rate / Issue 未响应占比 | /api/v3/response_timeliness/issue_unresponsive_rate | 1 | 0.17 |
+| Issue First Response Time / Issue 首次响应时间 | /api/v3/response_timeliness/issue_first_reponse | 15 | 0.17 |
+| Issue Processing Time / Issue 处理时长 | /api/v3/response_timeliness/issue_open_time | 60 | 0.17 |
+| PR Unresponsive Rate / PR 未响应占比 | /api/v3/response_timeliness/pr_unresponsive_rate | 1 | 0.17 |
+| PR First Response Time / PR 首次响应时间 | /api/v3/response_timeliness/pr_time_to_first_response | 15 | 0.16 |
+| PR Processing Time / PR 处理时长 | /api/v3/response_timeliness/pr_open_time | 30 | 0.16 |
+",
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Collaboration Efficiency / 协作效率',
-                   'Response Timeliness / 响应及时性'
+                   'Collaboration Efficiency / 协作效率'
                  ],
                  success: { code: 201, model: Openapi::Entities::ResponseTimelinessModelDataResponse }
             params { use :metric_search }

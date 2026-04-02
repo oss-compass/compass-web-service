@@ -37,9 +37,8 @@ module Openapi
                  detail: 'Open source software must provide a vulnerability reporting and fix-tracking mechanism / 开源软件必须有漏洞反馈与修复跟踪管理机制。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Security Management / 安全管理'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::VulnerabilityDisclosureResponse }
             params { use :metric_search }
@@ -57,9 +56,8 @@ module Openapi
                  detail: 'Check publicly disclosed but unfixed vulnerabilities (prefer OpenCheck/OSV results) / 软件及依赖源码是否有公开未修复漏洞检查。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Security Management / 安全管理'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::SecurityVulnerabilityResponse }
             params { use :metric_search }
@@ -74,12 +72,18 @@ module Openapi
             end
 
             desc 'Security Management Model Data / 安全管理模型数据',
-                 detail: 'Security Management Model Data / 安全管理模型数据',
+                 detail: "
+| 接口名称 | 地址 | 阈值 | 权重 |
+|---------|------|------|------|
+| Vulnerability Disclosure / 漏洞响应与披露 | /api/v3/security_management/vulnerability_disclosure | 1 | 0.50 |
+| Unfixed Public Vulnerabilities / 公开未修复漏洞 | /api/v3/security_management/security_vulnerability | 1 | 0.50 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Security Management / 安全管理'
+                   'Source Management / 源码管理'
                  ],
                  success: { code: 201, model: Openapi::Entities::SecurityManagementModelDataResponse }
             params { use :metric_search }
