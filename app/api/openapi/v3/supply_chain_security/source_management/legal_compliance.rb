@@ -109,6 +109,32 @@ module Openapi
               ]
               fetch_metric_data_v2(LegalComplianceMetric, fields)
             end
+
+            desc 'Legal Compliance Model Data / 合法合规模型数据',
+                 detail: 'Legal Compliance Model Data / 合法合规模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Source Management / 源码管理',
+                   'Legal Compliance / 合法合规'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::LegalComplianceModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                compliance_copyright_statement
+                compliance_copyright_statement_detail
+                license_included_osi
+                compliance_license_compatibility
+                compliance_license_compatibility_detail
+                license_compatibility_conflicts
+                compliance_copyright_statement_anti_tamper
+                compliance_copyright_statement_anti_tamper_detail
+                score
+              ]
+              fetch_metric_data_v2(LegalComplianceMetric, fields)
+            end
           end
 
         end

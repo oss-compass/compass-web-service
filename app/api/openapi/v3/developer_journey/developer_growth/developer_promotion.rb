@@ -92,6 +92,22 @@ module Openapi
             post :individual_issue_core_promotion_count do
               fetch_metric_data_v2(DeveloperPromotionMetric, 'individual_issue_core_promotion_count')
             end
+
+            desc 'Developer Promotion Model Data / 开发者晋升模型数据',
+                 detail: 'Developer Promotion Model Data / 开发者晋升模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Growth / 开发者成长',
+                   'Developer Promotion / 开发者晋升'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::DeveloperPromotionModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[org_code_core_promotion_count org_issue_core_promotion_count individual_code_core_promotion_count individual_issue_core_promotion_count score]
+              fetch_metric_data_v2(DeveloperPromotionMetric, fields)
+            end
           end
         end
       end

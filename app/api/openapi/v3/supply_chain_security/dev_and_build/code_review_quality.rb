@@ -114,6 +114,37 @@ module Openapi
               ]
               fetch_metric_data_v2(CodeReviewQualityMetric, fields)
             end
+
+            desc 'Code Review Quality Model Data / 代码审查质量模型数据',
+                 detail: 'Code Review Quality Model Data / 代码审查质量模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Dev and Build / 开发与构建',
+                   'Code Review Quality / 代码审查质量'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CodeReviewQualityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                dependency_reachable_ok
+                dependency_unreachable_list
+                detail
+                compliance_snippet_reference
+                compliance_snippet_reference_detail
+                violation_count
+                patent_risk_level
+                patent_risk_unavailable
+                patent_risk_detail
+                ecology_test_coverage
+                ecology_test_coverage_detail
+                test_coverage_percent
+                ecology_test_coverage_raw
+                score
+              ]
+              fetch_metric_data_v2(CodeReviewQualityMetric, fields)
+            end
           end
 
 

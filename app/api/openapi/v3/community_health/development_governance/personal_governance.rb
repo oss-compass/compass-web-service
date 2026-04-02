@@ -188,6 +188,22 @@ module Openapi
               fetch_metric_data_v2(PersonalGovernanceMetric, fields)
             end
 
+            desc 'Personal Governance Model Data / 个人开放治理模型数据',
+                 detail: 'Personal Governance Model Data / 个人开放治理模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Development Governance / 开放治理',
+                   'Personal Governance / 个人开放治理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::PersonalGovernanceModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[individual_code_contributors individual_code_contributors_ratio total_code_contributors individual_code_contribution individual_code_contribution_ratio total_code_contribution individual_non_code_contributors individual_non_code_contributors_ratio total_non_code_contributors individual_non_code_contribution individual_non_code_contribution_ratio total_non_code_contribution individual_managers individual_managers_ratio total_managers score]
+              fetch_metric_data_v2(PersonalGovernanceMetric, fields)
+            end
+
           end
         end
       end

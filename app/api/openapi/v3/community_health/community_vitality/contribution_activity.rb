@@ -116,6 +116,22 @@ module Openapi
             # post :release_count do
             #   fetch_metric_data(metric_name: 'recent_releases_count')
             # end
+
+            desc 'Contribution Activity Model Data / 贡献活跃度模型数据',
+                 detail: 'Contribution Activity Model Data / 贡献活跃度模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Community Vitality / 社区活力',
+                   'Contribution Activity / 贡献活跃度'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::ContributionActivityModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[commit_count lines_added lines_removed pr_comment_count issue_new_count issue_comment_activity score]
+              fetch_metric_data_v2(ContributionActivityMetric, fields)
+            end
           end
         end
       end

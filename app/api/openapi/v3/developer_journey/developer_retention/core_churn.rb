@@ -93,6 +93,22 @@ module Openapi
             post :individual_issue_core_churn do
               fetch_metric_data_v2(CoreChurnMetric, 'individual_issue_core_churn')
             end
+
+            desc 'Core Churn Model Data / 核心开发者流失模型数据',
+                 detail: 'Core Churn Model Data / 核心开发者流失模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
+                   'Core Churn / 核心开发者流失'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CoreChurnModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[org_code_core_churn_rate org_issue_core_churn_rate individual_code_core_churn_rate individual_issue_core_churn_rate score]
+              fetch_metric_data_v2(CoreChurnMetric, fields)
+            end
           end
         end
       end

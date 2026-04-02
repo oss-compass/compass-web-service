@@ -93,6 +93,22 @@ module Openapi
             post :individual_issue_core_loss do
               fetch_metric_data_v2(CoreLossMetric, 'individual_issue_core_loss')
             end
+
+            desc 'Core Loss Model Data / 核心开发者流失模型数据',
+                 detail: 'Core Loss Model Data / 核心开发者流失模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Developer Journey / 开发者旅程评估',
+                   'Developer Retention / 开发者留存',
+                   'Core Loss / 核心开发者流失'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::CoreLossModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[org_code_core_loss_count org_issue_core_loss_count individual_code_core_loss_count individual_issue_core_loss_count score]
+              fetch_metric_data_v2(CoreLossMetric, fields)
+            end
           end
         end
       end

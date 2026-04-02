@@ -217,6 +217,22 @@ module Openapi
               fields = %w[org_managers_ratio total_managers]
               fetch_metric_data_v2(OrganizationalGovernanceMetric, fields)
             end
+
+            desc 'Organizational Governance Model Data / 组织开放治理模型数据',
+                 detail: 'Organizational Governance Model Data / 组织开放治理模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Community Ecosystem Health / 社区生态健康评估',
+                   'Development Governance / 开放治理',
+                   'Organizational Governance / 组织开放治理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::OrganizationalGovernanceModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[participating_orgs org_code_contributors org_code_contributors_ratio total_code_contributors org_code_contribution org_code_contribution_ratio total_code_contribution org_non_code_contributors org_non_code_contributors_ratio total_non_code_contributors org_non_code_contribution org_non_code_contribution_ratio total_non_code_contribution governance_orgs org_managers org_managers_ratio total_managers score]
+              fetch_metric_data_v2(OrganizationalGovernanceMetric, fields)
+            end
           end
         end
       end

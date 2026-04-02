@@ -72,6 +72,29 @@ module Openapi
               ]
               fetch_metric_data_v2(MaintenanceManagementMetric, fields)
             end
+
+            desc 'Maintenance Management Model Data / 维护管理模型数据',
+                 detail: 'Maintenance Management Model Data / 维护管理模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Release and Maintenance / 发布与维护',
+                   'Maintenance Management / 维护管理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::MaintenanceManagementModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                lifecycle_statement
+                lifecycle_statement_exists
+                lifecycle_statement_detail
+                avg_vulnerability_fix_days
+                avg_vulnerability_fix_unavailable
+                score
+              ]
+              fetch_metric_data_v2(MaintenanceManagementMetric, fields)
+            end
           end
 
 

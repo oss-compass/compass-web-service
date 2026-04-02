@@ -72,6 +72,31 @@ module Openapi
               ]
               fetch_metric_data_v2(SecurityManagementMetric, fields)
             end
+
+            desc 'Security Management Model Data / 安全管理模型数据',
+                 detail: 'Security Management Model Data / 安全管理模型数据',
+                 tags: [
+                   'V3 API',
+                   'Metrics Model Data / 模型数据',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
+                   'Security Management / 安全管理'
+                 ],
+                 success: { code: 201, model: Openapi::Entities::SecurityManagementModelDataResponse }
+            params { use :metric_search }
+            post :model_data do
+              fields = %w[
+                vulnerability_disclosure_has_channel
+                security_md_exists
+                avg_vuln_close_days
+                vulnerability_disclosure_detail
+                security_vulnerability
+                security_vulnerability_detail
+                vuln_counts
+                security_vulnerability_raw
+                score
+              ]
+              fetch_metric_data_v2(SecurityManagementMetric, fields)
+            end
           end
 
         end
