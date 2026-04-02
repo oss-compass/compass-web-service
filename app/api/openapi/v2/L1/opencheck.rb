@@ -35,7 +35,7 @@ module Openapi
       
 
         resource :opencheck do
-          desc 'Get project opencheck data / 获取项目opencheck数据', detail: 'Get project opencheck data / 获取项目opencheck数据', tags: ['Metadata / 元数据'], success: {
+          desc 'Get project opencheck data / 获取项目opencheck数据', detail: 'Get project opencheck data / 获取项目opencheck数据', tags: ['V2 API','Metadata / 元数据'], success: {
             code: 201, model: Openapi::Entities::OpencheckRawResponse
           }
 

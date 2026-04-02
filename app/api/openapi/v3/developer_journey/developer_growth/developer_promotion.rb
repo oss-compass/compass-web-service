@@ -36,6 +36,8 @@ module Openapi
             desc 'Org Code Core Promotion Count / 组织代码核心晋升数量',
                  detail: 'Count of org members promoted to code core tier in the period / 本周期内晋升为代码核心层级的组织成员数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
@@ -49,6 +51,8 @@ module Openapi
             desc 'Org Issue Core Promotion Count / 组织Issue核心晋升数量',
                  detail: 'Count of org members promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的组织成员数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
@@ -62,6 +66,8 @@ module Openapi
             desc 'Individual Code Core Promotion Count / 个人代码核心晋升数量',
                  detail: 'Count of individual developers promoted to code core tier in the period / 本周期内晋升为代码核心层级的个人开发者数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'
@@ -75,6 +81,8 @@ module Openapi
             desc 'Individual Issue Core Promotion Count / 个人Issue核心晋升数量',
                  detail: 'Count of individual developers promoted to Issue core tier in the period / 本周期内晋升为Issue核心层级的个人开发者数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Growth / 开发者成长',
                    'Developer Promotion / 开发者晋升'

@@ -183,7 +183,7 @@ module Openapi
 
       resource :financeStandardProjectVersion do
         # desc 'trigger FinanceStandard Project'
-        desc 'Trigger The Finance Standard Metric / 触发执行金融指标', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Trigger The Finance Standard Metric / 触发执行金融指标', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::TriggerResponse
         }, detail: <<~DETAIL
           This interface is used to trigger the execution and analysis of financial metrics.
@@ -241,7 +241,7 @@ module Openapi
         end
 
         # desc 'query trigger status for a given project'
-        desc 'Query Trigger Status / 获取给定项目的金融指标执行状态', tags: ['Scene Invocation / 场景调用'], success: {
+        desc 'Query Trigger Status / 获取给定项目的金融指标执行状态', tags: ['V2 API', 'Scene Invocation / 场景调用'], success: {
           code: 201, model: Openapi::Entities::StatusQueryResponse
         }, detail: <<~DETAIL
            This interface is used to query the execution status of financial metrics analysis for a specified project and version.

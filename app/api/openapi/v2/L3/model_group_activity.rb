@@ -33,7 +33,7 @@ module Openapi
       before { save_tracking_api! }
 
       resource :metricModel do
-        desc 'List Project Organizations Activity / 获取项目组织活跃度', detail: 'List Project Organizations Activity / 获取项目组织活跃度', tags: ['Metrics Model Data / 模型数据'], success: {
+        desc 'List Project Organizations Activity / 获取项目组织活跃度', detail: 'List Project Organizations Activity / 获取项目组织活跃度', tags: ['V2 API', 'Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::OrganizationsActivityResponse
         }
 

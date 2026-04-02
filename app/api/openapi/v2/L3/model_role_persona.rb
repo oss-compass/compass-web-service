@@ -33,7 +33,7 @@ module Openapi
       before { save_tracking_api! }
 
       resource :metricModel do
-        desc 'List Project Contributor Role Persona / 获取项目贡献者角色画像', detail: 'List Project Contributor Role Persona / 获取项目贡献者角色画像', tags: ['Metrics Model Data / 模型数据'], success: {
+        desc 'List Project Contributor Role Persona / 获取项目贡献者角色画像', detail: 'List Project Contributor Role Persona / 获取项目贡献者角色画像', tags: ['V2 API', 'Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::ContributorRolePersonaResponse
         }
 

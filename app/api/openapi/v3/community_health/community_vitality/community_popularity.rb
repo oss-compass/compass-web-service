@@ -35,6 +35,8 @@ module Openapi
             desc 'Stars Growth / 项目Stars新增',
                  detail: 'The number of new Stars followed during the period / 周期内新增的Star关注数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Community Popularity / 社区流行度'
@@ -49,6 +51,8 @@ module Openapi
             desc 'Forks / 项目Forks新增',
                  detail: 'The number of new Forks during the period / 周期内新增的Forks数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Community Popularity / 社区流行度'

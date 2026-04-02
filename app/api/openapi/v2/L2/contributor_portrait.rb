@@ -5,24 +5,24 @@ module Openapi
     module L2
       class ContributorPortrait < Grape::API
 
-      version 'v2', using: :path
-      prefix :api
-      format :json
+        version 'v2', using: :path
+        prefix :api
+        format :json
 
-      helpers Openapi::SharedParams::CustomMetricSearch
-      helpers Openapi::SharedParams::AuthHelpers
-      helpers Openapi::SharedParams::ErrorHelpers
+        helpers Openapi::SharedParams::CustomMetricSearch
+        helpers Openapi::SharedParams::AuthHelpers
+        helpers Openapi::SharedParams::ErrorHelpers
 
-      rescue_from :all do |e|
-        case e
-        when Grape::Exceptions::ValidationErrors
-          handle_validation_error(e)
-        when SearchFlip::ResponseError
-          handle_open_search_error(e)
-        else
-          handle_generic_error(e)
+        rescue_from :all do |e|
+          case e
+          when Grape::Exceptions::ValidationErrors
+            handle_validation_error(e)
+          when SearchFlip::ResponseError
+            handle_open_search_error(e)
+          else
+            handle_generic_error(e)
+          end
         end
-      end
 
         helpers do
           def aggregate_monthly_values(sources, end_date, field_names)
@@ -52,35 +52,6 @@ module Openapi
               { date: date, value: count }
             end.sort_by { |item| item[:date] }
           end
-
-          # 根据平台选择对应的 indexer 类
-          # 注意：gitcode 和 atomgit 是同一平台，使用相同的 indexer
-          def select_indexers_by_platform(platform)
-            normalized_platform = platform.to_s.downcase.strip
-            case normalized_platform
-            # when 'gitee'
-            #   {
-            #     contributor_repo_enrich: GiteeEventContributorRepoEnrich,
-            #     contributor: GiteeEventContributor,
-            #     repository_enrich: GiteeEventRepositoryEnrich,
-            #     contributor_contributor_enrich: GiteeEventContributorContributorEnrich
-            #   }
-            when 'gitcode', 'atomgit'
-              {
-                contributor_repo_enrich: GitcodeEventContributorRepoEnrich,
-                contributor: GitcodeEventContributor,
-                repository_enrich: GitcodeEventRepositoryEnrich,
-                contributor_contributor_enrich: GitcodeEventContributorContributorEnrich
-              }
-            else # github (default)
-              {
-                contributor_repo_enrich: GithubEventContributorRepoEnrich,
-                contributor: GithubEventContributor,
-                repository_enrich: GithubEventRepositoryEnrich,
-                contributor_contributor_enrich: GithubEventContributorContributorEnrich
-              }
-            end
-          end
         end
 
         # before { require_token! }
@@ -90,7 +61,7 @@ module Openapi
 
           desc 'Developer Contribution Ranking / 开发者贡献排名',
                detail: 'Global annual ranking of developer code contributions, PR contributions, and Issue contributions / 开发者的代码贡献, PR贡献, Issue贡献在全球年度排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributionRankResponse
                }
@@ -102,8 +73,7 @@ module Openapi
             begin_date = Date.new(params[:begin_date].year, 1, 1)
             end_date = Date.new(params[:begin_date].year + 1, 1, 1)
 
-            indexers = select_indexers_by_platform(params[:platform])
-            indexer = indexers[:contributor_repo_enrich]
+            indexer = GithubEventContributorRepoEnrich
             push_rank, push_contribution = indexer.push_contribution_rank(params[:contributor], begin_date, end_date)
             issue_rank, issue_contribution = indexer.issue_contribution_rank(params[:contributor], begin_date, end_date)
             pull_rank, pull_contribution = indexer.pull_contribution_rank(params[:contributor], begin_date, end_date)
@@ -121,7 +91,7 @@ module Openapi
 
           desc 'Developer Overview / 开发者概览',
                detail: 'Overview of developer contributions and information / 开发者概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorOverviewResponse
                }
@@ -133,10 +103,9 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
-            event_indexer = indexers[:contributor]
-            event_repo_indexer = indexers[:repository_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
+            event_indexer = GithubEventContributor
+            event_repo_indexer = GithubEventRepositoryEnrich
 
             event_data = event_indexer.query_name(contributor)
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
@@ -179,7 +148,7 @@ module Openapi
 
             all_repos_contribution = enrich_indexer.repo_list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             # 构建角色映射
-            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org 
+            org =  event_data['company'] || fallback_org
             repo_roles = all_repos_contribution.map do |repos|
               repo = repos[:repo_url]
               contribution = repos[:contribution]
@@ -206,11 +175,11 @@ module Openapi
             {
               avatar_url: event_data['avatar_url'],
               html_url: event_data['html_url'],
-              country: event_data['country'].presence || fallback_country,
+              country: event_data['country'] || fallback_country,
               country_raw: country_raw,
-              city: event_data['city'].presence || fallback_city,
+              city: event_data['city'] || fallback_city,
               city_raw: city_raw,
-              company: event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org,
+              company: event_data['company'] || fallback_org,
               main_language: main_language,
               repo_roles: repo_roles,
               topics: topic_contributions_array
@@ -220,7 +189,7 @@ module Openapi
 
           desc 'Developer / 开发者贡献概览',
                detail: '开发者贡献概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorContributionOverviewResponse
                }
@@ -231,8 +200,7 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
             contributor = params[:contributor]
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -289,7 +257,7 @@ module Openapi
 
           desc 'An overview of developer programming languages / 开发者编程语言概览',
                detail: 'An overview of developer programming languages / 开发者编程语言概览',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorLanguageResponse
                },
@@ -302,8 +270,7 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -330,7 +297,7 @@ module Openapi
 
           desc 'Developer Repository Contribution Ranking / 开发者贡献仓库排名',
                detail: 'Ranking of repositories by developer contributions / 开发者贡献仓库排名',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorReposResponse,
                },
@@ -343,10 +310,9 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
-            event_repo_indexer = indexers[:repository_enrich]
-            event_indexer = indexers[:contributor]
+            enrich_indexer = GithubEventContributorRepoEnrich
+            event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -359,7 +325,7 @@ module Openapi
 
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
             event_data = event_indexer.query_name(contributor)
-            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org
+            org =  event_data['company'] || fallback_org
 
             res =  repo_contributions.map do |repos|
               repo = repos[:repo_url]
@@ -387,7 +353,7 @@ module Openapi
 
           desc 'Developer Contribution Type Distribution / 开发者贡献类型占比',
                detail: 'Distribution of different types of developer contributions / 开发者贡献类型占比',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributionTypeResponse
                }
@@ -399,8 +365,7 @@ module Openapi
             end_date = params[:end_date]
             contributor = params[:contributor]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
 
@@ -463,7 +428,7 @@ module Openapi
 
           desc 'Monthly Code Commit Count / 开发者每月代码提交次数',
                detail: 'Number of code commits by developer per month / 开发者每月代码提交次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
@@ -476,8 +441,7 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -489,7 +453,7 @@ module Openapi
 
           desc 'Monthly Issue Update Count / 开发者每月更新issue次数',
                detail: 'Number of issue updates by developer per month / 开发者每月更新issue次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
@@ -502,8 +466,7 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -514,7 +477,7 @@ module Openapi
 
           desc 'Monthly Issue Comment Count / 开发者每月issue评论次数',
                detail: 'Number of issue comments by developer per month / 开发者每月issue评论次数',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201,model: Openapi::Entities::ContributorMonthlyResponse
 
@@ -527,8 +490,7 @@ module Openapi
             begin_date = params[:begin_date]
             end_date = params[:end_date]
 
-            indexers = select_indexers_by_platform(params[:platform])
-            enrich_indexer = indexers[:contributor_repo_enrich]
+            enrich_indexer = GithubEventContributorRepoEnrich
 
             resp = enrich_indexer.list(contributor, begin_date, end_date, page: 1, per: MAX_PER)
             sources = resp&.dig('hits', 'hits')&.map { |hit| hit['_source'] } || []
@@ -539,7 +501,7 @@ module Openapi
 
           desc 'Developer Repository Contributions / 开发者对仓库贡献',
                detail: 'Developer contributions to repository including code, issues, issue comments, PR contributions and PR reviews / 开发者对仓库的代码贡献, Issue贡献, Issue评论, PR贡献以及PR审核贡献',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitRepoCollaborationResponse
                }
@@ -547,10 +509,9 @@ module Openapi
             use :contributor_portrait_search
           }
           post :repo_collaboration do
-            indexers = select_indexers_by_platform(params[:platform])
-            indexer = indexers[:contributor_repo_enrich]
-            event_repo_indexer = indexers[:repository_enrich]
-            event_indexer = indexers[:contributor]
+            indexer = GithubEventContributorRepoEnrich
+            event_repo_indexer = GithubEventRepositoryEnrich
+            event_indexer = GithubEventContributor
             contributor = params[:contributor]
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
@@ -562,7 +523,7 @@ module Openapi
 
             fallback_org = sources.map { |s| s['contributor_org'] }.compact.find { |c| !c.to_s.strip.empty? }
             event_data = event_indexer.query_name(contributor)
-            org =  event_data['company'].presence || event_data['email_company'].presence || event_data['commit_company'].presence || fallback_org
+            org =  event_data['company'] || fallback_org
 
             repo_contribution_list = hits.each_with_object({}) do |hit, result|
               data = hit['_source']
@@ -625,7 +586,7 @@ module Openapi
 
           desc 'Developer Collaboration / 开发者协作',
                detail: 'Establish collaboration relationships with other developers through issues, PRs and their corresponding comments / 通过Issue、PR及其对应的评论信息，与其他开发者建立协作关系',
-               tags: ['Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
+               tags: ['V2 API', 'Metrics Data / 指标数据', 'Contributor Persona / 开发者画像'],
                success: {
                  code: 201, model: Openapi::Entities::ContributorPortraitContributorCollaborationResponse
                }
@@ -633,8 +594,7 @@ module Openapi
             use :contributor_portrait_search
           }
           post :contributor_collaboration do
-            indexers = select_indexers_by_platform(params[:platform])
-            indexer = indexers[:contributor_contributor_enrich]
+            indexer = GithubEventContributorContributorEnrich
             resp = indexer.list(params[:contributor], params[:begin_date], params[:end_date], page: 1, per: MAX_PER)
             hits = resp&.[]('hits')&.[]('hits') || []
 

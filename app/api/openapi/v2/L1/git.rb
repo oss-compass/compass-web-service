@@ -33,7 +33,7 @@ module Openapi
       before { save_tracking_api! }
 
       resource :metadata do
-        desc 'List project git metadata / 获取项目git元数据', detail: 'List project git metadata / 获取项目git元数据', tags: ['Metadata / 元数据'], success: {
+        desc 'List project git metadata / 获取项目git元数据', detail: 'List project git metadata / 获取项目git元数据', tags: ['V2 API','Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::GitResponse
         }
 

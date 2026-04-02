@@ -35,6 +35,8 @@ module Openapi
             desc 'Community Contributor Count / 社区贡献者数量',
                  detail: 'Number of unique users with any contribution behavior during the period / 周期内有任何贡献行为的去重用户数 ',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Developer Base / 开发者基数'
@@ -49,6 +51,8 @@ module Openapi
             desc 'Active Code Contributor Count / 代码贡献者数量',
                  detail: 'Number of unique users with code commits, PR merges, or PR comments during the period / 周期内有代码提交或PR合并或PR评论的去重用户数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Developer Base / 开发者基数'
@@ -62,6 +66,8 @@ module Openapi
             desc 'Active Non-code Contributor Count / 非代码贡献者数量',
                  detail: 'Number of users who only participated in discussions but did not submit code during the period / 周期内仅参与讨论但未提交代码的用户数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Developer Base / 开发者基数'

@@ -31,7 +31,7 @@ module Openapi
         end
         before { save_tracking_api! }
         resource :metadata do
-          desc 'Obtain project repo language / 获取项目repo语言', detail: 'Obtain project repo language / 获取项目repo语言', tags: ['Metadata / 元数据'], success: {
+          desc 'Obtain project repo language / 获取项目repo语言', detail: 'Obtain project repo language / 获取项目repo语言', tags: ['V2 API','Metadata / 元数据'], success: {
             code: 201, model: Openapi::Entities::RepoLanguageResponse
           }
 

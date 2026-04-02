@@ -36,6 +36,8 @@ module Openapi
             desc 'New Org Count / 新增组织数',
                  detail: 'Count of organizations that made their first effective contribution (code or Issue) in the community during the period / 本周期内首次在社区产生有效贡献（代码或Issue）的组织去重数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                     'Developer Journey / 开发者旅程评估',
                    'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'
@@ -49,6 +51,8 @@ module Openapi
             desc 'New Org Code Contributors / 新增组织代码开发者数量',
                  detail: 'Count of org members who made their first code contribution during the period / 本周期内首次产生代码贡献的组织成员数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'
@@ -62,6 +66,8 @@ module Openapi
             desc 'New Org Non-code Contributors / 新增组织非代码开发者数量',
                  detail: 'Count of org members who made their first non-code contribution during the period / 本周期内首次产生非代码贡献的组织成员数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Developer Journey / 开发者旅程评估',
                    'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'
@@ -75,6 +81,8 @@ module Openapi
             desc 'New Individual Code Contributors / 新增个人代码开发者数量',
                  detail: 'Count of individual developers who made their first code contribution during the period / 本周期内首次产生代码贡献的个人开发者数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                     'Developer Journey / 开发者旅程评估',
                    'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'
@@ -88,6 +96,8 @@ module Openapi
             desc 'New Individual Non-code Contributors / 新增个人非代码开发者数量',
                  detail: 'Count of individual developers who made their first non-code contribution during the period / 本周期内首次产生非代码贡献的个人开发者数量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                     'Developer Journey / 开发者旅程评估',
                    'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'

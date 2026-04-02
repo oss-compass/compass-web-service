@@ -34,7 +34,7 @@ module Openapi
       before { save_tracking_api! }
 
       resource :metadata do
-        desc 'List project watch metadata / 获取项目watch元数据', detail: 'List project watch metadata / 获取项目watch元数据', tags: ['Metadata / 元数据'], success: {
+        desc 'List project watch metadata / 获取项目watch元数据', detail: 'List project watch metadata / 获取项目watch元数据', tags: ['V2 API','Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::WatchResponse
         }
 

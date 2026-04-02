@@ -33,7 +33,7 @@ module Openapi
       end
       before { save_tracking_api! }
       resource :metadata do
-        desc 'List project fork metadata / 获取项目fork元数据', detail: 'List project fork metadata / 获取项目fork元数据', tags: ['Metadata / 元数据'], success: {
+        desc 'List project fork metadata / 获取项目fork元数据', detail: 'List project fork metadata / 获取项目fork元数据', tags: ['V2 API','Metadata / 元数据'], success: {
           code: 201, model: Openapi::Entities::ForkResponse
         }
 

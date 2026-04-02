@@ -38,6 +38,8 @@ module Openapi
             desc 'PR Merge Rate / PR 合并率',
                  detail: 'Ratio of PRs created in cycle-2 that are ultimately merged / 周期内新建并最终被合并的PR占比。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
@@ -52,6 +54,8 @@ module Openapi
             desc 'PR/Issue Link Rate / PR/Issue 关联率',
                  detail: 'Ratio of PRs linked to an Issue in cycle-2 / 周期内 PR关联Issue的占比。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
@@ -66,6 +70,8 @@ module Openapi
             desc 'PR Review Participation Rate / PR 评审参与率',
                  detail: 'Ratio of PRs that have at least one non-author review comment or approval in cycle-2 / 周期内至少有一条非作者Review评论或Approval记录的PR占比。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
@@ -80,6 +86,8 @@ module Openapi
             desc 'Non-author Merge Rate / Merge协作比率',
                  detail: 'Ratio of merged PRs whose merger is not the author in cycle-2 / 周期内PR的合并操作者与PR提交者不是同一人的比例。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
@@ -94,6 +102,8 @@ module Openapi
             desc 'PR Average Interactions / PR 平均交互数',
                  detail: 'Average number of conversation/comments per PR (excluding bot comments) / 平均每个PR下的对话/评论数量。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'
@@ -108,6 +118,8 @@ module Openapi
             desc 'Review Time by Pull Request Size / 分级代码审查时长',
                  detail: 'average review time grouped by PR size (XS/S/M/L/XL) / 按代码变更行数分组统计的平均审查时间。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Collaboration Efficiency / 协作效率',
                    'Collaboration Quality / 协作开发质量'

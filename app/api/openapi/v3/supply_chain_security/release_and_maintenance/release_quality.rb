@@ -37,6 +37,8 @@ module Openapi
             desc 'SBOM in Release / SBOM检查',
                  detail: 'Verify SBOM file exists in release assets (SPDX/CycloneDX) / 验证发布的软件版本中是否包含标准的软件物料清单（SPDX/CycloneDX格式）。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Release Quality / 发布质量'
@@ -51,6 +53,8 @@ module Openapi
             desc 'Binary Artifacts in Repo / 二进制制品包含',
                  detail: 'Check whether repository contains prohibited compiled binary artifacts / 检查源码仓库中是否违规包含了编译后的二进制文件。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Release Quality / 发布质量'
@@ -71,6 +75,8 @@ module Openapi
             desc 'Package Signature / 软件包签名',
                  detail: 'Verify released package is digitally signed to ensure integrity / 验证发布的软件包是否经过数字签名以确保完整性和防篡改。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Release Quality / 发布质量'
@@ -85,6 +91,8 @@ module Openapi
             desc 'Release Notes / Release Notes',
                  detail: 'Check release notes are provided with clear change descriptions / 检查版本发布时是否提供了清晰的变更说明文档。',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
                    'Release and Maintenance / 发布与维护',
                    'Release Quality / 发布质量'

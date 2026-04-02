@@ -33,7 +33,7 @@ module Openapi
       before { save_tracking_api! }
 
       resource :metricModel do
-        desc 'List project collaboration development index / 获取项目协作开发指数', detail: 'List project collaboration development index / 获取项目协作开发指数', tags: ['Metrics Model Data / 模型数据'], success: {
+        desc 'List project collaboration development index / 获取项目协作开发指数', detail: 'List project collaboration development index / 获取项目协作开发指数', tags: ['V2 API', 'Metrics Model Data / 模型数据'], success: {
           code: 201, model: Openapi::Entities::CollaborationDevelopmentIndexResponse
         }
 

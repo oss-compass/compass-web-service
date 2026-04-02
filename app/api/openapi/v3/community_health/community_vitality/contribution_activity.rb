@@ -35,6 +35,8 @@ module Openapi
             desc '代码提交次数 / Commit Count',
                  detail: 'Total number of new commits during the period / 周期内新增的Commit总数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Contribution Activity / 贡献活跃度'
@@ -48,6 +50,8 @@ module Openapi
             desc 'Lines of Code Change / 新增代码行数 ',
                  detail: 'Total code line changes during the period / 周期内代码行变动总量',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Contribution Activity / 贡献活跃度'
@@ -62,6 +66,8 @@ module Openapi
             desc 'PR Comment Count / PR 评论数量',
                  detail: 'The total number of comments on all Issues and PRs generated during the period / 周期内产生的所有Issue和PR下的评论总和',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Contribution Activity / 贡献活跃度'
@@ -75,6 +81,8 @@ module Openapi
             desc 'New Issue Count / Issue 建立数量',
                  detail: 'Total number of issues created during the period / 周期内创建的Issue总数 ',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Contribution Activity / 贡献活跃度'
@@ -88,6 +96,8 @@ module Openapi
             desc 'Issue Comment Count / Issue 评论数量',
                  detail: 'Total number of comments under Issues during the period / 周期内Issue下的评论总数',
                  tags: [
+                   'V3 API',
+                   'Metrics Data / 指标数据',
                    'Community Ecosystem Health / 社区生态健康评估',
                    'Community Vitality / 社区活力',
                    'Contribution Activity / 贡献活跃度'
