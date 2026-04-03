@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Check whether maintenance lifecycle/EOL policy is explicitly stated (EOL, Support Policy) / 检查是否明确声明了软件版本的维护周期及停止支持（EOL）策略。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Maintenance Management / 维护管理'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::LifecycleStatementResponse }
             params { use :metric_search }
@@ -58,10 +56,8 @@ module Openapi
                  detail: 'Average time from vulnerability report to fix merged / 统计从漏洞被报告到修复代码合入的平均耗时。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Maintenance Management / 维护管理'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::AvgVulnerabilityFixTimeResponse }
             params { use :metric_search }
@@ -74,13 +70,18 @@ module Openapi
             end
 
             desc 'Maintenance Management Model Data / 维护管理模型数据',
-                 detail: 'Maintenance Management Model Data / 维护管理模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Lifecycle Statement / 生命周期申明 | /api/v3/maintenance_management/lifecycle_statement | 1 | 0.50 |
+| Average Vulnerability Fix Time / 安全漏洞平均修复时间 | /api/v3/maintenance_management/avg_vulnerability_fix_time | 30 | 0.50 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Release and Maintenance / 发布与维护',
-                   'Maintenance Management / 维护管理'
+                   'Release and Maintenance / 发布与维护'
                  ],
                  success: { code: 201, model: Openapi::Entities::MaintenanceManagementModelDataResponse }
             params { use :metric_search }

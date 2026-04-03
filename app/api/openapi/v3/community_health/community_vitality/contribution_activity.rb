@@ -36,10 +36,8 @@ module Openapi
                  detail: 'Total number of new commits during the period / 周期内新增的Commit总数',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CommitCountMetricResponse }
             params { use :metric_search }
@@ -51,10 +49,8 @@ module Openapi
                  detail: 'Total code line changes during the period / 周期内代码行变动总量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::LinesOfCodeChangeResponse }
             params { use :metric_search }
@@ -67,10 +63,8 @@ module Openapi
                  detail: 'The total number of comments on all Issues and PRs generated during the period / 周期内产生的所有Issue和PR下的评论总和',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::PrCommentCountResponse }
             params { use :metric_search }
@@ -82,10 +76,8 @@ module Openapi
                  detail: 'Total number of issues created during the period / 周期内创建的Issue总数 ',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::NewIssueCountResponse }
             params { use :metric_search }
@@ -97,10 +89,8 @@ module Openapi
                  detail: 'Total number of comments under Issues during the period / 周期内Issue下的评论总数',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Metrics / 度量指标',
+                   'Community Ecosystem Health / 社区生态健康评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::IssueCommentCountResponse }
             params { use :metric_search }
@@ -118,13 +108,20 @@ module Openapi
             # end
 
             desc 'Contribution Activity Model Data / 贡献活跃度模型数据',
-                 detail: 'Contribution Activity Model Data / 贡献活跃度模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Commit Count / 代码提交次数 | /api/v3/contribution_activity/commit_count | 12850 | 0.20 |
+| Lines of Code Change / 新增代码行数  | /api/v3/contribution_activity/lines_of_code_change | 300000 | 0.20 |
+| PR Comment Count / PR 评论数量 | /api/v3/contribution_activity/pr_comment_count | 10 | 0.20 |
+| New Issue Count / Issue 建立数量 | /api/v3/contribution_activity/new_issue_count | 10 | 0.20 |
+| Issue Comment Count / Issue 评论数量 | /api/v3/contribution_activity/issue_comment_count | 10 | 0.20 |
+",
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活力',
-                   'Contribution Activity / 贡献活跃度'
+                   'Community Vitality / 社区活力'
                  ],
                  success: { code: 201, model: Openapi::Entities::ContributionActivityModelDataResponse }
             params { use :metric_search }

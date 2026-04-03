@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Ratio of last-period code core contributors who remain core in current period / 上个周期的代码核心开发者在本周期依然保持为核心的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Retention / 核心开发者留存率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionOrgCodeCoreRetentionResponse }
             params { use :metric_search }
@@ -53,10 +51,8 @@ module Openapi
                  detail: 'Ratio of last-period Issue core contributors who remain core in current period / 上个周期的Issue核心开发者在本周期依然保持为Issue核心的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Retention / 核心开发者留存率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionOrgIssueCoreRetentionResponse }
             params { use :metric_search }
@@ -68,10 +64,8 @@ module Openapi
                  detail: 'Ratio of last-period individual code core who remain core in current period / 上个周期的个人代码核心在本周期依然保持为核心的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Retention / 核心开发者留存率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionIndividualCodeCoreRetentionResponse }
             params { use :metric_search }
@@ -83,10 +77,8 @@ module Openapi
                  detail: 'Ratio of last-period individual Issue core who remain core in current period / 上个周期的个人Issue核心在本周期依然保持为Issue核心的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Retention / 核心开发者留存率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionIndividualIssueCoreRetentionResponse }
             params { use :metric_search }
@@ -95,13 +87,20 @@ module Openapi
             end
 
             desc 'Core Retention Model Data / 核心开发者留存模型数据',
-                 detail: 'Core Retention Model Data / 核心开发者留存模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Org Code Core Retention / 组织代码核心开发者（含管理者）留存率 | /api/v3/core_retention/org_code_core_retention | 1 | 0.25 |
+| Org Issue Core Retention / 组织Issue核心开发者（含管理者）留存率 | /api/v3/core_retention/org_issue_core_retention | 1 | 0.25 |
+| Individual Code Core Retention / 个人代码核心开发者（含管理者）留存率 | /api/v3/core_retention/individual_code_core_retention | 1 | 0.25 |
+| Individual Issue Core Retention / 个人Issue核心开发者（含管理者）留存率 | /api/v3/core_retention/individual_issue_core_retention | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Retention / 核心开发者留存'
+                   'Developer Retention / 开发者留存'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreRetentionModelDataResponse }
             params { use :metric_search }

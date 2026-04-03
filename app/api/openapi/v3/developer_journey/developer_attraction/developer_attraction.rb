@@ -37,10 +37,8 @@ module Openapi
                  detail: 'Count of organizations that made their first effective contribution (code or Issue) in the community during the period / 本周期内首次在社区产生有效贡献（代码或Issue）的组织去重数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                    'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
-                   'Developer Attraction / 开发者吸引'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionNewOrgCountResponse }
             params { use :metric_search }
@@ -52,10 +50,8 @@ module Openapi
                  detail: 'Count of org members who made their first code contribution during the period / 本周期内首次产生代码贡献的组织成员数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
-                   'Developer Attraction / 开发者吸引'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionNewOrgCodeContributorsResponse }
             params { use :metric_search }
@@ -67,10 +63,8 @@ module Openapi
                  detail: 'Count of org members who made their first non-code contribution during the period / 本周期内首次产生非代码贡献的组织成员数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
-                   'Developer Attraction / 开发者吸引'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionNewOrgNonCodeContributorsResponse }
             params { use :metric_search }
@@ -82,10 +76,8 @@ module Openapi
                  detail: 'Count of individual developers who made their first code contribution during the period / 本周期内首次产生代码贡献的个人开发者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                    'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
-                   'Developer Attraction / 开发者吸引'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionNewIndividualCodeContributorsResponse }
             params { use :metric_search }
@@ -97,10 +89,8 @@ module Openapi
                  detail: 'Count of individual developers who made their first non-code contribution during the period / 本周期内首次产生非代码贡献的个人开发者数量',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                    'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
-                   'Developer Attraction / 开发者吸引'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionNewIndividualNonCodeContributorsResponse }
             params { use :metric_search }
@@ -109,12 +99,20 @@ module Openapi
             end
 
             desc 'Developer Attraction Model Data / 开发者吸引模型数据',
-                 detail: 'Developer Attraction Model Data / 开发者吸引模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| New Org Count / 新增组织数 | /api/v3/developer_attraction/new_org_count | 10 | 0.20 |
+| New Org Code Contributors / 新增组织代码开发者数量 | /api/v3/developer_attraction/new_org_code_contributors | 50 | 0.20 |
+| New Org Non-code Contributors / 新增组织非代码开发者数量 | /api/v3/developer_attraction/new_org_non_code_contributors | 50 | 0.20 |
+| New Individual Code Contributors / 新增个人代码开发者数量 | /api/v3/developer_attraction/new_individual_code_contributors | 100 | 0.20 |
+| New Individual Non-code Contributors / 新增个人非代码开发者数量 | /api/v3/developer_attraction/new_individual_non_code_contributors | 100 | 0.20 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Developer Journey / 开发者旅程评估',
-                   'Developer Attraction / 开发者吸引',
                    'Developer Attraction / 开发者吸引'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperAttractionModelDataResponse }

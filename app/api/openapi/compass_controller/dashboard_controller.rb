@@ -77,6 +77,36 @@ module Openapi
             []
           end
         end
+
+
+        def validate_no_overlap(organizations)
+          return if organizations.size <= 1
+
+          sorted = organizations.sort_by { |o| Date.parse(o[:first_date] || o['first_date']) }
+
+          sorted.each_cons(2) do |current, next_org|
+            current_end = current[:last_date] || current['last_date']
+            next_start = next_org[:first_date] || next_org['first_date']
+
+            if current_end.blank? || Date.parse(current_end) >= Date.parse(next_start)
+              error!({ error: 'Organization date ranges overlap' }, 400)
+            end
+          end
+        end
+
+        # UUID 生成方法
+        def generate_uuid(contributor, modify_type, label, level, platform)
+          Digest::MD5.hexdigest("#{contributor}:#{modify_type}:#{label}:#{level}:#{platform}")
+        end
+
+        def clear_all_contributors_cache(repo_urls)
+          repos_string = repo_urls.sort.join(',')
+          repos_hash = Digest::MD5.hexdigest(repos_string)
+          pattern = "contributors:#{repos_hash}:*"
+          Rails.cache.delete_matched(pattern)
+        end
+
+
       end
 
       before { require_login! }
@@ -863,7 +893,6 @@ module Openapi
           end_date = params[:endDate]
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
-          # sort_opts = (params[:sortOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -877,11 +906,6 @@ module Openapi
                         parsed_opts
                       end
 
-          # validate_by_label!(current_user, label)
-          #
-          # begin_date, end_date, _interval = extract_date(params[:beginDate], params[:endDate])
-          # validate_date!(current_user, label, level, begin_date, end_date)
-
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
             label,
             level,
@@ -894,6 +918,10 @@ module Openapi
 
 
 
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+
+          target_orgs = org_filter_opt&.values || []
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -908,29 +936,47 @@ module Openapi
 
           # 将字段名定义为常量或局部变量，使用 String 格式匹配 _source 的 key
           ALLOWED_FIELDS = %w[
-          repository
-          id_in_repo
-          url
-          title
-          state
-          created_at
-          closed_at
-          time_to_close_days
-          time_to_first_attention_without_bot
-          labels
-          user_login
-          assignee_login
-          num_of_comments_without_bot
+                      repository
+                      id_in_repo
+                      url
+                      title
+                      state
+                      created_at
+                      closed_at
+                      time_to_close_days
+                      time_to_first_attention_without_bot
+                      labels
+                      user_login
+                      assignee_login
+                      num_of_comments_without_bot
         ].freeze
 
           hits = resp&.dig('hits', 'hits') || []
 
+          # 提取所有唯一的 user_login
+          user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
+
+          contrib_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
+          contributors_info = {}
+          if user_logins.any?
+            contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+
+            # 构建 user_login -> 贡献者信息的映射
+            contributors_info = contributors_list.each_with_object({}) do |item, hash|
+              login = item.respond_to?(:contributor) ? item.contributor : item['contributor']
+              hash[login] = item if login
+            end
+          end
+
           items = hits.map do |hit|
             source = hit['_source'] || {}
-
-            # ALLOWED_FIELDS.each_with_object({}) do |field, hash|
-            #   hash[field] = source[field]
-            # end
 
             item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
               hash[field] = source[field]
@@ -940,14 +986,53 @@ module Openapi
               item_hash['time_to_first_attention_without_bot'] = 0
             end
 
-            if item_hash['num_of_comments_without_bot'].nil?
-              item_hash['num_of_comments_without_bot'] = 0
+            # if item_hash['num_of_comments_without_bot'].nil?
+            #   item_hash['num_of_comments_without_bot'] = 0
+            # end
+
+            # 嵌入贡献者信息 ==========
+            user_login = item_hash['user_login']
+            contributor = contributors_info[user_login]
+
+            if contributor
+              # 提取组织信息
+              organization = contributor.respond_to?(:organization) ? contributor.organization : contributor['organization']
+
+              # 判断内外部标签
+              is_internal = organization.to_s.downcase == 'huawei'
+
+              item_hash['contributor'] = {
+                'organization' => organization,
+                'is_internal' => is_internal
+              }
+            else
+              # 如果找不到贡献者信息，设置默认值
+              item_hash['contributor'] = {
+                'organization' => nil,
+                'is_internal' => false
+              }
             end
 
             item_hash
-
           end
 
+
+          if target_orgs.present?
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+            items = items.select do |item|
+              contributor = item['contributor']
+              org = contributor&.dig('organization')
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+
+            # 重新计算分页
+            count = items.length
+            total_page = (count.to_f / per).ceil
+            page = [page, total_page].min
+            page = 1 if page < 1
+            start_idx = (page - 1) * per
+            items = items[start_idx, per] || []
+          end
           {
             count: count,
             total_page: (count.to_f / per).ceil,
@@ -1155,7 +1240,6 @@ module Openapi
           end_date = params[:endDate]
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
-          # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -1168,9 +1252,6 @@ module Openapi
 
                         parsed_opts
                       end
-          # validate_by_label!(current_user, label)
-          # begin_date, end_date, _ = extract_date(params[:beginDate], params[:endDate])
-          # validate_date!(current_user, label, level, begin_date, end_date)
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
             label,
@@ -1180,6 +1261,11 @@ module Openapi
             GitcodePullEnrich
           )
 
+
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+
+          target_orgs = org_filter_opt&.values || []
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -1199,8 +1285,30 @@ module Openapi
 
           hits = resp&.dig('hits', 'hits') || []
 
-          # 【可选】如果你有 Types::Meta::PullDetailType 定义的字段白名单，可以在这里过滤
-          # 常见 PR 字段示例 (你可以根据实际需求修改 ALLOWED_FIELDS):
+          # 提取所有唯一的 user_login
+          user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
+
+          # 获取贡献者信息
+          contrib_indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
+          contributors_info = {}
+          if user_logins.any?
+
+            contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+
+            # 构建 user_login -> 贡献者信息的映射
+            contributors_info = contributors_list.each_with_object({}) do |item, hash|
+              login = item.respond_to?(:contributor) ? item.contributor : item['contributor']
+              hash[login] = item if login
+            end
+          end
+
           ALLOWED_FIELDS = %w[
               closed_at
               created_at
@@ -1216,24 +1324,60 @@ module Openapi
               title
               url
               user_login
-        ].freeze
+  ].freeze
 
           items = hits.map do |hit|
-            hit['_source']
-
-            # ALLOWED_FIELDS.each_with_object({}) do |field, hash|
-            #   hash[field] = hit['_source'][field]
-            # end
+            source = hit['_source'] || {}
 
             item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
-              hash[field] = hit['_source'][field]
+              hash[field] = source[field]
             end
 
             if item_hash['state'] == 'closed' && item_hash['time_to_first_attention_without_bot'].nil?
               item_hash['time_to_first_attention_without_bot'] = 0
             end
 
+            # 嵌入贡献者信息 ==========
+            user_login = item_hash['user_login']
+            contributor = contributors_info[user_login]
+
+            if contributor
+              # 提取组织信息
+              organization = contributor.respond_to?(:organization) ? contributor.organization : contributor['organization']
+
+              # 判断内外部标签
+              is_internal = organization.to_s.downcase == 'huawei'
+
+              item_hash['contributor'] = {
+                'organization' => organization,
+                'is_internal' => is_internal
+              }
+            else
+              # 如果找不到贡献者信息，设置默认值
+              item_hash['contributor'] = {
+                'organization' => nil,
+                'is_internal' => false
+              }
+            end
+
             item_hash
+          end
+
+          if target_orgs.present?
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+            items = items.select do |item|
+              contributor = item['contributor']
+              org = contributor&.dig('organization')
+              target_orgs_lower.include?(org)
+            end
+
+            # 重新计算分页
+            count = items.length
+            total_page = (count.to_f / per).ceil
+            page = [page, total_page].min
+            page = 1 if page < 1
+            start_idx = (page - 1) * per
+            items = items[start_idx, per] || []
           end
 
           {
@@ -1619,6 +1763,117 @@ module Openapi
             items: paged_items
           }
         end
+
+
+
+
+
+        desc '修改组织信息',
+             tags: ['ContributorService / 贡献者服务']
+
+        params do
+          requires :contributor, type: String, desc: '贡献者用户名'
+          requires :platform, type: String, desc: '平台类型 (gitee/github/gitcode)'
+          requires :label, type: String, desc: '仓库或社区标签'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+
+          # 组织信息数组
+          requires :organization, type: Hash do
+            requires :org_name, type: String, desc: '组织名称'
+            requires :first_date, type: String, desc: '开始日期 (ISO8601)'
+            optional :last_date, type: String, desc: '结束日期 (ISO8601)'
+          end
+        end
+
+        post :manage_user_orgs do
+
+          contributor = params[:contributor]
+          platform = params[:platform]
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          organizations = [params[:organization]]
+
+          begin
+            uuid = generate_uuid(contributor, ContributorOrg::SystemAdmin, label, level, platform)
+
+            record = OpenStruct.new(
+              id: uuid,
+              uuid: uuid,
+              contributor: contributor,
+              org_change_date_list: organizations,
+              modify_by: current_user.id,
+              modify_type: ContributorOrg::SystemAdmin,
+              platform_type: platform,
+              is_bot: false,
+              label: label,
+              level: level,
+              update_at_date: Time.current
+            )
+
+            ContributorOrg.import(record)
+
+            clear_all_contributors_cache([label])
+
+            { status: true, message: 'Organization updated successfully'}
+
+          rescue => ex
+            error!({ status: false, message: ex.message }, 422)
+          end
+        end
+
+        desc '获取全部组织列表',
+             tags: ['ContributorService / 贡献者服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+          requires :beginDate, type: String, desc: '开始日期 (ISO8601)'
+          requires :endDate, type: String, desc: '结束日期 (ISO8601)'
+        end
+
+        post :organization_list do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+
+
+          indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
+          # 获取所有贡献者列表
+          contributors_list = indexer.fetch_contributors_list(
+            repo_urls,
+            begin_date,
+            end_date,
+            label: label,
+            level: level
+          )
+
+          # 提取所有唯一的组织（忽略空值，忽略大小写去重）
+          # 保留原始大小写，但去重时忽略大小写
+          organizations = contributors_list
+                            .map { |item| item.respond_to?(:organization) ? item.organization : item['organization'] }
+                            .compact
+                            .map(&:to_s)
+                            .map(&:strip)
+                            .reject(&:blank?)
+                            .group_by(&:downcase)  # 按小写分组
+                            .map { |_, group| group.first }  # 取每组的第一个（保留原始大小写）
+                            .sort
+          {
+            count: organizations.length,
+            organizations: organizations
+          }
+        end
+
+
+
 
       end
     end

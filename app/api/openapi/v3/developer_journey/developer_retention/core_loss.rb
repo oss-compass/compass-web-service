@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Ratio of last-period code core with no contribution in current period / 上个周期的代码核心在本周期没有任何贡献行为的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Loss / 核心开发者流失率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreLossOrgCodeCoreLossResponse }
             params { use :metric_search }
@@ -53,10 +51,8 @@ module Openapi
                  detail: 'Ratio of last-period Issue core with no activity in current period / 上个周期的Issue核心在本周期无任何互动的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Loss / 核心开发者流失率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreLossOrgIssueCoreLossResponse }
             params { use :metric_search }
@@ -68,10 +64,8 @@ module Openapi
                  detail: 'Ratio of last-period individual code core with no contribution in current period / 上个周期的个人代码核心在本周期无任何贡献的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Loss / 核心开发者流失率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreLossIndividualCodeCoreLossResponse }
             params { use :metric_search }
@@ -80,13 +74,11 @@ module Openapi
             end
 
             desc 'Individual Issue Core Loss / 个人Issue核心开发者（含管理者）流失率',
-                 detail: 'Ratio of last-period individual Issue core with no activity in current period / 上个周期的个人Issue核心在本周期无任何互动的比例',
+                 detail: 'Ratio of last-period individual Issue core who left the community in current period / 上个周期的个人Issue核心在本周期完全离开社区的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Loss / 核心开发者流失率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreLossIndividualIssueCoreLossResponse }
             params { use :metric_search }
@@ -95,13 +87,20 @@ module Openapi
             end
 
             desc 'Core Loss Model Data / 核心开发者流失模型数据',
-                 detail: 'Core Loss Model Data / 核心开发者流失模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Org Code Core Loss / 组织代码核心开发者（含管理者）流失率 | /api/v3/core_loss/org_code_core_loss | 1 | 0.25 |
+| Org Issue Core Loss / 组织Issue核心开发者（含管理者）流失率 | /api/v3/core_loss/org_issue_core_loss | 1 | 0.25 |
+| Individual Code Core Loss / 个人代码核心开发者（含管理者）流失率 | /api/v3/core_loss/individual_code_core_loss | 1 | 0.25 |
+| Individual Issue Core Loss / 个人Issue核心开发者（含管理者）流失率 | /api/v3/core_loss/individual_issue_core_loss | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Loss / 核心开发者流失'
+                   'Developer Retention / 开发者留存'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreLossModelDataResponse }
             params { use :metric_search }

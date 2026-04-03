@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Ratio of last-period code core who downgraded to regular or visitor in current period / 上个周期的代码核心在本周期降级为常客或访客的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Churn / 核心开发者淡出率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreChurnOrgCodeCoreChurnResponse }
             params { use :metric_search }
@@ -53,10 +51,8 @@ module Openapi
                  detail: 'Ratio of last-period Issue core who downgraded to regular or visitor in current period / 上个周期的Issue核心在本周期降级为常客或访客的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Churn / 核心开发者淡出率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreChurnOrgIssueCoreChurnResponse }
             params { use :metric_search }
@@ -68,10 +64,8 @@ module Openapi
                  detail: 'Ratio of last-period individual code core who downgraded to regular or visitor in current period / 上个周期的个人代码核心在本周期降级为常客或访客的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Churn / 核心开发者淡出率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreChurnIndividualCodeCoreChurnResponse }
             params { use :metric_search }
@@ -83,10 +77,8 @@ module Openapi
                  detail: 'Ratio of last-period individual Issue core who downgraded to regular or visitor in current period / 上个周期的个人Issue核心在本周期降级为常客或访客的比例',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Churn / 核心开发者淡出率'
+                   'Metrics / 度量指标',
+                   'Developer Journey / 开发者旅程评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreChurnIndividualIssueCoreChurnResponse }
             params { use :metric_search }
@@ -95,13 +87,20 @@ module Openapi
             end
 
             desc 'Core Churn Model Data / 核心开发者流失模型数据',
-                 detail: 'Core Churn Model Data / 核心开发者流失模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Org Code Core Churn / 组织代码核心开发者（含管理者）淡出率 | /api/v3/core_churn/org_code_core_churn | 1 | 0.25 |
+| Org Issue Core Churn / 组织Issue核心开发者（含管理者）淡出率 | /api/v3/core_churn/org_issue_core_churn | 1 | 0.25 |
+| Individual Code Core Churn / 个人代码核心开发者（含管理者）淡出率 | /api/v3/core_churn/individual_code_core_churn | 1 | 0.25 |
+| Individual Issue Core Churn / 个人Issue核心开发者（含管理者）淡出率 | /api/v3/core_churn/individual_issue_core_churn | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Developer Journey / 开发者旅程评估',
-                   'Developer Retention / 开发者留存',
-                   'Core Churn / 核心开发者流失'
+                   'Developer Retention / 开发者留存'
                  ],
                  success: { code: 201, model: Openapi::Entities::CoreChurnModelDataResponse }
             params { use :metric_search }

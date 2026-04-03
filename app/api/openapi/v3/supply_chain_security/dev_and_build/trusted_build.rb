@@ -38,10 +38,8 @@ module Openapi
                  detail: 'Verify the project can be built from source using publicly available tools / 验证项目能否使用公开工具从源码成功构建出可工作的系统。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Trusted Build / 可信构建'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::TrustedBuildSuccessResponse }
             params { use :metric_search }
@@ -57,10 +55,8 @@ module Openapi
                  detail: 'Check whether CI pipeline is configured and enabled / 检查项目是否配置并启用了自动化的持续集成流水线。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Trusted Build / 可信构建'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::CiIntegrationResponse }
             params { use :metric_search }
@@ -76,10 +72,8 @@ module Openapi
                  detail: 'Check whether input metadata required for build is provided / 检查是否保存并提供了构建过程的输入元数据（环境、版本等）。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Trusted Build / 可信构建'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::BuildMetadataAvailableResponse }
             params { use :metric_search }
@@ -95,10 +89,8 @@ module Openapi
                  detail: 'Verify the same source produces identical artifact checksum in the same environment / 验证在相同环境下，同一源码是否能产出Hash值完全一致的二进制包。',
                  tags: [
                    'V3 API',
-                   'Metrics Data / 指标数据',
-                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Trusted Build / 可信构建'
+                   'Metrics / 度量指标',
+                   'Opensource Software Supply Chain Security / 开源软件供应链安全评估'
                  ],
                  success: { code: 201, model: Openapi::Entities::ReproducibleBuildResponse }
             params { use :metric_search }
@@ -110,13 +102,20 @@ module Openapi
             end
 
             desc 'Trusted Build Model Data / 可信构建模型数据',
-                 detail: 'Trusted Build Model Data / 可信构建模型数据',
+                 detail: "
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+|---------|------|------|------|
+| Build Success / 可构建 | /api/v3/trusted_build/trusted_build_success | 1 | 0.25 |
+| CI Integration / CI集成 | /api/v3/trusted_build/ci_integration | 1 | 0.25 |
+| Build Metadata Available / 构建元数据可获取 | /api/v3/trusted_build/build_metadata_available | 1 | 0.25 |
+| Reproducible Build / 一致性构建 | /api/v3/trusted_build/reproducible_build | 1 | 0.25 |
+",
+
                  tags: [
                    'V3 API',
-                   'Metrics Model Data / 模型数据',
+                   'Evaluation Model / 评估模型',
                    'Opensource Software Supply Chain Security / 开源软件供应链安全评估',
-                   'Dev and Build / 开发与构建',
-                   'Trusted Build / 可信构建'
+                   'Dev and Build / 开发与构建'
                  ],
                  success: { code: 201, model: Openapi::Entities::TrustedBuildModelDataResponse }
             params { use :metric_search }
