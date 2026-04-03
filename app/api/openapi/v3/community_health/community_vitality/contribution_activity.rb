@@ -109,9 +109,9 @@ module Openapi
 
             desc 'Contribution Activity Model Data / 贡献活跃度模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| 代码提交次数 / Commit Count | /api/v3/contribution_activity/commit_count | 12850 | 0.20 |
+| Commit Count / 代码提交次数 | /api/v3/contribution_activity/commit_count | 12850 | 0.20 |
 | Lines of Code Change / 新增代码行数  | /api/v3/contribution_activity/lines_of_code_change | 300000 | 0.20 |
 | PR Comment Count / PR 评论数量 | /api/v3/contribution_activity/pr_comment_count | 10 | 0.20 |
 | New Issue Count / Issue 建立数量 | /api/v3/contribution_activity/new_issue_count | 10 | 0.20 |

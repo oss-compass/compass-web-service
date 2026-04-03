@@ -74,7 +74,7 @@ module Openapi
 
             desc 'Developer Base Model Data / 开发者基础模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Community Contributor Count / 社区贡献者数量 | /api/v3/developer_base/contributor_count | 2000 | 0.33 |
 | Active Code Contributor Count / 代码贡献者数量 | /api/v3/developer_base/code_contributor_count | 1000 | 0.33 |

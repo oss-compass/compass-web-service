@@ -120,7 +120,7 @@ module Openapi
 
             desc 'Collaboration Quality Model Data / 协作开发质量模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | PR Merge Rate / PR 合并率 | /api/v3/collaboration_quality/pr_merge_rate | 1 | 0.17 |
 | PR/Issue Link Rate / PR/Issue 关联率 | /api/v3/collaboration_quality/pr_issue_link_rate | 1 | 0.17 |

@@ -100,7 +100,7 @@ module Openapi
 
             desc 'Developer Attraction Model Data / 开发者吸引模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | New Org Count / 新增组织数 | /api/v3/developer_attraction/new_org_count | 10 | 0.20 |
 | New Org Code Contributors / 新增组织代码开发者数量 | /api/v3/developer_attraction/new_org_code_contributors | 50 | 0.20 |

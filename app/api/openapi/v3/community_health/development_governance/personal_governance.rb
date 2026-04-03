@@ -170,7 +170,7 @@ module Openapi
 
             desc 'Personal Governance Model Data / 个人开放治理模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Individual Code Contributors by Period / 个人代码贡献者数量 | /api/v3/personal_governance/individual_code_contributors_by_period | 300 | 0 |
 | Individual Code Contributors Ratio by Period / 个人代码贡献者占比 | /api/v3/personal_governance/individual_code_contributors_ratio_by_period | 1 | 0 |

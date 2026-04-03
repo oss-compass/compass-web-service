@@ -109,7 +109,7 @@ module Openapi
 
             desc 'Code Review Quality Model Data / 代码审查质量模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Dependency Reachable / 依赖可获得 | /api/v3/code_review_quality/dependency_reachable | 1 | 0.25 |
 | Snippet Reference Compliance / 片段引用 | /api/v3/code_review_quality/compliance_snippet_reference | 1 | 0.25 |

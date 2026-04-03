@@ -73,7 +73,7 @@ module Openapi
 
             desc 'Security Management Model Data / 安全管理模型数据',
                  detail: "
-| 接口名称 | 地址 | 阈值 | 权重 |
+| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Vulnerability Disclosure / 漏洞响应与披露 | /api/v3/security_management/vulnerability_disclosure | 1 | 0.50 |
 | Unfixed Public Vulnerabilities / 公开未修复漏洞 | /api/v3/security_management/security_vulnerability | 1 | 0.50 |
