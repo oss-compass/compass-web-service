@@ -131,7 +131,7 @@ module Openapi
 
             desc 'Response Timeliness Model Data / 响应及时性模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Issue Unresponsive Rate / Issue 未响应占比 | /api/v3/response_timeliness/issue_unresponsive_rate | 1 | 0.17 |
 | Issue First Response Time / Issue 首次响应时间 | /api/v3/response_timeliness/issue_first_reponse | 15 | 0.17 |

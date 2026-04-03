@@ -98,7 +98,7 @@ module Openapi
 
             desc 'Release Quality Model Data / 发布质量模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | SBOM in Release / SBOM检查 | /api/v3/release_quality/sbom_in_release | 1 | 0.25 |
 | Binary Artifacts in Repo / 二进制制品包含 | /api/v3/release_quality/security_binary_artifact | 1 | 0.25 |

@@ -197,7 +197,7 @@ module Openapi
 
             desc 'Organizational Governance Model Data / 组织开放治理模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Participating Orgs by Period / 参与贡献的组织个数 | /api/v3/organizational_governance/participating_orgs_by_period | 10 | 0 |
 | Org Code Contributors by Period / 组织代码贡献者数量 | /api/v3/organizational_governance/org_code_contributors_by_period | 100 | 0 |

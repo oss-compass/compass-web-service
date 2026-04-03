@@ -103,7 +103,7 @@ module Openapi
 
             desc 'Trusted Build Model Data / 可信构建模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Build Success / 可构建 | /api/v3/trusted_build/trusted_build_success | 1 | 0.25 |
 | CI Integration / CI集成 | /api/v3/trusted_build/ci_integration | 1 | 0.25 |

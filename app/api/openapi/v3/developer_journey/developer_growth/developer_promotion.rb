@@ -87,7 +87,7 @@ module Openapi
 
             desc 'Developer Promotion Model Data / 开发者晋升模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Org Code Core Promotion Count / 组织代码核心晋升数量 | /api/v3/developer_promotion/org_code_core_promotion_count | 10 | 0.25 |
 | Org Issue Core Promotion Count / 组织Issue核心晋升数量 | /api/v3/developer_promotion/org_issue_core_promotion_count | 10 | 0.25 |

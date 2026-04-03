@@ -104,7 +104,7 @@ module Openapi
 
             desc 'Legal Compliance Model Data / 合法合规模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Legal Compliance: Copyright Statement Check / 许可头与版权声明 | /api/v3/legal_compliance/compliance_copyright_statement | 1 | 0.25 |
 | Legal Compliance: OSI License Check / 许可证包含（OSI） | /api/v3/legal_compliance/compliance_license | 1 | 0.25 |

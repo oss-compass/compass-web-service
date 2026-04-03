@@ -109,7 +109,7 @@ module Openapi
 
             desc 'Contribution Activity Model Data / 贡献活跃度模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Commit Count / 代码提交次数 | /api/v3/contribution_activity/commit_count | 12850 | 0.20 |
 | Lines of Code Change / 新增代码行数  | /api/v3/contribution_activity/lines_of_code_change | 300000 | 0.20 |

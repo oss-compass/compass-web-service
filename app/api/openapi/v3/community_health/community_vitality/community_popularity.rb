@@ -62,7 +62,7 @@ module Openapi
 
             desc 'Community Popularity Model Data / 社区流行度模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Stars Growth / 项目Stars新增 | /api/v3/community_popularity/stars | 100 | 0.50 |
 | Forks Growth / 项目Forks新增 | /api/v3/community_popularity/forks | 100 | 0.50 |

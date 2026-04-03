@@ -109,7 +109,7 @@ module Openapi
 
             desc 'Development Document Quality Model Data / 开发文档质量模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | README Document Quality / README | /api/v3/development_document_quality/ecology_readme | 1 | 0.25 |
 | Build Document / 构建文档 | /api/v3/development_document_quality/ecology_build_doc | 1 | 0.25 |

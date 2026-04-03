@@ -88,7 +88,7 @@ module Openapi
 
             desc 'Core Loss Model Data / 核心开发者流失模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Org Code Core Loss / 组织代码核心开发者（含管理者）流失率 | /api/v3/core_loss/org_code_core_loss | 1 | 0.25 |
 | Org Issue Core Loss / 组织Issue核心开发者（含管理者）流失率 | /api/v3/core_loss/org_issue_core_loss | 1 | 0.25 |

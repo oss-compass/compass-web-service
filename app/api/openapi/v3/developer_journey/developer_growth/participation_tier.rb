@@ -192,7 +192,7 @@ module Openapi
 
             desc 'Participation Tier Model Data / 开发者参与度分层模型数据',
                  detail: "
-| Interface Name / 接口名称 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
+| Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Org Code Core Contributors / 组织代码核心开发者（含管理者）数量 | /api/v3/participation_tier/org_code_core_contributors | 50 | 0.08 |
 | Org Issue Core Contributors / 组织Issue核心开发者（含管理者）数量 | /api/v3/participation_tier/org_issue_core_contributors | 50 | 0.08 |
