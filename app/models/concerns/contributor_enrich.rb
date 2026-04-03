@@ -154,10 +154,22 @@ module ContributorEnrich
             org_change_date_list = source['org_change_date_list'] || []
             current_contributor = source['contributor']
             current_org = nil
+            # org_change_date_list.each do |o|
+            #   first_date = (Date.parse(o['first_date']) rescue begin_date)
+            #   last_date = (Date.parse(o['last_date']) rescue Date.today)
+            #   unless begin_date > last_date || end_date < first_date
+            #     current_org = o['org_name']
+            #   end
+            # end
             org_change_date_list.each do |o|
-              first_date = (Date.parse(o['first_date']) rescue begin_date)
+              first_date = (Date.parse(o['first_date']) rescue begin_date.is_a?(Date) ? begin_date : Date.today)
               last_date = (Date.parse(o['last_date']) rescue Date.today)
-              unless begin_date > last_date || end_date < first_date
+
+              # 确保比较时类型一致
+              b_date = begin_date.is_a?(Date) ? begin_date : Date.parse(begin_date.to_s)
+              e_date = end_date.is_a?(Date) ? end_date : Date.parse(end_date.to_s)
+
+              unless b_date > last_date || e_date < first_date
                 current_org = o['org_name']
               end
             end
@@ -238,6 +250,7 @@ module ContributorEnrich
 
     def fetch_contributors_name_list(repo_urls, begin_date, end_date, label: nil, level: nil)
       query = self
+                .where(is_bot: false)
                 .must(terms: { 'repo_name.keyword' => repo_urls })
                 .range(:contribution, gt: 0)
                 .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
