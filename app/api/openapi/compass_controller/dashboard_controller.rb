@@ -98,6 +98,15 @@ module Openapi
         def generate_uuid(contributor, modify_type, label, level, platform)
           Digest::MD5.hexdigest("#{contributor}:#{modify_type}:#{label}:#{level}:#{platform}")
         end
+
+        def clear_all_contributors_cache(repo_urls)
+          repos_string = repo_urls.sort.join(',')
+          repos_hash = Digest::MD5.hexdigest(repos_string)
+          pattern = "contributors:#{repos_hash}:*"
+          Rails.cache.delete_matched(pattern)
+        end
+
+
       end
 
       before { require_login! }
@@ -907,6 +916,12 @@ module Openapi
 
           filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
 
+
+
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+
+          target_orgs = org_filter_opt&.values || []
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -1001,6 +1016,23 @@ module Openapi
             item_hash
           end
 
+
+          if target_orgs.present?
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+            items = items.select do |item|
+              contributor = item['contributor']
+              org = contributor&.dig('organization')
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+
+            # 重新计算分页
+            count = items.length
+            total_page = (count.to_f / per).ceil
+            page = [page, total_page].min
+            page = 1 if page < 1
+            start_idx = (page - 1) * per
+            items = items[start_idx, per] || []
+          end
           {
             count: count,
             total_page: (count.to_f / per).ceil,
@@ -1229,6 +1261,11 @@ module Openapi
             GitcodePullEnrich
           )
 
+
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+
+          target_orgs = org_filter_opt&.values || []
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -1324,6 +1361,23 @@ module Openapi
             end
 
             item_hash
+          end
+
+          if target_orgs.present?
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+            items = items.select do |item|
+              contributor = item['contributor']
+              org = contributor&.dig('organization')
+              target_orgs_lower.include?(org)
+            end
+
+            # 重新计算分页
+            count = items.length
+            total_page = (count.to_f / per).ceil
+            page = [page, total_page].min
+            page = 1 if page < 1
+            start_idx = (page - 1) * per
+            items = items[start_idx, per] || []
           end
 
           {
@@ -1714,7 +1768,7 @@ module Openapi
 
 
 
-        desc '管理贡献者组织信息（管理员）',
+        desc '修改组织信息',
              tags: ['ContributorService / 贡献者服务']
 
         params do
@@ -1732,9 +1786,6 @@ module Openapi
         end
 
         post :manage_user_orgs do
-
-
-
 
           contributor = params[:contributor]
           platform = params[:platform]
@@ -1761,11 +1812,64 @@ module Openapi
 
             ContributorOrg.import(record)
 
+            clear_all_contributors_cache([label])
+
             { status: true, message: 'Organization updated successfully'}
 
           rescue => ex
             error!({ status: false, message: ex.message }, 422)
           end
+        end
+
+        desc '获取全部组织列表',
+             tags: ['ContributorService / 贡献者服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+          requires :beginDate, type: String, desc: '开始日期 (ISO8601)'
+          requires :endDate, type: String, desc: '结束日期 (ISO8601)'
+        end
+
+        post :organization_list do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+
+
+          indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
+          # 获取所有贡献者列表
+          contributors_list = indexer.fetch_contributors_list(
+            repo_urls,
+            begin_date,
+            end_date,
+            label: label,
+            level: level
+          )
+
+          # 提取所有唯一的组织（忽略空值，忽略大小写去重）
+          # 保留原始大小写，但去重时忽略大小写
+          organizations = contributors_list
+                            .map { |item| item.respond_to?(:organization) ? item.organization : item['organization'] }
+                            .compact
+                            .map(&:to_s)
+                            .map(&:strip)
+                            .reject(&:blank?)
+                            .group_by(&:downcase)  # 按小写分组
+                            .map { |_, group| group.first }  # 取每组的第一个（保留原始大小写）
+                            .sort
+          {
+            count: organizations.length,
+            organizations: organizations
+          }
         end
 
 
