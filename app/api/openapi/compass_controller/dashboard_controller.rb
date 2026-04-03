@@ -883,8 +883,165 @@ module Openapi
           end
         end
 
-        post :issues_detail_list do
+        # post :issues_detail_list do
+        #
+        #   label = ShortenedLabel.normalize_label(params[:label])
+        #   level = params[:level]
+        #   page = params[:page]
+        #   per = params[:per]
+        #   begin_date = params[:beginDate]
+        #   end_date = params[:endDate]
+        #
+        #   filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+        #   sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
+        #                 [OpenStruct.new(type: 'created_at', direction: 'desc')]
+        #               else
+        #                 raw_opts = [params[:sortOpts]].flatten.compact
+        #                 parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+        #                 has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+        #                 unless has_created_at
+        #                   parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+        #                 end
+        #
+        #                 parsed_opts
+        #               end
+        #
+        #   indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+        #     label,
+        #     level,
+        #     GiteeIssueEnrich,
+        #     GithubIssueEnrich,
+        #     GitcodeIssueEnrich
+        #   )
+        #
+        #   filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
+        #
+        #
+        #
+        #   org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+        #   filter_opts.delete_if { |opt| opt.type == 'organization' }
+        #
+        #   target_orgs = org_filter_opt&.values || []
+        #   resp = indexer.terms_by_repo_urls(
+        #     repo_urls,
+        #     begin_date,
+        #     end_date,
+        #     per: per,
+        #     page: page,
+        #     filter_opts: filter_opts,
+        #     sort_opts: sort_opts
+        #   )
+        #
+        #   count = indexer.count_by_repo_urls(repo_urls, begin_date, end_date, filter_opts: filter_opts)
+        #
+        #   # 将字段名定义为常量或局部变量，使用 String 格式匹配 _source 的 key
+        #   ALLOWED_FIELDS = %w[
+        #               repository
+        #               id_in_repo
+        #               url
+        #               title
+        #               state
+        #               created_at
+        #               closed_at
+        #               time_to_close_days
+        #               time_to_first_attention_without_bot
+        #               labels
+        #               user_login
+        #               assignee_login
+        #               num_of_comments_without_bot
+        # ].freeze
+        #
+        #   hits = resp&.dig('hits', 'hits') || []
+        #
+        #   # 提取所有唯一的 user_login
+        #   user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
+        #
+        #   contrib_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+        #     label,
+        #     level,
+        #     GiteeContributorEnrich,
+        #     GithubContributorEnrich,
+        #     GitcodeContributorEnrich
+        #   )
+        #
+        #   contributors_info = {}
+        #   if user_logins.any?
+        #     contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+        #
+        #     # 构建 user_login -> 贡献者信息的映射
+        #     contributors_info = contributors_list.each_with_object({}) do |item, hash|
+        #       login = item.respond_to?(:contributor) ? item.contributor : item['contributor']
+        #       hash[login] = item if login
+        #     end
+        #   end
+        #
+        #   items = hits.map do |hit|
+        #     source = hit['_source'] || {}
+        #
+        #     item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+        #       hash[field] = source[field]
+        #     end
+        #
+        #     if item_hash['state'] == 'closed' && item_hash['time_to_first_attention_without_bot'].nil?
+        #       item_hash['time_to_first_attention_without_bot'] = 0
+        #     end
+        #
+        #     # if item_hash['num_of_comments_without_bot'].nil?
+        #     #   item_hash['num_of_comments_without_bot'] = 0
+        #     # end
+        #
+        #     # 嵌入贡献者信息 ==========
+        #     user_login = item_hash['user_login']
+        #     contributor = contributors_info[user_login]
+        #
+        #     if contributor
+        #       # 提取组织信息
+        #       organization = contributor.respond_to?(:organization) ? contributor.organization : contributor['organization']
+        #
+        #       # 判断内外部标签
+        #       is_internal = organization.to_s.downcase == 'huawei'
+        #
+        #       item_hash['contributor'] = {
+        #         'organization' => organization,
+        #         'is_internal' => is_internal
+        #       }
+        #     else
+        #       # 如果找不到贡献者信息，设置默认值
+        #       item_hash['contributor'] = {
+        #         'organization' => nil,
+        #         'is_internal' => false
+        #       }
+        #     end
+        #
+        #     item_hash
+        #   end
+        #
+        #
+        #   if target_orgs.present?
+        #     target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+        #     items = items.select do |item|
+        #       contributor = item['contributor']
+        #       org = contributor&.dig('organization')
+        #       target_orgs_lower.include?(org.to_s.downcase)
+        #     end
+        #
+        #     # 重新计算分页
+        #     count = items.length
+        #     total_page = (count.to_f / per).ceil
+        #     page = [page, total_page].min
+        #     page = 1 if page < 1
+        #     start_idx = (page - 1) * per
+        #     items = items[start_idx, per] || []
+        #   end
+        #   {
+        #     count: count,
+        #     total_page: (count.to_f / per).ceil,
+        #     page: page,
+        #     items: items
+        #   }
+        # end
 
+        post :issues_detail_list do
           label = ShortenedLabel.normalize_label(params[:label])
           level = params[:level]
           page = params[:page]
@@ -902,7 +1059,6 @@ module Openapi
                         unless has_created_at
                           parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
                         end
-
                         parsed_opts
                       end
 
@@ -916,12 +1072,60 @@ module Openapi
 
           filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
 
-
-
+          # 提取组织筛选条件
           org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
           filter_opts.delete_if { |opt| opt.type == 'organization' }
-
           target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息 ==========
+          target_user_logins = nil
+
+          if target_orgs.present?
+            contrib_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回空结果
+              return {
+                count: 0,
+                total_page: 0,
+                page: page,
+                items: []
+              }
+            end
+          end
+          # ========== 组织筛选处理结束 ==========
+
+          # ES 查询（现在包含 user_login 筛选）
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -934,41 +1138,45 @@ module Openapi
 
           count = indexer.count_by_repo_urls(repo_urls, begin_date, end_date, filter_opts: filter_opts)
 
-          # 将字段名定义为常量或局部变量，使用 String 格式匹配 _source 的 key
           ALLOWED_FIELDS = %w[
-                      repository
-                      id_in_repo
-                      url
-                      title
-                      state
-                      created_at
-                      closed_at
-                      time_to_close_days
-                      time_to_first_attention_without_bot
-                      labels
-                      user_login
-                      assignee_login
-                      num_of_comments_without_bot
-        ].freeze
+    repository
+    id_in_repo
+    url
+    title
+    state
+    created_at
+    closed_at
+    time_to_close_days
+    time_to_first_attention_without_bot
+    labels
+    user_login
+    assignee_login
+    num_of_comments_without_bot
+  ].freeze
 
           hits = resp&.dig('hits', 'hits') || []
 
-          # 提取所有唯一的 user_login
+          # 获取贡献者信息（用于返回 organization 字段）
           user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
-
-          contrib_indexer, repo_urls, origin = select_idx_repos_by_lablel_and_level(
-            label,
-            level,
-            GiteeContributorEnrich,
-            GithubContributorEnrich,
-            GitcodeContributorEnrich
-          )
 
           contributors_info = {}
           if user_logins.any?
-            contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
 
-            # 构建 user_login -> 贡献者信息的映射
+            contributors_list = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
             contributors_info = contributors_list.each_with_object({}) do |item, hash|
               login = item.respond_to?(:contributor) ? item.contributor : item['contributor']
               hash[login] = item if login
@@ -986,19 +1194,12 @@ module Openapi
               item_hash['time_to_first_attention_without_bot'] = 0
             end
 
-            # if item_hash['num_of_comments_without_bot'].nil?
-            #   item_hash['num_of_comments_without_bot'] = 0
-            # end
-
-            # 嵌入贡献者信息 ==========
+            # 嵌入贡献者信息
             user_login = item_hash['user_login']
             contributor = contributors_info[user_login]
 
             if contributor
-              # 提取组织信息
               organization = contributor.respond_to?(:organization) ? contributor.organization : contributor['organization']
-
-              # 判断内外部标签
               is_internal = organization.to_s.downcase == 'huawei'
 
               item_hash['contributor'] = {
@@ -1006,7 +1207,6 @@ module Openapi
                 'is_internal' => is_internal
               }
             else
-              # 如果找不到贡献者信息，设置默认值
               item_hash['contributor'] = {
                 'organization' => nil,
                 'is_internal' => false
@@ -1016,23 +1216,6 @@ module Openapi
             item_hash
           end
 
-
-          if target_orgs.present?
-            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
-            items = items.select do |item|
-              contributor = item['contributor']
-              org = contributor&.dig('organization')
-              target_orgs_lower.include?(org.to_s.downcase)
-            end
-
-            # 重新计算分页
-            count = items.length
-            total_page = (count.to_f / per).ceil
-            page = [page, total_page].min
-            page = 1 if page < 1
-            start_idx = (page - 1) * per
-            items = items[start_idx, per] || []
-          end
           {
             count: count,
             total_page: (count.to_f / per).ceil,
@@ -1230,8 +1413,164 @@ module Openapi
           end
         end
 
+  #       post :pulls_detail_list do
+  #
+  #         label = ShortenedLabel.normalize_label(params[:label])
+  #         level = params[:level]
+  #         page = params[:page]
+  #         per = params[:per]
+  #         begin_date = params[:beginDate]
+  #         end_date = params[:endDate]
+  #
+  #         filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+  #         sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
+  #                       [OpenStruct.new(type: 'created_at', direction: 'desc')]
+  #                     else
+  #                       raw_opts = [params[:sortOpts]].flatten.compact
+  #                       parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+  #                       has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+  #                       unless has_created_at
+  #                         parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+  #                       end
+  #
+  #                       parsed_opts
+  #                     end
+  #
+  #         indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+  #           label,
+  #           level,
+  #           GiteePullEnrich,
+  #           GithubPullEnrich,
+  #           GitcodePullEnrich
+  #         )
+  #
+  #
+  #         org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+  #         filter_opts.delete_if { |opt| opt.type == 'organization' }
+  #
+  #         target_orgs = org_filter_opt&.values || []
+  #         resp = indexer.terms_by_repo_urls(
+  #           repo_urls,
+  #           begin_date,
+  #           end_date,
+  #           per: per,
+  #           page: page,
+  #           filter_opts: filter_opts,
+  #           sort_opts: sort_opts
+  #         )
+  #
+  #         count = indexer.count_by_repo_urls(
+  #           repo_urls,
+  #           begin_date,
+  #           end_date,
+  #           filter_opts: filter_opts
+  #         )
+  #
+  #         hits = resp&.dig('hits', 'hits') || []
+  #
+  #         # 提取所有唯一的 user_login
+  #         user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
+  #
+  #         # 获取贡献者信息
+  #         contrib_indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+  #           label,
+  #           level,
+  #           GiteeContributorEnrich,
+  #           GithubContributorEnrich,
+  #           GitcodeContributorEnrich
+  #         )
+  #
+  #         contributors_info = {}
+  #         if user_logins.any?
+  #
+  #           contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+  #
+  #           # 构建 user_login -> 贡献者信息的映射
+  #           contributors_info = contributors_list.each_with_object({}) do |item, hash|
+  #             login = item.respond_to?(:contributor) ? item.contributor : item['contributor']
+  #             hash[login] = item if login
+  #           end
+  #         end
+  #
+  #         ALLOWED_FIELDS = %w[
+  #             closed_at
+  #             created_at
+  #             id_in_repo
+  #             labels
+  #             merge_author_login
+  #             num_review_comments
+  #             repository
+  #             reviewers_login
+  #             state
+  #             time_to_close_days
+  #             time_to_first_attention_without_bot
+  #             title
+  #             url
+  #             user_login
+  # ].freeze
+  #
+  #         items = hits.map do |hit|
+  #           source = hit['_source'] || {}
+  #
+  #           item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+  #             hash[field] = source[field]
+  #           end
+  #
+  #           if item_hash['state'] == 'closed' && item_hash['time_to_first_attention_without_bot'].nil?
+  #             item_hash['time_to_first_attention_without_bot'] = 0
+  #           end
+  #
+  #           # 嵌入贡献者信息 ==========
+  #           user_login = item_hash['user_login']
+  #           contributor = contributors_info[user_login]
+  #
+  #           if contributor
+  #             # 提取组织信息
+  #             organization = contributor.respond_to?(:organization) ? contributor.organization : contributor['organization']
+  #
+  #             # 判断内外部标签
+  #             is_internal = organization.to_s.downcase == 'huawei'
+  #
+  #             item_hash['contributor'] = {
+  #               'organization' => organization,
+  #               'is_internal' => is_internal
+  #             }
+  #           else
+  #             # 如果找不到贡献者信息，设置默认值
+  #             item_hash['contributor'] = {
+  #               'organization' => nil,
+  #               'is_internal' => false
+  #             }
+  #           end
+  #
+  #           item_hash
+  #         end
+  #
+  #         if target_orgs.present?
+  #           target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+  #           items = items.select do |item|
+  #             contributor = item['contributor']
+  #             org = contributor&.dig('organization')
+  #             target_orgs_lower.include?(org)
+  #           end
+  #
+  #           # 重新计算分页
+  #           count = items.length
+  #           total_page = (count.to_f / per).ceil
+  #           page = [page, total_page].min
+  #           page = 1 if page < 1
+  #           start_idx = (page - 1) * per
+  #           items = items[start_idx, per] || []
+  #         end
+  #
+  #         {
+  #           count: count,
+  #           total_page: (count.to_f / per).ceil,
+  #           page: page,
+  #           items: items
+  #         }
+  #       end
         post :pulls_detail_list do
-
           label = ShortenedLabel.normalize_label(params[:label])
           level = params[:level]
           page = params[:page]
@@ -1249,7 +1588,6 @@ module Openapi
                         unless has_created_at
                           parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
                         end
-
                         parsed_opts
                       end
 
@@ -1261,11 +1599,57 @@ module Openapi
             GitcodePullEnrich
           )
 
-
+          # 提取组织筛选条件
           org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
           filter_opts.delete_if { |opt| opt.type == 'organization' }
-
           target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息 ==========
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回空结果
+              return {
+                count: 0,
+                total_page: 0,
+                page: page,
+                items: []
+              }
+            end
+          end
+          # ========== 组织筛选处理结束 ==========
+
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -1289,18 +1673,23 @@ module Openapi
           user_logins = hits.map { |hit| hit.dig('_source', 'user_login') }.compact.uniq
 
           # 获取贡献者信息
-          contrib_indexer, repo_urls = select_idx_repos_by_lablel_and_level(
-            label,
-            level,
-            GiteeContributorEnrich,
-            GithubContributorEnrich,
-            GitcodeContributorEnrich
-          )
-
           contributors_info = {}
           if user_logins.any?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
 
-            contributors_list = contrib_indexer.fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+            contributors_list = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
 
             # 构建 user_login -> 贡献者信息的映射
             contributors_info = contributors_list.each_with_object({}) do |item, hash|
@@ -1310,20 +1699,20 @@ module Openapi
           end
 
           ALLOWED_FIELDS = %w[
-              closed_at
-              created_at
-              id_in_repo
-              labels
-              merge_author_login
-              num_review_comments
-              repository
-              reviewers_login
-              state
-              time_to_close_days
-              time_to_first_attention_without_bot
-              title
-              url
-              user_login
+    closed_at
+    created_at
+    id_in_repo
+    labels
+    merge_author_login
+    num_review_comments
+    repository
+    reviewers_login
+    state
+    time_to_close_days
+    time_to_first_attention_without_bot
+    title
+    url
+    user_login
   ].freeze
 
           items = hits.map do |hit|
@@ -1361,23 +1750,6 @@ module Openapi
             end
 
             item_hash
-          end
-
-          if target_orgs.present?
-            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
-            items = items.select do |item|
-              contributor = item['contributor']
-              org = contributor&.dig('organization')
-              target_orgs_lower.include?(org)
-            end
-
-            # 重新计算分页
-            count = items.length
-            total_page = (count.to_f / per).ceil
-            page = [page, total_page].min
-            page = 1 if page < 1
-            start_idx = (page - 1) * per
-            items = items[start_idx, per] || []
           end
 
           {
