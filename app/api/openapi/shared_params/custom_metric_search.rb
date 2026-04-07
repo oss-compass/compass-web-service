@@ -33,6 +33,7 @@ module Openapi
 
 
       params :metric_search do
+        requires :access_token, type: String, desc: 'Access token / 访问令牌', documentation: { param_type: 'body' }
         requires :label, type: String, desc: 'Repository or community address / 仓库或社区地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         requires :period, type: String, desc: 'Time period / 时间周期', documentation: { param_type: 'body', example: 'month,year,quarter' }
         optional :level, type: String, desc: 'Level repo or community / 层级 repo或community', default: 'repo', values: ['repo', 'community'], documentation: { param_type: 'body', example: 'repo' }
