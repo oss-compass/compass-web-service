@@ -72,20 +72,20 @@ module Openapi
               fetch_metric_data_v2(DeveloperBaseMetric, 'non_code_contributors')
             end
 
-            desc 'Developer Base Model Data / 开发者基础模型数据',
+            desc 'Developer Base Model / 开发者基础模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Community Contributor Count / 社区贡献者数量 | /api/v3/developer_base/contributor_count | 2000 | 0.33 |
-| Active Code Contributor Count / 代码贡献者数量 | /api/v3/developer_base/code_contributor_count | 1000 | 0.33 |
-| Active Non-code Contributor Count / 非代码贡献者数量 | /api/v3/developer_base/non_code_contributor_count | 1000 | 0.34 |
+| Community Contributor Count / 社区贡献者数量 | /api/v3/developer_base/contributor_count | 2000 count / 2000 个 | 0.33 |
+| Active Code Contributor Count / 代码贡献者数量 | /api/v3/developer_base/code_contributor_count | 1000 count / 1000 个 | 0.33 |
+| Active Non-code Contributor Count / 非代码贡献者数量 | /api/v3/developer_base/non_code_contributor_count | 1000 count / 1000 个 | 0.34 |
 ",
 
                  tags: [
                    'V3 API',
                    'Evaluation Model / 评估模型',
                    'Community Ecosystem Health / 社区生态健康评估',
-                   'Community Vitality / 社区活跃度'
+                   'Community Vitality / 社区活力'
                  ],
                  success: { code: 201, model: Openapi::Entities::DeveloperBaseModelDataResponse }
             params { use :metric_search }

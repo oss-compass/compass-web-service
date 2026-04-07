@@ -71,7 +71,7 @@ module Openapi
               fetch_metric_data_v2(SecurityManagementMetric, fields)
             end
 
-            desc 'Security Management Model Data / 安全管理模型数据',
+            desc 'Security Management Model / 安全管理模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

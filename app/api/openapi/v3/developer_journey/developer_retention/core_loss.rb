@@ -86,7 +86,7 @@ module Openapi
               fetch_metric_data_v2(CoreLossMetric, 'individual_issue_core_loss')
             end
 
-            desc 'Core Loss Model Data / 核心开发者流失模型数据',
+            desc 'Core Loss Model / 核心开发者流失模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

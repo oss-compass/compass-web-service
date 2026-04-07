@@ -98,15 +98,15 @@ module Openapi
               fetch_metric_data_v2(DeveloperAttractionMetric, 'new_individual_non_code_contributors')
             end
 
-            desc 'Developer Attraction Model Data / 开发者吸引模型数据',
+            desc 'Developer Attraction Model / 开发者吸引模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| New Org Count / 新增组织数 | /api/v3/developer_attraction/new_org_count | 10 | 0.20 |
-| New Org Code Contributors / 新增组织代码开发者数量 | /api/v3/developer_attraction/new_org_code_contributors | 50 | 0.20 |
-| New Org Non-code Contributors / 新增组织非代码开发者数量 | /api/v3/developer_attraction/new_org_non_code_contributors | 50 | 0.20 |
-| New Individual Code Contributors / 新增个人代码开发者数量 | /api/v3/developer_attraction/new_individual_code_contributors | 100 | 0.20 |
-| New Individual Non-code Contributors / 新增个人非代码开发者数量 | /api/v3/developer_attraction/new_individual_non_code_contributors | 100 | 0.20 |
+| New Org Count / 新增组织数 | /api/v3/developer_attraction/new_org_count | 10 count / 10 个 | 0.20 |
+| New Org Code Contributors / 新增组织代码开发者数量 | /api/v3/developer_attraction/new_org_code_contributors | 50 count / 50 个 | 0.20 |
+| New Org Non-code Contributors / 新增组织非代码开发者数量 | /api/v3/developer_attraction/new_org_non_code_contributors | 50 count / 50 个 | 0.20 |
+| New Individual Code Contributors / 新增个人代码开发者数量 | /api/v3/developer_attraction/new_individual_code_contributors | 100 count / 100 个 | 0.20 |
+| New Individual Non-code Contributors / 新增个人非代码开发者数量 | /api/v3/developer_attraction/new_individual_non_code_contributors | 100 count / 100 个 | 0.20 |
 ",
 
                  tags: [

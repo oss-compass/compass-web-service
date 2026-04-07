@@ -190,22 +190,22 @@ module Openapi
               fetch_metric_data_v2(ParticipationTierMetric, 'individual_issue_visitor_contributors')
             end
 
-            desc 'Participation Tier Model Data / 开发者参与度分层模型数据',
+            desc 'Participation Tier Model / 开发者参与度分层模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Org Code Core Contributors / 组织代码核心开发者（含管理者）数量 | /api/v3/participation_tier/org_code_core_contributors | 50 | 0.08 |
-| Org Issue Core Contributors / 组织Issue核心开发者（含管理者）数量 | /api/v3/participation_tier/org_issue_core_contributors | 50 | 0.08 |
-| Org Code Regular Contributors / 组织代码常客开发者数量 | /api/v3/participation_tier/org_code_regular_contributors | 100 | 0.08 |
-| Org Issue Regular Contributors / 组织Issue常客开发者数量 | /api/v3/participation_tier/org_issue_regular_contributors | 100 | 0.08 |
-| Org Code Visitor Contributors / 组织代码访客开发者数量 | /api/v3/participation_tier/org_code_visitor_contributors | 200 | 0.08 |
-| Org Issue Visitor Contributors / 组织Issue访客开发者数量 | /api/v3/participation_tier/org_issue_visitor_contributors | 200 | 0.08 |
-| Individual Code Core Contributors / 个人代码核心开发者（含管理者）数量 | /api/v3/participation_tier/individual_code_core_contributors | 100 | 0.08 |
-| Individual Issue Core Contributors / 个人Issue核心开发者（含管理者）数量 | /api/v3/participation_tier/individual_issue_core_contributors | 100 | 0.08 |
-| Individual Code Regular Contributors / 个人代码常客开发者数量 | /api/v3/participation_tier/individual_code_regular_contributors | 200 | 0.08 |
-| Individual Issue Regular Contributors / 个人Issue常客开发者数量 | /api/v3/participation_tier/individual_issue_regular_contributors | 200 | 0.08 |
-| Individual Code Visitor Contributors / 个人代码访客开发者数量 | /api/v3/participation_tier/individual_code_visitor_contributors | 300 | 0.09 |
-| Individual Issue Visitor Contributors / 个人Issue访客开发者数量 | /api/v3/participation_tier/individual_issue_visitor_contributors | 300 | 0.09 |
+| Org Code Core Contributors / 组织代码核心开发者（含管理者）数量 | /api/v3/participation_tier/org_code_core_contributors | 50 count / 50 个 | 0.08 |
+| Org Issue Core Contributors / 组织Issue核心开发者（含管理者）数量 | /api/v3/participation_tier/org_issue_core_contributors | 50 count / 50 个 | 0.08 |
+| Org Code Regular Contributors / 组织代码常客开发者数量 | /api/v3/participation_tier/org_code_regular_contributors | 100 count / 100 个 | 0.08 |
+| Org Issue Regular Contributors / 组织Issue常客开发者数量 | /api/v3/participation_tier/org_issue_regular_contributors | 100 count / 100 个 | 0.08 |
+| Org Code Visitor Contributors / 组织代码访客开发者数量 | /api/v3/participation_tier/org_code_visitor_contributors | 200 count / 200 个 | 0.08 |
+| Org Issue Visitor Contributors / 组织Issue访客开发者数量 | /api/v3/participation_tier/org_issue_visitor_contributors | 200 count / 200 个 | 0.08 |
+| Individual Code Core Contributors / 个人代码核心开发者（含管理者）数量 | /api/v3/participation_tier/individual_code_core_contributors | 100 count / 100 个 | 0.08 |
+| Individual Issue Core Contributors / 个人Issue核心开发者（含管理者）数量 | /api/v3/participation_tier/individual_issue_core_contributors | 100 count / 100 个 | 0.08 |
+| Individual Code Regular Contributors / 个人代码常客开发者数量 | /api/v3/participation_tier/individual_code_regular_contributors | 200 count / 200 个 | 0.08 |
+| Individual Issue Regular Contributors / 个人Issue常客开发者数量 | /api/v3/participation_tier/individual_issue_regular_contributors | 200 count / 200 个 | 0.08 |
+| Individual Code Visitor Contributors / 个人代码访客开发者数量 | /api/v3/participation_tier/individual_code_visitor_contributors | 300 count / 300 个 | 0.09 |
+| Individual Issue Visitor Contributors / 个人Issue访客开发者数量 | /api/v3/participation_tier/individual_issue_visitor_contributors | 300 count / 300 个 | 0.09 |
 ",
 
                  tags: [

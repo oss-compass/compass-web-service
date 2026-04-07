@@ -195,23 +195,15 @@ module Openapi
               fetch_metric_data_v2(OrganizationalGovernanceMetric, fields)
             end
 
-            desc 'Organizational Governance Model Data / 组织开放治理模型数据',
+            desc 'Organizational Governance Model / 组织开放治理模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Participating Orgs by Period / 参与贡献的组织个数 | /api/v3/organizational_governance/participating_orgs_by_period | 10 | 0 |
-| Org Code Contributors by Period / 组织代码贡献者数量 | /api/v3/organizational_governance/org_code_contributors_by_period | 100 | 0 |
-| Org Code Contributors Ratio by Period / 组织代码贡献者占比 | /api/v3/organizational_governance/org_code_contributors_ratio_by_period | 1 | 0 |
-| Org Code Contribution by Period / 组织代码贡献量 | /api/v3/organizational_governance/org_code_contribution_by_period | 3000 | 0 |
-| Org Code Contribution Ratio by Period / 组织代码贡献量占比 | /api/v3/organizational_governance/org_code_contribution_ratio_by_period | 1 | 0 |
-| Org Non-code Contributors by Period / 组织非代码贡献者数量 | /api/v3/organizational_governance/org_non_code_contributors_by_period | 100 | 0 |
-| Org Non-code Contributors Ratio by Period / 组织非代码贡献者占比 | /api/v3/organizational_governance/org_non_code_contributors_ratio_by_period | 1 | 0 |
-| Org Non-code Contribution by Period / 组织非代码贡献量 | /api/v3/organizational_governance/org_non_code_contribution_by_period | 1000 | 0 |
-| Org Non-code Contribution Ratio by Period / 组织非代码贡献量占比 | /api/v3/organizational_governance/org_non_code_contribution_ratio_by_period | 1 | 0 |
-| Governance Orgs by Period / 参与治理的组织个数 | /api/v3/organizational_governance/governance_orgs_by_period | 5 | 0.33 |
-| Org Managers by Period / 组织管理者数量 | /api/v3/organizational_governance/org_managers_by_period | 20 | 0.33 |
-| Org Managers Ratio by Period / 组织管理者数量占比 | /api/v3/organizational_governance/org_managers_ratio_by_period | 1 | 0.33 |
+| Governance Orgs by Period / 参与治理的组织个数 | /api/v3/organizational_governance/governance_orgs_by_period | 5 count / 5 个 | 0.33 |
+| Org Managers by Period / 组织管理者数量 | /api/v3/organizational_governance/org_managers_by_period | 20 count / 20 个 | 0.33 |
+| Org Managers Ratio by Period / 组织管理者数量占比 | /api/v3/organizational_governance/org_managers_ratio_by_period | 1 rate / 1 占比 | 0.33 |
 ",
+
                  tags: [
                    'V3 API',
                    'Evaluation Model / 评估模型',

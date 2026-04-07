@@ -168,21 +168,14 @@ module Openapi
               fetch_metric_data_v2(PersonalGovernanceMetric, fields)
             end
 
-            desc 'Personal Governance Model Data / 个人开放治理模型数据',
+            desc 'Personal Governance Model / 个人开放治理模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Individual Code Contributors by Period / 个人代码贡献者数量 | /api/v3/personal_governance/individual_code_contributors_by_period | 300 | 0 |
-| Individual Code Contributors Ratio by Period / 个人代码贡献者占比 | /api/v3/personal_governance/individual_code_contributors_ratio_by_period | 1 | 0 |
-| Individual Code Contribution by Period / 个人代码贡献量 | /api/v3/personal_governance/individual_code_contribution_by_period | 1000 | 0 |
-| Individual Code Contribution Ratio by Period / 个人代码贡献量占比 | /api/v3/personal_governance/individual_code_contribution_ratio_by_period | 1 | 0 |
-| Individual Non-code Contributors by Period / 个人非代码贡献者数量 | /api/v3/personal_governance/individual_non_code_contributors_by_period | 300 | 0 |
-| Individual Non-code Contributors Ratio by Period / 个人非代码贡献者占比 | /api/v3/personal_governance/individual_non_code_contributors_ratio_by_period | 1 | 0 |
-| Individual Non-code Contribution by Period / 个人非代码贡献量 | /api/v3/personal_governance/individual_non_code_contribution_by_period | 300 | 0 |
-| Individual Non-code Contribution Ratio by Period / 个人非代码贡献量占比 | /api/v3/personal_governance/individual_non_code_contribution_ratio_by_period | 1 | 0 |
-| Individual Managers by Period / 个人管理者数量 | /api/v3/personal_governance/individual_managers_by_period | 10 | 0.5 |
-| Individual Managers Ratio by Period / 个人管理者数量占比 | /api/v3/personal_governance/individual_managers_ratio_by_period | 1 | 0.5 |
+| Individual Managers by Period / 个人管理者数量 | /api/v3/personal_governance/individual_managers_by_period | 10 count / 10 个 | 0.5 |
+| Individual Managers Ratio by Period / 个人管理者数量占比 | /api/v3/personal_governance/individual_managers_ratio_by_period | 1 rate / 1 占比 | 0.5 |
 ",
+
                  tags: [
                    'V3 API',
                    'Evaluation Model / 评估模型',

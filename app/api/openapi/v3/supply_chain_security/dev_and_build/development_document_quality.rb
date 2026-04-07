@@ -107,7 +107,7 @@ module Openapi
               fetch_metric_data_v2(DevelopmentDocumentQualityMetric, fields)
             end
 
-            desc 'Development Document Quality Model Data / 开发文档质量模型数据',
+            desc 'Development Document Quality Model / 开发文档质量模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

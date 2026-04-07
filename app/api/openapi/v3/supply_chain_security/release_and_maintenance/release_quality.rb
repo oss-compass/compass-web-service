@@ -77,7 +77,7 @@ module Openapi
                  ],
                  success: { code: 201, model: Openapi::Entities::SecurityPackageSigResponse }
             params { use :metric_search }
-            post :security_package_sig do
+            post :security_package_sign do
               fields = %w[security_package_sig]
               fetch_metric_data_v2(ReleaseQualityMetric, fields)
             end
@@ -96,13 +96,13 @@ module Openapi
               fetch_metric_data_v2(ReleaseQualityMetric, fields)
             end
 
-            desc 'Release Quality Model Data / 发布质量模型数据',
+            desc 'Release Quality Model / 发布质量模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | SBOM in Release / SBOM检查 | /api/v3/release_quality/sbom_in_release | 1 | 0.25 |
 | Binary Artifacts in Repo / 二进制制品包含 | /api/v3/release_quality/security_binary_artifact | 1 | 0.25 |
-| Package Signature / 软件包签名 | /api/v3/release_quality/security_package_sig | 1 | 0.25 |
+| Package Signature / 软件包签名 | /api/v3/release_quality/security_package_sign | 1 | 0.25 |
 | Release Notes / Release Notes | /api/v3/release_quality/lifecycle_release_note | 1 | 0.25 |
 ",
 

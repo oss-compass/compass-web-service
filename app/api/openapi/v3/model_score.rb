@@ -25,7 +25,7 @@ module Openapi
         end
 
         resource :metricModel do
-          desc 'Get Metric Models Graph / 获取模型图',hidden: true, detail: 'Get Metric Models Graph / 获取模型图', tags: ['Metrics Model Data / 模型数据'], success: {
+          desc 'Get Metric Models Graph / 获取模型图',hidden: true, detail: 'Get Metric Models Graph / 获取模型图', tags: ['Metrics Model / 模型'], success: {
             code: 201, model: Openapi::Entities::ModelOverviewResponse
           }
 

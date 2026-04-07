@@ -118,16 +118,16 @@ module Openapi
               fetch_metric_data_v2(CollaborationQualityMetric, 'pr_review_time_by_size')
             end
 
-            desc 'Collaboration Quality Model Data / 协作开发质量模型数据',
+            desc 'Collaboration Quality Model / 协作开发质量模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | PR Merge Rate / PR 合并率 | /api/v3/collaboration_quality/pr_merge_rate | 1 | 0.17 |
-| PR/Issue Link Rate / PR/Issue 关联率 | /api/v3/collaboration_quality/pr_issue_link_rate | 1 | 0.17 |
-| PR Review Participation Rate / PR 评审参与率 | /api/v3/collaboration_quality/pr_review_participation_rate | 1 | 0.17 |
-| Non-author Merge Rate / Merge协作比率 | /api/v3/collaboration_quality/pr_non_author_merge_rate | 1 | 0.17 |
-| PR Average Interactions / PR 平均交互数 | /api/v3/collaboration_quality/pr_average_interactions | 1 | 0.17 |
-| Review Time by Pull Request Size / 分级代码审查时长 | /api/v3/collaboration_quality/pr_review_time_by_size | 10 | 0.17 |
+| PR/Issue Link Rate / PR/Issue 关联率 | /api/v3/collaboration_quality/pr_issue_link_rate | 1 rate / 1 占比 | 0.17 |
+| PR Review Participation Rate / PR 评审参与率 | /api/v3/collaboration_quality/pr_review_participation_rate | 1 rate / 1 占比 | 0.17 |
+| Non-author Merge Rate / Merge协作比率 | /api/v3/collaboration_quality/pr_non_author_merge_rate | 1 rate / 1 占比 | 0.17 |
+| PR Average Interactions / PR 平均交互数 | /api/v3/collaboration_quality/pr_average_interactions | 1 count / 1 个 | 0.17 |
+| Review Time by Pull Request Size / 分级代码审查时长 | /api/v3/collaboration_quality/pr_review_time_by_size | 10 days / 10 天 | 0.17 |
 ",
                  tags: [
                    'V3 API',
