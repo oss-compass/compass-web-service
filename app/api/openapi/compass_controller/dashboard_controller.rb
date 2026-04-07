@@ -584,8 +584,9 @@ module Openapi
             os_data_store[index_name] = docs
           end
 
-          # 检查是否需要重新查询：最近3个月且每个指标数据只有2个
-          need_refetch = is_recent_3_months && os_data_store.values.all? { |docs| docs.size == 2 }
+          # 检查是否需要重新查询：最近3个月且所有非空指标数据都只有2个
+          non_empty_docs = os_data_store.values.reject { |docs| docs.empty? }
+          need_refetch = is_recent_3_months && non_empty_docs.all? { |docs| docs.size == 2 } && non_empty_docs.any?
 
           if need_refetch
             # 开始时间往前推1个月
