@@ -69,12 +69,12 @@ module Openapi
               fetch_metric_data_v2(MaintenanceManagementMetric, fields)
             end
 
-            desc 'Maintenance Management Model Data / 维护管理模型数据',
+            desc 'Maintenance Management Model / 维护管理模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
 | Lifecycle Statement / 生命周期申明 | /api/v3/maintenance_management/lifecycle_statement | 1 | 0.50 |
-| Average Vulnerability Fix Time / 安全漏洞平均修复时间 | /api/v3/maintenance_management/avg_vulnerability_fix_time | 30 | 0.50 |
+| Average Vulnerability Fix Time / 安全漏洞平均修复时间 | /api/v3/maintenance_management/avg_vulnerability_fix_time | 30 days / 30 天 | 0.50 |
 ",
 
                  tags: [

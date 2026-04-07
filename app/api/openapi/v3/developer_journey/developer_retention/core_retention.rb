@@ -86,7 +86,7 @@ module Openapi
               fetch_metric_data_v2(CoreRetentionMetric, 'individual_issue_core_retention')
             end
 
-            desc 'Core Retention Model Data / 核心开发者留存模型数据',
+            desc 'Core Retention Model / 核心开发者留存模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

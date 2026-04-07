@@ -129,16 +129,16 @@ module Openapi
               fetch_metric_data_v2(ResponseTimelinessMetric, fields)
             end
 
-            desc 'Response Timeliness Model Data / 响应及时性模型数据',
+            desc 'Response Timeliness Model / 响应及时性模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Issue Unresponsive Rate / Issue 未响应占比 | /api/v3/response_timeliness/issue_unresponsive_rate | 1 | 0.17 |
-| Issue First Response Time / Issue 首次响应时间 | /api/v3/response_timeliness/issue_first_reponse | 15 | 0.17 |
-| Issue Processing Time / Issue 处理时长 | /api/v3/response_timeliness/issue_open_time | 60 | 0.17 |
-| PR Unresponsive Rate / PR 未响应占比 | /api/v3/response_timeliness/pr_unresponsive_rate | 1 | 0.17 |
-| PR First Response Time / PR 首次响应时间 | /api/v3/response_timeliness/pr_time_to_first_response | 15 | 0.17 |
-| PR Processing Time / PR 处理时长 | /api/v3/response_timeliness/pr_open_time | 30 | 0.17 |
+| Issue Unresponsive Rate / Issue 未响应占比 | /api/v3/response_timeliness/issue_unresponsive_rate | 1 rate / 1 占比 | 0.17 |
+| Issue First Response Time / Issue 首次响应时间 | /api/v3/response_timeliness/issue_first_reponse | 15 days / 15 天 | 0.17 |
+| Issue Processing Time / Issue 处理时长 | /api/v3/response_timeliness/issue_open_time | 60 days / 60 天 | 0.17 |
+| PR Unresponsive Rate / PR 未响应占比 | /api/v3/response_timeliness/pr_unresponsive_rate | 1 rate / 1 占比 | 0.17 |
+| PR First Response Time / PR 首次响应时间 | /api/v3/response_timeliness/pr_time_to_first_response | 15 days / 15 天 | 0.17 |
+| PR Processing Time / PR 处理时长 | /api/v3/response_timeliness/pr_open_time | 30 days / 30 天 | 0.17 |
 ",
                  tags: [
                    'V3 API',

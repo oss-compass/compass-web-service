@@ -107,15 +107,15 @@ module Openapi
             #   fetch_metric_data(metric_name: 'recent_releases_count')
             # end
 
-            desc 'Contribution Activity Model Data / 贡献活跃度模型数据',
+            desc 'Contribution Activity Model / 贡献活跃度模型',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
-| Commit Count / 代码提交次数 | /api/v3/contribution_activity/commit_count | 12850 | 0.20 |
-| Lines of Code Change / 新增代码行数  | /api/v3/contribution_activity/lines_of_code_change | 300000 | 0.20 |
-| PR Comment Count / PR 评论数量 | /api/v3/contribution_activity/pr_comment_count | 10 | 0.20 |
-| New Issue Count / Issue 建立数量 | /api/v3/contribution_activity/new_issue_count | 10 | 0.20 |
-| Issue Comment Count / Issue 评论数量 | /api/v3/contribution_activity/issue_comment_count | 10 | 0.20 |
+| Commit Count / 代码提交次数 | /api/v3/contribution_activity/commit_count | 12850 count / 12850 个 | 0.20 |
+| Lines of Code Change / 新增代码行数  | /api/v3/contribution_activity/lines_of_code_change | 300000 count / 300000 个 | 0.20 |
+| PR Comment Count / PR 评论数量 | /api/v3/contribution_activity/pr_comment_count | 10 count / 10 个 | 0.20 |
+| New Issue Count / Issue 建立数量 | /api/v3/contribution_activity/new_issue_count | 10 count / 10 个 | 0.20 |
+| Issue Comment Count / Issue 评论数量 | /api/v3/contribution_activity/issue_comment_count | 10 count / 10 个 | 0.20 |
 ",
                  tags: [
                    'V3 API',
