@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_07_070745) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -87,6 +87,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
+  create_table "dashboard_members", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "dashboard_id", null: false, comment: "看板ID"
+    t.bigint "user_id", null: false, comment: "用户ID"
+    t.integer "role", default: 0, null: false, comment: "角色：0-查看者, 1-编辑者, 2-管理员"
+    t.integer "status", default: 0, null: false, comment: "状态：0-正常, 1-禁用"
+    t.bigint "invited_by_id", comment: "邀请人"
+    t.datetime "joined_at", default: -> { "current_timestamp(6)" }, comment: "加入时间"
+    t.text "remark", comment: "备注"
+    t.index ["dashboard_id"], name: "index_dashboard_members_on_dashboard_id"
+    t.index ["invited_by_id"], name: "index_dashboard_members_on_invited_by_id"
+    t.index ["user_id"], name: "index_dashboard_members_on_user_id"
+  end
+
   create_table "dashboard_metric_infos", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "ident", null: false
@@ -145,6 +158,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
     t.string "identifier"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "visibility", default: 0
   end
 
   create_table "feedbacks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -937,7 +951,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
     t.integer "code_count"
     t.string "license"
     t.string "vulnerability_disclosure"
-    t.string "vulnerability_response"
     t.string "short_code", null: false
     t.integer "subject_id", null: false
     t.integer "user_id", null: false
@@ -1079,4 +1092,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_27_023102) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
+  add_foreign_key "dashboard_members", "dashboards"
+  add_foreign_key "dashboard_members", "users"
+  add_foreign_key "dashboard_members", "users", column: "invited_by_id"
 end
