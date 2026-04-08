@@ -35,6 +35,8 @@ module Openapi
         'compass_metric_model_v2_personal_governance' => PersonalGovernanceMetric
       }.freeze
 
+      before { require_login! }
+
       helpers do
         include Pagy::Backend
 
@@ -106,10 +108,35 @@ module Openapi
           Rails.cache.delete_matched(pattern)
         end
 
+        # 检查当前用户是否在看板中（任何角色）
+        def require_dashboard_member!(dashboard)
+          return dashboard if dashboard.public?
+          member = dashboard.dashboard_members.find_by(user: current_user, status: :active)
+          error!({ error: '无权访问此看板' }, 403) unless member
+          member
+        end
 
+        # 检查编辑权限
+        def require_dashboard_editor!(dashboard)
+          member = dashboard.dashboard_members.find_by(user: current_user, status: :active)
+          error!({ error: '需要编辑权限' }, 403) unless member&.can_edit?
+          member
+        end
+
+        # 检查管理员权限
+        def require_dashboard_admin!(dashboard)
+          member = dashboard.dashboard_members.find_by(user: current_user, status: :active)
+          error!({ error: '需要管理员权限' }, 403) unless member&.can_manage_members?
+          member
+        end
+
+        # 获取当前用户在看板中的角色
+        def current_member_role(dashboard)
+          dashboard.dashboard_members.find_by(user: current_user, status: :active)&.role
+        end
       end
 
-      before { require_login! }
+
 
       resource :dashboard do
 
@@ -171,7 +198,17 @@ module Openapi
           dashboard = Dashboard.new(dashboard_params)
 
           if dashboard.save
+            dashboard.dashboard_members.create!(
+              user_id: current_user.id,
+              role: 2,
+              status: 0,
+              invited_by_id: current_user.id,
+              joined_at: Time.current,
+              remark: '看板创建者'
+            )
+
             present dashboard
+
           else
             error!({ error: dashboard.errors.full_messages.join(', ') }, 422)
           end
@@ -380,8 +417,12 @@ module Openapi
         end
 
         post :get_by_identifier do
+
           dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
                                .find_by!(identifier: params[:identifier])
+
+          member  =  require_dashboard_member!(dashboard)
+
           level = dashboard.dashboard_type
           parsed_urls = dashboard.repo_urls.present? ? JSON.parse(dashboard.repo_urls) : []
           label = parsed_urls.first
@@ -394,6 +435,31 @@ module Openapi
             response_data['origin'] = origin
           end
 
+          current_user_permissions = if member.is_a?(DashboardMember)
+                                       {
+                                         is_member: true,
+                                         role: member.role,
+                                         # permissions: {
+                                         #   can_view: true,
+                                         #   can_edit: member.can_edit?,
+                                         #   can_manage_members: member.can_manage_members?,
+                                         #   can_delete_dashboard: member.can_delete_dashboard?
+                                         # }
+                                       }
+                                     else
+                                       # 公开看板，非成员
+                                       {
+                                         is_member: false,
+                                         role: nil,
+                                         # permissions: {
+                                         #   can_view: true,
+                                         #   can_edit: false,
+                                         #   can_manage_members: false,
+                                         #   can_delete_dashboard: false
+                                         # }
+                                       }
+                                     end
+          response_data['current_user_role'] = current_user_permissions
           # present dashboard.as_json(include: [:dashboard_models, :dashboard_metrics])
           present response_data
         end
@@ -2166,6 +2232,11 @@ module Openapi
           level = params[:level]
           organizations = [params[:organization]]
 
+          dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
+                               .find_by!(identifier: params[:identifier])
+
+          require_dashboard_editor!(dashboard)
+
           begin
             uuid = generate_uuid(contributor, ContributorOrg::SystemAdmin, label, level, platform)
 
@@ -2246,6 +2317,375 @@ module Openapi
         end
 
 
+        desc '批量分配/邀请成员到看板',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+
+          requires :members, type: Array, desc: '成员列表' do
+            requires :user_id, type: Integer, desc: '被分配用户ID'
+            optional :role, type: Integer, default: 0, desc: '角色权限0：查看 1: 编辑 2 管理员'
+            optional :remark, type: String, desc: '备注说明'
+          end
+        end
+
+        post :assign_members do
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+
+          # 需要管理员权限才能分配成员
+          require_dashboard_admin!(dashboard)
+
+          members_params = params[:members]
+          results = { success: [], failed: [], skipped: [] }
+
+          # 事务处理，确保数据一致性
+          DashboardMember.transaction do
+            members_params.each do |member_param|
+              user_id = member_param[:user_id]
+              role = member_param[:role] || 0
+              remark = member_param[:remark]
+
+              # 跳过自己
+              if user_id == current_user.id
+                results[:skipped] << { user_id: user_id, reason: '不能为自己分配角色' }
+                next
+              end
+
+              # 检查用户是否已存在
+              existing_member = dashboard.dashboard_members.find_by(user_id: user_id)
+              if existing_member
+                results[:skipped] << { user_id: user_id, reason: '该用户已是看板成员' }
+                next
+              end
+
+              # 检查用户是否存在
+              user = User.find_by(id: user_id)
+              unless user
+                results[:failed] << { user_id: user_id, reason: '用户不存在' }
+                next
+              end
+
+              member = dashboard.dashboard_members.new(
+                user_id: user_id,
+                role: role,
+                status: :active,
+                invited_by: current_user,
+                joined_at: Time.current,
+                remark: remark
+              )
+
+              if member.save
+                results[:success] << {
+                  id: member.id,
+                  user_id: user_id,
+                  user_name: user.name,
+                  role: role
+                }
+              else
+                results[:failed] << {
+                  user_id: user_id,
+                  reason: member.errors.full_messages.join(', ')
+                }
+              end
+            end
+          end
+
+          # 根据结果返回不同状态码
+          if results[:success].any?
+            status_code = results[:failed].any? || results[:skipped].any? ? 207 : 200
+            present({
+                      status: 'partial_success',
+                      message: "成功添加 #{results[:success].length} 人，失败 #{results[:failed].length} 人，跳过 #{results[:skipped].length} 人",
+                      data: results
+                    })
+          else
+            error!({
+                     status: 'failed',
+                     message: '所有成员添加失败',
+                     data: results
+                   }, 422)
+          end
+
+        rescue ActiveRecord::RecordNotFound
+          error!({ error: '看板不存在' }, 404)
+        end
+
+
+
+        desc '模糊查询用户', hidden: true, tags: ['admin'], success: {
+          code: 201
+        }, detail: '模糊查询用户'
+        params do
+          requires :keyword, type: String, desc: 'keyword', documentation: { param_type: 'body', example: 'Nae' }
+          optional :page, type: Integer, default: 1
+          optional :per_page, type: Integer, default: 20
+        end
+        post :search_user do
+          page = params[:page]
+          per_page = params[:per_page]
+          keywords = params[:keyword]
+
+
+          users = if keywords.present?
+                    User.where('name LIKE :kw OR email LIKE :kw', kw: "%#{keywords}%")
+                  else
+                    User.none  # 或者 User.where(id: nil) 返回空关系
+                  end
+
+
+          total = users.size
+          paged_users = users.offset((page - 1) * per_page).limit(per_page)
+
+          result = paged_users.map do |user|
+            {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+            }
+          end
+
+          {
+            total:,
+            page:,
+            per_page:,
+            data: result
+          }
+        end
+
+        desc '获取看板有权限用户列表',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+          optional :page, type: Integer, default: 1
+          optional :per_page, type: Integer, default: 20
+          optional :role, type: Integer,   desc: '按角色筛选 0：查看 1: 编辑 2 管理员'
+          optional :keyword, type: String, desc: '用户名/邮箱搜索关键词'
+        end
+
+        post :authorized_users do
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+          creator_id = dashboard.user_id
+          # 需要是看板成员或创建者才能查看权限列表
+          require_dashboard_member!(dashboard)
+
+          # 基础查询：所有活跃成员
+          members_scope = dashboard.dashboard_members
+                                   .includes(:user, :invited_by)
+                                   .where(status: :active)
+                                   .where('role < 2')
+
+
+          # 角色筛选
+          # if params[:role].present?
+          #   members_scope = members_scope.where(role: params[:role])
+          # end
+
+          # 关键词搜索（用户名或邮箱）
+          if params[:keyword].present?
+            keyword = "%#{params[:keyword]}%"
+            members_scope = members_scope.joins(:user).where(
+              'users.name LIKE ? OR users.email LIKE ?', keyword, keyword
+            )
+          end
+
+          # 排序：管理员在前，然后按加入时间倒序
+          members_scope = members_scope.order(
+            Arel.sql("CASE WHEN role = 'admin' THEN 0 WHEN role = 'editor' THEN 1 ELSE 2 END"),
+            joined_at: :desc
+          )
+
+          page = params[:page]
+          per_page = params[:per_page]
+
+          total = members_scope.count
+          paged_members = members_scope.offset((page - 1) * per_page).limit(per_page)
+
+          result = paged_members.map do |member|
+            {
+              id: member.user_id,
+              name: member.user.name,
+              email: member.user.email,
+              member_id: member.id,
+              role: member.role,
+              status: member.status,
+              joined_at: member.joined_at&.strftime('%Y-%m-%d %H:%M:%S'),
+              invited_by: member.invited_by&.name,
+              is_owner: member.user_id == creator_id,
+              remark: member.remark
+            }
+          end
+
+          {
+            total: total,
+            page: page,
+            per_page: per_page,
+            data: result
+          }
+
+        rescue ActiveRecord::RecordNotFound
+          error!({ error: '看板不存在' }, 404)
+        end
+
+        desc '批量更新看板成员角色',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+          requires :members, type: Array, desc: '成员列表' do
+            requires :member_id, type: Integer, desc: '成员记录ID'
+            requires :role, type: Integer,   desc: '新角色'
+          end
+        end
+
+        desc '批量更新看板成员角色',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+          requires :members, type: Array, desc: '成员列表' do
+            requires :member_id, type: Integer, desc: '成员记录ID'
+            requires :role, type: Integer, desc: '角色: 0-viewer, 1-editor, 2-admin'
+          end
+        end
+
+        post :update_member_roles do
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+          require_dashboard_admin!(dashboard)
+
+          members_params = params[:members]
+          results = { success: [], failed: [], skipped: [] }
+
+          DashboardMember.transaction do
+            members_params.each do |member_param|
+              member_id = member_param[:member_id]
+              new_role = member_param[:role]
+
+              member = dashboard.dashboard_members.find_by(id: member_id)
+
+              unless member
+                results[:failed] << { member_id: member_id, reason: '成员不存在' }
+                next
+              end
+
+              if member.user_id == current_user.id
+                results[:skipped] << { member_id: member_id, reason: '不能修改自己的角色' }
+                next
+              end
+
+              if member.role == new_role
+                results[:skipped] << { member_id: member_id, reason: '角色未变更' }
+                next
+              end
+
+              if member.update(role: new_role)
+                results[:success] << {
+                  member_id: member.id,
+                  user_id: member.user_id,
+                  user_name: member.user.name,
+                  role: new_role
+                }
+              else
+                results[:failed] << {
+                  member_id: member_id,
+                  reason: member.errors.full_messages.join(', ')
+                }
+              end
+            end
+          end
+
+          if results[:success].any?
+            present({
+                      status: results[:failed].any? || results[:skipped].any? ? 'partial_success' : 'success',
+                      message: "成功更新 #{results[:success].length} 人，失败 #{results[:failed].length} 人，跳过 #{results[:skipped].length} 人",
+                      data: results
+                    })
+          else
+            error!({
+                     status: 'failed',
+                     message: '所有成员更新失败',
+                     data: results
+                   }, 422)
+          end
+
+        rescue ActiveRecord::RecordNotFound
+          error!({ error: '看板不存在' }, 404)
+        end
+
+        desc '批量移除看板成员',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+          requires :member_ids, type: Array[Integer], desc: '成员记录ID列表'
+        end
+
+        post :remove_members do
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+          require_dashboard_admin!(dashboard)
+
+          member_ids = params[:member_ids]
+          results = { success: [], failed: [], skipped: [] }
+
+          DashboardMember.transaction do
+            member_ids.each do |member_id|
+              member = dashboard.dashboard_members.find_by(id: member_id)
+
+              unless member
+                results[:failed] << { member_id: member_id, reason: '成员不存在' }
+                next
+              end
+
+              # 不能移除自己
+              if member.user_id == current_user.id
+                results[:skipped] << { member_id: member_id, reason: '不能移除自己' }
+                next
+              end
+
+              # 检查是否是唯一管理员
+              if member.admin? && dashboard.dashboard_members.where(role: :admin, status: :active).count == 1
+                results[:skipped] << { member_id: member_id, reason: '不能移除唯一管理员' }
+                next
+              end
+
+              if member.destroy
+                results[:success] << {
+                  member_id: member_id,
+                  user_id: member.user_id,
+                  user_name: member.user.name
+                }
+              else
+                results[:failed] << {
+                  member_id: member_id,
+                  reason: '移除失败'
+                }
+              end
+            end
+          end
+
+          if results[:success].any?
+            present({
+                      status: results[:failed].any? || results[:skipped].any? ? 'partial_success' : 'success',
+                      message: "成功移除 #{results[:success].length} 人，失败 #{results[:failed].length} 人，跳过 #{results[:skipped].length} 人",
+                      data: results
+                    })
+          else
+            error!({
+                     status: 'failed',
+                     message: '所有成员移除失败',
+                     data: results
+                   }, 422)
+          end
+
+        rescue ActiveRecord::RecordNotFound
+          error!({ error: '看板不存在' }, 404)
+        end
 
 
       end

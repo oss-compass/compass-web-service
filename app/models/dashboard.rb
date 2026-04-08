@@ -8,15 +8,17 @@
 #  repo_urls       :string(255)
 #  competitor_urls :string(255)
 #  user_id         :integer          not null
+#  identifier      :string(255)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  identifier      :string(255)
+#  visibility      :integer          default("private")
 #
 class Dashboard < ApplicationRecord
 
   belongs_to :user
   has_many :dashboard_models, dependent: :destroy
   has_many :dashboard_metrics, dependent: :destroy
+  has_many :dashboard_members, dependent: :destroy
 
   # 允许在创建 Dashboard 时同时保存关联的 Model 和 Metric
   accepts_nested_attributes_for :dashboard_models, allow_destroy: true
@@ -27,7 +29,9 @@ class Dashboard < ApplicationRecord
   # 创建前自动生成编码（如果前端没有传的话）
   before_validation :ensure_identifier_exists, on: :create
   # before_validation :generate_identifier, on: :create
-
+  def public?
+    visibility == 'public' || visibility == 1
+  end
   private
 
   # def generate_identifier
