@@ -2335,7 +2335,7 @@ module Openapi
           dashboard = Dashboard.find_by!(identifier: params[:identifier])
 
           # 需要管理员权限才能分配成员
-          require_dashboard_admin!(dashboard)
+          require_dashboard_editor!(dashboard)
 
           members_params = params[:members]
           results = { success: [], failed: [], skipped: [] }
@@ -2628,7 +2628,7 @@ module Openapi
 
         post :remove_members do
           dashboard = Dashboard.find_by!(identifier: params[:identifier])
-          require_dashboard_admin!(dashboard)
+          require_dashboard_editor!(dashboard)
 
           member_ids = params[:member_ids]
           results = { success: [], failed: [], skipped: [] }
