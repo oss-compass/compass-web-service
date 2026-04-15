@@ -6,7 +6,7 @@
 #  event_type        :string(255)      not null
 #  timestamp         :bigint           not null
 #  user_id           :integer
-#  page_path         :string(255)      not null
+#  page_path         :string(500)      not null
 #  module_id         :string(255)
 #  referrer          :string(255)
 #  device_user_agent :string(255)

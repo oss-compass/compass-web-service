@@ -11,7 +11,7 @@
 #  identifier      :string(255)
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
-#  visibility      :integer          default("private")
+#  visibility      :integer          default(0)
 #
 class Dashboard < ApplicationRecord
 

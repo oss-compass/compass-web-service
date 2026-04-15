@@ -938,7 +938,7 @@ module Openapi
           optional :per, type: Integer, default: 9, desc: '每页数量'
           optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
           optional :endDate, type: String, desc: '结束日期 (ISO8601)'
-
+          optional :labelFilter, type: String, desc: '标签筛选'
           optional :filter_opts, type: Array do
             optional :type, type: String
             optional :values, type: Array[String]
@@ -1116,6 +1116,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
+
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
@@ -1190,9 +1191,27 @@ module Openapi
               }
             end
           end
-          # ========== 组织筛选处理结束 ==========
+          label_mapping = {
+            'bug' => ['bug'],
+            'feature' => ['feature', 'engineering', 'refactor'],
+            'question' => ['question'],
+            'other' => []
+          }
 
-          # ES 查询（现在包含 user_login 筛选）
+          if params[:labelFilter].present?
+            mapped_labels = label_mapping[params[:labelFilter]] || [params[:labelFilter]]
+            if params[:labelFilter] == 'other'
+              filter_opts << OpenStruct.new(
+                type: 'labels',
+                values: [],
+                not_exists: true # 标记为不存在查询
+              )
+
+            else
+              filter_opts << OpenStruct.new(type: 'labels', values: mapped_labels)
+            end
+          end
+
           resp = indexer.terms_by_repo_urls(
             repo_urls,
             begin_date,
@@ -1299,6 +1318,7 @@ module Openapi
           optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
           optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
           optional :endDate, type: String, desc: '结束日期 (ISO8601)'
+          optional :labelFilter, type: String, desc: '标签筛选'
         end
 
         post :issues_overview do
@@ -1318,6 +1338,27 @@ module Openapi
 
           base_filter_opts = []
           base_filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
+
+          label_mapping = {
+            'bug' => ['bug'],
+            'feature' => ['feature', 'engineering', 'refactor'],
+            'question' => ['question'],
+            'other' => []
+          }
+
+          if params[:labelFilter].present?
+            mapped_labels = label_mapping[params[:labelFilter]] || [params[:labelFilter]]
+            if params[:labelFilter] == 'other'
+              base_filter_opts << OpenStruct.new(
+                type: 'labels',
+                values: [],
+                not_exists: true # 标记为不存在查询
+              )
+
+            else
+              base_filter_opts << OpenStruct.new(type: 'labels', values: mapped_labels)
+            end
+          end
 
           # 新建 Issue 数量
           # 直接使用基础过滤器查询时间范围内的总数
@@ -2232,11 +2273,14 @@ module Openapi
           level = params[:level]
           organizations = [params[:organization]]
 
-          dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
-                               .find_by!(identifier: params[:identifier])
+          # dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
+          #                      .find_by!(identifier: params[:identifier])
+          #
+          # require_dashboard_editor!(dashboard)
+          has_edit_permission = DashboardMember.where(user: current_user, status: :active).exists?(['role >= ?', 1])
+          error!({ error: '需要编辑权限' }, 403) unless has_edit_permission
 
-          require_dashboard_editor!(dashboard)
-
+          current_user.id
           begin
             uuid = generate_uuid(contributor, ContributorOrg::SystemAdmin, label, level, platform)
 

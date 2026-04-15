@@ -24,7 +24,7 @@ class DashboardMember < ApplicationRecord
 
   enum role: {
     viewer: 0,   # 查看者：仅查看
-    editor: 1,   # 编辑者：查看 + 编辑配置
+    editor: 1,   # 编辑者：查看 + 编辑配置 + 管理成员
     admin: 2     # 管理员：查看 + 编辑 + 管理成员 + 删除看板
   }
 

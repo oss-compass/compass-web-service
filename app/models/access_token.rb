@@ -11,6 +11,12 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_access_tokens_on_expires_at  (expires_at)
+#  index_access_tokens_on_token       (token) UNIQUE
+#  index_access_tokens_on_user_id     (user_id)
+#
 
 class AccessToken < ApplicationRecord
   belongs_to :user

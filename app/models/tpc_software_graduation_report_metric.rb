@@ -16,9 +16,9 @@
 #  compliance_dco                                    :integer
 #  compliance_dco_detail                             :string(500)
 #  compliance_license_compatibility                  :integer
-#  compliance_license_compatibility_detail           :string(500)
+#  compliance_license_compatibility_detail           :string(1500)
 #  compliance_copyright_statement                    :integer
-#  compliance_copyright_statement_detail             :string(500)
+#  compliance_copyright_statement_detail             :string(1500)
 #  compliance_copyright_statement_anti_tamper        :integer
 #  compliance_copyright_statement_anti_tamper_detail :string(500)
 #  ecology_readme                                    :integer

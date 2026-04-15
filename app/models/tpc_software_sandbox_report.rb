@@ -15,7 +15,6 @@
 #  code_count               :integer
 #  license                  :string(255)
 #  vulnerability_disclosure :string(255)
-#  vulnerability_response   :string(255)
 #  short_code               :string(255)      not null
 #  subject_id               :integer          not null
 #  user_id                  :integer          not null
