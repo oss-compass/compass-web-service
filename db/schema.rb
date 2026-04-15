@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_07_070745) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_15_015611) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -85,6 +85,37 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_07_070745) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
+  end
+
+  create_table "dashboard_alert_records", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "dashboard_alert_rule_id", comment: "关联规则"
+    t.bigint "dashboard_id", comment: "所属看板"
+    t.datetime "triggered_at", comment: "触发时间"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dashboard_alert_rule_id"], name: "index_dashboard_alert_records_on_dashboard_alert_rule_id"
+    t.index ["dashboard_id"], name: "index_dashboard_alert_records_on_dashboard_id"
+  end
+
+  create_table "dashboard_alert_rules", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "dashboard_id", comment: "所属看板"
+    t.bigint "creator_id", comment: "创建人"
+    t.integer "monitor_type", default: 0, comment: "监控类型: 0-社区, 1-仓库"
+    t.string "target_repo", comment: "监控的仓库URL（仓库类型时填写）"
+    t.string "metric_key", comment: "指标标识"
+    t.string "metric_name", comment: "指标名称"
+    t.string "operator", comment: "比较运算符: >, >=, <, <=, ==, !="
+    t.string "operator_type", comment: "绝对值，百分比"
+    t.decimal "threshold", precision: 15, scale: 2, comment: "预警阈值"
+    t.integer "level", default: 1, comment: "级别: 0-提示(info), 1-警告(warning), 2-严重(critical)"
+    t.boolean "enabled", default: true, comment: "是否启用"
+    t.string "notify_config", comment: "通知配置: {channels: [\"email\"], recipients: [...]}"
+    t.datetime "last_triggered_at", comment: "上次触发时间"
+    t.text "description", comment: "规则描述"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_dashboard_alert_rules_on_creator_id"
+    t.index ["dashboard_id"], name: "index_dashboard_alert_rules_on_dashboard_id"
   end
 
   create_table "dashboard_members", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -1092,6 +1123,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_07_070745) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
+  add_foreign_key "dashboard_alert_records", "dashboard_alert_rules"
+  add_foreign_key "dashboard_alert_records", "dashboards"
+  add_foreign_key "dashboard_alert_rules", "users", column: "creator_id"
   add_foreign_key "dashboard_members", "dashboards"
   add_foreign_key "dashboard_members", "users"
   add_foreign_key "dashboard_members", "users", column: "invited_by_id"

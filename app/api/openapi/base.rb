@@ -93,6 +93,7 @@ module Openapi
     mount Openapi::V3::ModelScore
 
     mount Openapi::CompassController::DashboardController
+    mount Openapi::CompassController::DashboardAlertController
     mount Openapi::CompassController::MetricsModelController
 
     add_swagger_documentation \

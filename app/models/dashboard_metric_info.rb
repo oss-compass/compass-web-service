@@ -10,11 +10,11 @@
 #  default_weight          :float(24)
 #  default_threshold       :float(24)
 #  dashboard_model_info_id :integer
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
 #  metric_index            :string(255)
-#  mapping_settings        :string(255)
+#  mapping_settings        :text(4294967295)
 #  mapping_description     :string(255)
+#  updated_at              :datetime         not null
+#  created_at              :datetime         not null
 #
 class DashboardMetricInfo < ApplicationRecord
 
