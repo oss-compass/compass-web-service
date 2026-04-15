@@ -15,4 +15,8 @@
 #  index_dashboard_alert_records_on_dashboard_id             (dashboard_id)
 #
 class DashboardAlertRecord < ApplicationRecord
+
+  belongs_to :alert_rule
+  belongs_to :dashboard
+
 end

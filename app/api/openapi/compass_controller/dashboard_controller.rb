@@ -2273,11 +2273,14 @@ module Openapi
           level = params[:level]
           organizations = [params[:organization]]
 
-          dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
-                               .find_by!(identifier: params[:identifier])
+          # dashboard = Dashboard.includes(:dashboard_models, :dashboard_metrics)
+          #                      .find_by!(identifier: params[:identifier])
+          #
+          # require_dashboard_editor!(dashboard)
+          has_edit_permission = DashboardMember.where(user: current_user, status: :active).exists?(['role >= ?', 1])
+          error!({ error: '需要编辑权限' }, 403) unless has_edit_permission
 
-          require_dashboard_editor!(dashboard)
-
+          current_user.id
           begin
             uuid = generate_uuid(contributor, ContributorOrg::SystemAdmin, label, level, platform)
 

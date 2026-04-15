@@ -16,7 +16,11 @@ module BaseEnrich
 
       if filter_opts.present?
         filter_opts.each do |filter_opt|
-          base = base.where(filter_opt.type => filter_opt.values)
+          if filter_opt.respond_to?(:not_exists) && filter_opt.not_exists
+            base = base.must_not(exists: { field: filter_opt.type })
+          else
+            base = base.where(filter_opt.type => filter_opt.values)
+          end
         end
       end
 
@@ -57,7 +61,12 @@ module BaseEnrich
           .range(filter, gte: begin_date, lt: end_date)
       if filter_opts.present?
         filter_opts.each do |filter_opt|
-          base = base.where(filter_opt.type => filter_opt.values)
+
+          if filter_opt.respond_to?(:not_exists) && filter_opt.not_exists
+            base = base.must_not(exists: { field: filter_opt.type })
+          else
+            base = base.where(filter_opt.type => filter_opt.values)
+          end
         end
       end
       base.total_entries

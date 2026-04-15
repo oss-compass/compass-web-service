@@ -130,8 +130,258 @@ module Openapi
 
       resource :dashboard_alert do
 
+        desc '创建预警规则',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
 
+        params do
+          requires :dashboard_id, type: Integer, desc: '看板ID'
+          requires :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
+          optional :target_repo, type: String, desc: '目标仓库地址'
+          requires :metric_key, type: String, desc: '监控指标key'
+          requires :time_range, type: Integer, desc: '最近几个月'
+          requires :metric_name, type: String, desc: '监控指标名称'
+          requires :operator, type: String, values: ['>', '>=', '<', '<=', '=', '!='], desc: '比较运算符'
+          requires :threshold, type: BigDecimal, desc: '预警阈值'
+          requires :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别: critical(严重), warning(警告), info(提示)'
+          optional :description, type: String, desc: '规则描述'
+          optional :enabled, type: Boolean, default: true, desc: '是否启用'
+        end
 
+        post :create_rule do
+          dashboard = Dashboard.find(params[:dashboard_id])
+          require_dashboard_editor!(dashboard)
+
+          # 验证repo类型时target_repo必填
+          if params[:monitor_type] == 'repo' && params[:target_repo].blank?
+            error!({ error: '仓库监控类型需要指定目标仓库' }, 422)
+          end
+
+          rule = DashboardAlertRule.new(
+            dashboard_id: params[:dashboard_id],
+            creator_id: current_user.id,
+            monitor_type: DashboardAlertRule.monitor_types[params[:monitor_type]],
+            target_repo: params[:target_repo],
+            metric_key: params[:metric_key],
+            metric_name: params[:metric_name],
+            operator: params[:operator],
+            threshold: params[:threshold],
+            level: DashboardAlertRule.levels[params[:level]],
+            description: params[:description],
+            enabled: params[:enabled]
+          )
+
+          if rule.save
+            present rule
+          else
+            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+          end
+        end
+
+        desc '更新预警规则',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :id, type: Integer, desc: '规则ID'
+          optional :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
+          optional :target_repo, type: String, desc: '目标仓库地址'
+          optional :metric_key, type: String, desc: '监控指标key'
+          optional :metric_name, type: String, desc: '监控指标名称'
+          requires :time_range, type: Integer, desc: '最近几个月'
+          optional :operator, type: String, values: ['>', '>=', '<', '<=', '=', '!='], desc: '比较运算符'
+          optional :threshold, type: BigDecimal, desc: '预警阈值'
+          optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别'
+          optional :description, type: String, desc: '规则描述'
+          optional :enabled, type: Boolean, desc: '是否启用'
+        end
+
+        post :update_rule do
+          rule = DashboardAlertRule.find(params[:id])
+          dashboard = rule.dashboard
+          require_dashboard_editor!(dashboard)
+
+          update_params = declared(params, include_missing: false).except(:id)
+
+          # 转换枚举值
+          if update_params[:monitor_type].present?
+            update_params[:monitor_type] = DashboardAlertRule.monitor_types[update_params[:monitor_type]]
+          end
+          if update_params[:level].present?
+            update_params[:level] = DashboardAlertRule.levels[update_params[:level]]
+          end
+
+          if rule.update(update_params)
+            present rule
+          else
+            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+          end
+        end
+
+        desc '删除预警规则',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :id, type: Integer, desc: '规则ID'
+        end
+
+        post :delete_rule do
+          rule = DashboardAlertRule.find(params[:id])
+          dashboard = rule.dashboard
+          require_dashboard_editor!(dashboard)
+
+          if rule.destroy
+            { status: 'success', message: '预警规则已删除' }
+          else
+            error!({ error: '删除失败' }, 422)
+          end
+        end
+
+        desc '获取预警规则列表',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :dashboard_id, type: Integer, desc: '看板ID'
+          optional :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型筛选'
+          optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别筛选'
+          optional :enabled, type: Boolean, desc: '启用状态筛选'
+          optional :page, type: Integer, default: 1, desc: '页码'
+          optional :per_page, type: Integer, default: 10, desc: '每页数量'
+        end
+
+        post :list_rules do
+          dashboard = Dashboard.find(params[:dashboard_id])
+          require_dashboard_member!(dashboard)
+
+          scope = dashboard.dashboard_alert_rules.order(created_at: :desc)
+
+          if params[:monitor_type].present?
+            scope = scope.where(monitor_type: params[:monitor_type])
+          end
+          if params[:level].present?
+            scope = scope.where(level: params[:level])
+          end
+          if !params[:enabled].nil?
+            scope = scope.where(enabled: params[:enabled])
+          end
+
+          pages, records = paginate_fun(scope)
+
+          present({
+                    items: records,
+                    total_count: pages.count,
+                    current_page: pages.page,
+                    per_page: pages.items,
+                    total_pages: pages.pages
+                  })
+        end
+
+        desc '获取预警规则详情',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :id, type: Integer, desc: '规则ID'
+        end
+
+        post :get_rule do
+          rule = DashboardAlertRule.find(params[:id])
+          dashboard = rule.dashboard
+          require_dashboard_member!(dashboard)
+
+          present rule
+        end
+
+        desc '启用/禁用预警规则',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :id, type: Integer, desc: '规则ID'
+          requires :enabled, type: Boolean, desc: '是否启用'
+        end
+
+        post :toggle_rule do
+          rule = DashboardAlertRule.find(params[:id])
+          dashboard = rule.dashboard
+          require_dashboard_editor!(dashboard)
+
+          if rule.update(enabled: params[:enabled])
+            present rule
+          else
+            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+          end
+        end
+
+        desc '获取预警记录列表',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :dashboard_id, type: Integer, desc: '看板ID'
+          optional :rule_id, type: Integer, desc: '规则ID筛选'
+          optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别筛选'
+          optional :page, type: Integer, default: 1, desc: '页码'
+          optional :per_page, type: Integer, default: 10, desc: '每页数量'
+        end
+
+        post :list_records do
+          dashboard = Dashboard.find(params[:dashboard_id])
+          require_dashboard_member!(dashboard)
+
+          scope = dashboard.dashboard_alert_records
+                           .joins(:dashboard_alert_rule)
+                           .order(triggered_at: :desc)
+
+          if params[:rule_id].present?
+            scope = scope.where(dashboard_alert_rule_id: params[:rule_id])
+          end
+          if params[:level].present?
+            scope = scope.where(dashboard_alert_rules: { level: params[:level] })
+          end
+
+          pages, records = paginate_fun(scope)
+
+          present({
+                    items: records.as_json(include: { dashboard_alert_rule: { only: [:id, :metric_name, :level] } }),
+                    total_count: pages.count,
+                    current_page: pages.page,
+                    per_page: pages.items,
+                    total_pages: pages.pages
+                  })
+        end
+
+        desc '获取监控指标列表',
+             tags: ['DashboardAlertService / 预警服务'],
+             hidden: true
+
+        params do
+          requires :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型'
+        end
+
+        post :list_metrics do
+          community_metrics = [
+            { key: 'new_issue_count', name: '新建Issue数量' },
+            { key: 'issue_resolution_percentage', name: 'Issue解决百分比' },
+            { key: 'unresponsive_issue_count', name: '未响应Issues数量' },
+            { key: 'avg_response_time', name: '平均响应时间' }
+          ]
+
+          repo_metrics = [
+            { key: 'issue_total_count', name: 'Issue总数' },
+            { key: 'issue_open_count', name: '打开Issue数量' },
+            { key: 'closed_loop_rate', name: 'Issue闭环率' },
+            { key: 'avg_closed_loop_time', name: '平均闭环时长' },
+            { key: 'avg_first_response_time', name: 'Issue首次响应时间' },
+            { key: 'open_unresponsive_count', name: '未响应Issue数量' }
+          ]
+
+          metrics = params[:monitor_type] == 'community' ? community_metrics : repo_metrics
+
+          { metrics: metrics }
+        end
 
       end
     end
