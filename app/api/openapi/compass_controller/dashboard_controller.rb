@@ -110,10 +110,14 @@ module Openapi
 
         # 检查当前用户是否在看板中（任何角色）
         def require_dashboard_member!(dashboard)
-          return dashboard if dashboard.public?
           member = dashboard.dashboard_members.find_by(user: current_user, status: :active)
-          error!({ error: '无权访问此看板' }, 403) unless member
-          member
+
+          if dashboard.public?
+            member  # 公开看板：返回 member 或 nil
+          else
+            error!({ error: '无权访问此看板' }, 403) unless member
+            member
+          end
         end
 
         # 检查编辑权限
@@ -1238,6 +1242,7 @@ module Openapi
     user_login
     assignee_login
     num_of_comments_without_bot
+    priority
   ].freeze
 
           hits = resp&.dig('hits', 'hits') || []
@@ -1318,7 +1323,10 @@ module Openapi
           optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
           optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
           optional :endDate, type: String, desc: '结束日期 (ISO8601)'
+          requires :identifier, type: String, desc: 'identifier'
+          optional :ResponsiblePerson, type: Integer, desc: '责任人 user_id'
           optional :labelFilter, type: String, desc: '标签筛选'
+          optional :priority, type: String, desc: '优先级筛选'
         end
 
         post :issues_overview do
@@ -1327,6 +1335,7 @@ module Openapi
           level = params[:level]
           begin_date = params[:beginDate]
           end_date = params[:endDate]
+          user_id = params[:ResponsiblePerson]
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
             label,
@@ -1335,6 +1344,16 @@ module Openapi
             GithubIssueEnrich,
             GitcodeIssueEnrich
           )
+
+          if user_id.present?
+            dashboard = Dashboard.find_by!(identifier: params[:identifier])
+            responsible_labels = DashboardCommunityResponsiblePerson
+                                   .where(user_id: user_id)
+                                   .where(dashboard_id: dashboard.id)
+                                   .pluck(:label)
+
+            repo_urls = repo_urls & responsible_labels if responsible_labels.present?
+          end
 
           base_filter_opts = []
           base_filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
@@ -1345,6 +1364,11 @@ module Openapi
             'question' => ['question'],
             'other' => []
           }
+
+          if params[:priority].present?
+            base_filter_opts << OpenStruct.new(type: 'priority', values: params[:priority])
+          end
+
 
           if params[:labelFilter].present?
             mapped_labels = label_mapping[params[:labelFilter]] || [params[:labelFilter]]
@@ -1436,6 +1460,66 @@ module Openapi
             avg_response_time: avg_response_time,
             unresponsive_issue_count: unresponsive_issue_count
           }
+        end
+
+        desc '更新 Issue 优先级',
+             tags: ['CompassService / compass服务'],
+             hidden: true
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          requires :url, type: String, desc: 'Issue url'
+          requires :priority, type: String, values: ['fatal', 'serious', 'medium', 'info'], desc: '优先级:  致命, 严重, 一般, 提示'
+          requires :identifier, type: String, desc: 'identifier'
+
+        end
+
+        post :update_issue_priority do
+          label = ShortenedLabel.normalize_label(params[:label])
+          issue_url = params[:url]
+          priority = params[:priority]
+
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+
+
+          require_dashboard_editor!(dashboard)
+
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            'repo',
+            GiteeIssueEnrich,
+            GithubIssueEnrich,
+            GitcodeIssueEnrich
+          )
+
+          resp = indexer.must(term: { 'url' => issue_url }).execute.raw_response
+          issues = resp&.dig('hits', 'hits') || []
+          error!({ error: 'Issue 不存在' }, 404) if issues.empty?
+
+          # 更新优先级到 OpenSearch
+          begin
+            issue = issues.first
+            issue_source = issue['_source']
+            issue_id_es = issue['_id']
+
+            # 使用 SearchFlip 的 bulk 方法更新文档
+            indexer.bulk do |bulk|
+              bulk.update issue_id_es, doc: { priority: priority }
+            end
+
+            {
+              status: 'success',
+              message: '优先级更新成功',
+              data: {
+                issue_id: issue_url,
+                priority: priority,
+                repository: issue_source['repository']
+              }
+            }
+          rescue => e
+            error!({ error: "更新失败: #{e.message}" }, 500)
+          end
         end
 
         desc '获取总览数据 (Overview): PR统计与代码提交统计',
@@ -1904,6 +1988,8 @@ module Openapi
           optional :per, type: Integer, default: 20, desc: '每页数量'
           optional :beginDate, type: String, desc: '开始日期  '
           optional :endDate, type: String, desc: '结束日期 '
+          optional :ResponsiblePerson, type: Integer, desc: '责任人 user_id'
+          optional :identifier, type: String, desc: 'identifier'
           # 筛选参数
           optional :filterOpts, type: Array do
             optional :type, type: String
@@ -1921,8 +2007,10 @@ module Openapi
           level = params[:level]
           begin_date = params[:beginDate]
           end_date = params[:endDate]
+          user_id = params[:ResponsiblePerson]
           page = [params[:page].to_i, 1].max
           per = [params[:per].to_i, 1].max
+
 
           filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = params[:sortOpts]
@@ -1935,8 +2023,54 @@ module Openapi
             GitcodeIssueEnrich
           )
 
+          indexer = GitcodeIssueEnrich
+          repo_urls = [
+
+            "https://gitcode.com/CPF-KMP-CMP/kotlinx-html",
+            "https://gitcode.com/CPF-KMP-CMP/opentest4k",
+            "https://gitcode.com/CPF-KMP-CMP/burst",
+            "https://gitcode.com/CPF-KMP-CMP/assertk",
+            "https://gitcode.com/CPF-KMP-CMP/TestHelp",
+            "https://gitcode.com/CPF-KMP-CMP/Stately",
+            "https://gitcode.com/CPF-KMP-CMP/kotlinx-atomicfu",
+            "https://gitcode.com/CPF-KMP-CMP/kotlinx-datetime",
+            "https://gitcode.com/CPF-KMP-CMP/kotlinx-coroutines",
+            "https://gitcode.com/CPF-KMP-CMP/ktor",
+            "https://gitcode.com/CPF-KMP-CMP/skia-pack",
+            "https://gitcode.com/CPF-KMP-CMP/skia",
+            "https://gitcode.com/CPF-KMP-CMP/interop-arkts",
+            "https://gitcode.com/CPF-KMP-CMP/fusion-render",
+            "https://gitcode.com/CPF-KMP-CMP/compose-multiplatform-core",
+            "https://gitcode.com/CPF-KMP-CMP/compose-multiplatform",
+            "https://gitcode.com/CPF-KMP-CMP/kotlin",
+            "https://gitcode.com/CPF-KMP-CMP/skiko",
+            "https://gitcode.com/CPF-KMP-CMP/manifest",
+          ]
 
 
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+          if user_id.present?
+            dashboard = Dashboard.find_by!(identifier: params[:identifier])
+            responsible_labels = DashboardCommunityResponsiblePerson
+                                   .where(user_id: user_id)
+                                   .where(dashboard_id: dashboard.id)
+                                   .pluck(:label)
+
+            repo_urls = repo_urls & responsible_labels if responsible_labels.present?
+          end
+
+          persons = dashboard.dashboard_community_responsible_people.includes(:user)
+
+          repo_to_persons = persons.group_by(&:label).transform_values do |person_list|
+            person_list.map do |person|
+              user = person.user
+              {
+                user_id: person.user_id,
+                user_name: user&.name,
+                user_email: user&.email
+              }
+            end
+          end
           filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
 
           total_issue_count = indexer.count_by_repo_urls(
@@ -2029,7 +2163,8 @@ module Openapi
               closed_loop_rate: closed_loop_rate,
               avg_closed_loop_time: avg_close_time,
               avg_first_response_time: avg_first_response,
-              open_unresponsive_count: stat[:open_unresponsive_count]
+              open_unresponsive_count: stat[:open_unresponsive_count],
+              responsible_person: repo_to_persons[repo.to_s] || []
             }
           end.sort_by { |row| -row[:issue_total_count] }
 
@@ -2245,6 +2380,57 @@ module Openapi
         end
 
 
+
+        desc '创建/设置责任人',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        params do
+          requires :identifier, type: String, desc: '看板唯一编码'
+          requires :ResponsiblePerson, type: Integer, desc: '责任人用户ID'
+          requires :repo_url, type: String, desc: '仓库地址'
+        end
+
+        post :set_responsible_person do
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
+
+          require_dashboard_editor!(dashboard)
+
+          user_id = params[:ResponsiblePerson]
+          label = params[:repo_url]
+
+          # 检查用户是否存在
+          user = User.find_by(id: user_id)
+          error!({ error: '用户不存在' }, 404) unless user
+
+          # 查找该仓库是否已有责任人
+          existing = DashboardCommunityResponsiblePerson.find_by(
+            dashboard_id: dashboard.id,
+            label: label
+          )
+
+          if existing
+            # 更新为新的责任人
+            existing.update!(
+              user_id: user_id,
+              updated_at: Time.current
+            )
+            { status: 'success', message: '责任人已更新' }
+          else
+            # 创建新的责任人记录
+            DashboardCommunityResponsiblePerson.create!(
+              dashboard_id: dashboard.id,
+              user_id: user_id,
+              label: label
+            )
+            { status: 'success', message: '责任人设置成功' }
+          end
+
+        rescue ActiveRecord::RecordNotFound
+          error!({ error: '看板不存在' }, 404)
+        rescue ActiveRecord::RecordInvalid => e
+          error!({ error: e.message }, 422)
+        end
 
 
 
