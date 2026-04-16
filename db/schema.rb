@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_15_024820) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_16_122723) do
   create_table "access_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "token", null: false
     t.integer "user_id", null: false
@@ -93,6 +93,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_024820) do
     t.datetime "triggered_at", comment: "触发时间"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "current_value", precision: 10, scale: 2
     t.index ["dashboard_alert_rule_id"], name: "index_dashboard_alert_records_on_dashboard_alert_rule_id"
     t.index ["dashboard_id"], name: "index_dashboard_alert_records_on_dashboard_id"
   end
@@ -117,6 +118,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_024820) do
     t.integer "time_range"
     t.index ["creator_id"], name: "index_dashboard_alert_rules_on_creator_id"
     t.index ["dashboard_id"], name: "index_dashboard_alert_rules_on_dashboard_id"
+  end
+
+  create_table "dashboard_community_responsible_people", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "dashboard_id", comment: "关联看板"
+    t.bigint "user_id", comment: "责任人用户"
+    t.string "label", comment: "仓库地址"
+    t.datetime "created_at", default: -> { "current_timestamp(6)" }, null: false
+    t.datetime "updated_at", default: -> { "current_timestamp(6)" }, null: false
+    t.index ["dashboard_id"], name: "index_dashboard_community_responsible_people_on_dashboard_id"
+    t.index ["user_id"], name: "index_dashboard_community_responsible_people_on_user_id"
   end
 
   create_table "dashboard_members", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
@@ -1127,6 +1138,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_15_024820) do
   add_foreign_key "dashboard_alert_records", "dashboard_alert_rules"
   add_foreign_key "dashboard_alert_records", "dashboards"
   add_foreign_key "dashboard_alert_rules", "users", column: "creator_id"
+  add_foreign_key "dashboard_community_responsible_people", "dashboards"
+  add_foreign_key "dashboard_community_responsible_people", "users"
   add_foreign_key "dashboard_members", "dashboards"
   add_foreign_key "dashboard_members", "users"
   add_foreign_key "dashboard_members", "users", column: "invited_by_id"

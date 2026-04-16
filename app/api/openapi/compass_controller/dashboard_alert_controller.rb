@@ -44,7 +44,7 @@ module Openapi
           pagy(scope, page: params[:page], items: params[:per_page])
         end
 
-        def fetch_metrics_by_range(db_index_key, label, start_date, end_date,level)
+        def fetch_metrics_by_range(db_index_key, label, start_date, end_date, level)
 
           return {} if db_index_key.blank? || label.blank?
           metric_class = INDEX_CLASS_MAPPING[db_index_key]
@@ -69,7 +69,7 @@ module Openapi
                       .limit(100)
 
             if level == 'community'
-              query = query.must(term: { "type.keyword"=> "software-artifact" })
+              query = query.must(term: { "type.keyword" => "software-artifact" })
             end
             response = query.execute.raw_response
             hits = response&.[]('hits')&.[]('hits') || []
@@ -79,7 +79,6 @@ module Openapi
             []
           end
         end
-
 
         def validate_no_overlap(organizations)
           return if organizations.size <= 1
@@ -95,8 +94,6 @@ module Openapi
             end
           end
         end
-
-
 
         # 检查当前用户是否在看板中（任何角色）
         def require_dashboard_member!(dashboard)
@@ -126,22 +123,26 @@ module Openapi
         end
       end
 
-
-
       resource :dashboard_alert do
 
         desc '创建预警规则',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleResponse },
+             failure: [
+               { code: 403, message: '需要编辑权限' },
+               { code: 422, message: '参数错误或保存失败' }
+             ]
 
         params do
-          requires :dashboard_id, type: Integer, desc: '看板ID'
-          requires :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
-          optional :target_repo, type: String, desc: '目标仓库地址'
-          requires :metric_key, type: String, desc: '监控指标key'
-          requires :time_range, type: Integer, desc: '最近几个月'
-          requires :metric_name, type: String, desc: '监控指标名称'
+          requires :identifier, type: String, desc: '看板唯一编码'
+          requires :monitorType, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
+          optional :targetRepo, type: String, desc: '目标仓库地址'
+          requires :metricKey, type: String, desc: '监控指标key'
+          requires :timeRange, type: Integer, desc: '最近几个月'
+          requires :metricName, type: String, desc: '监控指标名称'
           requires :operator, type: String, values: ['>', '>=', '<', '<=', '=', '!='], desc: '比较运算符'
+          requires :operatorType, type: String, values: ['value', 'percentage'], desc: '比较类型: value(数值), percentage(百分比)'
           requires :threshold, type: BigDecimal, desc: '预警阈值'
           requires :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别: critical(严重), warning(警告), info(提示)'
           optional :description, type: String, desc: '规则描述'
@@ -149,22 +150,24 @@ module Openapi
         end
 
         post :create_rule do
-          dashboard = Dashboard.find(params[:dashboard_id])
+          dashboard = Dashboard.find_by(identifier: params[:identifier])
           require_dashboard_editor!(dashboard)
 
-          # 验证repo类型时target_repo必填
-          if params[:monitor_type] == 'repo' && params[:target_repo].blank?
-            error!({ error: '仓库监控类型需要指定目标仓库' }, 422)
+          # 验证repo类型时targetRepo必填
+          if params[:monitorType] == 'repo' && params[:targetRepo].blank?
+            error!({ success: false }, 422)
           end
 
           rule = DashboardAlertRule.new(
-            dashboard_id: params[:dashboard_id],
+            dashboard_id: dashboard.id,
             creator_id: current_user.id,
-            monitor_type: DashboardAlertRule.monitor_types[params[:monitor_type]],
-            target_repo: params[:target_repo],
-            metric_key: params[:metric_key],
-            metric_name: params[:metric_name],
+            monitor_type: DashboardAlertRule.monitor_types[params[:monitorType]],
+            target_repo: params[:targetRepo],
+            metric_key: params[:metricKey],
+            metric_name: params[:metricName],
             operator: params[:operator],
+            operator_type: params[:operatorType],
+            time_range: params[:timeRange],
             threshold: params[:threshold],
             level: DashboardAlertRule.levels[params[:level]],
             description: params[:description],
@@ -172,23 +175,30 @@ module Openapi
           )
 
           if rule.save
-            present rule
+            { success: true }
           else
-            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+            error!({ success: false }, 422)
           end
         end
 
         desc '更新预警规则',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleResponse },
+             failure: [
+               { code: 403, message: '需要编辑权限' },
+               { code: 404, message: '规则不存在' },
+               { code: 422, message: '更新失败' }
+             ]
 
         params do
           requires :id, type: Integer, desc: '规则ID'
-          optional :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
-          optional :target_repo, type: String, desc: '目标仓库地址'
-          optional :metric_key, type: String, desc: '监控指标key'
-          optional :metric_name, type: String, desc: '监控指标名称'
-          requires :time_range, type: Integer, desc: '最近几个月'
+          optional :monitorType, type: String, values: ['community', 'repo'], desc: '监控类型: community(社区), repo(仓库)'
+          optional :targetRepo, type: String, desc: '目标仓库地址'
+          optional :metricKey, type: String, desc: '监控指标key'
+          optional :metricName, type: String, desc: '监控指标名称'
+          optional :timeRange, type: Integer, desc: '最近几个月'
+          optional :operatorType, type: String, values: ['value', 'percentage'], desc: '比较类型'
           optional :operator, type: String, values: ['>', '>=', '<', '<=', '=', '!='], desc: '比较运算符'
           optional :threshold, type: BigDecimal, desc: '预警阈值'
           optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别'
@@ -203,6 +213,14 @@ module Openapi
 
           update_params = declared(params, include_missing: false).except(:id)
 
+          # 转换参数名从驼峰到下划线
+          update_params[:monitor_type] = update_params.delete(:monitorType) if update_params.key?(:monitorType)
+          update_params[:target_repo] = update_params.delete(:targetRepo) if update_params.key?(:targetRepo)
+          update_params[:metric_key] = update_params.delete(:metricKey) if update_params.key?(:metricKey)
+          update_params[:metric_name] = update_params.delete(:metricName) if update_params.key?(:metricName)
+          update_params[:time_range] = update_params.delete(:timeRange) if update_params.key?(:timeRange)
+          update_params[:operator_type] = update_params.delete(:operatorType) if update_params.key?(:operatorType)
+
           # 转换枚举值
           if update_params[:monitor_type].present?
             update_params[:monitor_type] = DashboardAlertRule.monitor_types[update_params[:monitor_type]]
@@ -212,15 +230,21 @@ module Openapi
           end
 
           if rule.update(update_params)
-            present rule
+            { success: true }
           else
-            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+            error!({ success: false }, 422)
           end
         end
 
         desc '删除预警规则',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleResponse },
+             failure: [
+               { code: 403, message: '需要编辑权限' },
+               { code: 404, message: '规则不存在' },
+               { code: 422, message: '删除失败' }
+             ]
 
         params do
           requires :id, type: Integer, desc: '规则ID'
@@ -232,33 +256,41 @@ module Openapi
           require_dashboard_editor!(dashboard)
 
           if rule.destroy
-            { status: 'success', message: '预警规则已删除' }
+            { success: true }
           else
-            error!({ error: '删除失败' }, 422)
+            error!({ success: false }, 422)
           end
         end
 
         desc '获取预警规则列表',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleListResponse },
+             failure: [
+               { code: 403, message: '无权访问此看板' },
+               { code: 404, message: '看板不存在' }
+             ]
 
         params do
-          requires :dashboard_id, type: Integer, desc: '看板ID'
-          optional :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型筛选'
+          requires :identifier, type: String, desc: '看板唯一编码'
+          optional :monitorType, type: String, values: ['community', 'repo'], desc: '监控类型筛选'
           optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别筛选'
           optional :enabled, type: Boolean, desc: '启用状态筛选'
           optional :page, type: Integer, default: 1, desc: '页码'
-          optional :per_page, type: Integer, default: 10, desc: '每页数量'
+          optional :perPage, type: Integer, default: 10, desc: '每页数量'
         end
 
         post :list_rules do
-          dashboard = Dashboard.find(params[:dashboard_id])
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
           require_dashboard_member!(dashboard)
 
-          scope = dashboard.dashboard_alert_rules.order(created_at: :desc)
 
-          if params[:monitor_type].present?
-            scope = scope.where(monitor_type: params[:monitor_type])
+          scope = dashboard.dashboard_alert_rules.order(created_at: :desc).includes(:creator)
+
+
+
+          if params[:monitorType].present?
+            scope = scope.where(monitor_type: params[:monitorType])
           end
           if params[:level].present?
             scope = scope.where(level: params[:level])
@@ -269,18 +301,51 @@ module Openapi
 
           pages, records = paginate_fun(scope)
 
+
+          # 单位映射
+          unit_map = {
+            'new_issue_count' => '个',
+            'issue_resolution_percentage' => '%',
+            'unresponsive_issue_count' => '个',
+            'avg_response_time' => '天',
+            'issue_total_count' => '个',
+            'issue_open_count' => '个',
+            'closed_loop_rate' => '%',
+            'avg_closed_loop_time' => '天',
+            'avg_first_response_time' => '天',
+            'open_unresponsive_count' => '个'
+          }
+
+          items = records.map do |rule|
+            creator = rule.creator
+            rule.as_json.merge(
+              unit: unit_map[rule.metric_key] || '',
+              creator: {
+                user_id: creator&.id,
+                user_name: creator&.name,
+                user_email: creator&.email
+              }
+            )
+          end
+
+
           present({
-                    items: records,
-                    total_count: pages.count,
-                    current_page: pages.page,
-                    per_page: pages.items,
-                    total_pages: pages.pages
+                    items: items,
+                    totalCount: pages.count,
+                    currentPage: pages.page,
+                    perPage: pages.items,
+                    totalPages: pages.pages
                   })
         end
 
         desc '获取预警规则详情',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleDetailResponse },
+             failure: [
+               { code: 403, message: '无权访问此看板' },
+               { code: 404, message: '规则不存在' }
+             ]
 
         params do
           requires :id, type: Integer, desc: '规则ID'
@@ -296,7 +361,13 @@ module Openapi
 
         desc '启用/禁用预警规则',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRuleResponse },
+             failure: [
+               { code: 403, message: '需要编辑权限' },
+               { code: 404, message: '规则不存在' },
+               { code: 422, message: '更新失败' }
+             ]
 
         params do
           requires :id, type: Integer, desc: '规则ID'
@@ -309,78 +380,107 @@ module Openapi
           require_dashboard_editor!(dashboard)
 
           if rule.update(enabled: params[:enabled])
-            present rule
+            { success: true }
           else
-            error!({ error: rule.errors.full_messages.join(', ') }, 422)
+            error!({ success: false }, 422)
           end
         end
 
         desc '获取预警记录列表',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertRecordListResponse },
+             failure: [
+               { code: 403, message: '无权访问此看板' },
+               { code: 404, message: '看板不存在' }
+             ]
 
         params do
-          requires :dashboard_id, type: Integer, desc: '看板ID'
-          optional :rule_id, type: Integer, desc: '规则ID筛选'
+          requires :identifier, type: String, desc: '看板唯一编码'
+          optional :ruleId, type: Integer, desc: '规则ID筛选'
           optional :level, type: String, values: ['critical', 'warning', 'info'], desc: '预警级别筛选'
           optional :page, type: Integer, default: 1, desc: '页码'
-          optional :per_page, type: Integer, default: 10, desc: '每页数量'
+          optional :perPage, type: Integer, default: 10, desc: '每页数量'
         end
 
         post :list_records do
-          dashboard = Dashboard.find(params[:dashboard_id])
+          dashboard = Dashboard.find_by!(identifier: params[:identifier])
           require_dashboard_member!(dashboard)
 
           scope = dashboard.dashboard_alert_records
+                            .includes(:dashboard_alert_rule)
                            .joins(:dashboard_alert_rule)
                            .order(triggered_at: :desc)
 
-          if params[:rule_id].present?
-            scope = scope.where(dashboard_alert_rule_id: params[:rule_id])
+          if params[:ruleId].present?
+            scope = scope.where(dashboard_alert_rule_id: params[:ruleId])
           end
           if params[:level].present?
             scope = scope.where(dashboard_alert_rules: { level: params[:level] })
           end
-
           pages, records = paginate_fun(scope)
+          # 单位映射
+          unit_map = {
+            'new_issue_count' => '个',
+            'issue_resolution_percentage' => '%',
+            'unresponsive_issue_count' => '个',
+            'avg_response_time' => '天',
+            'issue_total_count' => '个',
+            'issue_open_count' => '个',
+            'closed_loop_rate' => '%',
+            'avg_closed_loop_time' => '天',
+            'avg_first_response_time' => '天',
+            'open_unresponsive_count' => '个'
+          }
+
+          items = records.map do |record|
+            rule = record.dashboard_alert_rule
+            unit = unit_map[rule&.metric_key] || ''
+            record.as_json.merge(
+              threshold: rule&.threshold,
+              dashboard_alert_rule: rule&.as_json&.slice('id', 'metric_name', 'level', 'metric_key').merge(unit: unit)
+            )
+          end
 
           present({
-                    items: records.as_json(include: { dashboard_alert_rule: { only: [:id, :metric_name, :level] } }),
-                    total_count: pages.count,
-                    current_page: pages.page,
-                    per_page: pages.items,
-                    total_pages: pages.pages
+                    items: items,
+                    totalCount: pages.count,
+                    currentPage: pages.page,
+                    perPage: pages.items,
+                    totalPages: pages.pages
                   })
         end
 
         desc '获取监控指标列表',
              tags: ['DashboardAlertService / 预警服务'],
-             hidden: true
+             hidden: true,
+             success: { code: 200, model: Entities::DashboardAlertMetricListResponse }
 
         params do
-          requires :monitor_type, type: String, values: ['community', 'repo'], desc: '监控类型'
+          requires :monitorType, type: String, values: ['community', 'repo'], desc: '监控类型'
         end
 
         post :list_metrics do
           community_metrics = [
-            { key: 'new_issue_count', name: '新建Issue数量' },
-            { key: 'issue_resolution_percentage', name: 'Issue解决百分比' },
-            { key: 'unresponsive_issue_count', name: '未响应Issues数量' },
-            { key: 'avg_response_time', name: '平均响应时间' }
+            { key: 'new_issue_count', name: '新建Issue数量', operatorType: 'value', unit: '个' },
+            { key: 'issue_resolution_percentage', name: 'Issue解决百分比', operatorType: 'percentage', unit: '%' },
+            { key: 'unresponsive_issue_count', name: '未响应Issues数量', operatorType: 'value', unit: '个' },
+            { key: 'avg_response_time', name: '平均响应时间', operatorType: 'value', unit: '天' }
           ]
 
           repo_metrics = [
-            { key: 'issue_total_count', name: 'Issue总数' },
-            { key: 'issue_open_count', name: '打开Issue数量' },
-            { key: 'closed_loop_rate', name: 'Issue闭环率' },
-            { key: 'avg_closed_loop_time', name: '平均闭环时长' },
-            { key: 'avg_first_response_time', name: 'Issue首次响应时间' },
-            { key: 'open_unresponsive_count', name: '未响应Issue数量' }
+            { key: 'issue_total_count', name: 'Issue总数', operatorType: 'value', unit: '个' },
+            { key: 'issue_open_count', name: '打开Issue数量', operatorType: 'value', unit: '个' },
+            { key: 'closed_loop_rate', name: 'Issue闭环率', operatorType: 'percentage', unit: '%' },
+            { key: 'avg_closed_loop_time', name: '平均闭环时长', operatorType: 'value', unit: '天' },
+            { key: 'avg_first_response_time', name: 'Issue首次响应时间', operatorType: 'value', unit: '天' },
+            { key: 'open_unresponsive_count', name: '未响应Issue数量', operatorType: 'value', unit: '个' }
           ]
 
-          metrics = params[:monitor_type] == 'community' ? community_metrics : repo_metrics
+          metrics = params[:monitorType] == 'community' ? community_metrics : repo_metrics
 
           { metrics: metrics }
+
         end
 
       end

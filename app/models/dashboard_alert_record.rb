@@ -8,6 +8,7 @@
 #  triggered_at            :datetime
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
+#  current_value           :decimal(10, 2)
 #
 # Indexes
 #
@@ -16,7 +17,7 @@
 #
 class DashboardAlertRecord < ApplicationRecord
 
-  belongs_to :alert_rule
+  belongs_to :dashboard_alert_rule
   belongs_to :dashboard
 
 end
