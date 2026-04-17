@@ -2032,7 +2032,7 @@ module Openapi
                                    .where(dashboard_id: dashboard.id)
                                    .pluck(:label)
 
-            repo_urls = repo_urls & responsible_labels if responsible_labels.present?
+            repo_urls = repo_urls & responsible_labels
           end
 
           persons = dashboard.dashboard_community_responsible_people.includes(:user)
