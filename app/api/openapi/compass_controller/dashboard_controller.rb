@@ -2023,30 +2023,6 @@ module Openapi
             GitcodeIssueEnrich
           )
 
-          indexer = GitcodeIssueEnrich
-          repo_urls = [
-
-            "https://gitcode.com/CPF-KMP-CMP/kotlinx-html",
-            "https://gitcode.com/CPF-KMP-CMP/opentest4k",
-            "https://gitcode.com/CPF-KMP-CMP/burst",
-            "https://gitcode.com/CPF-KMP-CMP/assertk",
-            "https://gitcode.com/CPF-KMP-CMP/TestHelp",
-            "https://gitcode.com/CPF-KMP-CMP/Stately",
-            "https://gitcode.com/CPF-KMP-CMP/kotlinx-atomicfu",
-            "https://gitcode.com/CPF-KMP-CMP/kotlinx-datetime",
-            "https://gitcode.com/CPF-KMP-CMP/kotlinx-coroutines",
-            "https://gitcode.com/CPF-KMP-CMP/ktor",
-            "https://gitcode.com/CPF-KMP-CMP/skia-pack",
-            "https://gitcode.com/CPF-KMP-CMP/skia",
-            "https://gitcode.com/CPF-KMP-CMP/interop-arkts",
-            "https://gitcode.com/CPF-KMP-CMP/fusion-render",
-            "https://gitcode.com/CPF-KMP-CMP/compose-multiplatform-core",
-            "https://gitcode.com/CPF-KMP-CMP/compose-multiplatform",
-            "https://gitcode.com/CPF-KMP-CMP/kotlin",
-            "https://gitcode.com/CPF-KMP-CMP/skiko",
-            "https://gitcode.com/CPF-KMP-CMP/manifest",
-          ]
-
 
           dashboard = Dashboard.find_by!(identifier: params[:identifier])
           if user_id.present?
