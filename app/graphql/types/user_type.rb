@@ -6,6 +6,7 @@ module Types
     field :name, String, null: false
     field :email, String, null: false
     field :email_verified, Boolean, null: false
+    field :dashboard_role, Boolean
     field :subscriptions, Types::Subscription::SubscriptionPageType, null: false, resolver: Queries::SubscriptionsQuery
     field :language, String, null: false
     field :role_level, Integer, null: false
@@ -21,6 +22,10 @@ module Types
 
     def contributing_orgs
       object.contributing_orgs
+    end
+
+    def dashboard_role
+      object.dashboard_role
     end
   end
 end

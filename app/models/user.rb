@@ -48,6 +48,7 @@ class User < ApplicationRecord
   has_many :tpc_software_selection_report
   has_many :tpc_software_selections
   has_many :access_tokens
+  has_many :dashboards, dependent: :destroy
 
   validate :check_email_change_limit
   validates :encrypted_password, presence: true
@@ -136,6 +137,9 @@ class User < ApplicationRecord
     end || []
   end
 
+  def dashboard_role
+    DashboardMember.exists?(user: self, status: :active)
+  end
   def generate_email_verification_token
     self.email_verification_token = loop do
       random_token = SecureRandom.urlsafe_base64(nil, false)
