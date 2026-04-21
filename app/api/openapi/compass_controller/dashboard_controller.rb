@@ -340,24 +340,10 @@ module Openapi
         end
         post :list do
 
-          base_scope = if current_user.role_level > 4
-                         Dashboard.all
-                       else
-                         current_user.dashboards
-                       end
-
-
-          # dashboards_scope = base_scope.includes(:dashboard_models, :dashboard_metrics)
-          #                              .order(created_at: :desc)
-          # pages, records = paginate_fun(dashboards_scope)
-          #
-          # present({
-          #           items: records.as_json(include: [:dashboard_models, :dashboard_metrics]),
-          #           total_count: pages.count,
-          #           current_page: pages.page,
-          #           per_page: pages.items,
-          #           total_pages: pages.pages
-          #         })
+          base_scope = Dashboard.left_joins(:dashboard_members)
+                                .where('dashboards.user_id = ? OR (dashboard_members.user_id = ? AND dashboard_members.status = ?)',
+                                       current_user.id, current_user.id, DashboardMember.statuses[:active])
+                                .distinct
 
           dashboards_scope = base_scope
 
@@ -1890,27 +1876,27 @@ module Openapi
             end
           end
 
-          ALLOWED_FIELDS = %w[
-    closed_at
-    created_at
-    id_in_repo
-    labels
-    merge_author_login
-    num_review_comments
-    repository
-    reviewers_login
-    state
-    time_to_close_days
-    time_to_first_attention_without_bot
-    title
-    url
-    user_login
-  ].freeze
+          allowed_fields = %w[
+                  closed_at
+                  created_at
+                  id_in_repo
+                  labels
+                  merge_author_login
+                  num_review_comments
+                  repository
+                  reviewers_login
+                  state
+                  time_to_close_days
+                  time_to_first_attention_without_bot
+                  title
+                  url
+                  user_login
+                ].freeze
 
           items = hits.map do |hit|
             source = hit['_source'] || {}
 
-            item_hash = ALLOWED_FIELDS.each_with_object({}) do |field, hash|
+            item_hash = allowed_fields.each_with_object({}) do |field, hash|
               hash[field] = source[field]
             end
 
