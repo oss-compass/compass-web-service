@@ -2357,14 +2357,14 @@ module Openapi
 
 
 
-        desc '创建/设置责任人',
+        desc '创建/设置/删除责任人',
              tags: ['CompassService / Compass服务'],
              hidden: true
 
         params do
           requires :identifier, type: String, desc: '看板唯一编码'
-          requires :ResponsiblePerson, type: Integer, desc: '责任人用户ID'
           requires :repo_url, type: String, desc: '仓库地址'
+          optional :ResponsiblePerson, type: Integer, desc: '责任人用户ID。如果不传或传空，则表示移除该仓库的责任人'
         end
 
         post :set_responsible_person do
@@ -2375,31 +2375,41 @@ module Openapi
           user_id = params[:ResponsiblePerson]
           label = params[:repo_url]
 
-          # 检查用户是否存在
-          user = User.find_by(id: user_id)
-          error!({ error: '用户不存在' }, 404) unless user
-
           # 查找该仓库是否已有责任人
           existing = DashboardCommunityResponsiblePerson.find_by(
             dashboard_id: dashboard.id,
             label: label
           )
 
-          if existing
-            # 更新为新的责任人
-            existing.update!(
-              user_id: user_id,
-              updated_at: Time.current
-            )
-            { status: 'success', message: '责任人已更新' }
+          if user_id.blank?
+            if existing
+              existing.destroy!
+              { status: 'success', message: '责任人已移除' }
+            else
+              { status: 'success', message: '该仓库暂无责任人，无需移除' }
+            end
           else
-            # 创建新的责任人记录
-            DashboardCommunityResponsiblePerson.create!(
-              dashboard_id: dashboard.id,
-              user_id: user_id,
-              label: label
-            )
-            { status: 'success', message: '责任人设置成功' }
+            # 执行原来的创建/更新逻辑
+            # 检查用户是否存在
+            user = User.find_by(id: user_id)
+            error!({ error: '用户不存在' }, 404) unless user
+
+            if existing
+              # 更新为新的责任人
+              existing.update!(
+                user_id: user_id,
+                updated_at: Time.current
+              )
+              { status: 'success', message: '责任人已更新' }
+            else
+              # 创建新的责任人记录
+              DashboardCommunityResponsiblePerson.create!(
+                dashboard_id: dashboard.id,
+                user_id: user_id,
+                label: label
+              )
+              { status: 'success', message: '责任人设置成功' }
+            end
           end
 
         rescue ActiveRecord::RecordNotFound
