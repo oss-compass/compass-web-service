@@ -168,7 +168,7 @@ module Openapi
               fetch_metric_data_v2(PersonalGovernanceMetric, fields)
             end
 
-            desc 'Personal Governance Model / 个人开放治理模型',
+            desc 'Personal Governance / 个人开放治理',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

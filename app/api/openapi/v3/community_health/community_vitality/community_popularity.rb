@@ -60,7 +60,7 @@ module Openapi
               fetch_metric_data_v2(CommunityPopularityMetric, fields)
             end
 
-            desc 'Community Popularity Model / 社区流行度模型',
+            desc 'Community Popularity / 社区流行度',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

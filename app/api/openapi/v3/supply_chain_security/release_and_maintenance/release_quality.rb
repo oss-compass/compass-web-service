@@ -96,7 +96,7 @@ module Openapi
               fetch_metric_data_v2(ReleaseQualityMetric, fields)
             end
 
-            desc 'Release Quality Model / 发布质量模型',
+            desc 'Release Quality / 发布质量',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

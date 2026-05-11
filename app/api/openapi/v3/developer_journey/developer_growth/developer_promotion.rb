@@ -85,7 +85,7 @@ module Openapi
               fetch_metric_data_v2(DeveloperPromotionMetric, 'individual_issue_core_promotion_count')
             end
 
-            desc 'Developer Promotion Model / 开发者晋升模型',
+            desc 'Developer Promotion / 开发者晋升',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

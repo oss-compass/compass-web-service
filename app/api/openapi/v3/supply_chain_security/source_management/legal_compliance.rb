@@ -102,7 +102,7 @@ module Openapi
               fetch_metric_data_v2(LegalComplianceMetric, fields)
             end
 
-            desc 'Legal Compliance Model / 合法合规模型',
+            desc 'Legal Compliance / 合法合规',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
