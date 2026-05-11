@@ -98,7 +98,7 @@ module Openapi
               fetch_metric_data_v2(DeveloperAttractionMetric, 'new_individual_non_code_contributors')
             end
 
-            desc 'Developer Attraction Model / 开发者吸引模型',
+            desc 'Developer Attraction Model / 开发者吸引',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

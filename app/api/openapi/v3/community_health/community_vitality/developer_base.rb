@@ -72,7 +72,7 @@ module Openapi
               fetch_metric_data_v2(DeveloperBaseMetric, 'non_code_contributors')
             end
 
-            desc 'Developer Base Model / 开发者基础模型',
+            desc 'Developer Base Model / 开发者基数',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

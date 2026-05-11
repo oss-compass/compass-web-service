@@ -195,7 +195,7 @@ module Openapi
               fetch_metric_data_v2(OrganizationalGovernanceMetric, fields)
             end
 
-            desc 'Organizational Governance Model / 组织开放治理模型',
+            desc 'Organizational Governance Model / 组织开放治理',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

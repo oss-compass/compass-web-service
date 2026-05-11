@@ -118,7 +118,7 @@ module Openapi
               fetch_metric_data_v2(CollaborationQualityMetric, 'pr_review_time_by_size')
             end
 
-            desc 'Collaboration Quality Model / 协作开发质量模型',
+            desc 'Collaboration Quality Model / 协作开发质量',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

@@ -107,7 +107,7 @@ module Openapi
             #   fetch_metric_data(metric_name: 'recent_releases_count')
             # end
 
-            desc 'Contribution Activity Model / 贡献活跃度模型',
+            desc 'Contribution Activity Model / 贡献活跃度',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
