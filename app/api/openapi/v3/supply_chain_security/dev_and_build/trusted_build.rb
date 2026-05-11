@@ -101,7 +101,7 @@ module Openapi
               fetch_metric_data_v2(TrustedBuildMetric, fields)
             end
 
-            desc 'Trusted Build Model / 可信构建',
+            desc 'Trusted Build / 可信构建',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

@@ -129,7 +129,7 @@ module Openapi
               fetch_metric_data_v2(ResponseTimelinessMetric, fields)
             end
 
-            desc 'Response Timeliness Model / 响应及时性',
+            desc 'Response Timeliness / 响应及时性',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|

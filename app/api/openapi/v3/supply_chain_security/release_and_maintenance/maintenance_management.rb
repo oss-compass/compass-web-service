@@ -69,7 +69,7 @@ module Openapi
               fetch_metric_data_v2(MaintenanceManagementMetric, fields)
             end
 
-            desc 'Maintenance Management Model / 维护管理',
+            desc 'Maintenance Management / 维护管理',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
