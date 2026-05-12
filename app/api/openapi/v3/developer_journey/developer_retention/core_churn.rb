@@ -86,7 +86,7 @@ module Openapi
               fetch_metric_data_v2(CoreChurnMetric, 'individual_issue_core_churn')
             end
 
-            desc 'Core Churn / 核心开发者流失',
+            desc 'Core Churn / 核心开发者淡出',
                  detail: "
 | Metrics / 度量指标 | Address / 地址 | Threshold / 阈值 | Weight / 权重 |
 |---------|------|------|------|
