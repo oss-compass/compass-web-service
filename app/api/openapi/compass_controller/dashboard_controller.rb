@@ -32,7 +32,26 @@ module Openapi
         'compass_metric_model_v2_contribution_activity' => ContributionActivityMetric,
         'compass_metric_model_v2_community_popularity' => CommunityPopularityMetric,
         'compass_metric_model_v2_organizational_governance' => OrganizationalGovernanceMetric,
-        'compass_metric_model_v2_personal_governance' => PersonalGovernanceMetric
+        'compass_metric_model_v2_personal_governance' => PersonalGovernanceMetric,
+
+        'compass_metric_model_v2_developer_attraction'=>  DeveloperAttractionMetric,
+        'compass_metric_model_v2_developer_promotion'=>  DeveloperPromotionMetric,
+        'compass_metric_model_v2_participation_tier'=> ParticipationTierMetric,
+        'compass_metric_model_v2_core_churn'=> CoreChurnMetric,
+        'compass_metric_model_v2_core_loss'=> CoreLossMetric,
+        'compass_metric_model_v2_core_retention'=> CoreRetentionMetric,
+
+        'compass_metric_model_v2_legal_compliance'=> LegalComplianceMetric,
+        'compass_metric_model_v2_security_management'=> SecurityManagementMetric,
+        'compass_metric_model_v2_development_document_quality'=> DevelopmentDocumentQualityMetric,
+        'compass_metric_model_v2_code_review_quality'=> CodeReviewQualityMetric,
+        'compass_metric_model_v2_trusted_build'=> TrustedBuildMetric,
+        'compass_metric_model_v2_release_quality'=> ReleaseQualityMetric,
+        'compass_metric_model_v2_maintenance_management'=> MaintenanceManagementMetric,
+
+
+
+
       }.freeze
 
       before { require_login! }
@@ -396,6 +415,119 @@ module Openapi
             independent_metrics: independent_metrics.as_json
           }
 
+        end
+
+        desc '获取供应链安全相关指标详情',
+             tags: ['CompassService / Compass服务'],
+             hidden: true
+
+        desc '获取安全相关指标(SecurityManagement)的详情数据'
+        params do
+          requires :identifier, type: String
+          requires :repo,       type: String
+          requires :beginDate,  type: String
+          requires :endDate,    type: String
+          optional :level,      type: String
+        end
+        post :get_security_detail_by_identifier do
+          dashboard = Dashboard.find_by(identifier: params[:identifier])
+          error!({ error: '找不到该看板或无权访问' }, 403) if dashboard.blank?
+
+          target_label = params[:repo].presence
+          model_idents = %w[
+              model_018
+              model_019
+              model_020
+              model_021
+              model_022
+              model_023
+              model_024
+            ]
+
+          if target_label.blank?
+            present({ model_ident: model_ident, model_score: [], metrics: [] })
+            return
+          end
+
+          level      = params[:level]
+          start_date = params[:beginDate]
+          end_date   = params[:endDate]
+
+          # 只取安全模型下的子指标
+          metrics = dashboard.dashboard_metrics
+                             .includes(:dashboard_metric_info)
+                             .where(dashboard_model_info_ident: model_idents)
+                             .order(sort: :asc)
+
+          if metrics.blank?
+            present({ model_ident: model_ident, model_score: [], metrics: [] })
+            return
+          end
+
+          involved_indices = metrics.map { |m| m.dashboard_metric_info.metric_index }.uniq.compact
+
+          repo_urls     = [target_label]
+          os_data_store = {}
+
+          involved_indices.each do |index_name|
+            os_data_store[index_name] = fetch_metrics_by_range(index_name, repo_urls, start_date, end_date, level)
+          end
+
+          metric_list = metrics.map do |metric|
+            info = metric.dashboard_metric_info
+
+            settings = if info.mapping_settings.is_a?(String)
+                         JSON.parse(info.mapping_settings) rescue {}
+                       else
+                         info.mapping_settings || {}
+                       end
+
+            source_docs = os_data_store[info.metric_index] || []
+
+
+
+            series_data = source_docs.map do |doc|
+              value = 0
+              if settings['main']
+                value = doc[settings['main']] || 0
+              elsif settings['numerator'] && settings['denominator']
+                num = doc[settings['numerator']].to_f
+                den = doc[settings['denominator']].to_f
+                value = den.zero? ? 0 : (num / den).round(4)
+              end
+
+
+              extra = {}
+              extra[:total] = doc[settings['total_field']] if settings['total_field']
+              extra[:avg]   = doc[settings['avg']]         if settings['avg']
+              extra[:added] = doc[settings['added']]       if settings['added']
+              extra[:unit]  = settings['unit']             if settings['unit']
+
+
+              detail_field = settings['detail']
+              raw = detail_field.present? ? doc[detail_field.to_s] : nil
+
+              {
+                date:   doc['grimoire_creation_date'],
+                value:  value,
+                extra:  extra,
+                detail: raw,
+                # test: doc.reject { |k, _| meta_fields.include?(k.to_s) }
+              }
+            end
+
+            {
+              id:       metric.id,
+              name:     info.name,
+              ident:    info.ident,
+              data:     series_data
+            }
+          end
+
+          present({
+
+                    metrics: metric_list
+                  })
         end
 
         desc '通过编码获取看板详情',
