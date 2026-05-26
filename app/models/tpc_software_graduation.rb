@@ -170,13 +170,11 @@ class TpcSoftwareGraduation < ApplicationRecord
       if member_type_hash.key?(risk_metric)
         member_type_list = member_type_hash[risk_metric]
         if TpcSoftwareCommentState.check_compliance_metric(risk_metric)
-          if [TpcSoftwareCommentState::Member_Type_Compliance,
-              TpcSoftwareCommentState::Member_Type_Legal].all? { |element| member_type_list.include?(element) }
+          if member_type_list.include?(TpcSoftwareCommentState::Member_Type_Legal)
             confirmed_metrics << risk_metric
           end
         else
-          if [TpcSoftwareCommentState::Member_Type_Compliance,
-              TpcSoftwareCommentState::Member_Type_Committer,
+          if [TpcSoftwareCommentState::Member_Type_Committer,
               TpcSoftwareCommentState::Member_Type_Sig_Lead].all? { |element| member_type_list.include?(element) }
             confirmed_metrics << risk_metric
           end

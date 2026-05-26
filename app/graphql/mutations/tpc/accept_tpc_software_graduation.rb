@@ -41,8 +41,8 @@ module Mutations
             permission = TpcSoftwareMember.check_sig_lead_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_Legal
             permission = TpcSoftwareMember.check_legal_permission?(current_user)
-          when TpcSoftwareCommentState::Member_Type_Compliance
-            permission = TpcSoftwareMember.check_compliance_permission?(current_user)
+          # when TpcSoftwareCommentState::Member_Type_Compliance
+          #   permission = TpcSoftwareMember.check_compliance_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_QA
             permission = TpcSoftwareMember.check_qa_permission?(current_user)
           when TpcSoftwareCommentState::Member_Type_Community_Collaboration_WG
