@@ -45,11 +45,11 @@ class TpcSoftwareCommentState < ApplicationRecord
   Member_Type_Community_Collaboration_WG = 5
 
   Member_Type_QA = 4
-  Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
-  Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG,Member_Type_QA]
+  Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Community_Collaboration_WG]
+  Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Community_Collaboration_WG,Member_Type_QA]
 
-  Selection_Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance,Member_Type_Community_Collaboration_WG]
-  Selection_Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal,Member_Type_Community_Collaboration_WG, Member_Type_Compliance,Member_Type_QA]
+  Selection_Member_Types = [ Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Community_Collaboration_WG]
+  Selection_Member_Types_QA = [ Member_Type_Sig_Lead, Member_Type_Legal,Member_Type_Community_Collaboration_WG, Member_Type_QA]
 
   Sandbox_Member_Types = [Member_Type_Sig_Lead, Member_Type_Legal, Member_Type_Compliance]
 
