@@ -37,7 +37,7 @@ class MetricModelsV2Server
 
       CodeReviewQualityMetric,
       DevelopmentDocumentQualityMetric,
-      TrustedBuildMetric,
+      # TrustedBuildMetric,
       MaintenanceManagementMetric,
       ReleaseQualityMetric,
       LegalComplianceMetric,
