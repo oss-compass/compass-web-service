@@ -47,13 +47,15 @@ module Openapi
           indexer = ScorecardMetric
           repo_urls = [params[:label]]
 
-          opencheckRawResp = opencheckRawIndexer.one_by_metric_repo_urls(repo_urls, target: 'label')
-          opencheckRawHits = opencheckRawResp&.[]('hits')&.[]('hits') || []
-          return {} if opencheckRawHits.empty?
+          # opencheckRawResp = opencheckRawIndexer.one_by_metric_repo_urls(repo_urls, target: 'label')
+          # opencheckRawHits = opencheckRawResp&.[]('hits')&.[]('hits') || []
+          # return {} if opencheckRawHits.empty?
 
           resp = indexer.one_by_metric_repo_urls(repo_urls)
 
           hits = resp&.[]('hits')&.[]('hits') || []
+
+          return {} if hits.empty?
           items = hits.map { |data| data['_source'].symbolize_keys }
           result = items&.first&.reject { |key, _| key.to_s.end_with?('_detail') } || {}
 
