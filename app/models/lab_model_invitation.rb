@@ -68,8 +68,9 @@ class LabModelInvitation < ApplicationRecord
   end
 
   def verify_and_finish!(user, token)
-    return false unless pending?
+    return [false, I18n.t('lab_models.invalid_invitation')] unless pending?
     if !expired? && token == self.token
+      return [false, I18n.t('lab_models.forbidden')] if user.email != email
       if lab_model.has_member?(user)
         self.update!(status: :cancel)
         [false, I18n.t('lab_models.already_memeber')]

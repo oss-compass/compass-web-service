@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   end
 
   def accept_invitation
-    redirect_to url_for(redirect_url(default_url: '/auth/signin')) unless current_user.present?
+    redirect_to url_for(redirect_url(default_url: '/auth/signin')) and return unless current_user.present?
     token = params[:token]
     invitation = LabModelInvitation.find_by(token: token)
     error = nil
