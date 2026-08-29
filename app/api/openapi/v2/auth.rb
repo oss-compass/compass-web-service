@@ -36,7 +36,7 @@ module Openapi
           token_str = params[:token]
           error!({ error: 'token 不能为空' }, 400) if token_str.blank?
 
-          access_token = AccessToken.find_by(token: token_str)
+          access_token = AccessToken.active.find_by(token: token_str)
           unless access_token
             error!({ valid: false, error: '无效或过期的 token' }, 401)
           end
