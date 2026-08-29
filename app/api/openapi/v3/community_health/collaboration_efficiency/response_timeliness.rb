@@ -94,7 +94,7 @@ module Openapi
                  }
             params { use :metric_search }
             post :pr_unresponsive_rate do
-              fetch_metric_data(metric_name: 'pr_unresponsive_rate')
+              fetch_metric_data_v2(ResponseTimelinessMetric, 'pr_unresponsive_rate')
             end
 
             desc 'PR First Response Time / PR 首次响应时间',
