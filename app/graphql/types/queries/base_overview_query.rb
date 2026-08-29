@@ -10,9 +10,9 @@ module Types
             sub_grouped_contributors = grouped_contributors.group_by { _1['organization'] }
             sorted_group_contributors =
               if scope == 'contributor'
-                sub_grouped_contributors.sort_by { |_k, v| v.length }
+                sub_grouped_contributors.sort_by { |_k, v| -v.length }
               else
-                sub_grouped_contributors.sort_by { |_k, v| v.map { _1['contribution'] }.reduce(0, :+) }
+                sub_grouped_contributors.sort_by { |_k, v| -v.map { _1['contribution'] }.reduce(0, :+) }
               end
             top_group_contributors = sorted_group_contributors.first(10)
             top_group_contributors.map do |group, contributors|
