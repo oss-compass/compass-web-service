@@ -1011,10 +1011,10 @@ module Openapi
           contributors_count = full_contributors_list.length
 
           # 2. Top 1 贡献者
-          # 逻辑：按 commit_count 倒序排列取前1
-          # 字段兼容：确保 commit_count 为数字，防止 nil 报错
+          # 逻辑：按 contribution 倒序排列取前1
+          # 说明：贡献者列表来自 ContributorDetailType 字段（contribution 等），不存在 commit_count 字段
           top_contributors = full_contributors_list
-                               .sort_by { |c| -(c['commit_count'].to_i) }
+                               .sort_by { |c| -(c['contribution'].to_i) }
                                .first(1)
                                # 仅返回前端需要的字段，避免暴露过多信息
                                .map do |c|
