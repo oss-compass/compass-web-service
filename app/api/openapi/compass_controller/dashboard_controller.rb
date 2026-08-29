@@ -2768,6 +2768,8 @@ module Openapi
           optional :per_page, type: Integer, default: 20
         end
         post :search_user do
+          error!({ error: '需要管理员权限' }, 403) unless current_user&.is_admin?
+
           page = params[:page]
           per_page = params[:per_page]
           keywords = params[:keyword]
