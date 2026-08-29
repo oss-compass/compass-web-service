@@ -12,11 +12,14 @@ module Mutations
       label = ShortenedLabel.normalize_label(label)
       validate_repo_admin!(context[:current_user], label, level)
 
+      subject = Subject.find_by(label: label, level: level)
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
       subject_sig = SubjectSig.find_by(id: id)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_sig.nil?
 
       subject_ref = SubjectRef.find_by(id: subject_sig.subject_ref_id)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_ref.nil?
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_ref.parent_id != subject.id
 
       subject_ref.destroy!
 

@@ -15,7 +15,9 @@ module Mutations
       label = ShortenedLabel.normalize_label(label)
       validate_repo_admin!(context[:current_user], label, level)
 
-      subject_access_level = SubjectAccessLevel.find_by(id: id)
+      subject = Subject.find_by(label: label, level: level)
+      raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject.nil?
+      subject_access_level = SubjectAccessLevel.find_by(id: id, subject_id: subject.id)
       raise GraphQL::ExecutionError.new I18n.t('basic.subject_not_exist') if subject_access_level.nil?
 
       subject_access_level.update!(access_level: access_level)
