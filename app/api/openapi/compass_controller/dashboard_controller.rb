@@ -445,7 +445,7 @@ module Openapi
             ]
 
           if target_label.blank?
-            present({ model_ident: model_ident, model_score: [], metrics: [] })
+            present({ model_ident: nil, model_score: [], metrics: [] })
             return
           end
 
@@ -460,7 +460,7 @@ module Openapi
                              .order(sort: :asc)
 
           if metrics.blank?
-            present({ model_ident: model_ident, model_score: [], metrics: [] })
+            present({ model_ident: nil, model_score: [], metrics: [] })
             return
           end
 
