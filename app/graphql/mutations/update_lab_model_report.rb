@@ -21,6 +21,10 @@ module Mutations
 
       report = LabModelReport.find_by(id: report_id)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless report.present?
+
+      model = LabModel.find_by(id: report.lab_model_id)
+      raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless model.present? && ::Pundit.policy(current_user, model).update?
+
       ActiveRecord::Base.transaction do
         update_set = {}
         update_set[:is_public] = is_public if is_public != nil
