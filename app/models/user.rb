@@ -37,6 +37,8 @@ class User < ApplicationRecord
 
   include Userable
 
+  validate :reject_reserved_anonymous_email, on: :create
+
   alias_attribute :metric_models, :lab_models
   alias_attribute :invitations, :lab_model_invitations
 
@@ -60,6 +62,17 @@ class User < ApplicationRecord
   ANONYMOUS_EMAIL_SUFFIX = '@user.anonymous.oss-compass.org'
   NORMAL_ROLE = 3
   TPC_ROLE = 2
+
+  # Addresses under ANONYMOUS_EMAIL_SUFFIX are synthesized for anonymous
+  # OAuth logins (.from_omniauth). A regular signup must not be able to
+  # claim one first, or the real user's first anonymous OAuth login would
+  # find_by(email:) that account and sign the victim into an
+  # attacker-chosen password (account pre-hijack). Internal anonymous
+  # users set the anonymous flag and bypass this check.
+  def reject_reserved_anonymous_email
+    return if anonymous?
+    errors.add(:email, I18n.t('users.email_reserved')) if email.to_s.downcase.end_with?(ANONYMOUS_EMAIL_SUFFIX)
+  end
 
   def email_verified?
     email_verification_token.nil?

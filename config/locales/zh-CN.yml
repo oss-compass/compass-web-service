@@ -1486,6 +1486,7 @@ zh-CN:
     send_invite_limit: 邀请邮件24小时内发送不可以超过 %{count} 次
     keep_one_login_bind: 至少保留一个登录绑定
     no_such_login_bind: 未绑定相关平台帐号
+    email_reserved: 该邮箱域名由系统保留，无法注册
     wechat_already_bind: 已经绑定了一个微信
     provider_not_supported: 第三方应用登录目前仅支持 github，gitee
     subscription_already_exist: 已经订阅了

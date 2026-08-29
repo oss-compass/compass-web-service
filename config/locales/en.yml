@@ -2001,6 +2001,7 @@ en:
       24 hours.
     keep_one_login_bind: Keep at least one login binding
     no_such_login_bind: No binding account information for the platform
+    email_reserved: This email domain is reserved by the system and cannot be registered
     wechat_already_bind: It has been bound to a wechat
     provider_not_supported: Third-party application login currently supports only
       github and gitee
