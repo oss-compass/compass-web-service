@@ -31,21 +31,25 @@ class ExportTaskWorker
         if query.present?
           scroll_query = indexer.must([query]).per(per_page).scroll(timeout: '1m')
           loop do
-            scroll_query.execute.raw_response.dig('hits', 'hits').map do |hit|
+            hits = scroll_query.execute.raw_response.dig('hits', 'hits') || []
+            break if hits.empty?
+
+            hits.each do |hit|
               csv << callback_module
                        .send(each_callback_function, { uuid: uuid, source: hit['_source'] })
-                       .slice(*select)
-                       .values
+                       .values_at(*select)
             end
-            scroll_query = scroll_query.scroll(id: scroll_query.scroll_id, timeout: '1m')
-            break if scroll_query.last_page?
+
+            scroll_id = scroll_query.scroll_id
+            break if scroll_id.blank?
+
+            scroll_query = scroll_query.scroll(id: scroll_id, timeout: '1m')
           end
         elsif raw_data.present?
           raw_data.each do |row|
             csv << callback_module
                      .send(each_callback_function, { uuid: uuid, source: row })
-                     .slice(*select)
-                     .values
+                     .values_at(*select)
           end
         end
       end
