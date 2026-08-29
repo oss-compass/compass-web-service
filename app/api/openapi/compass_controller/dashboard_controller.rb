@@ -2680,7 +2680,7 @@ module Openapi
           dashboard = Dashboard.find_by!(identifier: params[:identifier])
 
           # 需要管理员权限才能分配成员
-          require_dashboard_editor!(dashboard)
+          require_dashboard_admin!(dashboard)
 
           members_params = params[:members]
           results = { success: [], failed: [], skipped: [] }
