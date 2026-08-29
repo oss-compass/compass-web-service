@@ -2231,7 +2231,7 @@ module Openapi
                 row[:close_time_count] += 1
               end
 
-              first_response_time = source['time_to_first_attention']
+              first_response_time = source['time_to_first_attention_without_bot']
               if !first_response_time.nil?
                 row[:first_response_sum] += first_response_time.to_f
                 row[:first_response_count] += 1
