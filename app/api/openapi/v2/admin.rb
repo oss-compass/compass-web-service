@@ -9,6 +9,9 @@ module Openapi
       require 'maxminddb'
 
       before { require_login! }
+      before do
+        error!({ error: I18n.t('users.forbidden') }, 403) unless current_user&.is_admin?
+      end
       helpers Openapi::SharedParams::ErrorHelpers
 
       rescue_from :all do |e|
