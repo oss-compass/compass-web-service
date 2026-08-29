@@ -214,6 +214,7 @@ class User < ApplicationRecord
 
     subject_ids = SubjectRef.where("parent_id = ? OR child_id = ?", subject.id, subject.id).pluck(:parent_id).uniq
     subject_access_level = SubjectAccessLevel.where(subject_id: subject_ids)
+                                             .where(user_id: id)
                                              .where(access_level: SubjectAccessLevel::PRIVILEGED_LEVEL)
     return subject_access_level.exists?
   end
