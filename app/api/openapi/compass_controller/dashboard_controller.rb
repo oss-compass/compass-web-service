@@ -2393,7 +2393,7 @@ module Openapi
               source = hit['_source'] || {}
               repo = source['repository'].presence || source['tag'].presence || 'unknown'
               state = source['state'].to_s.downcase
-              comments_without_bot = source['num_of_comments_without_bot'].to_i
+              comments_without_bot = source['num_review_comments_without_bot'].to_i
 
               row = grouped[repo]
               row[:pull_total_count] += 1

@@ -7,7 +7,7 @@ module PullEnrich
 
     def export_headers
       ['title', 'url', 'state', 'created_at', 'closed_at', 'time_to_close_days', 'time_to_first_attention_without_bot',
-       'num_of_comments_without_bot', 'labels', 'user_login', 'reviewers_login', 'merge_author_login']
+       'num_review_comments_without_bot', 'labels', 'user_login', 'reviewers_login', 'merge_author_login']
     end
 
     def on_each(args)
