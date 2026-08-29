@@ -17,6 +17,8 @@ module Mutations
                 who_vote: nil
     )
 
+      login_required!(context[:current_user])
+
       payload = {
         src_package_name: src_package_name,
         src_ecosystem: src_ecosystem,
