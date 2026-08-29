@@ -36,7 +36,11 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       cookies['auth.token'] = { value: token, expires: 1.day.from_now }
 
       sns_info = $wechat_client.get_oauth_access_token(params[:code])
-      if sns_info.result['errcode'] != '40029'
+      # WeChat returns errcode as an integer (absent/0 on success); the old
+      # string comparison against '40029' was always true, so every failed
+      # code exchange ran the success path with a nil openid and created a
+      # phantom LoginBind that permanently blocked real binding.
+      if sns_info.result['errcode'].to_i.zero?
         session[:openid] = sns_info.result['openid']
         auth = OmniAuth::AuthHash.new({
                                         provider: 'wechat',
