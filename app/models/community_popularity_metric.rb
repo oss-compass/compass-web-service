@@ -8,7 +8,7 @@ class CommunityPopularityMetric < BaseMetric
 
 
   def self.dimension
-    'producommunity vitality'
+    'community vitality'
   end
 
   def self.scope
