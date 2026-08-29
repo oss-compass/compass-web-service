@@ -15,7 +15,7 @@ module Types
         beta_metrics = BetaMetric
         beta_metrics = beta_metrics.where(status: status) if status
         beta_metrics = beta_metrics.where(metric: metric) if metric
-        beta_metrics = beta_metrics.where(metric: dimensionality) if dimensionality
+        beta_metrics = beta_metrics.where(dimensionality: dimensionality) if dimensionality
         _, records = pagy(beta_metrics, { page: page, items: per })
         records
       end
