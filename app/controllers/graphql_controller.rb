@@ -84,7 +84,6 @@ class GraphqlController < ApplicationController
     scope = Devise::Mapping.find_scope!(user)
     warden.logout(scope)
     token = request.cookies['auth.token']
-    Rails.logger.info(token) ## logging token for temporary debug
     return unless token.present?
 
     # if token.present?
