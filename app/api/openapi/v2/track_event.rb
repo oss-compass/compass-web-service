@@ -80,7 +80,8 @@ module Openapi
           domain = params[:payload][:domain]
           ip = params[:payload][:ip]
           token = params[:payload][:token]
-          user_token = AccessToken.find_by(token: token)
+          user_token = AccessToken.active.find_by(token: token)
+          error!({ error: '无效的 token' }, 401) if user_token.nil?
           user_id = user_token[:user_id]
 
           data = TrackingRestapi.new(
