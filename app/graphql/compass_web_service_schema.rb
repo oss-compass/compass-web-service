@@ -2,6 +2,12 @@ class CompassWebServiceSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
 
+  # /api/graphql is publicly reachable and fans out to OpenSearch per level,
+  # so unbounded selection nesting (object types reference each other) would
+  # let a single request drive memory and backend load. 40 leaves generous
+  # headroom above the dashboards' deepest legitimate queries.
+  max_depth 40
+
   # For batch-loading (see https://graphql-ruby.org/dataloader/overview.html)
   use GraphQL::Dataloader
 
