@@ -739,6 +739,7 @@ module Openapi
 
           dashboard = Dashboard.find_by(identifier: params[:identifier])
           error!({ error: '找不到该看板或无权访问' }, 403) if dashboard.blank?
+          require_dashboard_member!(dashboard)
 
           target_label = params[:repo].presence
           if target_label.blank?
