@@ -14,7 +14,7 @@ class ContributionActivityMetric < BaseMetric
   end
 
   def self.scope
-    'community health'
+    'community_health'
   end
 
   def self.ident

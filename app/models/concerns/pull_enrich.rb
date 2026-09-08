@@ -49,5 +49,25 @@ module PullEnrich
       fetch_pull_list_by_hash(repo_urls, [hash_value], target).first
     end
 
+
+    def avg_time_to_close_days_by_repo_urls(
+          repo_urls, begin_date, end_date,
+          target: 'tag', filter: :created_at, filter_opts: []
+        )
+      base = base_terms_by_repo_urls(
+        repo_urls, begin_date, end_date,
+        target: target, filter: filter, filter_opts: filter_opts
+      )
+      resp = base
+               .per(0)
+               .aggregate(
+                 { avg_time_to_close_days: { avg: { field: 'time_to_close_days' } } }
+               )
+               .execute
+               .raw_response
+      val = resp.dig('aggregations', 'avg_time_to_close_days', 'value')
+      val.present? ? val.to_f : 0.0
+    end
+
   end
 end
