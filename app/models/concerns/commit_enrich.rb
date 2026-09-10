@@ -5,14 +5,15 @@ module CommitEnrich
   class_methods do
 
     def base_commit_list_by_repo_urls(
-      repo_urls, begin_date, end_date, branch,
+      repo_urls, begin_date, end_date, branch = nil,
       target: 'tag', filter: :grimoire_creation_date, sort: :grimoire_creation_date, direction: :desc,
       filter_opts: [], sort_opts: [], label: nil, level: nil
     )
       base =
         self
           .must(terms: { target => repo_urls.map { |element| element + ".git" } })
-          .must(match_phrase: { branches: "'#{branch}'" })
+      base = base.must(match_phrase: { branches: "'#{branch}'" }) if branch.present?
+      base = base
           .must(wildcard: { author_email: { value: "*@*" } })
           .must(wildcard: { committer_email: { value: "*@*" } })
           .must(range: { lines_changed: { gt: 0 } })
@@ -124,6 +125,25 @@ module CommitEnrich
           .per(0)
           .execute
           .raw_response
+    end
+
+    def fetch_contributor_code_lines_by_repo_urls(repo_urls, begin_date, end_date,
+                                                  size: 10_000, target: 'tag')
+      base_commit_list_by_repo_urls(repo_urls, begin_date, end_date, target: target)
+        .aggregate(
+          group_by_name: {
+            terms: { field: 'author_email', size: size, order: { lines_changed: 'desc' } },
+            aggs: {
+              lines_added: { sum: { field: 'lines_added' } },
+              lines_removed: { sum: { field: 'lines_removed' } },
+              lines_changed: { sum: { field: 'lines_changed' } },
+              author_name: { top_hits: { _source: ['author_name'], size: 1 } }
+            }
+          }
+        )
+        .per(0)
+        .execute
+        .raw_response
     end
 
     def merge_commit_organization(source, target)
