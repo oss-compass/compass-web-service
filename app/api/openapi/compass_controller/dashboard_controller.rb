@@ -12,19 +12,19 @@ module Openapi
       helpers Openapi::SharedParams::Search
 
       helpers Openapi::V1::Helpers
-      # helpers Openapi::SharedParams::ErrorHelpers
+      helpers Openapi::SharedParams::ErrorHelpers
       helpers Openapi::SharedParams::RestapiHelpers
 
-      # rescue_from :all do |e|
-      #   case e
-      #   when Grape::Exceptions::ValidationErrors
-      #     handle_validation_error(e)
-      #   when SearchFlip::ResponseError
-      #     handle_open_search_error(e)
-      #   else
-      #     handle_generic_error(e)
-      #   end
-      # end
+      rescue_from :all do |e|
+        case e
+        when Grape::Exceptions::ValidationErrors
+          handle_validation_error(e)
+        when SearchFlip::ResponseError
+          handle_open_search_error(e)
+        else
+          handle_generic_error(e)
+        end
+      end
       INDEX_CLASS_MAPPING = {
         'compass_metric_model_v2_response_timeliness' => ResponseTimelinessMetric,
         'compass_metric_model_v2_collaboration_quality' => CollaborationQualityMetric,
@@ -1450,6 +1450,11 @@ module Openapi
           optional :ResponsiblePerson, type: Integer, desc: '责任人 user_id'
           optional :labelFilter, type: String, desc: '标签筛选'
           optional :priority, type: String, desc: '优先级筛选'
+          # 筛选参数
+          optional :filterOpts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
         end
 
         post :issues_overview do
@@ -1507,6 +1512,58 @@ module Openapi
             end
           end
 
+          # ========== 组织筛选：与 community_issue_summary_list 查询联动 ==========
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          target_orgs = org_filter_opt&.values || []
+
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 base_filter_opts
+            if target_user_logins.any?
+              base_filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回空结果
+              return {
+                new_issue_count: 0,
+                issue_resolution_percentage: '0%',
+                issue_resolution_numerator: 0,
+                issue_resolution_denominator: 0,
+                avg_response_time: nil,
+                avg_closed_loop_time: nil,
+                unresponsive_issue_count: 0
+              }
+            end
+          end
+
           # 新建 Issue 数量
           # 直接使用基础过滤器查询时间范围内的总数
           new_issue_count = indexer.count_by_repo_urls(
@@ -1553,24 +1610,29 @@ module Openapi
             filter_opts: unresponsive_filter
           )
 
-          # 平均响应时间：与 count 同属时间范围与 filter，对 time_to_first_attention_without_bot 做 avg（单位与天数字段一致）
           avg_response_time = nil
+          avg_closed_loop_time = nil
           begin
-            val = indexer
-                    .base_terms_by_repo_urls(
-                      repo_urls, begin_date, end_date,
-                      filter_opts: base_filter_opts
-                    )
-                    .per(0)
-                    .aggregate(
-                      { issue_avg_first_attention: { avg: { field: 'time_to_first_attention_without_bot' } } }
-                    )
-                    .execute
-                    .aggregations
-                    .dig('issue_avg_first_attention', 'value')
-            avg_response_time = val.present? ? val.round(2) : nil
+            aggs = indexer
+                     .base_terms_by_repo_urls(
+                       repo_urls, begin_date, end_date,
+                       filter_opts: base_filter_opts
+                     )
+                     .per(0)
+                     .aggregate(
+                       issue_avg_first_attention: { avg: { field: 'time_to_first_attention_without_bot' } },
+                       issue_avg_close_days: { avg: { field: 'time_to_close_days' } }
+                     )
+                     .execute
+                     .aggregations
+
+            first_attention_val = aggs.dig('issue_avg_first_attention', 'value')
+            avg_response_time = first_attention_val.present? ? first_attention_val.round(2) : nil
+
+            close_days_val = aggs.dig('issue_avg_close_days', 'value')
+            avg_closed_loop_time = close_days_val.present? ? close_days_val.round(2) : nil
           rescue => e
-            Rails.logger.error "issues_overview avg_response_time: #{e.message}"
+            Rails.logger.error "issues_overview avg metrics: #{e.message}"
           end
 
           # 返回结果
@@ -1581,6 +1643,7 @@ module Openapi
             issue_resolution_numerator: resolved_issue_count,
             issue_resolution_denominator: new_issue_count,
             avg_response_time: avg_response_time,
+            avg_closed_loop_time: avg_closed_loop_time,
             unresponsive_issue_count: unresponsive_issue_count
           }
         end
@@ -2178,6 +2241,56 @@ module Openapi
           end
           filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
 
+          # 提取组织筛选条件
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+          target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息，转换为 user_login 筛选 ==========
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回空结果
+              return {
+                count: 0,
+                total_page: 0,
+                page: page,
+                items: []
+              }
+            end
+          end
+
           total_issue_count = indexer.count_by_repo_urls(
             repo_urls,
             begin_date,
@@ -2352,6 +2465,56 @@ module Openapi
             GithubPullEnrich,
             GitcodePullEnrich
           )
+
+          # 提取组织筛选条件
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+          target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息，转换为 user_login 筛选 ==========
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回空结果
+              return {
+                count: 0,
+                total_page: 0,
+                page: page,
+                items: []
+              }
+            end
+          end
 
           total_pull_count = indexer.count_by_repo_urls(
             repo_urls,
