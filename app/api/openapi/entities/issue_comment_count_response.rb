@@ -13,7 +13,10 @@ module Openapi
       expose :metadata__enriched_on,
              documentation: { type: 'String', desc: 'metadata__enriched_on', example: '2025-05-14T07:28:30.512875+00:00' }
 
-      expose :issue_comment_count,
+      # Keep this attribute aligned with the index field requested by
+      # `fetch_metric_data_v2(ContributionActivityMetric, 'issue_comment_activity')`.
+      # The helper slices the OpenSearch `_source`, so another name stays nil.
+      expose :issue_comment_activity,
              documentation: {
                type: 'Integer',
                desc: 'Issue Comment Count (Comments under Issues in cycle) / Issue讨论活跃度（周期内Issue下评论总数）',
