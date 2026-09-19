@@ -425,7 +425,7 @@ en:
       code:
         pr_creation: PR creation
         pr_comments: PR comments
-        code_commit: code commit
+        code_pr_commit: code PR commit
       code_admin:
         pr_labeled: PR labeled
         pr_unlabeled: PR unlabeled
