@@ -13,6 +13,7 @@ module Types
     field :cancel_subscription, mutation: Mutations::CancelSubscription, description: 'Cancel subscription'
 
     field :manage_user_orgs, mutation: Mutations::ManageUserOrgs, description: 'Manage user organizations'
+    field :manage_contributor_bot, mutation: Mutations::ManageContributorBot, description: 'Mark a contributor as a robot or remove the tag'
 
     # Lab Model Management
     field :create_lab_model, mutation: Mutations::CreateLabModel, description: 'Create a Lab model'

@@ -25,6 +25,10 @@ module Types
 
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
+        # Robots are excluded from the top contributor distribution by default,
+        # unless the caller explicitly asks for them through `filter_opts`.
+        filter_opts = default_bot_filter_opts(filter_opts)
+
         indexer, repo_urls =
                  select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 
