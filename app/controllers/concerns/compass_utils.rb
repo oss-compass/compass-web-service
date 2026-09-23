@@ -172,7 +172,7 @@ module CompassUtils
         aggs: metric_fields.reduce({}) do |aggs, field|
           if suffixs.present?
             suffixs.reduce(aggs) do |results, suffix|
-              results.merge({ "#{field}#{suffix}" => { avg: { field: "#{aliases[field]}#{suffix}" || "#{field}#{suffix}" } } })
+              results.merge({ "#{field}#{suffix}" => { avg: { field: "#{aliases[field] || field}#{suffix}" } } })
             end
           else
             aggs.merge({ field => { avg: { field: aliases[field] || field } } })
