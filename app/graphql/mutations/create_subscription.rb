@@ -36,7 +36,7 @@ module Mutations
         end
         raise GraphQL::ExecutionError.new I18n.t('users.subject_not_exist') unless existed_metrics.any?
 
-        status_updated_at = existed_metrics.first['metadata__enriched_on']
+        status_updated_at = existed_metrics.compact.first['metadata__enriched_on']
         status = Subject::COMPLETE
       else
         status_updated_at = task.updated_at
