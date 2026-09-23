@@ -99,9 +99,8 @@ module CommitEnrich
                                            commit_hash_list: [], label: nil, level: nil)
       sort_bucket_map = { bucket_sort: { sort: [{ lines_changed: { order: "desc" } }] } }
       if sort_opts.present?
-        sort_bucket_map = sort_opts.find { |sort_opt| sort_opt.type == "lines_total" }&.then do |sort_opt|
-          { bucket_sort: { sort: [{ lines_total: { order: sort_opt.direction } }] } }
-        end
+        lines_total_sort = sort_opts.find { |sort_opt| sort_opt.type == "lines_total" }
+        sort_bucket_map = { bucket_sort: { sort: [{ lines_total: { order: lines_total_sort.direction } }] } } if lines_total_sort
       end
       base = base_commit_list_by_repo_urls(repo_urls, begin_date, end_date, branch, target: target,
                                            filter_opts: filter_opts, sort_opts: sort_opts,
