@@ -79,6 +79,13 @@ module CompassUtils
     [begin_date, end_date, interval]
   end
 
+  def repository_host(url)
+    Addressable::URI.parse(url)&.normalized_host
+  rescue Addressable::URI::InvalidURIError
+    nil
+  end
+  private :repository_host
+
   def extract_repos_source(label, level)
     repo_list = [label]
     if level == 'community'
@@ -87,9 +94,10 @@ module CompassUtils
     end
     github_count, gitee_count, gticode_count = 0,0,0
     repo_list.each do |url|
-      gitee_count += 1 if url =~ /gitee\.com/
-      github_count += 1 if url =~ /github\.com/
-      gticode_count += 1 if url =~ /gitcode\.com/
+      host = repository_host(url)
+      gitee_count += 1 if host == 'gitee.com'
+      github_count += 1 if host == 'github.com'
+      gticode_count += 1 if host == 'gitcode.com'
     end
     counts = { 'github' => github_count, 'gitee' => gitee_count, 'gitcode' => gticode_count }
     max_pair = counts.max_by { |_, v| v }
@@ -111,9 +119,8 @@ module CompassUtils
 
     if level == 'repo'
       # 查找匹配的主机配置
-      matched_host = repo_host_mapping.find { |host, _| label =~ /#{host}/ }
-      if matched_host
-        _, config = matched_host
+      config = repo_host_mapping[repository_host(label)]
+      if config
         return [config[:idx], [label], config[:origin]]
       end
     end
