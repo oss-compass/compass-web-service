@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'csv'
 require 'open3'
+require 'tempfile'
 
 class ExportServer
   include Common
@@ -16,7 +17,7 @@ class ExportServer
   end
 
   def execute
-    export_repos_to_csv(REPOS_CSV)
+    return unless export_repos_to_csv(REPOS_CSV)
 
     chdir = "#{Rails.root + META_REPO}"
 
@@ -60,7 +61,9 @@ class ExportServer
   end
 
   def export_repos_to_csv(filename)
-    CSV.open(File.join(Rails.root, META_REPO, filename), 'w') do |csv|
+    destination = File.join(Rails.root, META_REPO, filename)
+    temporary = Tempfile.new(['repositories-', '.csv'], File.dirname(destination))
+    CSV.open(temporary.path, 'w') do |csv|
       csv << ['repo_url']
       (0...@num_partitions).each do |partition|
         job_logger.info("exporting repo url at partition: #{partition}")
@@ -84,7 +87,7 @@ class ExportServer
     end
 
     # re-sort alphabetically
-    file_name = File.join(Rails.root, META_REPO, filename)
+    file_name = temporary.path
     lines = []
     header = ''
     File.open(file_name, 'r') do |file|
@@ -101,8 +104,14 @@ class ExportServer
         file.puts(line)
       end
     end
+    temporary.close
+    File.rename(file_name, destination)
+    true
   rescue => ex
     job_logger.error "failed to export repo urls, error: #{ex.message}"
+    false
+  ensure
+    temporary&.close!
   end
 
   def job_logger
