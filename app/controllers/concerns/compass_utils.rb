@@ -16,6 +16,7 @@ module CompassUtils
     uri = Addressable::URI.parse(url)
     uri.scheme = default_host.scheme
     uri.host = default_host.host
+    uri.port = default_host.port
     if error.present?
       uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
     end
