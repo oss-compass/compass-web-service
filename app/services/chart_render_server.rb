@@ -56,8 +56,8 @@ class ChartRenderServer
 
     x = generate_x_axis(data: x_values)
 
-    y_min = y_values.min || 0
-    y_max = y_values.max || 0
+    y_min = y_values.compact.min || 0
+    y_max = y_values.compact.max || 0
 
     y = [
       generate_y_axis(
@@ -154,7 +154,7 @@ class ChartRenderServer
         source = hit['_source']
         x_values << source['grimoire_creation_date'].slice(0, 10)
         y_src = (source[@field] || source[metrics.fields_aliases[@field.to_s]])
-        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src).round(2)
+        y_values << chart_metric_value(metrics, y_src)
       end
     end
     [x_values, y_values]
@@ -171,9 +171,14 @@ class ChartRenderServer
       template = hits.first&.[]('_source')
       aggs.map do |data|
         x_values << data['key_as_string'].slice(0, 10)
-        y_src = (data[@field]&.[]('value') || data[metrics.fields_aliases[@field.to_s]]&.[]('value') ||
-                 template[@field] || template[metrics.fields_aliases[@field.to_s]])
-        y_values << (@y_trans && @field == metrics.main_score ? metrics.scaled_value(nil, target_value: y_src) : y_src).round(2)
+        field_alias = metrics.fields_aliases[@field.to_s]
+        bucket_metric = data[@field] || data[field_alias]
+        y_src = if bucket_metric
+                  bucket_metric['value']
+                else
+                  template&.[](@field) || template&.[](field_alias)
+                end
+        y_values << chart_metric_value(metrics, y_src)
       end
     end
     [x_values, y_values]
@@ -247,6 +252,13 @@ class ChartRenderServer
   end
 
   private
+  def chart_metric_value(metrics, value)
+    return if value.nil?
+
+    value = metrics.scaled_value(nil, target_value: value) if @y_trans && @field == metrics.main_score
+    value.round(2)
+  end
+
   def options(
         x: {}, y: [],
         legend: [],
