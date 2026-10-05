@@ -16,10 +16,10 @@ module Mutations
           model_id: nil,
           version_id: nil,
           version: '',
-          is_score:false,
+          is_score: nil,
           datasets: [],
           metrics: [],
-          algorithm:
+          algorithm: nil
         )
       current_user = context[:current_user]
 
