@@ -34,7 +34,12 @@ namespace :db do
         subject.status_updated_at ||= Time.current
         subject.save!
 
-        if subject.count != real_count
+        software_references_changed =
+          subject.software_repos.pluck('label').uniq.sort != software_artifact_repositories.uniq.sort
+        governance_references_changed =
+          subject.governance_repos.pluck('label').uniq.sort != governance_repositories.uniq.sort
+
+        if subject.count != real_count || software_references_changed || governance_references_changed
 
           Subject.sync_subject_repos_refs(subject, new_software_repos: software_artifact_repositories, new_governance_repos: governance_repositories)
 
