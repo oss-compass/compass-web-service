@@ -65,6 +65,11 @@ module Openapi
           pr_url = result[:pr_url]
           result_message = result[:message]
 
+          unless result[:status]
+            Rails.cache.delete(cache_key)
+            return false, result_message.presence || "项目提交失败，请稍后重试。"
+          end
+
           if result_message.present?
             exist_flag = false
             message = "#{result_message},请等待任务执行完毕后查询。"
