@@ -65,7 +65,8 @@ module CompassUtils
 
     begin_date = begin_date || today - 3.months
     end_date = [end_date || today, today].min
-    diff_seconds = end_date.to_i - begin_date.to_i
+    # Preserve fractional seconds at the fallback and aggregation boundaries.
+    diff_seconds = end_date.to_time - begin_date.to_time
 
     if diff_seconds < SEVEN_DAYS
       begin_date = today - 3.months
