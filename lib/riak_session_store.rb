@@ -15,7 +15,9 @@ class RiakSessionStore < ActionDispatch::Session::AbstractSecureStore
   USE_INDIFFERENT_ACCESS = defined?(ActiveSupport).freeze
   # ==== Options
   # * +:key+ - Same as with the other cookie stores, key name
-  # * +:riak+ - A hash with riak-specific options
+  # * +:riak+ - A hash with riak-specific options, including :bucket and :bucket_type
+  # * +:bucket+, +:bucket_type+ - Legacy top-level selectors override the corresponding
+  #   :riak values; omitted selectors default to 'sessions' and 'default'.
   # * +:on_riak_down:+ - Called with err, env, and SID on Errno::ECONNREFUSED
   # * +:on_session_load_error:+ - Called with err and SID on Marshal.load fail
   # * +:serializer:+ - Serializer to use on session data, default is :marshal.
@@ -38,8 +40,8 @@ class RiakSessionStore < ActionDispatch::Session::AbstractSecureStore
     super
 
     @default_options[:namespace] = 'rack:session'
-    options[:bucket] ||= 'sessions'
-    options[:bucket_type] ||= 'default'
+    options[:bucket] ||= options.dig(:riak, :bucket) || 'sessions'
+    options[:bucket_type] ||= options.dig(:riak, :bucket_type) || 'default'
     @default_options.merge!(options[:riak] || {})
     init_options = options[:riak]&.reject { |k, _v| %i[expire_after key_prefix bucket bucket_type].include?(k) } || {}
     @riak = init_options[:client] || Riak::Client.new(init_options)
