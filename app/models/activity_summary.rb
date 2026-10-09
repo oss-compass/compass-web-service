@@ -29,6 +29,7 @@ class ActivitySummary < BaseSummary
       "contributor_count_median"=>{"type"=>"float"},
       "created_since_mean"=>{"type"=>"float"},
       "created_since_median"=>{"type"=>"float"},
+      "category"=>{"type":"keyword", "normalizer":"lowercase"},
       "grimoire_creation_date"=>{"type"=>"date"},
       "metadata__enriched_on"=>{"type"=>"date"},
       "model_name"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},

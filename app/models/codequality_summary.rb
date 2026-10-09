@@ -28,6 +28,7 @@ class CodequalitySummary < BaseSummary
       "contributor_count_median"=>{"type"=>"float"},
       "git_pr_linked_ratio_mean"=>{"type"=>"float"},
       "git_pr_linked_ratio_median"=>{"type"=>"float"},
+      "category"=>{"type":"keyword", "normalizer":"lowercase"},
       "grimoire_creation_date"=>{"type"=>"date"},
       "is_maintained_mean"=>{"type"=>"float"},
       "is_maintained_median"=>{"type"=>"float"},

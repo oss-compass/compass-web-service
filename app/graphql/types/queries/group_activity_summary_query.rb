@@ -7,8 +7,9 @@ module Types
       description 'Get group activity summary data of compass'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
+      argument :category, GraphQL::Types::String, required: false, description: 'category ident'
 
-      def resolve(begin_date: nil, end_date: nil)
+      def resolve(begin_date: nil, end_date: nil, category: nil)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
@@ -23,7 +24,7 @@ module Types
           ['_median', '_mean']
         )
 
-        resp = GroupActivitySummary.aggs_by_date(begin_date, end_date, aggs)
+        resp = GroupActivitySummary.aggs_by_date(begin_date, end_date, aggs, category: category)
 
         build_metrics_data(resp, Types::GroupActivitySummaryType) do |skeleton, raw|
           data = raw[:data]
