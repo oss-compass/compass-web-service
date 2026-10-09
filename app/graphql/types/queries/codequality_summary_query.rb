@@ -7,13 +7,14 @@ module Types
       description 'Get codequality summary data of compass'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
+      argument :category, GraphQL::Types::String, required: false, description: 'category ident'
 
-      def resolve(begin_date: nil, end_date: nil)
+      def resolve(begin_date: nil, end_date: nil, category: nil)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         if !interval
-          resp = CodequalitySummary.query_by_date(begin_date, end_date)
+          resp = CodequalitySummary.query_by_date(begin_date, end_date, category: category)
           build_metrics_data(resp, Types::CodequalitySummaryType) do |skeleton, raw|
             stats = Types::MetricStatType.fields.keys
             fields = skeleton.keys
@@ -48,7 +49,7 @@ module Types
             CodequalityMetric.fields_aliases,
             ['_median', '_mean']
           )
-          resp = CodequalitySummary.aggs_by_date(begin_date, end_date, aggs)
+          resp = CodequalitySummary.aggs_by_date(begin_date, end_date, aggs, category: category)
 
           build_metrics_data(resp, Types::CodequalitySummaryType) do |skeleton, raw|
             data = raw[:data]
