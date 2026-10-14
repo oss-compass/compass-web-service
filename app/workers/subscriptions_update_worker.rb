@@ -26,18 +26,19 @@ class SubscriptionsUpdateWorker
           count: count
         )
       end
+      update_attributes = {}
       if subject.status != status
-        update_attributes = { status: status, status_updated_at: status_updated_at }
+        update_attributes.merge!({ status: status, status_updated_at: status_updated_at })
         if status == Subject::PROGRESS
           update_attributes.merge!({ collect_at: status_updated_at })
         elsif status == Subject::COMPLETE
           update_attributes.merge!({ complete_at: status_updated_at })
         end
-        if count && subject.count != count && count > 0
-          update_attributes.merge!({ count: count })
-        end
-        subject.update!(update_attributes)
       end
+      if count && subject.count != count && count > 0
+        update_attributes.merge!({ count: count })
+      end
+      subject.update!(update_attributes) if update_attributes.present?
 
       if subject.status == Subject::COMPLETE
         subject.subscriptions.includes(:user).each do |subscription|
