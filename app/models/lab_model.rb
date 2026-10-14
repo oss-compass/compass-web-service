@@ -24,7 +24,7 @@ class LabModel < ApplicationRecord
 
   belongs_to :mainline_version, class_name: 'LabModelVersion', foreign_key: :default_version_id, optional: true
 
-  has_many :lab_model_versions, dependent: :delete_all
+  has_many :lab_model_versions, dependent: :destroy
   has_many :lab_model_members, dependent: :delete_all
   has_many :lab_model_invitations, dependent: :delete_all
   has_many :lab_model_reports, dependent: :delete_all
