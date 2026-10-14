@@ -38,7 +38,7 @@ module Openapi
             current_user = User.find_by(id: data['user_id'])
             type = data['type']
           else
-            error!('token校验失败,无效或过期的token', 401)
+            throw :error, status: 401, message: 'token校验失败,无效或过期的token'
           end
 
         rescue Faraday::ConnectionFailed, Faraday::TimeoutError => e
@@ -47,7 +47,7 @@ module Openapi
             sleep(wait_time)
             retry
           else
-            error!("token 校验失败: #{e.message}", 503)
+            throw :error, status: 503, message: "token 校验失败: #{e.message}"
           end
         end
 
