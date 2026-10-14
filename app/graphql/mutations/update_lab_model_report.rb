@@ -26,13 +26,13 @@ module Mutations
         update_set[:is_public] = is_public if is_public != nil
 
         report.update!(update_set) if update_set.present?
-        report = LabDataset.find_by(lab_model_report_id: report_id)
+        dataset = LabDataset.find_by(lab_model_report_id: report_id)
         if datasets.present?
           filtered_rows =
             datasets
               .map { |row| row.to_h.merge(label: ShortenedLabel.normalize_label(row.label)) }
           content = JSON.dump(filtered_rows)
-          report.update!(content: content)
+          dataset.update!(content: content)
         end
       end
       { data: report }
