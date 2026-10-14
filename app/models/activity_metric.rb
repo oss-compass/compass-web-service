@@ -77,7 +77,7 @@ class ActivityMetric < BaseMetric
         label: label,
         level: level,
         activity_score: snaphost['avg_activity']['value'],
-        activity_delta: snaphost['the_delta']['value'],
+        activity_delta: snaphost.dig('the_delta', 'value') || 0,
         updated_at: DateTime.parse(snaphost['key_as_string'])
       }
     else
