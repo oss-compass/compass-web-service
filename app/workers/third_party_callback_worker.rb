@@ -1,7 +1,7 @@
 class ThirdPartyCallbackWorker
   include Sneakers::Worker
 
-  Enable = ENV.fetch('THIRD_PARTY_CALLBACK_ENABLE') { false }
+  Enable = ActiveModel::Type::Boolean.new.cast(ENV.fetch('THIRD_PARTY_CALLBACK_ENABLE') { false })
   Token = ENV.fetch('THIRD_PARTY_CALLBACK_TOKEN') { '' }
   CallbackUrl = ENV.fetch('THIRD_PARTY_CALLBACK_URL') { '' }
   LimitOrigins = ENV.fetch('THIRD_PARTY_CALLBACK_ORIGINS') { 'gitee' }
