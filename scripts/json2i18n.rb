@@ -14,7 +14,7 @@ response = Dir.glob(File.join(input_directory, '**/*.json')).sort.reduce({}) do 
   result
 end.map do |key, content|
   File.open(File.join(output_directory, "#{key}.yml"), 'w') do |file|
-    file.write(YAML.dump({ key => content}).gsub("---\n", ''))
+    file.write(YAML.dump({ key => content}).sub(/\A---\n/, ''))
   end
 end
 
