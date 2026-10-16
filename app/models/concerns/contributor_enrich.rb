@@ -5,6 +5,24 @@ module ContributorEnrich
   MAX_DEPTH = 100
   MAX_PER_PAGE = 8000
 
+  # Contribution types that the enrichment pipeline used to report as a single
+  # aggregate and that are now reported through more granular types.
+  # `code_commit` counted every commit of a contributor, no matter whether it
+  # was pushed directly to a branch or merged through a pull request, so its
+  # value overlaps with the `code_direct_commit` / `code_pr_commit` pair that
+  # replaced it.
+  #
+  # The contribution domain portrait (领域画像) derives the width of every
+  # horizontal bar from the sum of `contribution_type_list`, so keeping the
+  # aggregate next to its replacements counts the same commits twice and makes
+  # the bars overlap. The aggregate is therefore dropped as soon as one of its
+  # replacement types is reported for the same contributor, while records that
+  # only carry the historical aggregate are left untouched so that no
+  # contribution is silently lost.
+  AGGREGATED_CONTRIBUTION_TYPES = {
+    'code_commit' => %w[code_direct_commit code_pr_commit].freeze
+  }.freeze
+
   class_methods do
     def fetch_contributors_list(repo_urls, begin_date, end_date, label: nil, level: nil)
       Rails.cache.fetch(contributors_key(repo_urls, begin_date, end_date), expires_in: 15.minutes) do
@@ -31,6 +49,7 @@ module ContributorEnrich
             .dig('hits', 'hits')
             .map do |hit|
             row = hit['_source'].slice(*Types::Meta::ContributorDetailType.fields.keys.map(&:underscore))
+            row['contribution_type_list'] = normalize_contribution_type_list(row['contribution_type_list'])
             key = row['contributor']
             contributors_map[key] = contributors_map[key] ? merge_contributor(contributors_map[key], row) : row
             contribution_count += row['contribution'].to_i
@@ -213,6 +232,36 @@ module ContributorEnrich
       false
     end
 
+    # Returns true when `contribution_type` is an aggregate that is already
+    # covered by one of the more granular types present in `present_types`.
+    def aggregated_contribution_type_replaced?(contribution_type, present_types)
+      replacements = AGGREGATED_CONTRIBUTION_TYPES[contribution_type]
+      return false unless replacements
+
+      replacements.any? { |replacement| present_types.include?(replacement) }
+    end
+
+    # Normalize the `contribution_type_list` coming back from the enrichment
+    # index: remove aggregated contribution types that overlap with the
+    # granular types replacing them and merge the entries of the same type.
+    # The list is read while scrolling through the contributor records day by
+    # day, so the same contribution type can be reported more than once and
+    # has to be summed before it reaches the domain portrait.
+    def normalize_contribution_type_list(contribution_type_list)
+      rows = Array(contribution_type_list).select { |row| row.is_a?(Hash) }
+      present_types = rows.map { |row| row['contribution_type'] }
+
+      rows
+        .reject { |row| aggregated_contribution_type_replaced?(row['contribution_type'], present_types) }
+        .group_by { |row| row['contribution_type'] }
+        .map do |type, grouped_rows|
+        {
+          'contribution_type' => type,
+          'contribution' => grouped_rows.sum { |row| row['contribution'].to_i }
+        }
+      end
+    end
+
     def merge_contributor(source, target)
       base = source.merge(target)
       base['contribution'] = source['contribution'].to_i + target['contribution'].to_i
@@ -227,13 +276,11 @@ module ContributorEnrich
       base['ecological_type'] = [source['ecological_type'], target['ecological_type']]
                                   .compact.sort_by { |value| ecological_type_sorted.index(value) }.first
       base['organization'] = target['organization'] ? target['organization'] : source['organization']
-      total_contribution_type_list = source['contribution_type_list'] + target['contribution_type_list']
+      # Reuse the normalization of the per-record path so that a contributor
+      # merged across several days never carries the aggregated `code_commit`
+      # type next to the granular types that replaced it.
       base['contribution_type_list'] =
-        total_contribution_type_list
-          .group_by { |row| row['contribution_type'] }
-          .map do |type, rows|
-        { 'contribution_type' => type, 'contribution' => rows.sum { |row| row['contribution'].to_i } }
-      end
+        normalize_contribution_type_list(source['contribution_type_list'] + target['contribution_type_list'])
       base
     end
 

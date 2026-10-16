@@ -285,7 +285,7 @@ zh-CN:
       code:
         pr_creation: PR创建
         pr_comments: PR评论
-        code_commit: 代码提交
+        code_pr_commit: code PR提交
       code_admin:
         pr_labeled: PR添加标签
         pr_unlabeled: PR取消标签
