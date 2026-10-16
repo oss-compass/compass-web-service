@@ -421,8 +421,8 @@ module Openapi
                }
 
           params { use :community_portrait_search }
-          post :issue_authors_contributor_count do
-            fetch_metric_data(metric_name: "issue_authors_contributor_count")
+          post :code_review_count do
+            fetch_metric_data(metric_name: 'code_review_count')
           end
 
 
