@@ -9,13 +9,13 @@ module Mutations
     argument :content, String, required: false, description: 'comment content'
     argument :images, [Input::Base64ImageInput], required: false,  description: 'related images under this comment'
 
-    def resolve(model_id: nil, comment_id: nil, content: nil, images: [])
+    def resolve(model_id: nil, comment_id: nil, content: nil, images: nil)
 
       current_user = context[:current_user]
 
       login_required!(current_user)
 
-      raise GraphQL::ExecutionError.new I18n.t('lab_models.content_required') if content.strip.blank?
+      raise GraphQL::ExecutionError.new I18n.t('lab_models.content_required') if !content.nil? && content.strip.blank?
 
       model = LabModel.find_by(id: model_id)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless model.present?
@@ -24,24 +24,25 @@ module Mutations
       comment = model.comments.find_by(id: comment_id)
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless comment.present?
       raise GraphQL::ExecutionError.new I18n.t('lab_models.forbidden') unless current_user.id == comment.user_id
-      if content.present?
-        comment.update!(content: content)
+      unless images.nil?
+        new_images = images.select{ |image| !image.base64.starts_with?('/files') }
+        keep_images = images.select{ |image| image.base64.starts_with?('/files') }.map(&:id).compact
+        raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if keep_images.length + new_images.length > 5
       end
 
-      new_images = images.select{ |image| !image.base64.starts_with?('/files') }
-      keep_images = images.select{ |image| image.base64.starts_with?('/files') }.map(&:id).compact
+      comment.update!(content: content) if content.present?
 
-      raise GraphQL::ExecutionError.new I18n.t('lab_models.reach_limit') if keep_images.length + new_images.length > 5
+      unless images.nil?
+        if keep_images.present?
+          comment.images.where.not(id: keep_images).purge
+        else
+          comment.images.purge
+        end
 
-      if keep_images.present?
-        comment.images.where.not(id: keep_images).purge
-      else
-        comment.images.purge
-      end
-
-      if new_images.present?
-        new_images.each do |image|
-          comment.images.attach(data: image.base64, filename: image.filename)
+        if new_images.present?
+          new_images.each do |image|
+            comment.images.attach(data: image.base64, filename: image.filename)
+          end
         end
       end
 
