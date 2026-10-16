@@ -122,6 +122,13 @@ module Openapi
 
 
 
+      # `fetch_metric_data_v2` builds every item with `source.slice(*target_fields)`, so
+      # an item only carries the base fields plus the exact metric fields the route
+      # asked for. A response entity that exposes a different attribute name therefore
+      # serialises nil and the value disappears from the response (a contributor count
+      # reported as 0 is the symptom seen in project analysis).
+      # Keep the exposed names aligned with the requested index fields, and keep the
+      # single-metric entities consistent with their `*ModelDataItem` counterparts.
       def fetch_metric_data_v2(indexer, field_or_fields)
         label, level, begin_date, end_date, page, size = extract_search_params!(params)
         repo_urls = [label]
