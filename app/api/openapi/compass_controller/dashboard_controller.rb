@@ -971,6 +971,75 @@ module Openapi
           }
         end
 
+        desc '导出贡献者详情列表（CSV）',
+             tags: ['CompassService / compass服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+          optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
+          optional :endDate, type: String, desc: '结束日期 (ISO8601)'
+
+          # 复杂对象数组，对应 GraphQL 的 [Input::FilterOptionInput]
+          optional :filter_opts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
+
+          # 排序选项，对应 GraphQL 的 [Input::SortOptionInput]
+          optional :sort_opts, type: Array do
+            optional :type, type: String
+            optional :direction, type: String
+          end
+        end
+
+        post :contributors_detail_list_export do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
+
+          filter_opts << OpenStruct.new(type: "is_bot", values: ["false"])
+
+          indexer, repo_urls, _origin = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeContributorEnrich,
+            GithubContributorEnrich,
+            GitcodeContributorEnrich
+          )
+
+          repo_urls_filter_opt = filter_opts.find { |opt| opt.type == 'repo_urls' }
+          filter_opts.delete_if { |opt| opt.type == 'repo_urls' }
+
+          if repo_urls_filter_opt && repo_urls_filter_opt.values.present?
+            repo_urls = repo_urls & repo_urls_filter_opt.values
+          end
+
+          contributors_list = indexer
+                                .fetch_contributors_list(repo_urls, begin_date, end_date, label: label, level: level)
+                                .then { |list| indexer.filter_contributors(list, filter_opts) }
+                                .then { |list| indexer.sort_contributors(list, sort_opts) }
+
+          headers = indexer.export_headers
+
+          csv_data = CSV.generate(headers: true) do |csv|
+            csv << headers
+
+            contributors_list.each do |row|
+              csv << indexer.on_each(uuid: nil, source: row).slice(*headers).values
+            end
+          end
+
+          content_type 'text/csv'
+          header['Content-Disposition'] = "attachment; filename=contributors_#{begin_date}_to_#{end_date}.csv"
+          env['api.format'] = :binary
+          body "\uFEFF" + csv_data
+        end
+
         desc '获取贡献者总览数据 (Overview): 人数统计与组织统计',
              tags: ['CompassService / compass服务']
 
@@ -1436,6 +1505,155 @@ module Openapi
             page: page,
             items: items
           }
+        end
+
+        desc '导出 Issue 详情列表（CSV）',
+             tags: ['CompassService / compass服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+          optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
+          optional :endDate, type: String, desc: '结束日期 (ISO8601)'
+          optional :labelFilter, type: String, desc: '标签筛选'
+          optional :filter_opts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
+
+          optional :sort_opts, type: Array do
+            optional :type, type: String
+            optional :direction, type: String
+          end
+        end
+
+        post :issues_detail_list_export do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
+                        [OpenStruct.new(type: 'created_at', direction: 'desc')]
+                      else
+                        raw_opts = [params[:sortOpts]].flatten.compact
+                        parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+                        has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+                        unless has_created_at
+                          parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+                        end
+                        parsed_opts
+                      end
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteeIssueEnrich,
+            GithubIssueEnrich,
+            GitcodeIssueEnrich
+          )
+
+          filter_opts << OpenStruct.new(type: 'pull_request', values: ['false'])
+
+          # 提取组织筛选条件
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+          target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息 ==========
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回仅表头的空 CSV
+              headers = indexer.export_headers
+              csv_data = CSV.generate(headers: true) { |csv| csv << headers }
+
+              content_type 'text/csv'
+              header['Content-Disposition'] = "attachment; filename=issues_#{begin_date}_to_#{end_date}.csv"
+              env['api.format'] = :binary
+              body "\uFEFF" + csv_data
+              return
+            end
+          end
+
+          label_mapping = {
+            'bug' => ['bug'],
+            'feature' => ['feature', 'engineering', 'refactor'],
+            'question' => ['question'],
+            'other' => []
+          }
+
+          if params[:labelFilter].present?
+            mapped_labels = label_mapping[params[:labelFilter]] || [params[:labelFilter]]
+            if params[:labelFilter] == 'other'
+              filter_opts << OpenStruct.new(
+                type: 'labels',
+                values: [],
+                not_exists: true
+              )
+            else
+              filter_opts << OpenStruct.new(type: 'labels', values: mapped_labels)
+            end
+          end
+
+          headers = indexer.export_headers
+
+          csv_data = CSV.generate(headers: true) do |csv|
+            csv << headers
+
+            scroll_query = indexer
+                             .base_terms_by_repo_urls(
+                               repo_urls, begin_date, end_date, filter_opts: filter_opts, sort_opts: sort_opts)
+                             .per(2000)
+                             .scroll(timeout: '1m')
+
+            loop do
+              hits = scroll_query.execute.raw_response.dig('hits', 'hits') || []
+              hits.each do |hit|
+                csv << indexer.on_each(uuid: nil, source: hit['_source']).slice(*headers).values
+              end
+
+              scroll_query = scroll_query.scroll(id: scroll_query.scroll_id, timeout: '1m')
+              break if scroll_query.last_page? || hits.empty?
+            end
+          end
+
+          content_type 'text/csv'
+          header['Content-Disposition'] = "attachment; filename=issues_#{begin_date}_to_#{end_date}.csv"
+          env['api.format'] = :binary
+          body "\uFEFF" + csv_data
         end
 
         desc '获取 Issue 总览数据 (Overview): 统计与质量分析',
@@ -2142,6 +2360,135 @@ module Openapi
             page: page,
             items: items
           }
+        end
+
+        desc '导出 PR (Pull Request) 详情列表（CSV）',
+             tags: ['CompassService / compass服务']
+
+        params do
+          requires :label, type: String, desc: 'Repo 或 Project 的 label'
+          optional :level, type: String, default: 'repo', desc: '级别: repo 或 community'
+          optional :beginDate, type: String, desc: '开始日期 (ISO8601)'
+          optional :endDate, type: String, desc: '结束日期 (ISO8601)'
+
+          # 筛选参数
+          optional :filter_opts, type: Array do
+            optional :type, type: String
+            optional :values, type: Array[String]
+          end
+
+          # 排序参数
+          optional :sort_opts, type: Array do
+            optional :key, type: String
+            optional :direction, type: String
+          end
+        end
+
+        post :pulls_detail_list_export do
+          label = ShortenedLabel.normalize_label(params[:label])
+          level = params[:level]
+          begin_date = params[:beginDate]
+          end_date = params[:endDate]
+
+          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
+                        [OpenStruct.new(type: 'created_at', direction: 'desc')]
+                      else
+                        raw_opts = [params[:sortOpts]].flatten.compact
+                        parsed_opts = raw_opts.map { |opt| OpenStruct.new(opt) }
+                        has_created_at = parsed_opts.any? { |opt| opt.type == 'created_at' }
+                        unless has_created_at
+                          parsed_opts << OpenStruct.new(type: 'created_at', direction: 'desc')
+                        end
+                        parsed_opts
+                      end
+
+          indexer, repo_urls = select_idx_repos_by_lablel_and_level(
+            label,
+            level,
+            GiteePullEnrich,
+            GithubPullEnrich,
+            GitcodePullEnrich
+          )
+
+          # 提取组织筛选条件
+          org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
+          filter_opts.delete_if { |opt| opt.type == 'organization' }
+          target_orgs = org_filter_opt&.values || []
+
+          # ========== 如果有组织筛选，先获取贡献者信息 ==========
+          if target_orgs.present?
+            contrib_indexer, _, _ = select_idx_repos_by_lablel_and_level(
+              label,
+              level,
+              GiteeContributorEnrich,
+              GithubContributorEnrich,
+              GitcodeContributorEnrich
+            )
+
+            # 获取所有贡献者（不带分页，获取全部）
+            all_contributors = contrib_indexer.fetch_contributors_list(
+              repo_urls,
+              begin_date,
+              end_date,
+              label: label,
+              level: level
+            )
+
+            # 筛选目标组织的贡献者
+            target_orgs_lower = target_orgs.map(&:to_s).map(&:downcase)
+
+            target_user_logins = all_contributors
+                                   .select do |item|
+              org = item.respond_to?(:organization) ? item.organization : item['organization']
+              target_orgs_lower.include?(org.to_s.downcase)
+            end
+                                   .map { |item| item.respond_to?(:contributor) ? item.contributor : item['contributor'] }
+                                   .compact
+                                   .uniq
+
+            # 将 user_login 筛选条件加入 filter_opts
+            if target_user_logins.any?
+              filter_opts << OpenStruct.new(type: 'user_login', values: target_user_logins)
+            else
+              # 没有匹配的贡献者，返回仅表头的空 CSV
+              headers = indexer.export_headers
+              csv_data = CSV.generate(headers: true) { |csv| csv << headers }
+
+              content_type 'text/csv'
+              header['Content-Disposition'] = "attachment; filename=pulls_#{begin_date}_to_#{end_date}.csv"
+              env['api.format'] = :binary
+              body "\uFEFF" + csv_data
+              return
+            end
+          end
+
+          headers = indexer.export_headers
+
+          csv_data = CSV.generate(headers: true) do |csv|
+            csv << headers
+
+            scroll_query = indexer
+                             .base_terms_by_repo_urls(
+                               repo_urls, begin_date, end_date, filter_opts: filter_opts, sort_opts: sort_opts)
+                             .per(2000)
+                             .scroll(timeout: '1m')
+
+            loop do
+              hits = scroll_query.execute.raw_response.dig('hits', 'hits') || []
+              hits.each do |hit|
+                csv << indexer.on_each(uuid: nil, source: hit['_source']).slice(*headers).values
+              end
+
+              scroll_query = scroll_query.scroll(id: scroll_query.scroll_id, timeout: '1m')
+              break if scroll_query.last_page? || hits.empty?
+            end
+          end
+
+          content_type 'text/csv'
+          header['Content-Disposition'] = "attachment; filename=pulls_#{begin_date}_to_#{end_date}.csv"
+          env['api.format'] = :binary
+          body "\uFEFF" + csv_data
         end
 
         desc '获取社区仓库列表',
