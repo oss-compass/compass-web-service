@@ -50,9 +50,9 @@ class CollectionServer
                     )
                   )
                 )
-                job_logger.info "successfully generate snaphost of label #{label}."
+                job_logger.info "successfully generate snapshot of label #{label}."
               else
-                job_logger.info "metircs data of label `#{label}` is expired, please re-caculate"
+                job_logger.info "metrics data of label `#{label}` is expired, please re-calculate"
                 if label =~ URI::regexp
                   uri = Addressable::URI.parse(label)
                   case AnalyzeServer.new(repo_url: "#{uri&.scheme}://#{uri&.normalized_host}#{uri&.path}").execute(only_validate: false)
