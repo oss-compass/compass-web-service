@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Types
   module Queries
@@ -7,7 +7,7 @@ module Types
       type Types::Meta::ContributorDetailPageType, null: false
       description 'Get contributors detail list of a repo or community'
       argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+      argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
       argument :page, Integer, required: false, description: 'page number'
       argument :per, Integer, required: false, description: 'page size'
       argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'

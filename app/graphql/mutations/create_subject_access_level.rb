@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Mutations
   class CreateSubjectAccessLevel < BaseMutation
@@ -6,7 +6,7 @@ module Mutations
     field :status, String, null: false
 
     argument :label, String, required: true, description: 'repo or project label'
-    argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+    argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
     argument :user_id, Integer, required: true, description: 'user id'
     argument :access_level, Integer, required: true, description: 'subject access level: `NORMAL/COMMITTER: 0, PRIVILEGED/LEADER: 1 default: 0`'
 

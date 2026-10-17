@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Mutations
   class CreateSubjectSig < BaseMutation
@@ -6,7 +6,7 @@ module Mutations
     field :status, String, null: false
 
     argument :label, String, required: true, description: 'repo or project label'
-    argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+    argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
     argument :name, String, required: true, description: 'subject sig name'
     argument :description, String, required: false, description: 'subject sig description'
     argument :maintainers, [String], required: false, description: 'subject sig maintainers'

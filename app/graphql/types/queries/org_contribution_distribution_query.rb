@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Types
   module Queries
@@ -9,7 +9,7 @@ module Types
       description 'Get organization contributors distribution'
 
       argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+      argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
       argument :filter_opts, [Input::FilterOptionInput], required: false, description: 'filter options'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'

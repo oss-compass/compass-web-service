@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Mutations
   module Tpc
@@ -8,7 +8,7 @@ module Mutations
       field :status, String, null: false
 
       argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+      argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
       argument :report_type, Integer, required: true, description: 'incubation: 0, sandbox: 1'
       argument :software_report, Input::TpcSoftwareSelectionReportInput, required: true
 

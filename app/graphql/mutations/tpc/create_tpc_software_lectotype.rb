@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+﻿# frozen_string_literal: true
 
 module Mutations
   module Tpc
@@ -9,7 +9,7 @@ module Mutations
       field :id, Integer, null: false
 
       argument :label, String, required: true, description: 'repo or project label'
-      argument :level, String, required: false, description: 'repo or comunity', default_value: 'repo'
+      argument :level, String, required: false, description: 'repo or community', default_value: 'repo'
       argument :tpc_software_lectotype_report_ids, [Integer], required: true
       argument :repo_url, [String], required: false
       argument :committers, [String], required: true
