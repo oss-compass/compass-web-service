@@ -285,7 +285,7 @@ class AnalyzeServer
     end
     { status: true, message: '' }
   rescue => ex
-    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update developers #{@repo_url} status, #{ex.message}")
     { status: false, message: ex.message }
   end
 end
