@@ -37,7 +37,7 @@ class ActivityMetric < BaseMetric
   end
 
   def self.build_snapshot(label)
-    snaphost =
+    snapshot =
       self
         .must(match: { 'label.keyword': label })
         .range(:grimoire_creation_date, gte: Date.today.end_of_day - 1.month, lte: Date.today.end_of_day)
@@ -72,24 +72,24 @@ class ActivityMetric < BaseMetric
 
     level = label =~ URI::regexp ? 'repo' : 'community'
 
-    if snaphost
+    if snapshot
       {
         label: label,
         level: level,
-        activity_score: snaphost['avg_activity']['value'],
-        activity_delta: snaphost['the_delta']['value'],
-        updated_at: DateTime.parse(snaphost['key_as_string'])
+        activity_score: snapshot['avg_activity']['value'],
+        activity_delta: snapshot['the_delta']['value'],
+        updated_at: DateTime.parse(snapshot['key_as_string'])
       }
     else
       resp = query_label_one(label, level)
-      snaphost = resp&.[]('hits')&.[]('hits').first
-      if snaphost
+      snapshot = resp&.[]('hits')&.[]('hits').first
+      if snapshot
         {
           label: label,
           level: level,
-          activity_score: snaphost['_source']['activity_score'],
+          activity_score: snapshot['_source']['activity_score'],
           activity_delta: 0,
-          updated_at: DateTime.parse(snaphost['_source']['grimoire_creation_date'])
+          updated_at: DateTime.parse(snapshot['_source']['grimoire_creation_date'])
         }
       end
     end
