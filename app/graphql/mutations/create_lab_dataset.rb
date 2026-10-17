@@ -118,7 +118,7 @@ module Mutations
             AnalyzeServer.new(repo_url: project[:label]).execute(only_validate: false)
           end
         rescue => e
-          puts "Error processing project #{project[:label]}: #{e.message}"
+          Rails.logger.error("Error processing project #{project[:label]}: #{e.message}")
         end
         CustomAnalyzeProjectServer.new(user: current_user, model: model, version: version, project: project[:label], level: project[:level]).execute
       end

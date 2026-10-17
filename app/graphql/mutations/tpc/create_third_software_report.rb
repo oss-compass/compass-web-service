@@ -120,7 +120,7 @@ module Mutations
 
           end
         end
-        puts current_user.to_json
+        Rails.logger.debug(current_user.to_json)
         Rails.cache.decrement(remaining_software_count_key)
         { status: true, message: '' }
       rescue => ex

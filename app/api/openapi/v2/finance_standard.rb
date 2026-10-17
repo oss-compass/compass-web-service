@@ -16,7 +16,7 @@ module Openapi
 
       helpers do
         def check_version_exists(label, version_number)
-          puts "Checking version #{label}, #{version_number}"
+          Rails.logger.info("Checking version #{label}, #{version_number}")
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(label, 'repo', GiteeReleasesEnrich, GithubReleasesEnrich, GitcodeReleasesEnrich)
           releases = indexer.get_releases(repo_urls)

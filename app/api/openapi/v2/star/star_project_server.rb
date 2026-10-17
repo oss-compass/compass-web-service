@@ -306,7 +306,7 @@ module Openapi
           end
           post :project_list do
             # 获取表格的项目列表
-            puts " 获取表格的项目列表"
+            Rails.logger.info("获取表格的项目列表")
             project = params[:project_urls]
 
             get_community_name(project)

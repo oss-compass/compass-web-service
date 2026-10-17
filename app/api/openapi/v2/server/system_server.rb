@@ -14,7 +14,7 @@ module Openapi
             '/api/v2/server/save_mq_data'
           ]
 
-          puts request.path
+          Rails.logger.debug(request.path)
           unless skip_paths.any? { |p| request.path.start_with?(p) }
             require_login!
           end

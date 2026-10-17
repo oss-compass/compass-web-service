@@ -63,7 +63,7 @@ module Types
           clarification_count_hash = clarification_count_hash.transform_keys(&:to_sym)
         end
 
-        puts clarification_count_hash
+        Rails.logger.debug(clarification_count_hash)
         clarification_count_hash
       end
 
