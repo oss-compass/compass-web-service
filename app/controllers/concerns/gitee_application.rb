@@ -160,6 +160,7 @@ module GiteeApplication
     )
     issue = JSON.parse(resp.body)
     Rails.logger.info "gitee_create_issue: #{issue}"
+    return { status: false, message: resp.body } unless resp.success?
     { status: true, issue_url: issue["html_url"] }
   rescue => ex
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
@@ -176,6 +177,7 @@ module GiteeApplication
     )
     issue = JSON.parse(resp.body)
     Rails.logger.info "gitee_create_issue_comment: #{issue}"
+    return { status: false, message: resp.body } unless resp.success?
     { status: true, message: '' }
   rescue => ex
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
@@ -194,6 +196,7 @@ module GiteeApplication
     )
     issue = JSON.parse(resp.body)
     Rails.logger.info "gitee_update_issue: #{issue}"
+    return { status: false, message: resp.body } unless resp.success?
     { status: true, message: '' }
   rescue => ex
     { status: false, message: I18n.t('oauth.issue.failed', reason: ex.message) }
