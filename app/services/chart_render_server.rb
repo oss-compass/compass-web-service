@@ -15,7 +15,7 @@ class ChartRenderServer
     @height = params[:height] || 600
     @y_abs = params[:y_abs].to_s == '1'
     @y_trans = params[:y_trans].to_s == '1'
-    @label = params[:lable] || ShortenedLabel.revert(@short_code)&.label
+    @label = params[:label] || params[:lable] || ShortenedLabel.revert(@short_code)&.label
     @repo_type = params[:repo_type]
   end
 
