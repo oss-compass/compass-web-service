@@ -79,17 +79,15 @@ class CollectionServer
 
   def clean_expired(lte: 6.months)
     job_logger.info("begin to clean expired collection data")
-    response = BaseCollection.range(:updated_at, lte: Date.today.end_of_day - lte).execute.raw_response
-    items = response&.[]('hits')&.[]('hits')
-    if items.present?
-      models = items.map { |item| OpenStruct.new(item['_source']) }
-      models.each do |model|
-        job_logger.info("cleaning #{model.to_h}")
-        BaseCollection.delete(model)
-      end
-    else
-      job_logger.info("no expired data")
+    query = BaseCollection.range(:updated_at, lte: Date.today.end_of_day - lte)
+    found_expired = false
+    query.find_each_result(batch_size: 100) do |item|
+      found_expired = true
+      model = OpenStruct.new(item.to_h.except('_hit'))
+      job_logger.info("cleaning #{model.to_h}")
+      BaseCollection.delete(model)
     end
+    job_logger.info("no expired data") unless found_expired
   end
 
   def job_logger
