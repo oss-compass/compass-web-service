@@ -55,12 +55,13 @@ class ExportTaskWorker
       subject = Subject.find_by(label: label, level: level)
 
       if subject.present?
-        blob =
+        blob = File.open(temp_csv_path) do |file|
           ActiveStorage::Blob.create_and_upload!(
-            io: File.open(temp_csv_path),
+            io: file,
             filename: "#{subject.short_name}.csv",
             content_type: 'text/csv',
           )
+        end
         blob_id = blob.id
         subject.exports.attach(blob.signed_id)
       end
@@ -72,6 +73,16 @@ class ExportTaskWorker
       Rails.cache.write("export-#{uuid}", { status: ::Subject::UNKNOWN })
       Sneakers.logger.error "Failed to export, reason: #{ex.message}"
       raise ex
+    ensure
+      begin
+        File.delete(temp_csv_path) if File.exist?(temp_csv_path)
+      rescue => cleanup_error
+        begin
+          Sneakers.logger.error "Failed to clean up export CSV, reason: #{cleanup_error.message}"
+        rescue StandardError
+          # Cleanup diagnostics must not replace the original worker error.
+        end
+      end
     end
     ack!
   end
