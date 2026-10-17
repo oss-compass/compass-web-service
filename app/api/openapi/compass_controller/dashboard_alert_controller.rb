@@ -44,6 +44,10 @@ module Openapi
           pagy(scope, page: params[:page], items: params[:per_page])
         end
 
+        def alert_monitor_type(value)
+          DashboardAlertRule.monitor_types[value == 'repo' ? 'repository' : value]
+        end
+
         def fetch_metrics_by_range(db_index_key, label, start_date, end_date, level)
 
           return {} if db_index_key.blank? || label.blank?
@@ -161,7 +165,7 @@ module Openapi
           rule = DashboardAlertRule.new(
             dashboard_id: dashboard.id,
             creator_id: current_user.id,
-            monitor_type: DashboardAlertRule.monitor_types[params[:monitorType]],
+            monitor_type: alert_monitor_type(params[:monitorType]),
             target_repo: params[:targetRepo],
             metric_key: params[:metricKey],
             metric_name: params[:metricName],
@@ -223,7 +227,7 @@ module Openapi
 
           # 转换枚举值
           if update_params[:monitor_type].present?
-            update_params[:monitor_type] = DashboardAlertRule.monitor_types[update_params[:monitor_type]]
+            update_params[:monitor_type] = alert_monitor_type(update_params[:monitor_type])
           end
           if update_params[:level].present?
             update_params[:level] = DashboardAlertRule.levels[update_params[:level]]
@@ -290,7 +294,7 @@ module Openapi
 
 
           if params[:monitorType].present?
-            scope = scope.where(monitor_type: params[:monitorType])
+            scope = scope.where(monitor_type: alert_monitor_type(params[:monitorType]))
           end
           if params[:level].present?
             scope = scope.where(level: params[:level])
