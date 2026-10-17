@@ -98,7 +98,7 @@ module Mutations
           model_version.update!(version: version)
         end
 
-        if is_score != nil
+        if !is_score.nil?
           model_version.update!(is_score: is_score)
         end
 

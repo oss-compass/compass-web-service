@@ -23,7 +23,7 @@ module Mutations
       raise GraphQL::ExecutionError.new I18n.t('lab_models.not_found') unless report.present?
       ActiveRecord::Base.transaction do
         update_set = {}
-        update_set[:is_public] = is_public if is_public != nil
+        update_set[:is_public] = is_public if !is_public.nil?
 
         report.update!(update_set) if update_set.present?
         report = LabDataset.find_by(lab_model_report_id: report_id)

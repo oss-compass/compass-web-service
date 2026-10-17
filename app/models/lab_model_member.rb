@@ -51,8 +51,8 @@ class LabModelMember < ApplicationRecord
 
   def update_permission!(can_update: nil, can_execute: nil)
     current = permission
-    current = change_update(current, can_update) if can_update != nil
-    current = change_execute(current, can_execute) if can_execute != nil
+    current = change_update(current, can_update) if !can_update.nil?
+    current = change_execute(current, can_execute) if !can_execute.nil?
     self.update!(permission: current)
   end
 

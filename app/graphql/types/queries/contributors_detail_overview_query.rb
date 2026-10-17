@@ -48,7 +48,7 @@ module Types
                  .must(terms: { 'repo_name.keyword': repo_urls })
                  .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
 
-        base = base.must(match_phrase: { ecological_type: contributor_type }) if contributor_type != nil
+        base = base.must(match_phrase: { ecological_type: contributor_type }) if !contributor_type.nil?
 
         resp = base
                  .must_not(terms: { 'contributor.keyword' => ['openharmony_ci', 'fengwujin'] })

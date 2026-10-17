@@ -30,8 +30,8 @@ module Mutations
 
       update_set = {}
       update_set[:name] = name if name.present?
-      update_set[:is_public] = is_public if is_public != nil
-      update_set[:description] = description if description != nil
+      update_set[:is_public] = is_public if !is_public.nil?
+      update_set[:description] = description if !description.nil?
       model.update!(update_set) if update_set.present?
 
       { data: model }
