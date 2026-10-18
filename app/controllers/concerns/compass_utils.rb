@@ -48,7 +48,9 @@ module CompassUtils
     current_line = ''
 
     text.split.each do |word|
-      if current_line.length + word.length <= max_length
+      if current_line.empty?
+        current_line = word
+      elsif current_line.length + 1 + word.length <= max_length
         current_line += ' ' + word
       else
         broken_lines << current_line.strip
