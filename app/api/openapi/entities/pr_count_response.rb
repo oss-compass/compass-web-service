@@ -20,7 +20,7 @@ module Openapi
       expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/oss-compass/compass-web-service' }
       expose :metric_type, documentation: { type: 'String', desc: 'metric_type', example: 'community_portrait' }
       expose :metric_name,
-             documentation: { type: 'String', desc: 'metric_name', example: 'total_create_close_pr_count' }
+             documentation: { type: 'String', desc: 'metric_name', example: 'pr_count' }
       expose :metric_detail, using: Entities::PrCountMetricDetail,
              documentation: { type: 'PrCountMetricDetail', desc: 'metric_detail' }
       expose :version_number, documentation: { type: 'NilClass', desc: 'version_number', example: nil } # 新增字段
