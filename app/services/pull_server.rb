@@ -139,10 +139,10 @@ class PullServer
           domain = uri&.normalized_host
           domain_name = domain.starts_with?('gitee.com') ? 'gitee' : 'github'
           if domain_name == 'gitee'
-            result = gitee_is_fork_repo(@project_url)
+            result = gitee_is_fork_repo(uri.to_s)
             return result unless result[:status]
           else
-            result = github_is_fork_repo(@project_url)
+            result = github_is_fork_repo(uri.to_s)
             return result unless result[:status]
           end
           path = "#{SINGLE_DIR}/#{domain_name}#{uri.path}.yml"
