@@ -267,7 +267,7 @@ class TpcSoftwareSandbox < ApplicationRecord
     #
     # return unless need_autocreate
 
-    need_autocreate = check_auto_create_permission(selection)
+    need_autocreate = check_auto_create_permission(sandbox)
     return unless need_autocreate
 
     if state == State_Completed
@@ -315,7 +315,7 @@ class TpcSoftwareSandbox < ApplicationRecord
     # repo_owner = repo_owner_map[sig_id_for_repo] || ""
 
     # 去掉首尾空格和末尾斜杠
-    full_repo_url = selection.repo_url.to_s.strip.chomp('/')
+    full_repo_url = sandbox.repo_url.to_s.strip.chomp('/')
     # 找到最后一个 '/' 的位置，截取它之前的所有内容
     last_slash_index = full_repo_url.rindex('/')
     if last_slash_index
