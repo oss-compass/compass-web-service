@@ -101,8 +101,13 @@ class ChartRenderServer
                   build_metrics_with_agg(metrics, type)
                 end
 
-      x_final_values = x_values if x_values.length > x_final_values.length
-      [metrics, y_values]
+      x_final_values.concat(x_values)
+      [metrics, x_values.zip(y_values).to_h]
+    end
+
+    x_final_values = x_final_values.uniq.sort
+    y_final_values.map! do |metrics, values_by_date|
+      [metrics, x_final_values.map { |date| values_by_date[date] }]
     end
 
     x = generate_x_axis(data: x_final_values)
