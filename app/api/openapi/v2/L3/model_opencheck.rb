@@ -32,7 +32,7 @@ module Openapi
       end
       before { save_tracking_api! }
 
-      resource :opencheck do
+      resource :metricModel do
         desc 'List openchecker check Data of the project / 获取项目openchecker检查数据', detail: '
         List openchecker check Data of the project,including license compatibility analysis and known vulnerabilities. / 获取项目openchecker检查数据,包括开源许可证信息和漏洞信息',
              tags: ['V2 API', 'Metrics Model Data / 模型数据'],
