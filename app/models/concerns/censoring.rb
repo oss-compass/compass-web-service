@@ -3,7 +3,7 @@
 module Censoring
   extend ActiveSupport::Concern
 
-  Enable = ENV.fetch('CENSORING_ENABLE') { false }
+  Enable = ActiveModel::Type::Boolean.new.cast(ENV.fetch('CENSORING_ENABLE') { false })
   Host = ENV.fetch('DEFAULT_HOST') { 'http://localhost:3000' }
   AppNumber = 4
   CensoringTopic = 'compass-review'
