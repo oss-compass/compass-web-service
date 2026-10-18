@@ -185,9 +185,8 @@ module CompassUtils
   def time_diff_hours(start_time_str, end_time_str)
     start_datetime = DateTime.parse(start_time_str)
     end_datetime = DateTime.parse(end_time_str)
-    time_diff_seconds = (end_datetime - start_datetime) * HOURS
-    days_diff = time_diff_seconds / HOURS
-    format('%.2f', days_diff)
+    elapsed_hours = (end_datetime - start_datetime) * 24
+    format('%.2f', elapsed_hours)
   end
 
 end
