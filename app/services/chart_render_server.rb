@@ -95,7 +95,7 @@ class ChartRenderServer
       @field = metrics.main_score
 
       x_values, y_values =
-                if metrics != GroupActivityMetric
+                if metrics != GroupActivityMetric && !@interval
                   build_metrics_with_search(metrics, type)
                 else
                   build_metrics_with_agg(metrics, type)
