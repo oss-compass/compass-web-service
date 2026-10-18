@@ -52,14 +52,17 @@ module Types
           end
         end
 
-        resp = indexer.fetch_commit_agg_list_by_repo_urls(current_page_repo_urls, start_time, end_date, branch,
-                                                          commit_hash_list: commit_hash_map.keys, agg_field: 'tag',
-                                                          per: 10000, label: label, level: level)
-        buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
-        commit_map = buckets.each_with_object({}) do |data, hash|
-          hash[data['key'].gsub(".git", "")] = {
-            'lines_total' => data['lines_total']['value']
-          }
+        commit_map = {}
+        if commit_hash_map.any?
+          resp = indexer.fetch_commit_agg_list_by_repo_urls(current_page_repo_urls, start_time, end_date, branch,
+                                                            commit_hash_list: commit_hash_map.keys, agg_field: 'tag',
+                                                            per: 10000, label: label, level: level)
+          buckets = resp&.[]('aggregations')&.[]('group_by_name')&.[]('buckets') || []
+          commit_map = buckets.each_with_object({}) do |data, hash|
+            hash[data['key'].gsub(".git", "")] = {
+              'lines_total' => data['lines_total']['value']
+            }
+          end
         end
 
         repo_sig_list = SubjectSig.fetch_subject_sig_list_by_repo_urls(label, level, current_page_repo_urls, filter_opts: filter_opts)
