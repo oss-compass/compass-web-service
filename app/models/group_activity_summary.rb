@@ -5,7 +5,8 @@ class GroupActivitySummary < BaseSummary
 
   def self.mapping
     {"properties"=>
-     {"grimoire_creation_date"=>{"type"=>"date"},
+     {"category"=>{"type":"keyword", "normalizer":"lowercase"},
+      "grimoire_creation_date"=>{"type"=>"date"},
       "metadata__enriched_on"=>{"type"=>"date"},
       "model_name"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}},
       "uuid"=>{"type"=>"text", "fields"=>{"keyword"=>{"type"=>"keyword", "ignore_above"=>256}}}}}

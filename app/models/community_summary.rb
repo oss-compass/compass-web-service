@@ -17,6 +17,7 @@ class CommunitySummary < BaseSummary
       "comment_frequency_median"=>{"type"=>"float"},
       "community_support_score_mean"=>{"type"=>"float"},
       "community_support_score_median"=>{"type"=>"float"},
+      "category"=>{"type":"keyword", "normalizer":"lowercase"},
       "grimoire_creation_date"=>{"type"=>"date"},
       "issue_first_reponse_avg_mean"=>{"type"=>"float"},
       "issue_first_reponse_avg_median"=>{"type"=>"float"},

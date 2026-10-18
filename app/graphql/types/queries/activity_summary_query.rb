@@ -7,13 +7,14 @@ module Types
       description 'Get activity summary data of compass'
       argument :begin_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'begin date'
       argument :end_date, GraphQL::Types::ISO8601DateTime, required: false, description: 'end date'
+      argument :category, GraphQL::Types::String, required: false, description: 'category ident'
 
-      def resolve(begin_date: nil, end_date: nil)
+      def resolve(begin_date: nil, end_date: nil, category: nil)
 
         begin_date, end_date, interval = extract_date(begin_date, end_date)
 
         if !interval
-          resp = ActivitySummary.query_by_date(begin_date, end_date)
+          resp = ActivitySummary.query_by_date(begin_date, end_date, category: category)
 
           build_metrics_data(resp, Types::ActivitySummaryType) do |skeleton, raw|
             skeleton.keys.map do |key|
@@ -38,7 +39,7 @@ module Types
             ActivityMetric.fields_aliases,
             ['_median', '_mean']
           )
-          resp = ActivitySummary.aggs_by_date(begin_date, end_date, aggs)
+          resp = ActivitySummary.aggs_by_date(begin_date, end_date, aggs, category: category)
 
           build_metrics_data(resp, Types::ActivitySummaryType) do |skeleton, raw|
             data = raw[:data]
