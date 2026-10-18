@@ -926,7 +926,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
@@ -999,7 +999,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
           filter_opts << OpenStruct.new(type: "is_bot", values: ["false"])
@@ -1155,7 +1155,7 @@ module Openapi
         #   begin_date = params[:beginDate]
         #   end_date = params[:endDate]
         #
-        #   filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+        #   filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
         #   sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
         #                 [OpenStruct.new(type: 'created_at', direction: 'desc')]
         #               else
@@ -1313,7 +1313,7 @@ module Openapi
           end_date = params[:endDate]
 
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -1533,7 +1533,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -1731,7 +1731,7 @@ module Openapi
           end
 
           # ========== 组织筛选：与 community_issue_summary_list 查询联动 ==========
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           org_filter_opt = filter_opts.find { |opt| opt.type == 'organization' }
           target_orgs = org_filter_opt&.values || []
 
@@ -2024,7 +2024,7 @@ module Openapi
   #         begin_date = params[:beginDate]
   #         end_date = params[:endDate]
   #
-  #         filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+  #         filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
   #         sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
   #                       [OpenStruct.new(type: 'created_at', direction: 'desc')]
   #                     else
@@ -2180,7 +2180,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -2390,7 +2390,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = if params[:sortOpts].nil? || params[:sortOpts].empty?
                         [OpenStruct.new(type: 'created_at', direction: 'desc')]
                       else
@@ -2551,7 +2551,7 @@ module Openapi
           per = [params[:per].to_i, 1].max
 
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = params[:sortOpts]
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
@@ -2802,7 +2802,7 @@ module Openapi
           page = [params[:page].to_i, 1].max
           per = [params[:per].to_i, 1].max
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = params[:sortOpts]
 
           indexer, repo_urls = select_idx_repos_by_lablel_and_level(
