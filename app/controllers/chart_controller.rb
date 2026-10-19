@@ -18,7 +18,7 @@ class ChartController < ApplicationController
     end
     render template: 'chart/empty', layout: false, content_type: 'image/svg+xml'
   rescue => ex
-    Rails.logger.error("Failed to render svg chart: #{ex.message}")
+    Rails.logger.error("Failed to render svg chart: #{ex.class}: #{ex.message}")
     render template: 'chart/empty', layout: false, content_type: 'image/svg+xml'
   end
 
@@ -26,7 +26,7 @@ class ChartController < ApplicationController
     svg = ChartTpcRenderServer.new(params).render
     render xml: svg, layout: false, content_type: 'image/svg+xml'
   rescue => ex
-    Rails.logger.error("Failed to render svg chart: #{ex.message}")
+    Rails.logger.error("Failed to render svg chart: #{ex.class}: #{ex.message}")
     default_png = File.read(Rails.root.join('app', 'assets', 'images', 'default-tpc-report.png'))
     send_data default_png, type: 'image/png', disposition: 'inline'
   end

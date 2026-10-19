@@ -104,7 +104,7 @@ class AnalyzeGroupServer
     end
     [repos['software-artifact'] || [], repos['governance'] || [], repos['origin']]
   rescue => ex
-    Rails.logger.error("Failed to extract repos, error: #{ex.message}")
+    Rails.logger.error("Failed to extract repos, error: #{ex.class}: #{ex.message}")
     [[], [], nil]
   end
 
@@ -240,7 +240,7 @@ class AnalyzeGroupServer
     RabbitMQ.publish(SUBSCRIPTION_QUEUE, message) if count > 0
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
-    Rails.logger.error("Failed to sumbit task #{@yaml_url} status, #{ex.message}")
+    Rails.logger.error("Failed to sumbit task #{@yaml_url} status, #{ex.class}: #{ex.message}")
     { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
@@ -257,7 +257,7 @@ class AnalyzeGroupServer
       repo_task.update(status: task_resp['status'])
     end
   rescue => ex
-    Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.class}: #{ex.message}")
   end
 
   def update_developers
@@ -294,7 +294,7 @@ class AnalyzeGroupServer
     end
     { status: true, message: '' }
   rescue => ex
-    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.class}: #{ex.message}")
     { status: false, message: ex.message }
   end
 end

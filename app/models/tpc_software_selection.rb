@@ -379,7 +379,7 @@ class TpcSoftwareSelection < ApplicationRecord
     begin
       gitcode_server.update_repo_model(repo_owner, repo_name)
     rescue StandardError => e
-      Rails.logger.error "[AutoRepo] 设置权限模式失败，终止后续流程: #{e.message}"
+      Rails.logger.error "[AutoRepo] 设置权限模式失败，终止后续流程: #{e.class}: #{e.message}"
       return created_repo
     end
 

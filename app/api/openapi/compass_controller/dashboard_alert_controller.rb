@@ -75,7 +75,7 @@ module Openapi
             hits = response&.[]('hits')&.[]('hits') || []
             hits.map { |data| data["_source"] }
           rescue => e
-            Rails.logger.error "SearchFlip Range Query Error [#{real_index_name}]: #{e.message}"
+            Rails.logger.error "SearchFlip Range Query Error [#{real_index_name}]: #{e.class}: #{e.message}"
             []
           end
         end

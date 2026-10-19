@@ -61,7 +61,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
         raise sns_info.result['errmsg']
       end
     rescue => e
-      Rails.logger.error "Wechat auth error: #{e.message}"
+      Rails.logger.error "Wechat auth error: #{e.class}: #{e.message}"
       error = e.message
     end
     redirect_to url_for(redirect_url(error: error, default_url: default_url))

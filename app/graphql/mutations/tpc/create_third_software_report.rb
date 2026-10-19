@@ -113,7 +113,7 @@ module Mutations
                   email: current_user.email
                 ).email_software_report_start.deliver_later
               rescue => e
-                Rails.logger.error("MetricServer failed: #{e.message}")
+                Rails.logger.error("MetricServer failed: #{e.class}: #{e.message}")
               end
 
             end

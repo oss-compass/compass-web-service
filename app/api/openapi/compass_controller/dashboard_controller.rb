@@ -94,7 +94,7 @@ module Openapi
             hits = response&.[]('hits')&.[]('hits') || []
             hits.map { |data| data["_source"] }
           rescue => e
-            Rails.logger.error "SearchFlip Range Query Error [#{real_index_name}]: #{e.message}"
+            Rails.logger.error "SearchFlip Range Query Error [#{real_index_name}]: #{e.class}: #{e.message}"
             []
           end
         end
@@ -1850,7 +1850,7 @@ module Openapi
             close_days_val = aggs.dig('issue_avg_close_days', 'value')
             avg_closed_loop_time = close_days_val.present? ? close_days_val.round(2) : nil
           rescue => e
-            Rails.logger.error "issues_overview avg metrics: #{e.message}"
+            Rails.logger.error "issues_overview avg metrics: #{e.class}: #{e.message}"
           end
 
           # 返回结果

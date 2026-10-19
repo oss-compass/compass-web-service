@@ -135,7 +135,7 @@ class BaseCollection < BaseIndex
         .compact
     end
   rescue => ex
-    Rails.logger.error("Failed to get collections of #{label}, #{ex.message}")
+    Rails.logger.error("Failed to get collections of #{label}, #{ex.class}: #{ex.message}")
     []
   end
 

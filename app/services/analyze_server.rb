@@ -174,7 +174,7 @@ class AnalyzeServer
       end
     raise ValidateFailed.new(I18n.t('analysis.validation.cannot_access')) unless ret_code == 200
   rescue => ex
-    Rails.logger.error("This repository `#{@repo_url}` can not access, error: #{ex.message}")
+    Rails.logger.error("This repository `#{@repo_url}` can not access, error: #{ex.class}: #{ex.message}")
     raise ValidateError.new(I18n.t('analysis.validation.cannot_access_with_tip'))
   end
 
@@ -236,7 +236,7 @@ class AnalyzeServer
     RabbitMQ.publish(SUBSCRIPTION_QUEUE, message)
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
-    Rails.logger.error("Failed to sumbit task #{@repo_url} status, #{ex.message}")
+    Rails.logger.error("Failed to sumbit task #{@repo_url} status, #{ex.class}: #{ex.message}")
     { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
@@ -248,7 +248,7 @@ class AnalyzeServer
       repo_task.update(status: task_resp['status'])
     end
   rescue => ex
-    Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update task #{repo_task.task_id} status, #{ex.class}: #{ex.message}")
   end
 
   def update_developers
@@ -285,7 +285,7 @@ class AnalyzeServer
     end
     { status: true, message: '' }
   rescue => ex
-    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update developers #{repo_task.task_id} status, #{ex.class}: #{ex.message}")
     { status: false, message: ex.message }
   end
 end

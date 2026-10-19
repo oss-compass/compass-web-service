@@ -628,7 +628,7 @@ module Openapi
           begin
             CompassRiak.delete('users', "user_#{user.id}")
           rescue => e
-            Rails.logger.warn("Riak 删除用户缓存失败: #{e.message}")
+            Rails.logger.warn("Riak 删除用户缓存失败: #{e.class}: #{e.message}")
           end
 
           {
