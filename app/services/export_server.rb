@@ -20,38 +20,47 @@ class ExportServer
 
     chdir = "#{Rails.root + META_REPO}"
 
-    output, status = Open3.capture2("https_proxy=#{PROXY} git pull", :chdir=>chdir)
+    git_env = { 'https_proxy' => PROXY, 'GITHUB_TOKEN' => GITHUB_TOKEN }
+
+    output, status = Open3.capture2(git_env, 'git', 'pull', chdir: chdir)
 
     if !status.success?
       job_logger.error "failed to git pull latest, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git add #{REPOS_CSV}", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'add', REPOS_CSV, chdir: chdir)
     if !status.success?
       job_logger.error "failed to git add #{REPOS_CSV}, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git commit -s -m 'Update at #{DateTime.now.to_s}'", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'commit', '-s', '-m', "Update at #{DateTime.now}", chdir: chdir)
     if !status.success?
       job_logger.error "failed to git commit, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git config credential.username oss-compass-bot", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'config', 'credential.username', 'oss-compass-bot', chdir: chdir)
     if !status.success?
       job_logger.error "failed to git config credential.username, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git config credential.helper '!f() { echo password=#{GITHUB_TOKEN}; }; f'", :chdir=>chdir)
+    output, status = Open3.capture2(
+      git_env,
+      'git',
+      'config',
+      'credential.helper',
+      '!f() { echo password=$GITHUB_TOKEN; }; f',
+      chdir: chdir
+    )
     if !status.success?
       job_logger.error "failed to git config credential.helper, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("https_proxy=#{PROXY} git push origin main", :chdir=>chdir)
+    output, status = Open3.capture2(git_env, 'git', 'push', 'origin', 'main', chdir: chdir)
     if !status.success?
       job_logger.error "failed to git push, error: #{output}"
       return
