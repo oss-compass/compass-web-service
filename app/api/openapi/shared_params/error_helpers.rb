@@ -6,7 +6,7 @@ module Openapi
 
       def handle_open_search_error(e)
         if e.message.include?("Result window is too large")
-          Rails.logger.error "OpenSearch 分页错误: #{e.message}"
+          Rails.logger.error "OpenSearch 分页错误: #{e.class}: #{e.message}"
           error!(
             {
               error: "分页参数过大",
@@ -15,7 +15,7 @@ module Openapi
             400
           )
         else
-          Rails.logger.error "OpenSearch 通用错误: #{e.message}"
+          Rails.logger.error "OpenSearch 通用错误: #{e.class}: #{e.message}"
           error!(
             {
               error: "数据查询失败",
@@ -27,7 +27,7 @@ module Openapi
       end
 
       def handle_generic_error(e)
-        Rails.logger.error "系统 通用错误: #{e.message}"
+        Rails.logger.error "系统 通用错误: #{e.class}: #{e.message}"
         error!({
                  error: "internal_server_error",
                  message: "系统发生意外错误"
@@ -37,7 +37,7 @@ module Openapi
       end
 
       def handle_release_error(e)
-        Rails.logger.error "release error: #{e.message}"
+        Rails.logger.error "release error: #{e.class}: #{e.message}"
         error!({
                  error: "version number error",
                  message: "#{e.message}"
@@ -47,7 +47,7 @@ module Openapi
       end
 
       def handle_validation_error(e)
-        Rails.logger.error "参数校验错误 : #{e.message}"
+        Rails.logger.error "参数校验错误 : #{e.class}: #{e.message}"
         error_messages = e.full_messages.map do |msg|
           field = msg[/^(.*?) /, 1]
           {
