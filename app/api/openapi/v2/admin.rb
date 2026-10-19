@@ -1313,7 +1313,7 @@ module Openapi
           end
 
           restapi = TrackingRestapi.where(created_at: begin_date..end_date)
-          restapi = restapi.where(user_id: user_ids) if user_ids.present?
+          restapi = restapi.where(user_id: user_ids) unless user_ids.nil?
           restapi = restapi.where(api_path: api) if api.present?
 
           result = restapi
@@ -1404,7 +1404,7 @@ module Openapi
 
           archive_download = TrackingEvent.where(created_at: begin_date..end_date, module_id: 'dataHub', event_type: 'module_click')
                                           .where("data LIKE ?", "%archive_download%").where.not(user_id: nil)
-          archive_download = archive_download.where(user_id: user_ids) if user_ids.present?
+          archive_download = archive_download.where(user_id: user_ids) unless user_ids.nil?
           archive_download = archive_download.where("data LIKE ?", "%#{dataset}%") if dataset.present?
 
 
