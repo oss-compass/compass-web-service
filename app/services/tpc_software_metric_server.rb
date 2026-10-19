@@ -200,7 +200,7 @@ class TpcSoftwareMetricServer
         begin
           metric_hash.merge!(TpcSoftwareReportMetric.get_compliance_dco(@project_url, oh_commit_sha))
         rescue => e
-          Rails.logger.error("Error in get_compliance_dco: #{e.message}")
+          Rails.logger.error("Error in get_compliance_dco: #{e.class}: #{e.message}")
         end
 
         metric_hash.merge!(TpcSoftwareReportMetric.get_ecology_code_maintenance(@project_url))
@@ -210,7 +210,7 @@ class TpcSoftwareMetricServer
         begin
           metric_hash.merge!(TpcSoftwareReportMetric.get_security_history_vulnerability(@project_url))
         rescue => e
-          Rails.logger.error("Error in get_security_history_vulnerability: #{e.message}")
+          Rails.logger.error("Error in get_security_history_vulnerability: #{e.class}: #{e.message}")
         end
 
         metric_hash.merge!(TpcSoftwareReportMetric.get_lifecycle_version_lifecycle(@project_url))
@@ -422,7 +422,7 @@ class TpcSoftwareMetricServer
         begin
           metric_hash.merge!(TpcSoftwareSandboxReportMetric.get_security_history_vulnerability(@project_url))
         rescue => e
-          Rails.logger.error("Error in get_security_history_vulnerability: #{e.message}")
+          Rails.logger.error("Error in get_security_history_vulnerability: #{e.class}: #{e.message}")
         end
 
         metric_hash.merge!(TpcSoftwareSandboxReportMetric.get_lifecycle_version_lifecycle(@project_url))
