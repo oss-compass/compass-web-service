@@ -114,6 +114,6 @@ module Common
       Rails.logger.info(resp.body)
     end
   rescue => ex
-    Rails.logger.error("Failed to notify system slack, #{ex.message}")
+    Rails.logger.error("Failed to notify system slack, #{ex.class}: #{ex.message}")
   end
 end

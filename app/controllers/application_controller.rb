@@ -137,7 +137,7 @@ class ApplicationController < ActionController::Base
         :github_notify_on_pr
     self.send(notify_method, owner(user_agent), repo(user_agent), pr_number, message)
   rescue => ex
-    Rails.logger.error("Failed to notify on pr #{pr_number}, #{ex.message}")
+    Rails.logger.error("Failed to notify on pr #{pr_number}, #{ex.class}: #{ex.message}")
   end
 
   private
