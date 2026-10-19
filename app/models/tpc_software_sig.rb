@@ -16,7 +16,7 @@ class TpcSoftwareSig < ApplicationRecord
   belongs_to :subject
   has_many :tpc_software_selection_reports
   has_many :tpc_software_graduation_reports
-  has_many :tpc_software_members
+  has_many :tpc_software_members, dependent: :destroy
 
   def sig_committer
     TpcSoftwareMember.where(tpc_software_sig_id: id)
