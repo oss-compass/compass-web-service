@@ -152,7 +152,7 @@ module Openapi
 
             rescue SearchFlip::ResponseError => e
 
-              Rails.logger.error("【ES Error】get_index_last_data_agg failed: #{e.message}")
+              Rails.logger.error("【ES Error】get_index_last_data_agg failed: #{e.class}: #{e.message}")
               return []
             end
 
@@ -356,7 +356,7 @@ module Openapi
                         end
                       end
                     rescue => e
-                      Rails.logger.error("DB query failed for #{original_input}: #{e.message}")
+                      Rails.logger.error("DB query failed for #{original_input}: #{e.class}: #{e.message}")
                     end
 
                     begin
@@ -392,7 +392,7 @@ module Openapi
                         unique_participants.merge(matched_names)
                       end
                     rescue => e
-                      Rails.logger.error("ES query failed for #{original_input}: #{e.message}")
+                      Rails.logger.error("ES query failed for #{original_input}: #{e.class}: #{e.message}")
                     end
                   end
 
@@ -596,7 +596,7 @@ module Openapi
                 end
 
               rescue => e
-                Rails.logger.error("Tec seats query failed for #{origin_url}: #{e.message}")
+                Rails.logger.error("Tec seats query failed for #{origin_url}: #{e.class}: #{e.message}")
               end
 
               results << {
@@ -768,7 +768,7 @@ module Openapi
                   repo_star_data[url] = hit['stargazers_count'].to_i if hit
                 end
               rescue SearchFlip::ResponseError => e
-                Rails.logger.error "StarCount Logic Error: #{e.message}"
+                Rails.logger.error "StarCount Logic Error: #{e.class}: #{e.message}"
               end
             end
 
@@ -1297,7 +1297,7 @@ module Openapi
               end
 
             rescue => e
-              Rails.logger.info("【Error】code_line_count ES 查询失败: #{e.message} ")
+              Rails.logger.info("【Error】code_line_count ES 查询失败: #{e.class}: #{e.message} ")
 
             end
 
