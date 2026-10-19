@@ -47,7 +47,7 @@ class User < ApplicationRecord
   has_many :lab_model_invitations
   has_many :tpc_software_selection_report
   has_many :tpc_software_selections
-  has_many :access_tokens
+  has_many :access_tokens, dependent: :destroy
   has_many :dashboards, dependent: :destroy
 
   validate :check_email_change_limit
