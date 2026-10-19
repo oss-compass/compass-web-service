@@ -62,7 +62,7 @@ module Openapi
           json = JSON.parse(response.body)
           json.map { |release| release["tag_name"] }
         rescue => e
-          Rails.logger.error "GitHub releases error: #{e.message}"
+          Rails.logger.error "GitHub releases error: #{e.class}: #{e.message}"
           []
         end
 
@@ -74,7 +74,7 @@ module Openapi
           json = JSON.parse(response.body)
           json.map { |tag| tag["name"] }
         rescue => e
-          Rails.logger.error "GitHub tags error: #{e.message}"
+          Rails.logger.error "GitHub tags error: #{e.class}: #{e.message}"
           []
         end
 
@@ -99,7 +99,7 @@ module Openapi
           return [] unless response.success?
           JSON.parse(response.body).map { |t| t["name"] }
         rescue => e
-          Rails.logger.error "Gitee tags error: #{e.message}"
+          Rails.logger.error "Gitee tags error: #{e.class}: #{e.message}"
           []
         end
 
