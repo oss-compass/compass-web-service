@@ -154,7 +154,7 @@ class CustomAnalyzeServer
 
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
   rescue => ex
-    Rails.logger.error("Failed to sumbit task Model #{model.id}: Version #{version.id} status, #{ex.message}")
+    Rails.logger.error("Failed to sumbit task Model #{model.id}: Version #{version.id} status, #{ex.class}: #{ex.message}")
     { status: ProjectTask::UnSubmit, message: I18n.t('analysis.task.unsubmit') }
   end
 
@@ -165,6 +165,6 @@ class CustomAnalyzeServer
     # end
     update_task_info(status: task_resp['status'], task_id: task_id, updated_at: task_resp['updated'])
   rescue => ex
-    Rails.logger.error("Failed to update task #{task_id} status, #{ex.message}")
+    Rails.logger.error("Failed to update task #{task_id} status, #{ex.class}: #{ex.message}")
   end
 end
