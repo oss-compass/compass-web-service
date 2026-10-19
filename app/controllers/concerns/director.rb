@@ -21,7 +21,7 @@ module Director
         end.flatten.uniq
       end
     rescue => ex
-      Rails.logger.error("failed to retrive repositories, error: #{ex.message}")
+      Rails.logger.error("failed to retrive repositories, error: #{ex.class}: #{ex.message}")
       []
     end
   end
@@ -44,7 +44,7 @@ module Director
         end.flatten.uniq
       end
     rescue => ex
-      Rails.logger.error("failed to retrive repositories, error: #{ex.message}")
+      Rails.logger.error("failed to retrive repositories, error: #{ex.class}: #{ex.message}")
       []
     end
   end
