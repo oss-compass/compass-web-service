@@ -20,8 +20,8 @@ class Dashboard < ApplicationRecord
   has_many :dashboard_metrics, dependent: :destroy
   has_many :dashboard_members, dependent: :destroy
   has_many :dashboard_community_responsible_people, dependent: :destroy
-  has_many :dashboard_alert_rules
-  has_many :dashboard_alert_records
+  has_many :dashboard_alert_rules, dependent: :destroy
+  has_many :dashboard_alert_records, dependent: :destroy
 
   # 允许在创建 Dashboard 时同时保存关联的 Model 和 Metric
   accepts_nested_attributes_for :dashboard_models, allow_destroy: true
