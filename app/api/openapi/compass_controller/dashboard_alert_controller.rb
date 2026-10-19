@@ -44,6 +44,19 @@ module Openapi
           pagy(scope, page: params[:page], items: params[:per_page])
         end
 
+        # 接口里的 monitorType 取值是 community/repo，而 DashboardAlertRule 的 enum 键是
+        # community/repository，直接查 enum 映射表会把 repo 查成 nil；level 同理需要
+        # 由字符串转成列里存的整数。写入和筛选都必须经过这两个方法。
+        def monitor_type_value(param_value)
+          return nil if param_value.blank?
+          DashboardAlertRule.monitor_types[param_value == 'repo' ? 'repository' : param_value]
+        end
+
+        def level_value(param_value)
+          return nil if param_value.blank?
+          DashboardAlertRule.levels[param_value]
+        end
+
         def fetch_metrics_by_range(db_index_key, label, start_date, end_date, level)
 
           return {} if db_index_key.blank? || label.blank?
@@ -161,7 +174,7 @@ module Openapi
           rule = DashboardAlertRule.new(
             dashboard_id: dashboard.id,
             creator_id: current_user.id,
-            monitor_type: DashboardAlertRule.monitor_types[params[:monitorType]],
+            monitor_type: monitor_type_value(params[:monitorType]),
             target_repo: params[:targetRepo],
             metric_key: params[:metricKey],
             metric_name: params[:metricName],
@@ -169,7 +182,7 @@ module Openapi
             operator_type: params[:operatorType],
             time_range: params[:timeRange],
             threshold: params[:threshold],
-            level: DashboardAlertRule.levels[params[:level]],
+            level: level_value(params[:level]),
             description: params[:description],
             enabled: params[:enabled]
           )
@@ -221,12 +234,12 @@ module Openapi
           update_params[:time_range] = update_params.delete(:timeRange) if update_params.key?(:timeRange)
           update_params[:operator_type] = update_params.delete(:operatorType) if update_params.key?(:operatorType)
 
-          # 转换枚举值
+          # 转换枚举值（repo -> repository，level 字符串 -> 列里的整数）
           if update_params[:monitor_type].present?
-            update_params[:monitor_type] = DashboardAlertRule.monitor_types[update_params[:monitor_type]]
+            update_params[:monitor_type] = monitor_type_value(update_params[:monitor_type])
           end
           if update_params[:level].present?
-            update_params[:level] = DashboardAlertRule.levels[update_params[:level]]
+            update_params[:level] = level_value(update_params[:level])
           end
 
           if rule.update(update_params)
@@ -290,10 +303,10 @@ module Openapi
 
 
           if params[:monitorType].present?
-            scope = scope.where(monitor_type: params[:monitorType])
+            scope = scope.where(monitor_type: monitor_type_value(params[:monitorType]))
           end
           if params[:level].present?
-            scope = scope.where(level: params[:level])
+            scope = scope.where(level: level_value(params[:level]))
           end
           if !params[:enabled].nil?
             scope = scope.where(enabled: params[:enabled])
