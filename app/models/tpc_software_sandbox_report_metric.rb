@@ -638,7 +638,7 @@ class TpcSoftwareSandboxReportMetric < ApplicationRecord
         score = 0
       elsif releases.length == 0
         score = 4
-      elsif 2.year.ago <= DateTime.parse(releases.first.dig("created_at"))
+      elsif releases.any? && 2.year.ago <= DateTime.parse(releases.first.dig("created_at"))
         score = 10
       else
         score = 6
