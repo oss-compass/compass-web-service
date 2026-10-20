@@ -15,7 +15,7 @@ Thank you for considering contributing to Compass Web Service! We welcome contri
 1. Clone the repository:
 
 ```
-git clone https://github.com/open-metrics-code/compass-web-service
+git clone https://github.com/oss-compass/compass-web-service
 cd compass-web-service
 ```
 
