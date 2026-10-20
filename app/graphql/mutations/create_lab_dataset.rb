@@ -129,16 +129,17 @@ module Mutations
     end
 
     def merge_dataset(existing_content, new_datasets)
-      existing_content = JSON.parse(existing_content)
+      filtered_rows = normalized_dataset_rows(new_datasets)
+      existing_content = normalized_existing_rows(existing_content)
       existing_hash = existing_content.each_with_object({}) do |item, hash|
         hash[item["label"]] = item
       end
-      new_datasets.each do |dataset|
-        existing_hash[dataset.label] ||= {
-          label: dataset.label,
-          level: dataset.level,
-          first_ident: dataset.first_ident,
-          second_ident: dataset.second_ident
+      filtered_rows.each do |dataset|
+        existing_hash[dataset[:label]] ||= {
+          label: dataset[:label],
+          level: dataset[:level],
+          first_ident: dataset[:first_ident],
+          second_ident: dataset[:second_ident]
         }
       end
 
@@ -146,22 +147,36 @@ module Mutations
     end
 
     def get_new_dataset(existing_content, new_datasets)
-
-      filtered_rows = new_datasets.map { |row| row.to_h.merge(label: ShortenedLabel.normalize_label(row.label)) }
-
-      raise ValidateFailed.new(I18n.t('lab_models.invalid_dataset')) if filtered_rows.blank?
-      raise ValidateFailed.new(I18n.t('lab_models.datasets_too_large', limit: Limit)) if filtered_rows.length > Limit
+      filtered_rows = normalized_dataset_rows(new_datasets)
       if existing_content.nil?
         return filtered_rows
       end
-      # return new_datasets if existing_content.nil?
-      existing_content = JSON.parse(existing_content)
+      existing_content = normalized_existing_rows(existing_content)
       existing_hash = existing_content.each_with_object({}) do |item, hash|
         hash[item["label"]] = item
       end
       # Not in existing_content
-      new_datasets.reject { |dataset| existing_hash.key?(dataset.label) }
+      filtered_rows.reject { |dataset| existing_hash.key?(dataset[:label]) }
 
+    end
+
+    private
+
+    def normalized_dataset_rows(datasets)
+      rows = datasets.map { |row| row.to_h.merge(label: ShortenedLabel.normalize_label(row.label)) }
+      raise LabDataset::ValidateFailed.new(I18n.t('lab_models.invalid_dataset')) if rows.blank?
+      if rows.length > Limit
+        raise LabDataset::ValidateFailed.new(I18n.t('lab_models.datasets_too_large', limit: Limit))
+      end
+
+      rows.uniq { |row| row[:label] }
+    end
+
+    def normalized_existing_rows(content)
+      JSON.parse(content).map do |row|
+        row = { 'label' => row, 'level' => 'repo' } if row.is_a?(String)
+        row.merge('label' => ShortenedLabel.normalize_label(row['label']))
+      end
     end
 
   end
