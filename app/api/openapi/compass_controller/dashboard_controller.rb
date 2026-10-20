@@ -926,7 +926,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || []).map { |opt| OpenStruct.new(opt) }
           # sort_opts = (params[:sort_opts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
@@ -999,7 +999,7 @@ module Openapi
           begin_date = params[:beginDate]
           end_date = params[:endDate]
 
-          filter_opts = (params[:filterOpts] || []).map { |opt| OpenStruct.new(opt) }
+          filter_opts = (params[:filter_opts] || []).map { |opt| OpenStruct.new(opt) }
           sort_opts = [params[:sortOpts]].compact.map { |opt| OpenStruct.new(opt) }
 
           filter_opts << OpenStruct.new(type: "is_bot", values: ["false"])
