@@ -46,7 +46,7 @@ module Openapi
           end
 
           def project_update_distribution(base_indexer, terms_field)
-            now = Time.now.to_i
+            now = Time.current.to_i
             one_month = 30 * 24 * 60 * 60
             three_months = 3 * one_month
             six_months = 6 * one_month
@@ -91,7 +91,7 @@ module Openapi
                 last_update_ts = bucket.dig('last_update', 'value')
                 next unless last_update_ts
 
-                diff = Time.now - last_update_ts
+                diff = Time.current - last_update_ts
                 if diff <= one_month
                   stats[:within_1m] += 1
                 elsif diff > one_month && diff <= three_months
@@ -404,19 +404,19 @@ module Openapi
 
             case time_type
             when 0
-              start_time = Time.now - 1.month
-              end_time = Time.now
+              start_time = Time.current - 1.month
+              end_time = Time.current
             when 1
-              start_time = Time.now - 3.months
-              end_time = Time.now - 1.month
+              start_time = Time.current - 3.months
+              end_time = Time.current - 1.month
             when 3
-              start_time = Time.now - 6.months
-              end_time = Time.now - 3.months
+              start_time = Time.current - 6.months
+              end_time = Time.current - 3.months
             when 6
-              start_time = Time.now - 12.months
-              end_time = Time.now - 6.months
+              start_time = Time.current - 12.months
+              end_time = Time.current - 6.months
             when 12
-              end_time = Time.now - 12.months
+              end_time = Time.current - 12.months
             end
 
             projects = Subject.where(level: 'repo', updated_at: start_time..end_time)
@@ -451,19 +451,19 @@ module Openapi
 
             case time_type
             when 0
-              start_time = Time.now - 1.month
-              end_time = Time.now
+              start_time = Time.current - 1.month
+              end_time = Time.current
             when 1
-              start_time = Time.now - 3.months
-              end_time = Time.now - 1.month
+              start_time = Time.current - 3.months
+              end_time = Time.current - 1.month
             when 3
-              start_time = Time.now - 6.months
-              end_time = Time.now - 3.months
+              start_time = Time.current - 6.months
+              end_time = Time.current - 3.months
             when 6
-              start_time = Time.now - 12.months
-              end_time = Time.now - 6.months
+              start_time = Time.current - 12.months
+              end_time = Time.current - 6.months
             when 12
-              end_time = Time.now - 12.months
+              end_time = Time.current - 12.months
             end
 
             projects = Subject.where(level: 'community', updated_at: start_time..end_time)
