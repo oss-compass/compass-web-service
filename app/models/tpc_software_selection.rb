@@ -377,10 +377,13 @@ class TpcSoftwareSelection < ApplicationRecord
     end
 
     begin
-      gitcode_server.update_repo_model(repo_owner, repo_name)
+      permission_result = gitcode_server.update_repo_model(repo_owner, repo_name)
+      unless permission_result == true
+        return permission_result.presence || "Failed to configure repository permissions"
+      end
     rescue StandardError => e
       Rails.logger.error "[AutoRepo] 设置权限模式失败，终止后续流程: #{e.message}"
-      return created_repo
+      return e.message
     end
 
     # 添加协作者 (Committers)
