@@ -1,0 +1,13 @@
+source 'https://rubygems.org'
+
+ruby '3.3.6'
+
+# Match the application lockfile versions used by the native row-processing tests.
+gem 'activerecord', '7.1.5.2'
+gem 'railties', '7.1.5.2'
+gem 'addressable', '2.8.0'
+gem 'mysql2', '0.5.4'
+gem 'nanoid', '2.0.0'
+gem 'minitest', '5.25.5'
+gem 'graphql', '2.0.32'
+gem 'zeitwerk', '2.6.13'
