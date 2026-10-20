@@ -290,7 +290,8 @@ module Openapi
 
 
           if params[:monitorType].present?
-            scope = scope.where(monitor_type: params[:monitorType])
+            monitor_type = DashboardAlertRule.monitor_types[params[:monitorType]]
+            scope = scope.where(monitor_type: monitor_type) if monitor_type.present?
           end
           if params[:level].present?
             scope = scope.where(level: params[:level])
