@@ -10,9 +10,11 @@ module Types
             sub_grouped_contributors = grouped_contributors.group_by { _1['organization'] }
             sorted_group_contributors =
               if scope == 'contributor'
-                sub_grouped_contributors.sort_by { |_k, v| v.length }
+                # Top 10 需要"贡献者最多"的组织：与 contribution 分支及 REST 侧
+                # contributes.rb 的 sort_by { -v.length } 一致地降序。
+                sub_grouped_contributors.sort_by { |_k, v| -v.length }
               else
-                sub_grouped_contributors.sort_by { |_k, v| v.map { _1['contribution'] }.reduce(0, :+) }
+                sub_grouped_contributors.sort_by { |_k, v| -v.map { _1['contribution'] }.reduce(0, :+) }
               end
             top_group_contributors = sorted_group_contributors.first(10)
             top_group_contributors.map do |group, contributors|
