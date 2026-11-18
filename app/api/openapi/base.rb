@@ -66,6 +66,7 @@ module Openapi
     mount Openapi::V2::Server::QueueServer
     mount Openapi::V2::FeedbackModule
     mount Openapi::V2::Star::StarProjectServer
+    mount Openapi::V2::Star::StarV2ProjectServer
 
     mount Openapi::V3::CommunityHealth::CollaborationEfficiency::ResponseTimeliness
     mount Openapi::V3::CommunityHealth::CollaborationEfficiency::CollaborationQuality
