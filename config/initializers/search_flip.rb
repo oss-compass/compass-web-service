@@ -9,7 +9,9 @@ http_client = http_client.basic_auth(
 )
 
 # Timeouts
-http_client = http_client.timeout(20)
+# 全局超时（单次请求的总耗时预算）。默认 20 秒对聚合/scroll 类查询偏紧，
+# 可通过 OPENSEARCH_TIMEOUT（秒）调整。
+http_client = http_client.timeout(ENV.fetch('OPENSEARCH_TIMEOUT', 60).to_i)
 
 AuthSearchConn = SearchFlip::Connection.new(
   base_url: ENV.fetch('OPENSEARCH_URL') { 'http://localhost:9200' },
