@@ -18,7 +18,7 @@ class ShortenedLabel < ApplicationRecord
   validates :short_code, presence: true, uniqueness: true
   validates :label, presence: true
   validates :level, presence: true
-  before_validation :generate_short_code
+  before_validation :generate_short_code, if: :new_record?
 
   CacheTTL = 1.week
   CharacterSet = '0123456789abcdefghijklmnopqrstuvwxyz'
