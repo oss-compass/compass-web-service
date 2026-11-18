@@ -76,13 +76,13 @@ class Subject < ApplicationRecord
   def self.append_child(parent, label, type)
     append_child!(parent, label, type)
   rescue => ex
-    Rails.logger.error "Unable to append child #{label} to #{parent&.label}, error: #{error}"
+    Rails.logger.error "Unable to append child #{label} to #{parent&.label}, error: #{ex}"
   end
 
   def self.remove_child(parent, label, type)
     remove_child!(parent, label, type)
   rescue => ex
-    Rails.logger.error "Unable to remove child #{label} from #{parent&.label}, error: #{error}"
+    Rails.logger.error "Unable to remove child #{label} from #{parent&.label}, error: #{ex}"
   end
 
   def self.append_child!(parent, label, type)
