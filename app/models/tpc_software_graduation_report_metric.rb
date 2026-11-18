@@ -70,7 +70,7 @@ class TpcSoftwareGraduationReportMetric < ApplicationRecord
   belongs_to :tpc_software_graduation_report
   belongs_to :subject
   belongs_to :user
-  has_one :tpc_software_graduation_report_metric_raw
+  has_one :tpc_software_graduation_report_metric_raw, dependent: :destroy
   has_many :tpc_software_comments, as: :tpc_software, dependent: :destroy
   has_many :tpc_software_comment_states, as: :tpc_software, dependent: :destroy
 
