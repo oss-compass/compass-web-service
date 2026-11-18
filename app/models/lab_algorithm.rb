@@ -9,7 +9,7 @@
 #  updated_at :datetime         not null
 #
 class LabAlgorithm < ApplicationRecord
-  has_many :lab_model_versions
+  has_many :lab_model_versions, dependent: :destroy
 
   validates :ident, presence: true
 
