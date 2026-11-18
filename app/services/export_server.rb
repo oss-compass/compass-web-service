@@ -20,38 +20,45 @@ class ExportServer
 
     chdir = "#{Rails.root + META_REPO}"
 
-    output, status = Open3.capture2("https_proxy=#{PROXY} git pull", :chdir=>chdir)
+    # Pass proxy settings through the child environment so their contents are never parsed as shell source.
+    git_env = { 'https_proxy' => PROXY }
+
+    output, status = Open3.capture2(git_env, 'git', 'pull', chdir: chdir)
 
     if !status.success?
       job_logger.error "failed to git pull latest, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git add #{REPOS_CSV}", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'add', REPOS_CSV, chdir: chdir)
     if !status.success?
       job_logger.error "failed to git add #{REPOS_CSV}, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git commit -s -m 'Update at #{DateTime.now.to_s}'", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'commit', '-s', '-m', "Update at #{DateTime.now.to_s}", chdir: chdir)
     if !status.success?
       job_logger.error "failed to git commit, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git config credential.username oss-compass-bot", :chdir=>chdir)
+    output, status = Open3.capture2('git', 'config', 'credential.username', 'oss-compass-bot', chdir: chdir)
     if !status.success?
       job_logger.error "failed to git config credential.username, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("git config credential.helper '!f() { echo password=#{GITHUB_TOKEN}; }; f'", :chdir=>chdir)
+    # Resolve the token from the child environment when Git invokes the helper instead of persisting it in git config.
+    output, status = Open3.capture2(
+      'git', 'config', 'credential.helper', '!f() { echo "password=$GITHUB_TOKEN"; }; f', chdir: chdir
+    )
     if !status.success?
       job_logger.error "failed to git config credential.helper, error: #{output}"
       return
     end
 
-    output, status = Open3.capture2("https_proxy=#{PROXY} git push origin main", :chdir=>chdir)
+    push_env = git_env.merge('GITHUB_TOKEN' => GITHUB_TOKEN)
+    output, status = Open3.capture2(push_env, 'git', 'push', 'origin', 'main', chdir: chdir)
     if !status.success?
       job_logger.error "failed to git push, error: #{output}"
       return
