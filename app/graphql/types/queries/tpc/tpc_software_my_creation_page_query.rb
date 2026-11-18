@@ -37,7 +37,7 @@ module Types
                                 .where(subject_id: subject.id)
                                 .where(user_id: current_user.id)
                                 .where.not(state: nil)
-            items = tpc_software.where.not(issue_url: nil) unless application_type == 3
+            items = items.where.not(issue_url: nil) unless application_type == 3
 
             if items.is_a?(ActiveRecord::Relation)
               if filter_opts.present?
