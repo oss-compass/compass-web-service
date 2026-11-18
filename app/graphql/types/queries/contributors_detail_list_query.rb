@@ -24,6 +24,10 @@ module Types
 
         validate_date!(context[:current_user], label, level, begin_date, end_date)
 
+        # The contributor table of the deep insight page is a ranking, robots are
+        # hidden unless the caller explicitly asks for them.
+        filter_opts = default_bot_filter_opts(filter_opts)
+
         indexer, repo_urls, origin =
                             select_idx_repos_by_lablel_and_level(label, level, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich)
 

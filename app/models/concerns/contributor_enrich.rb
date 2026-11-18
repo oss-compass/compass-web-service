@@ -54,13 +54,30 @@ module ContributorEnrich
             .sort_by { |row| mileage_types.index(row['mileage_type']) }
 
         load_organizations(contributors_list, begin_date, end_date, label, level)
+
+        # Robots that were tagged manually through the `manageContributorBot`
+        # mutation are stored in the `bots` index and are only merged into the
+        # enrich index by the next analysis run, apply them here so the tag takes
+        # effect immediately.
+        load_manual_bots(contributors_list, repo_urls, label, level)
       end
     end
 
     def contributors_key(repo_urls, begin_date, end_date)
-      repos_string = repo_urls.sort.join(',')
-      repos_hash = Digest::MD5.hexdigest(repos_string)
-      "contributors:#{repos_hash}:#{begin_date}:#{end_date}"
+      "#{contributors_cache_namespace(repo_urls)}:#{begin_date}:#{end_date}"
+    end
+
+    def contributors_cache_namespace(repo_urls)
+      repos_hash = Digest::MD5.hexdigest(repo_urls.sort.join(','))
+      "contributors:#{repos_hash}"
+    end
+
+    # Tagging or untagging a robot changes the cached contributor list, so the
+    # entries of the affected repositories have to be dropped explicitly.
+    def clear_contributors_cache(repo_urls)
+      return if repo_urls.blank?
+
+      Rails.cache.delete_matched("#{contributors_cache_namespace(repo_urls)}:*")
     end
 
     def append_filtered_contribution(row, filter_opt)
@@ -192,6 +209,34 @@ module ContributorEnrich
         contributor_index = last_updated_contributor_indexes.max
         last_updated_contributor_indexes = []
       end
+      contributors
+    end
+
+    # `fetch_contributors_list` merges organizations from the `contributor_org`
+    # index, the manual robot tags live in the `bots` index and have to be
+    # overlaid in the same place so every caller of the contributor list (deep
+    # insight table, top contributor distributions and the export) sees the same
+    # `is_bot` value.
+    def load_manual_bots(contributors, repo_urls, label, level)
+      return contributors if contributors.blank?
+
+      tagged_names =
+        Bot.tagged_contributors(
+          repo_urls: repo_urls,
+          community: level == 'community' ? label : nil,
+          platform_type: platform_type
+        )
+      return contributors if tagged_names.empty?
+
+      contributors.each do |row|
+        row['is_bot'] = true if tagged_names.include?(row['contributor'])
+      end
+      contributors
+    rescue StandardError => ex
+      # The `bots` index is created by the data pre-processing pipeline, a
+      # missing or temporarily unavailable index must not break the contributor
+      # list, the tag simply has no effect until it is reachable again.
+      Rails.logger.warn("Failed to load the manual robot tags: #{ex.message}")
       contributors
     end
 
