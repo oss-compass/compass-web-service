@@ -33,7 +33,7 @@ class SubjectSig < ApplicationRecord
     if filter_opts.present?
       filter_opts.each do |filter_opt|
         if ["sig_name"].include?(filter_opt.type)
-          subject_sigs_query.where("subject_sigs.name IN (?)", filter_opt.values)
+          subject_sigs_query = subject_sigs_query.where("subject_sigs.name IN (?)", filter_opt.values)
         end
       end
     end
