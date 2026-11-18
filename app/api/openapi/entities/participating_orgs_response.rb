@@ -6,7 +6,10 @@ module Openapi
       expose :uuid, documentation: { type: 'String', desc: 'uuid', example: 'b2495fcb8eac6407bb802a568b55cfcfd9d27f55' }
       expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/oss-compass/compass-web-service' }
-      expose :participating_orgs_count,
+      # Keep this attribute aligned with the index field requested by
+      # `fetch_metric_data_v2(OrganizationalGovernanceMetric, 'participating_orgs')`.
+      # The helper slices the OpenSearch `_source`, so another name stays nil.
+      expose :participating_orgs,
              documentation: {
                type: 'Integer',
                desc: '参与贡献的组织个数 / Participating orgs count',

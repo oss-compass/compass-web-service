@@ -13,7 +13,10 @@ module Openapi
       expose :metadata__enriched_on,
              documentation: { type: 'String', desc: 'metadata__enriched_on', example: '2025-05-14T07:28:30.512875+00:00' }
 
-      expose :new_issue_count,
+      # Keep this attribute aligned with the index field requested by
+      # `fetch_metric_data_v2(ContributionActivityMetric, 'issue_new_count')`.
+      # The helper slices the OpenSearch `_source`, so another name stays nil.
+      expose :issue_new_count,
              documentation: {
                type: 'Integer',
                desc: 'New Issue Count (Issues created in cycle) / 新增Issue数（周期内创建的Issue总数）',
