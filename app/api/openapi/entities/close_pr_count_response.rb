@@ -19,7 +19,7 @@ module Openapi
       expose :level, documentation: { type: 'String', desc: 'Analysis Level / 分析层级', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'Repository URL / 仓库地址', example: 'https://github.com/oss-compass/compass-web-service' }
       expose :metric_type, documentation: { type: 'String', desc: 'Metric Type / 指标类型', example: 'community_portrait' }
-      expose :metric_name, documentation: { type: 'String', desc: 'Metric Name / 指标名称', example: 'code_review_count' }
+      expose :metric_name, documentation: { type: 'String', desc: 'Metric Name / 指标名称', example: 'close_pr_count' }
       expose :metric_detail, using: Entities::ClosePrCountMetricDetail,
              documentation: { type: 'ClosePrCountMetricDetail', desc: 'Metric Details / 指标详情' }
       expose :version_number, documentation: { type: 'NilClass', desc: 'Version Number / 版本号', example: nil } # 新增字段
