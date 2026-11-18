@@ -13,5 +13,5 @@
 #
 class DashboardModelInfo < ApplicationRecord
 
-  has_many :dashboard_metric_infos, foreign_key: :dashboard_model_info_id
+  has_many :dashboard_metric_infos, foreign_key: :dashboard_model_info_id, dependent: :destroy
 end
