@@ -17,7 +17,8 @@ module CompassWebService
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # Keep application time calculations independent of the host process timezone.
+    config.time_zone = "UTC"
     # config.eager_load_paths << Rails.root.join("extras")
 
     # Set Redis as the back-end for the cache.

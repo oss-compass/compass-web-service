@@ -326,7 +326,7 @@ module Openapi
 
             company = params[:company].to_s.downcase.strip
             begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
-            end_date = params[:end_date] || Time.now.utc.iso8601
+            end_date = params[:end_date] || Time.current.utc.iso8601
 
             # 使用多线程并行处理每个输入项
             threads = raw_urls_list.map do |original_input|
@@ -432,7 +432,7 @@ module Openapi
 #             raw_urls_list = params[:project_urls]
 #             company = params[:company].downcase
 #             begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
-#             end_date = params[:end_date] || Time.now.utc.iso8601
+#             end_date = params[:end_date] || Time.current.utc.iso8601
 #
 #             input_to_clean_urls = raw_urls_list.index_with do |multi_url|
 #               multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)
@@ -537,7 +537,7 @@ module Openapi
             raw_urls_list = params[:project_urls]
             company_query = params[:company].to_s.downcase.strip
             begin_date = params[:begin_date] || 2.years.ago.utc.iso8601
-            end_date = params[:end_date] || Time.now.utc.iso8601
+            end_date = params[:end_date] || Time.current.utc.iso8601
 
             input_to_clean_urls = raw_urls_list.index_with do |multi_url|
               multi_url.split(/,|;|\s+/).map(&:strip).reject(&:empty?)

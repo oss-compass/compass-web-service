@@ -17,7 +17,7 @@ module CompassUtils
     uri.scheme = default_host.scheme
     uri.host = default_host.host
     if error.present?
-      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.now.to_f * 1000).to_i })
+      uri.query_values = uri.query_values.to_h.merge({ error: error, ts: (Time.current.to_f * 1000).to_i })
     end
     uri.to_s
   end

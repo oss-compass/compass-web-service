@@ -100,7 +100,7 @@ module Openapi
           # 起止时间（默认近两年）
           def time_range
             begin_date = params[:start_time] || params[:begin_date] || 2.years.ago.utc
-            end_date = params[:end_time] || Time.now.utc
+            end_date = params[:end_time] || Time.current.utc
             [begin_date, end_date]
           end
 
