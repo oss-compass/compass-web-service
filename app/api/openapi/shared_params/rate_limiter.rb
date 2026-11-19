@@ -8,7 +8,7 @@ module Openapi
         return if (user&.role_level.to_i > 3) || (type == 0)
 
 
-        key = "rate_limit:token:#{token}:#{Time.now.to_i / period}"
+        key = "rate_limit:token:#{token}:#{Time.current.to_i / period}"
 
         count = Rails.cache.fetch(key, expires_in: period) { 0 }
         count += 1

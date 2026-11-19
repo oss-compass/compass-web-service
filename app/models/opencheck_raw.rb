@@ -45,7 +45,7 @@ class OpencheckRaw < BaseMetric
     document_hash = {
       project_url: project_url,
       label: project_url,
-      grimoire_creation_date: Time.now.utc.iso8601,
+      grimoire_creation_date: Time.current.utc.iso8601,
       command: command,
       command_result: command_result,
       id: SecureRandom.uuid,

@@ -43,7 +43,7 @@ class PullServer
     when 'repo'
       path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
       message = "Updated #{path} developers"
-      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
+      branch = "#{Time.current.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
       result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
       repo, sha = {}, nil
       sha = cacualte_sha(result[:body]) if result[:status]
@@ -70,7 +70,7 @@ class PullServer
     when 'project', 'community'
       path = "#{ORG_DIR}/#{@label}.yml"
       message = "Updated #{path}"
-      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
+      branch = "#{Time.current.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
       result = @domain_name == 'gitee' ? gitee_get_file(path, 'main') : github_get_file(path, 'main')
       return result unless result[:status]
       project = YAML.safe_load(result[:body])
@@ -105,7 +105,7 @@ class PullServer
       if @project_url.present?
         path = "#{SINGLE_DIR}/#{@domain_name}#{@path}.yml"
         message = "Updated #{path}"
-        branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
+        branch = "#{Time.current.strftime('%Y%m%d%H%M%S')}#{@path.gsub('/', '-')}"
         repo = {}
         repo['resource_types'] = { 'repo_urls' => @project_url }
         content_base64 = Base64.strict_encode64(YAML.dump(repo))
@@ -129,7 +129,7 @@ class PullServer
           return { status: false, message: I18n.t('pull.too_many_repositories') }
         end
 
-        branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-update-projects"
+      branch = "#{Time.current.strftime('%Y%m%d%H%M%S')}-update-projects"
         message = "Updated projects"
 
         path_content_base64_pairs = {}
@@ -164,7 +164,7 @@ class PullServer
     when 'project', 'community'
       path = "#{ORG_DIR}/#{@label}.yml"
       message = "Updated #{path}"
-      branch = "#{DateTime.now.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
+      branch = "#{Time.current.strftime('%Y%m%d%H%M%S')}-#{@label.gsub('/', '-')}"
       project = {}
       project['community_name'] = @label
       project['community_org_url'] = @extra[:community_org_url] if @extra[:community_org_url]
