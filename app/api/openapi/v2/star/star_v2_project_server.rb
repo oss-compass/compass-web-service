@@ -25,7 +25,9 @@ module Openapi
 
           # 根据 repo_url 获取社区名称（StarProject 表）
           def get_community_name(keyword)
-            StarProject.find_by(repo_url: keyword)&.project_name
+            k = keyword.to_s.chomp('/')
+            StarProject.find_by(repo_url: k)&.project_name ||
+              StarProject.where(repo_url: "#{k}/").limit(1).pick(:project_name)
           end
 
           # 将单个原子 URL 展开为底层仓库 URL 列表（社区 URL 展开，普通 repo 原样返回）
@@ -272,89 +274,6 @@ module Openapi
               .raw_response
           end
 
-          # 组级去重用户集合（单层 terms，size 30k < ES max_buckets 65535，超大社区会截断）。
-          # 结果按「索引+仓库集合+时间范围+字段」缓存 15 分钟，避免大社区重复重查
-          def distinct_users(indexer, repo_urls, date_field, begin_date, end_date, user_field: 'user_login', customize: nil)
-            return Set.new if repo_urls.empty?
-
-            # SearchFlip::Criteria#index_name 会抛错；criteria 链用 .target 取索引类，索引类用 .name
-            idx_id = indexer.is_a?(SearchFlip::Criteria) ? indexer.target.name : indexer.name
-            ck = ['star_v2:users', idx_id, user_field, date_field, begin_date, end_date,
-                  Digest::MD5.hexdigest(repo_urls.sort.join(','))].join(':')
-            cached = Rails.cache.read(ck)
-            return cached if cached
-
-            base = indexer
-                     .must(terms: { 'tag' => repo_urls })
-                     .range(date_field, gte: begin_date, lt: end_date)
-            base = customize.call(base) if customize
-            resp = base
-                     .per(0)
-                     .aggregate(by_user: { terms: { field: user_field, size: 30_000 } })
-                     .execute
-                     .raw_response
-            users = (resp&.[]('aggregations')&.[]('by_user')&.[]('buckets') || []).map { |b| b['key'] }.to_set
-            Rails.cache.write(ck, users, expires_in: 15.minutes)
-            users
-          end
-
-          # D0/D1/D2 贡献者分层（组级去重人数）：
-          # D2 = commit 创建人；D1 = issue/pr 的创建/关闭/评论人 + commit 创建人；D0 = D1 + star + fork（不统计 commit 评论人）
-          # 返回 { d0: Set, d1: Set, d2: Set }（整组跨仓库去重）
-          def contributor_tiers(repo_urls, begin_date, end_date)
-            return { d0: Set.new, d1: Set.new, d2: Set.new } if repo_urls.empty?
-
-            # 组级缓存（16 次远端 ES 聚合较慢，15 分钟内复用）
-            tkey = ['star_v2:tiers', Digest::MD5.hexdigest(repo_urls.sort.join(',')), begin_date, end_date].join(':')
-            tcached = Rails.cache.read(tkey)
-            return tcached if tcached
-
-            d1 = Set.new
-            d0_extra = Set.new
-            d2 = Set.new
-
-            {
-              'gitee.com' => [GiteeIssueEnrich, Gitee2IssueEnrich, GiteePullEnrich, Gitee2PullEnrich, GiteeEventEnrich, GiteeGitEnrich, GiteeStargazerEnrich, GiteeForkEnrich],
-              'github.com' => [GithubIssueEnrich, Github2IssueEnrich, GithubPullEnrich, Github2PullEnrich, GithubEventEnrich, GithubGitEnrich, GithubStargazerEnrich, GithubForkEnrich],
-              'gitcode.com' => [GitcodeIssueEnrich, Gitcode2IssueEnrich, GitcodePullEnrich, Gitcode2PullEnrich, GitcodeEventEnrich, GitcodeGitEnrich, GitcodeStargazerEnrich, GitcodeForkEnrich]
-            }.each do |host, (issue_idx, issue2_idx, pull_idx, pull2_idx, event_idx, git_idx, star_idx, fork_idx)|
-              urls = repo_urls.select { |u| u.include?(host) }
-              next if urls.empty?
-
-              # D1：issue/pr 创建人 + 评论人
-              d1.merge(distinct_users(issue_idx, urls, :created_at, begin_date, end_date))
-              d1.merge(distinct_users(issue2_idx, urls, :grimoire_creation_date, begin_date, end_date))
-              d1.merge(distinct_users(pull_idx, urls, :created_at, begin_date, end_date))
-              d1.merge(distinct_users(pull2_idx, urls, :comment_created_at, begin_date, end_date))
-              # D1：issue/pr 关闭人（ClosedEvent 操作者）
-              d1.merge(distinct_users(event_idx.must(term: { 'event_type' => 'ClosedEvent' }),
-                                      urls, :created_at, begin_date, end_date, user_field: 'actor_username'))
-              # D1/D2：commit 创建人
-              git_urls = urls.map { |u| u.sub(/\.git\z/, '') + '.git' }
-              commit_filters = lambda do |q|
-                q.must(wildcard: { author_email: { value: '*@*' } })
-                 .must(wildcard: { committer_email: { value: '*@*' } })
-                 .must(range: { lines_changed: { gt: 0 } })
-                 .must_not(terms: { author_email: ['mamingshuai@huawei.com', 'wenjun1@huawei.com'] })
-                 .must_not(terms: { committer_email: ['mamingshuai@huawei.com', 'wenjun1@huawei.com'] })
-                 .must_not(wildcard: { author_email: { value: '*noreply*' } })
-                 .must_not(wildcard: { committer_email: { value: '*noreply*' } })
-                 .must_not(wildcard: { message: { value: '*Merge pull request*' } })
-              end
-              authors = distinct_users(git_idx, git_urls, :grimoire_creation_date, begin_date, end_date,
-                                       user_field: 'author_name', customize: commit_filters)
-              d1.merge(authors)
-              d2.merge(authors)
-              # D0 增量：star / fork 用户
-              d0_extra.merge(distinct_users(star_idx, urls, :created_at, begin_date, end_date))
-              d0_extra.merge(distinct_users(fork_idx, urls, :created_at, begin_date, end_date))
-            end
-
-            result = { d0: d1 | d0_extra, d1: d1, d2: d2 }
-            Rails.cache.write(tkey, result, expires_in: 15.minutes)
-            result
-          end
-
           # 将任意时间字符串归一化为周期结束日期（周末/月末/年末），保证 new 与 total 的日期对齐
           def period_key(date_str, time_type)
             t = Time.parse(date_str.to_s)
@@ -441,7 +360,12 @@ module Openapi
           # new 为组级差值（截 0），repo_url 为原始入参地址（社区地址）
           # totals_by_repo 结构：{ repo => { totals: { 周期 => 值（范围内） }, baseline: 起始前最近快照值 } }
           def group_snapshot_series(input_url, repos, totals_by_repo, begin_date, end_date, time_type)
-            entries = repos.filter_map { |r| totals_by_repo[r] }.reject { |e| e[:totals].empty? }
+            entries = repos.filter_map do |r|
+              e = totals_by_repo[r]
+              next if e.nil?
+              next if e[:baseline].to_i.zero? && e[:totals].empty?
+              e
+            end
             return { repo_url: input_url, items: [] } if entries.empty?
 
             # 起始周期统一取 begin_date 所在周期（与 issue/pr/commit 周期接口一致）：
@@ -1562,31 +1486,29 @@ module Openapi
             groups = expand_inputs_grouped(params[:project_urls])
             begin_date, end_date = time_range
 
-            # 每组（仓库/社区）独立计算：组级批量查询（每平台一次），避免逐仓库循环
+            # 每组（仓库/社区）独立计算：组级批量查询（每平台一次），避免逐仓库循环。
             data = groups.map do |input, repos|
-              # 华为/非华为：按组缓存贡献者名单（大社区批量查询较慢，15 分钟内复用）
-              ck = ['star_v2:contrib_names', Digest::MD5.hexdigest(repos.sort.join(',')), begin_date, end_date].join(':')
-              lists = Rails.cache.fetch(ck, expires_in: 15.minutes) do
-                arr = []
-                platform_groups(repos, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich).each do |idx, urls|
-                  arr.concat(idx.fetch_contributors_name_list(urls, begin_date, end_date))
-                end
-                arr
-              end
-              huawei = Set.new
-              non_huawei = Set.new
-              lists.each do |c|
-                name = c['contributor']
-                next if name.blank?
-                huawei?(c['organization']) ? huawei << name : non_huawei << name
+              acc = { huawei: Set.new, non_huawei: Set.new, d0: Set.new, d1: Set.new, d2: Set.new }
+              truncated = false
+              platform_groups(repos, GiteeContributorEnrich, GithubContributorEnrich, GitcodeContributorEnrich).each do |idx, urls|
+                r = idx.contributor_company_and_tiers(urls, begin_date, end_date)
+                acc[:huawei].merge(r[:huawei])
+                acc[:non_huawei].merge(r[:non_huawei])
+                acc[:d0].merge(r[:d0])
+                acc[:d1].merge(r[:d1])
+                acc[:d2].merge(r[:d2])
+                truncated ||= r[:truncated]
               end
 
-              tiers = contributor_tiers(repos, begin_date, end_date)
-              { repo_url: input, huawei_contributor_count: huawei.size,
-                non_huawei_contributor_count: non_huawei.size,
-                contributor_total_count: tiers[:d0].size,
-                d0_contributor_count: tiers[:d0].size, d1_contributor_count: tiers[:d1].size,
-                d2_contributor_count: tiers[:d2].size }
+              result = { repo_url: input,
+                         huawei_contributor_count: acc[:huawei].size,
+                         non_huawei_contributor_count: acc[:non_huawei].size,
+                         contributor_total_count: acc[:d0].size,
+                         d0_contributor_count: acc[:d0].size,
+                         d1_contributor_count: acc[:d1].size,
+                         d2_contributor_count: acc[:d2].size }
+              result[:truncated] = true if truncated
+              result
             end
 
             { code: 201, data: { contributor_company_count: data } }
