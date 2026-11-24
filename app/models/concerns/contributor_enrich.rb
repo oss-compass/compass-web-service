@@ -4,6 +4,10 @@ module ContributorEnrich
 
   MAX_DEPTH = 100
   MAX_PER_PAGE = 8000
+  # 贡献者分层计数上限（ES max_buckets 65536 以内）；D0/D1/D2 与华为/非华为同源同上限
+  TIER_MAX = 30_000
+  # 被动贡献类型：仅有这类动作的用户不计入 D1
+  PASSIVE_CONTRIBUTION_TYPES = %w[star fork].freeze
 
   class_methods do
     def fetch_contributors_list(repo_urls, begin_date, end_date, label: nil, level: nil)
@@ -285,6 +289,62 @@ module ContributorEnrich
         }
         end
 
+    end
+
+    # 按贡献者索引一次性统计：华为/非华为人数 + D0/D1/D2 分层人数
+    # 全部来自同一聚合、同一过滤口径，因此 huawei + non_huawei == d0 == total 恒成立
+    # 返回各层贡献者名集合，调用方按平台合并去重：
+    #   { huawei: Set, non_huawei: Set, d0: Set, d1: Set, d2: Set, truncated: Boolean }
+    def contributor_company_and_tiers(repo_urls, begin_date, end_date)
+      empty = { huawei: Set.new, non_huawei: Set.new, d0: Set.new, d1: Set.new, d2: Set.new, truncated: false }
+      return empty if Array(repo_urls).empty?
+
+      response = self
+                   .where(is_bot: false)
+                   .must(terms: { 'repo_name.keyword' => repo_urls })
+                   .range(:contribution, gt: 0)
+                   .range(:grimoire_creation_date, gte: begin_date, lte: end_date)
+                   .per(0)
+                   .aggregate(
+                     contributors: {
+                       terms: { field: 'contributor.keyword', size: TIER_MAX },
+                       aggs: {
+                         latest_info: {
+                           top_hits: {
+                             size: 1,
+                             sort: [{ grimoire_creation_date: { order: 'desc' } }],
+                             _source: { includes: ['organization'] }
+                           }
+                         },
+                         non_passive: {
+                           filter: { bool: { must_not: { terms: { 'contribution_type_list.contribution_type.keyword' => PASSIVE_CONTRIBUTION_TYPES } } } }
+                         },
+                         code: {
+                           filter: { term: { 'contribution_type_list.contribution_type.keyword' => 'code_author' } }
+                         }
+                       }
+                     }
+                   ).execute
+
+      buckets = response.aggregations['contributors']['buckets'] || []
+      huawei = Set.new
+      non_huawei = Set.new
+      d0 = Set.new
+      d1 = Set.new
+      d2 = Set.new
+      buckets.each do |b|
+        name = b['key']
+        next if name.blank?
+
+        d0 << name
+        org = b.dig('latest_info', 'hits', 'hits', 0, '_source', 'organization').to_s
+        (org.downcase.include?('huawei') ? huawei : non_huawei) << name
+        d1 << name if b.dig('non_passive', 'doc_count').to_i > 0
+        d2 << name if b.dig('code', 'doc_count').to_i > 0
+      end
+
+      { huawei: huawei, non_huawei: non_huawei, d0: d0, d1: d1, d2: d2,
+        truncated: buckets.size >= TIER_MAX }
     end
   end
 end
