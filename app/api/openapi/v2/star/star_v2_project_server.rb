@@ -1629,14 +1629,14 @@ module Openapi
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
             optional :time_type, type: String, desc: '时间类型 week/month/year', default: 'week'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_lines_count do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
             time_type = period_type
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             # 一次聚合拿到各仓库每周期：commit 数 / 新增行 / 删除行 / 华为 commit 数
             series_by_repo = {}
@@ -1674,13 +1674,13 @@ module Openapi
             requires :project_urls, type: Array[String], desc: '项目地址'
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_company_count do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             stats = Hash.new { |h, k| h[k] = { huawei: 0, total: 0 } }
             platform_groups(repo_urls, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich).each do |idx, urls|
@@ -1705,13 +1705,13 @@ module Openapi
             requires :project_urls, type: Array[String], desc: '项目地址'
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_company_lines_count do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             # 一次聚合：按 tag（仓库）分桶，桶内统计总新增/删除行，以及华为组织的新增/删除行
             stats = Hash.new do |h, k|
@@ -1783,13 +1783,13 @@ module Openapi
             requires :project_urls, type: Array[String], desc: '项目地址'
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_count do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             counts = Hash.new(0)
             platform_groups(repo_urls, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich).each do |idx, urls|
@@ -1807,13 +1807,13 @@ module Openapi
             requires :project_urls, type: Array[String], desc: '项目地址'
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_activity_count do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             counts = Hash.new(0)
             platform_groups(repo_urls, GiteeGitEnrich, GithubGitEnrich, GitcodeGitEnrich).each do |idx, urls|
@@ -1832,14 +1832,14 @@ module Openapi
             optional :start_time, type: DateTime, desc: '开始时间'
             optional :end_time, type: DateTime, desc: '结束时间'
             optional :time_type, type: String, desc: '时间类型 week/month/year', default: 'week'
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_count_period do
             groups = expand_inputs_grouped(params[:project_urls])
             repo_urls = groups.sum([], &:last)
             begin_date, end_date = time_range
             time_type = period_type
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             counts_by_repo = Hash.new { |h, k| h[k] = Hash.new(0) }
             added_by_repo = Hash.new { |h, k| h[k] = Hash.new(0) }
@@ -1892,12 +1892,12 @@ module Openapi
             optional :end_time, type: DateTime, desc: '结束时间'
             optional :page, type: Integer, desc: '页码', default: 1
             optional :size, type: Integer, desc: '每页条数', default: 10
-            optional :branch, type: String, desc: '分支', default: 'master'
+            optional :branch, type: String, desc: '分支（不传则不过滤，统计采集到的全部提交）', default: nil
           end
           post :commit_metadata do
             repo_urls = expand_inputs(params[:project_urls])
             begin_date, end_date = time_range
-            branch = params[:branch] || 'master'
+            branch = params[:branch].presence
 
             items = []
             total_count = 0 # 各平台命中总数累加（分页元信息）
