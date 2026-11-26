@@ -13,6 +13,7 @@ module Openapi
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
       helpers Openapi::SharedParams::RestapiHelpers
+      helpers Openapi::SharedParams::RepoUrl
 
       rescue_from :all do |e|
         case e
@@ -64,9 +65,10 @@ module Openapi
           requires :label, type: String, desc: 'Repository address / 仓库地址', documentation: { param_type: 'body', example: 'https://github.com/oss-compass/compass-web-service' }
         }
         post :analyze_criticality_score do
+          label = normalize_incoming_repo_url!(params[:label])
 
           opts = {
-            repo_url: params[:label],
+            repo_url: label,
             opencheck_raw: true,
             opencheck_raw_param: {
               commands: ['ohpm-info']

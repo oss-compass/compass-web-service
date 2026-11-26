@@ -13,6 +13,7 @@ module Openapi
       helpers Openapi::SharedParams::AuthHelpers
       helpers Openapi::SharedParams::ErrorHelpers
       helpers Openapi::SharedParams::RestapiHelpers
+      helpers Openapi::SharedParams::RepoUrl
 
       rescue_from :all do |e|
         case e
@@ -74,8 +75,9 @@ module Openapi
           optional :label_token, type: String, desc: 'GitCode/Gitee access token: Used solely for checking the model Webhooks metrics. If not provided, the check will not be performed / GitCode/Gitee 访问令牌：仅用于检查 Webhooks 指标。如果不提供，该指标将不会执行检查', documentation: { param_type: 'body' }
         }
         post :analyze_scorecard do
+          label = normalize_incoming_repo_url!(params[:label])
           opts = {
-            repo_url: params[:label],
+            repo_url: label,
             opencheck_raw: true,
             opencheck_raw_param: {
               access_token: params[:label_token]

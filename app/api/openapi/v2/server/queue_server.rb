@@ -15,6 +15,7 @@ module Openapi
           require_login!
         end
         helpers Openapi::SharedParams::ErrorHelpers
+        helpers Openapi::SharedParams::RepoUrl
 
         rescue_from :all do |e|
           case e
@@ -180,7 +181,7 @@ module Openapi
           end
           post :add_queue do
             type = params[:type]
-            project_url = params[:project_url]
+            project_url = normalize_incoming_repo_url!(params[:project_url])
             server = AnalyzeServer.new({ repo_url: project_url })
             result = if type == 0
                        server.execute_workflow
@@ -200,8 +201,7 @@ module Openapi
           end
           post :projects_add_queue do
             type = params[:type]
-
-            project_urls = params[:project_urls]
+            project_urls = params[:project_urls].map { |url| normalize_incoming_repo_url!(url) }
 
             results = project_urls.map do |project_url|
               server = AnalyzeServer.new({ repo_url: project_url })
