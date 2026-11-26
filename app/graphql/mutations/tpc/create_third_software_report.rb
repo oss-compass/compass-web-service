@@ -32,15 +32,17 @@ module Mutations
         software_reports.each_with_index do |report_input, index|
           begin
             ActiveRecord::Base.transaction do
+              code_url = TpcSoftwareMetricServer.normalize_repo_url(report_input.code_url)
 
               existing_report = TpcSoftwareSelectionReport.find_by(
                 subject_id: subject.id,
-                code_url: report_input.code_url
+                code_url: code_url
               )
 
               raise GraphQL::ExecutionError.new(I18n.t('tpc.software_report_already_exist')) if existing_report.present?
 
               report_data = report_input.as_json(except: [:architecture_diagrams])
+              report_data["code_url"] = code_url
               report_data.merge!(
                 user_id: current_user.id,
                 subject_id: subject.id,

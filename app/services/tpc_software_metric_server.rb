@@ -19,14 +19,37 @@ class TpcSoftwareMetricServer
   Report_Type_License = -1
   Report_Type_Metrics_Model = -2
 
+  REPO_HOSTS = %w[gitee.com github.com gitcode.com atomgit.com].freeze
+  # 只允许仓库路径。$、反引号、分号、管道、空格等留给 shell 解释的字符一律拒绝。
+  REPO_SEGMENT = %r{[A-Za-z0-9\u00C0-\uFFFF._-]}.freeze
+
   def initialize(opts = {})
     @project_url = opts[:project_url]
+  end
+
+  # 下游会把这个字符串拼进 shell。这里只放行规范化后的仓库地址，query 里的 $(...) 不会被发出去。
+  def self.normalize_repo_url(url)
+    uri = Addressable::URI.parse(url.to_s.strip)
+    host = uri.normalized_host.to_s.delete_prefix("www.")
+    segments = uri.path.to_s.split("/").reject(&:empty?)
+    segments[-1] = segments[-1].sub(/\.git\z/i, "") if segments.last
+    safe_path = segments.all? { |segment| segment.match?(/\A#{REPO_SEGMENT.source}+\z/) && !segment.include?("..") }
+    unless %w[http https].include?(uri.scheme) && uri.userinfo.blank? && REPO_HOSTS.include?(host) && segments.length >= 2 && safe_path
+      raise GraphQL::ExecutionError, I18n.t("tpc.software_code_url_invalid")
+    end
+    "https://#{host}/#{segments.join("/")}"
+  rescue Addressable::URI::InvalidURIError, TypeError
+    raise GraphQL::ExecutionError, I18n.t("tpc.software_code_url_invalid")
+  end
+
+  def normalized_repo_url
+    @normalized_repo_url ||= self.class.normalize_repo_url(@project_url)
   end
 
   def analyze_metric_by_compass(report_id, report_metric_id, report_type)
     result = AnalyzeServer.new(
       {
-        repo_url: @project_url,
+        repo_url: normalized_repo_url,
         callback: {
           hook_url: TPC_SERVICE_CALLBACK_URL,
           params: {
@@ -56,7 +79,7 @@ class TpcSoftwareMetricServer
     end
     payload = {
       commands: commands,
-      project_url: "#{@project_url}.git",
+      project_url: "#{normalized_repo_url}.git",
       callback_url: TPC_SERVICE_CALLBACK_URL,
       commit_hash: oh_commit_sha,
       task_metadata: {
