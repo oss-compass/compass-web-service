@@ -554,7 +554,6 @@ class TpcSoftwareMetricServer
   def tpc_software_metrics_model_callback(metrics_model)
     if metrics_model&.any?
       opts = {
-        repo_url: @project_url,
         opencheck_raw: false,
         opencheck_raw_param: {},
         raw: false,
@@ -574,6 +573,7 @@ class TpcSoftwareMetricServer
       metrics_model.each do |key|
         opts[key.to_sym] = true
       end
+      opts[:repo_url] = normalized_repo_url
 
       result = AnalyzeServer.new(opts).execute_tpc
       Rails.logger.info("analyze metric model info: #{result}")

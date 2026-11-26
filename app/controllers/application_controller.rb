@@ -91,7 +91,12 @@ class ApplicationController < ActionController::Base
 
     Rails.logger.info("tpc_software_callback info: command_list: #{command_list} project_url: #{project_url} task_metadata: #{task_metadata}")
 
-    metric_server = TpcSoftwareMetricServer.new({project_url: project_url.gsub(".git", "")})
+    if project_url.blank?
+      render json: { status: false, message: 'callback failed' }
+      return
+    end
+
+    metric_server = TpcSoftwareMetricServer.new({ project_url: project_url.sub(/\.git\z/i, "") })
     # 将所有openchecker内容保存到Opensearch
     metric_server.save_opencheck_raw_callback(command_list, scan_results)
 
@@ -109,8 +114,8 @@ class ApplicationController < ActionController::Base
 
     render json: { status: true, message: 'ok' }
   rescue => ex
-    Rails.logger.info(ex)
-    render json: { status: false, message: ex }
+    Rails.logger.error(ex)
+    render json: { status: false, message: 'callback failed' }
   end
 
 
