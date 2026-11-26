@@ -26,6 +26,8 @@ module Mutations
 
       }
 
+      current_user = context[:current_user]
+      login_required!(current_user)
       url =  ENV.fetch('THIRD_URL')
       response = Faraday.post(
         "#{url}/vote_down",
