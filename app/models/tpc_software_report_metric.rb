@@ -74,6 +74,7 @@ class TpcSoftwareReportMetric < ApplicationRecord
   Report_Type_Selection = 'TpcSoftwareSelectionReport'
   Report_Type_Lectotype = 'TpcSoftwareLectotypeReport'
   Report_Type_Sandbox = 'TpcSoftwareSandboxReport'
+  Report_Type_Other = 'TpcSoftwareOtherReport'
 
   Status_Progress = 'progress'
   Status_Again_Progress = 'again_progress'

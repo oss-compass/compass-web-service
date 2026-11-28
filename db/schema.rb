@@ -825,6 +825,34 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_16_122723) do
     t.datetime "updated_at", null: false
   end
 
+
+  create_table "tpc_software_other_reports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.integer "report_type", null: false
+    t.string "name", null: false
+    t.integer "tpc_software_sig_id", null: false
+    t.string "release"
+    t.datetime "release_time"
+    t.string "manufacturer", null: false
+    t.string "website_url", null: false
+    t.string "code_url", null: false
+    t.string "programming_language", null: false
+    t.integer "code_count"
+    t.string "license"
+    t.string "vulnerability_disclosure"
+    t.string "vulnerability_response"
+    t.string "short_code", null: false
+    t.integer "subject_id", null: false
+    t.integer "user_id", null: false
+    t.string "adaptation_method"
+    t.string "oh_commit_sha"
+    t.integer "report_category"
+    t.integer "upstream_collaboration_strategy"
+    t.string "upstream_communication_link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["short_code"], name: "index_tpc_software_other_reports_on_short_code", unique: true
+  end
+
   create_table "tpc_software_report_metric_raws", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "tpc_software_report_metric_id", null: false
     t.string "code_url", null: false
