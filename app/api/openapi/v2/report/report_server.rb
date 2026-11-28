@@ -152,8 +152,8 @@ module Openapi
               )
 
               tpc_software_metric_server = TpcSoftwareMetricServer.new({project_url: code_url})
-              # tpc_software_metric_server.analyze_metric_by_tpc_service(report.id, report_metric.id, report.oh_commit_sha, TpcSoftwareMetricServer::Report_Type_Other)
-              # tpc_software_metric_server.analyze_metric_by_compass(report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Other)
+              tpc_software_metric_server.analyze_metric_by_tpc_service(report.id, report_metric.id, report.oh_commit_sha, TpcSoftwareMetricServer::Report_Type_Other)
+              tpc_software_metric_server.analyze_metric_by_compass(report.id, report_metric.id, TpcSoftwareMetricServer::Report_Type_Other)
             end
 
             { status: true, message: '', report_id: report.id, short_code: report.short_code }
