@@ -6,7 +6,10 @@ module Openapi
       expose :uuid, documentation: { type: 'String', desc: 'uuid', example: 'b2495fcb8eac6407bb802a568b55cfcfd9d27f55' }
       expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/oss-compass/compass-web-service' }
-      expose :org_non_code_contributors_count,
+      # Keep this attribute aligned with the index field requested by
+      # `fetch_metric_data_v2(OrganizationalGovernanceMetric, 'org_non_code_contributors')`.
+      # The helper slices the OpenSearch `_source`, so another name stays nil.
+      expose :org_non_code_contributors,
              documentation: {
                type: 'Integer',
                desc: '组织非代码贡献者数量 / Org non-code contributors count',

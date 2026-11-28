@@ -13,7 +13,10 @@ module Openapi
       expose :metadata__enriched_on,
              documentation: { type: 'String', desc: 'metadata__enriched_on', example: '2025-05-14T07:28:30.512875+00:00' }
 
-      expose :contributor_count,
+      # Keep this attribute aligned with the index field requested by
+      # `fetch_metric_data_v2(DeveloperBaseMetric, 'total_active_contributors')`.
+      # The helper slices the OpenSearch `_source`, so another name stays nil.
+      expose :total_active_contributors,
              documentation: {
                type: 'Integer',
                desc: 'Community Contributor Count (Total Active Contributors) / 社区贡献者数量（总活跃贡献者数）',
