@@ -150,6 +150,17 @@ module Types
         end
       end
 
+      # The deep insight contributor list is a ranking, so robots have to be
+      # excluded by default. Callers that already provide an `is_bot` filter
+      # (the web app does when the user wants to inspect robots) keep full
+      # control over the returned list.
+      def default_bot_filter_opts(filter_opts)
+        filter_opts = Array(filter_opts)
+        return filter_opts if filter_opts.any? { |opt| opt.type == 'is_bot' }
+
+        filter_opts + [OpenStruct.new(type: 'is_bot', values: ['false'])]
+      end
+
       def login_required!(current_user)
         raise GraphQL::ExecutionError.new I18n.t('users.require_login') if current_user.blank?
       end
