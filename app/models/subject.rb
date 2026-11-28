@@ -44,7 +44,7 @@ class Subject < ApplicationRecord
 
   has_many_attached :exports
 
-  has_one :subject_customization
+  has_one :subject_customization, dependent: :destroy
 
   validates :label, presence: true, length: { maximum: 255 }
   validates :level, presence: true, length: { maximum: 255 }
