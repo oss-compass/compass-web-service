@@ -32,7 +32,7 @@ module Openapi
       expose :level, documentation: { type: 'String', desc: 'level', example: 'repo' }
       expose :label, documentation: { type: 'String', desc: 'label', example: 'https://github.com/oss-compass/compass-web-service' }
       expose :metric_type, documentation: { type: 'String', desc: 'metric_type', example: 'community_portrait' }
-      expose :metric_name, documentation: { type: 'String', desc: 'metric_name', example: 'pr_open_time' }
+      expose :metric_name, documentation: { type: 'String', desc: 'metric_name', example: 'pr_time_to_first_response' }
       expose :metric_detail, using: Entities::PrTimeToFirstResponseMetricDetail,
              documentation: { type: 'PrTimeToFirstResponseMetricDetail', desc: 'metric_detail' }
       expose :version_number, documentation: { type: 'NilClass', desc: 'version_number', example: nil } # 新增字段
