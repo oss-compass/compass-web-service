@@ -11,7 +11,7 @@
 #
 class TpcAutoCreateOrg < ApplicationRecord
 
-  has_many :tpc_auto_create_committers
+  has_many :tpc_auto_create_committers, dependent: :destroy
 
   scope :enabled, -> { where(enabled: true) }
 end
