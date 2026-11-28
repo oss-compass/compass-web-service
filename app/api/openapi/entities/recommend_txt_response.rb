@@ -12,7 +12,7 @@ module Openapi
     end
 
     class RecommendTxtResponse < Grape::Entity
-      expose :items, using: Entities::RecommendTxtResponseItem, documentation: { type: 'Entities::RecommendResponseItem', desc: 'response', param_type: 'body', is_array: true }
+      expose :items, using: Entities::RecommendTxtResponseItem, documentation: { type: 'Entities::RecommendTxtResponseItem', desc: 'response', param_type: 'body', is_array: true }
     end
 
   end

@@ -2,12 +2,9 @@
 module Openapi
   module Entities
 
-    class RecommendVoteUpResponseItem < Grape::Entity
-      expose :message, documentation: { type: 'String', desc: 'message', example: 'Vote up/down recorded successfully' }
-    end
-
     class RecommendVoteUpResponse < Grape::Entity
-      expose :data, using: Entities::RecommendVoteUpResponseItem, documentation: { type: 'Entities::RecommendResponseItem', desc: 'response', example: 'Vote up/down recorded successfully', param_type: 'body', is_array: true }
+      expose :status, documentation: { type: 'Boolean', desc: 'Whether the vote was recorded / 是否记录成功', example: true }
+      expose :message, documentation: { type: 'String', desc: 'Vote result message / 投票结果信息', example: 'Vote up recorded successfully' }
     end
 
   end

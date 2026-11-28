@@ -15,7 +15,7 @@ module Openapi
     end
 
     class RecommendTplResponse < Grape::Entity
-      expose :items, using: Entities::RecommendTplResponseItem, documentation: { type: 'Entities::RecommendResponseItem', desc: 'response', param_type: 'body', is_array: true }
+      expose :items, using: Entities::RecommendTplResponseItem, documentation: { type: 'Entities::RecommendTplResponseItem', desc: 'response', param_type: 'body', is_array: true }
     end
 
   end
