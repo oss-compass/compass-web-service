@@ -5,7 +5,13 @@ class CollectionServer
   include Common
 
   def execute(directory)
-    output, status = Open3.capture2("https_proxy=#{PROXY} git pull", :chdir=>"#{Rails.root + META_REPO}")
+    # Keep the proxy out of the shell source so configuration values cannot add commands.
+    output, status = Open3.capture2(
+      { 'https_proxy' => PROXY },
+      'git',
+      'pull',
+      chdir: Rails.root + META_REPO
+    )
 
     if !status.success?
       job_logger.error "failed to git pull latest, error: #{output}"
