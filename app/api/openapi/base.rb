@@ -67,6 +67,7 @@ module Openapi
     mount Openapi::V2::FeedbackModule
     mount Openapi::V2::Star::StarProjectServer
     mount Openapi::V2::Star::StarV2ProjectServer
+    mount Openapi::V2::Report::ReportServer
 
     mount Openapi::V3::CommunityHealth::CollaborationEfficiency::ResponseTimeliness
     mount Openapi::V3::CommunityHealth::CollaborationEfficiency::CollaborationQuality
