@@ -47,7 +47,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
                                         credentials: {
                                           token: sns_info.result['access_token'],
                                           refresh_token: sns_info.result['refresh_token'],
-                                          expires_at: Time.now.to_i + sns_info.result['expires_in'],
+                                          expires_at: Time.current.to_i + sns_info.result['expires_in'],
                                           expires: true
                                         },
                                         extra: {

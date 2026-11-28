@@ -235,7 +235,7 @@ class AnalyzeGroupServer
     count = repos_count
     sync_subject_refs
 
-    message = { label: @project_name, level: @level, status: Subject.task_status_converter(task_resp['status']), count: count, status_updated_at: DateTime.now.utc.iso8601 }
+    message = { label: @project_name, level: @level, status: Subject.task_status_converter(task_resp['status']), count: count, status_updated_at: Time.current.utc.iso8601 }
 
     RabbitMQ.publish(SUBSCRIPTION_QUEUE, message) if count > 0
     { status: task_resp['status'], message: I18n.t('analysis.task.pending') }
