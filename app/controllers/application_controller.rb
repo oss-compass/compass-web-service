@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
       notify_on_pr(pr_number, quote_mark(YAML.dump(result)), domain: domain)
     end
 
-    { status: true, message: 'ok' }
+    render json: { status: true, message: 'ok' }
   end
 
   def tpc_software_workflow
